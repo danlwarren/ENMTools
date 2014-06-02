@@ -1,0 +1,691 @@
+tiplabels(pch=19, cex=pointsizes, col=pointcolors)
+plot(ladderize(bat.tree), show.tip.label=F, legend=T, cex = .5, edge.width = 2, label.offset = .1)
+tiplabels(pch=19, cex=pointsizes, col=pointcolors)
+title("Diet and Olfactory")
+rm(list=ls())#
+require(auteur)#
+require(car)#
+#
+bat.tree <- read.tree(file="SingleTree.tre")#
+plot(bat.tree)#
+bat.data <- read.csv(file="batbrains.csv")#
+olf.reg <- lm(log(bat.data$olfactory_bulb)~log(bat.data$brain_size))#
+olf.residuals <- olf.reg$residuals#
+bat.data <- cbind(bat.data, olf.residuals)#
+rownames(bat.data) <- bat.data$taxon#
+check <- name.check(bat.tree, bat.data)#
+bat.tree <- drop.tip(bat.tree, check$Tree.not.data)#
+bat.data <- bat.data[intersect(bat.data$taxon, bat.tree$tip.label),]#
+check <- name.check(bat.tree, bat.data)#
+names(olf.residuals) <- rownames(bat.data)#
+rjmcmc.bm(bat.tree, olf.residuals, filebase="batolf", ngen = 100000)#
+mydir.bats <- paste("jump-relaxedBM", "batolf", sep=".")#
+bat.data$diet <- recode(bat.data$diet, "'fruit'=0; else=1")#
+res.bats <- summarize.rjmcmc(mydir.bats)#
+res.bats$phy <- ladderize(res.bats$phy)#
+pointsizes <- olf.residuals * 5#
+names(pointsizes) <- names(bat.data)#
+pointcolors <- bat.data$diet + 2#
+names(pointcolors) <- names(bat.data)#
+plot(x=res.bats, par="shifts", burnin=0.25, legend=T, cex = 1,  edge.width = 2, label.offset = .02)#
+plot(ladderize(bat.tree), show.tip.label=F, legend=T, cex = .5, edge.width = 2, label.offset = .1)#
+tiplabels(pch=19, cex=pointsizes, col=pointcolors)#
+title("Diet and Olfactory")
+rm(list=ls())#
+require(auteur)#
+require(car)#
+#
+bat.tree <- read.tree(file="SingleTree.tre")#
+plot(bat.tree)#
+bat.data <- read.csv(file="batbrains.csv")#
+olf.reg <- lm(log(bat.data$olfactory_bulb)~log(bat.data$brain_size))#
+olf.residuals <- olf.reg$residuals#
+bat.data <- cbind(bat.data, olf.residuals)#
+rownames(bat.data) <- bat.data$taxon#
+check <- name.check(bat.tree, bat.data)#
+bat.tree <- drop.tip(bat.tree, check$Tree.not.data)#
+bat.data <- bat.data[intersect(bat.data$taxon, bat.tree$tip.label),]#
+check <- name.check(bat.tree, bat.data)#
+names(olf.residuals) <- rownames(bat.data)#
+rjmcmc.bm(bat.tree, olf.residuals, filebase="batolf", ngen = 10000)#
+mydir.bats <- paste("jump-relaxedBM", "batolf", sep=".")#
+bat.data$diet <- recode(bat.data$diet, "'fruit'=0; else=1")#
+res.bats <- summarize.rjmcmc(mydir.bats)#
+res.bats$phy <- ladderize(res.bats$phy)#
+pointsizes <- olf.residuals * 5#
+names(pointsizes) <- names(bat.data)#
+pointcolors <- bat.data$diet + 2#
+names(pointcolors) <- names(bat.data)#
+plot(x=res.bats, par="shifts", burnin=0.25, legend=T, cex = 1,  edge.width = 2, label.offset = .02)#
+plot(ladderize(bat.tree), show.tip.label=T, legend=T, cex = .5, edge.width = 2, label.offset = .1)#
+tiplabels(pch=19, cex=pointsizes, col=pointcolors)#
+title("Diet and Olfactory")
+help(plot)
+help(plot.tree)
+help(plot.phy)
+ape
+picante
+require(picante)
+help(plot.tree)
+require(ape)
+help(plot.tree)
+??plot.tree
+ls()
+rm(list=ls())#
+require(auteur)#
+require(car)#
+#
+bat.tree <- read.tree(file="SingleTree.tre")#
+#plot(bat.tree)#
+bat.data <- read.csv(file="batbrains.csv")#
+olf.reg <- lm(log(bat.data$olfactory_bulb)~log(bat.data$brain_size))#
+olf.residuals <- olf.reg$residuals#
+bat.data <- cbind(bat.data, olf.residuals)#
+rownames(bat.data) <- bat.data$taxon#
+check <- name.check(bat.tree, bat.data)#
+bat.tree <- drop.tip(bat.tree, check$Tree.not.data)#
+bat.data <- bat.data[intersect(bat.data$taxon, bat.tree$tip.label),]#
+check <- name.check(bat.tree, bat.data)#
+names(olf.residuals) <- rownames(bat.data)#
+rjmcmc.bm(bat.tree, olf.residuals, filebase="batolf", ngen = 10000)#
+mydir.bats <- paste("jump-relaxedBM", "batolf", sep=".")#
+bat.data$diet <- recode(bat.data$diet, "'fruit'=0; else=1")#
+res.bats <- summarize.rjmcmc(mydir.bats)#
+res.bats$phy <- ladderize(res.bats$phy)#
+pointsizes <- olf.residuals * 5#
+names(pointsizes) <- names(bat.data)#
+pointcolors <- bat.data$diet + 2#
+names(pointcolors) <- names(bat.data)#
+#plot(x=res.bats, par="shifts", burnin=0.25, legend=T, cex = 1,  edge.width = 2, label.offset = .02)#
+plot(ladderize(bat.tree), show.tip.label=T, legend=T, cex = .5, edge.width = 2, label.offset = .1)#
+tiplabels(pch=19, cex=pointsizes, col=pointcolors)#
+title("Diet and Olfactory")
+pointcolors <- bat.data$diet
+plot(ladderize(bat.tree), show.tip.label=T, legend=T, cex = .5, edge.width = 2, label.offset = .1)
+plot(ladderize(bat.tree), show.tip.label=T, cex = .5, edge.width = 2, label.offset = .1)
+rm(list=ls())#
+require(auteur)#
+require(car)#
+#
+bat.tree <- read.tree(file="SingleTree.tre")#
+#plot(bat.tree)#
+bat.data <- read.csv(file="batbrains.csv")#
+olf.reg <- lm(log(bat.data$olfactory_bulb)~log(bat.data$brain_size))#
+olf.residuals <- olf.reg$residuals#
+bat.data <- cbind(bat.data, olf.residuals)#
+rownames(bat.data) <- bat.data$taxon#
+check <- name.check(bat.tree, bat.data)#
+bat.tree <- drop.tip(bat.tree, check$Tree.not.data)#
+bat.data <- bat.data[intersect(bat.data$taxon, bat.tree$tip.label),]#
+check <- name.check(bat.tree, bat.data)#
+names(olf.residuals) <- rownames(bat.data)#
+rjmcmc.bm(bat.tree, olf.residuals, filebase="batolf", ngen = 10000)#
+mydir.bats <- paste("jump-relaxedBM", "batolf", sep=".")#
+bat.data$diet <- recode(bat.data$diet, "'fruit'=0; else=1")#
+res.bats <- summarize.rjmcmc(mydir.bats)#
+res.bats$phy <- ladderize(res.bats$phy)#
+pointsizes <- olf.residuals * 5#
+names(pointsizes) <- names(bat.data)#
+pointcolors <- bat.data$diet#
+#
+names(pointcolors) <- names(bat.data)#
+#plot(x=res.bats, par="shifts", burnin=0.25, legend=T, cex = 1,  edge.width = 2, label.offset = .02)#
+plot(ladderize(bat.tree), show.tip.label=T, cex = .5, edge.width = 2, label.offset = .1)#
+tiplabels(pch=19, cex=pointsizes, col=pointcolors)#
+title("Diet and Olfactory")
+pointcolors
+pointsizes <- olf.residuals * 5
+names(pointsizes) <- rownames(bat.data)
+pointcolors
+rownames(bat.data)
+pointsizes <- olf.residuals * 5
+names(pointsizes) <- rownames(bat.data)
+pointcolors <- bat.data$diet
+names(pointcolors) <- rownames(bat.data)
+pointsizes
+olf.residuals
+size(olf.residuals)
+length(olf.residuals)
+dim(bat.data)
+bat.tree <- read.tree(file="SingleTree.tre")#
+#plot(bat.tree)#
+bat.data <- read.csv(file="batbrains.csv")#
+olf.reg <- lm(log(bat.data$olfactory_bulb)~log(bat.data$brain_size))#
+olf.residuals <- olf.reg$residuals#
+bat.data <- cbind(bat.data, olf.residuals)#
+rownames(bat.data) <- bat.data$taxon#
+check <- name.check(bat.tree, bat.data)#
+bat.tree <- drop.tip(bat.tree, check$Tree.not.data)#
+bat.data <- bat.data[intersect(bat.data$taxon, bat.tree$tip.label),]#
+check <- name.check(bat.tree, bat.data)#
+names(olf.residuals) <- rownames(bat.data)#
+rjmcmc.bm(bat.tree, olf.residuals, filebase="batolf", ngen = 10000)#
+mydir.bats <- paste("jump-relaxedBM", "batolf", sep=".")#
+bat.data$diet <- recode(bat.data$diet, "'fruit'=0; else=1")#
+res.bats <- summarize.rjmcmc(mydir.bats)#
+res.bats$phy <- ladderize(res.bats$phy)#
+pointsizes <- olf.residuals * 5#
+names(pointsizes) <- rownames(bat.data)#
+pointcolors <- bat.data$diet
+pointcolors
+pointsizes
+res.bats$phy <- ladderize(res.bats$phy)#
+pointsizes <- bat.data$olf.residuals * 5#
+names(pointsizes) <- rownames(bat.data)#
+pointcolors <- bat.data$diet
+names(pointcolors) <- rownames(bat.data)
+pointcolors
+pointsizes
+pointsizes <- bat.data$olf.residuals #
+names(pointsizes) <- rownames(bat.data)#
+pointcolors <- bat.data$diet#
+pointcolors <- pointcolors + 2#
+names(pointcolors) <- rownames(bat.data)#
+#plot(x=res.bats, par="shifts", burnin=0.25, legend=T, cex = 1,  edge.width = 2, label.offset = .02)#
+plot(ladderize(bat.tree), show.tip.label=T, cex = .5, edge.width = 2, label.offset = .1)#
+tiplabels(pch=19, cex=pointsizes, col=pointcolors)#
+title("Diet and Olfactory")
+pointcolors
+pointcolors <- bat.data$diet
+pointcolors
+pointcolors <- as.numeric(bat.data$diet)
+pointcolors <- pointcolors + 2
+names(pointcolors) <- rownames(bat.data)
+pointcolors
+plot(ladderize(bat.tree), show.tip.label=T, cex = .5, edge.width = 2, label.offset = .1)#
+tiplabels(pch=19, cex=pointsizes, col=pointcolors)#
+title("Diet and Olfactory")
+pointsizes <- bat.data$olf.residuals *2#
+names(pointsizes) <- rownames(bat.data)#
+pointcolors <- as.numeric(bat.data$diet)#
+pointcolors <- pointcolors + 2#
+names(pointcolors) <- rownames(bat.data)#
+#plot(x=res.bats, par="shifts", burnin=0.25, legend=T, cex = 1,  edge.width = 2, label.offset = .02)#
+plot(ladderize(bat.tree), show.tip.label=T, cex = .5, edge.width = 2, label.offset = .1)#
+tiplabels(pch=19, cex=pointsizes, col=pointcolors)#
+title("Diet and Olfactory")
+res.bats$phy <- ladderize(res.bats$phy)#
+pointsizes <- bat.data$olf.residuals *2#
+names(pointsizes) <- rownames(bat.data)#
+pointcolors <- as.numeric(bat.data$diet)#
+pointcolors <- pointcolors + 2#
+names(pointcolors) <- rownames(bat.data)#
+#plot(x=res.bats, par="shifts", burnin=0.25, legend=T, cex = 1,  edge.width = 2, label.offset = .02)#
+plot(ladderize(bat.tree), show.tip.label=T, cex = .5, edge.width = 2, label.offset = 1)#
+tiplabels(pch=19, cex=pointsizes, col=pointcolors)#
+title("Diet and Olfactory")
+res.bats$phy <- ladderize(res.bats$phy)#
+pointsizes <- bat.data$olf.residuals *4#
+names(pointsizes) <- rownames(bat.data)#
+pointcolors <- as.numeric(bat.data$diet)#
+pointcolors <- pointcolors + 2#
+names(pointcolors) <- rownames(bat.data)#
+#plot(x=res.bats, par="shifts", burnin=0.25, legend=T, cex = 1,  edge.width = 2, label.offset = .02)#
+plot(ladderize(bat.tree), show.tip.label=T, cex = .5, edge.width = 2, label.offset = 2)#
+tiplabels(pch=19, cex=pointsizes, col=pointcolors)#
+title("Diet and Olfactory")
+pointsizes <- bat.data$olf.residuals *3#
+names(pointsizes) <- rownames(bat.data)#
+pointcolors <- as.numeric(bat.data$diet)#
+pointcolors <- pointcolors + 2#
+names(pointcolors) <- rownames(bat.data)#
+#plot(x=res.bats, par="shifts", burnin=0.25, legend=T, cex = 1,  edge.width = 2, label.offset = .02)#
+plot(ladderize(bat.tree), show.tip.label=T, cex = .5, edge.width = 2, label.offset = 2)#
+tiplabels(pch=19, cex=pointsizes, col=pointcolors)#
+title("Diet and Olfactory")
+pointsizes <- bat.data$olf.residuals *3#
+names(pointsizes) <- rownames(bat.data)#
+pointcolors <- as.numeric(bat.data$diet)#
+pointcolors <- pointcolors + 2#
+names(pointcolors) <- rownames(bat.data)#
+plot(x=res.bats, par="shifts", burnin=0.25, legend=T, cex = 1,  edge.width = 2, label.offset = .02)
+rm(list=ls())#
+require(auteur)#
+require(car)#
+#
+bat.tree <- read.tree(file="SingleTree.tre")#
+#plot(bat.tree)#
+bat.data <- read.csv(file="batbrains.csv")#
+olf.reg <- lm(log(bat.data$olfactory_bulb)~log(bat.data$brain_size))#
+olf.residuals <- olf.reg$residuals#
+bat.data <- cbind(bat.data, olf.residuals)#
+rownames(bat.data) <- bat.data$taxon#
+check <- name.check(bat.tree, bat.data)#
+bat.tree <- drop.tip(bat.tree, check$Tree.not.data)#
+bat.data <- bat.data[intersect(bat.data$taxon, bat.tree$tip.label),]#
+check <- name.check(bat.tree, bat.data)#
+names(olf.residuals) <- rownames(bat.data)#
+rjmcmc.bm(bat.tree, olf.residuals, filebase="batolf", ngen = 10000)#
+mydir.bats <- paste("jump-relaxedBM", "batolf", sep=".")#
+bat.data$diet <- recode(bat.data$diet, "'fruit'=0; else=1")#
+res.bats <- summarize.rjmcmc(mydir.bats)#
+res.bats$phy <- ladderize(res.bats$phy)#
+pointsizes <- bat.data$olf.residuals *3#
+names(pointsizes) <- rownames(bat.data)#
+pointcolors <- as.numeric(bat.data$diet)#
+pointcolors <- pointcolors + 2#
+names(pointcolors) <- rownames(bat.data)#
+plot(x=res.bats, par="shifts", burnin=0.25, legend=T, cex = 1,  edge.width = 2, label.offset = .02)#
+plot(ladderize(bat.tree), show.tip.label=T, cex = .5, edge.width = 2, label.offset = 2)#
+tiplabels(pch=19, cex=pointsizes, col=pointcolors)#
+title("Diet and Olfactory")
+names(pointsizes)
+names(pointsizes)[1] <-"ppppp"
+names(pointsizes)
+names(pointcolors)
+names(pointcolors) <- names(pointsizes)
+names(pointcolors)
+class(pointsizes)
+pointcolors
+help(names)
+v <- c(1, 2, 3)
+names(v) <- c("one", "two", "three")
+v
+w <- c(1, 2, 3)
+names(w) <- c("four", "five", "six")
+w
+names(w) <- names(v)
+v
+w
+v <- as.data.frame(v)
+v
+w
+names(w) <- c("four", "five", "six")
+w
+v
+names(v) <- names(w)
+w
+names(w)
+names(v)
+rownames(v)
+rownames(v) <- names(w)
+v
+require(picante)
+?picante
+birds <- readsample("bird.dist.phylocom")
+birds <- readsample("bird_dist.phylocom")
+geo <- read.csv("IslandGeoData.csv")
+head(geo)
+plot(geo$Area, geo$Height)
+plot(geo$Area, geo$Distance)
+fulltree <- read.tree("BirdTree.tre")
+plot.tree(fulltree)
+require(ape)
+plot.tree(fulltree)
+geo <- read.csv("IslandGeoData.csv", na.strings = "-9999")
+plot(geo$Area, geo$Height)
+plot(geo$Area, geo$Distance)
+plot(fulltree)
+plot(fulltree, cex=.1)
+fulltree
+plot(fulltree, shot.tip.label=F)
+plot(fulltree, show.tip.label=F)
+plot(fulltree, show.tip.label=F. edge.width=.5)
+plot(fulltree, show.tip.label=F, edge.width=.5)
+prunedtree <- prune.sample(birds, fulltree)
+plot(prunedtree, show.tip.label=F, edge.width=.5)
+birds <- birds[, prunedtree$tip.label]
+plot(prunedtree, show.tip.label=F)
+pch
+tiplabels(tip=which(birds[2,] >0), pch=19, cex=2)
+plot(prunedtree, show.tip.label=F, type="fan")
+tiplabels(tip=which(birds[2,] >0), pch=19, cex=2)
+plot(prunedtree, show.tip.label=F, type="fan")#
+tiplabels(pch=19, cex=2, tip.col = birds[2,])
+birds[2,]
+plot(prunedtree, show.tip.label=F, type="fan")#
+tiplabels(pch=19, cex=2, tip.color = birds[2,])
+plot(prunedtree, show.tip.label=F, type="fan")#
+tiplabels(pch=19, cex=2, col= birds[2,])
+plot(prunedtree, show.tip.label=F, type="fan")#
+tiplabels(tip=which(birds[2,] >0), pch=19, cex=2)
+head(birds)
+pd.result <- pd(birds, prunedtree, include.root=F)
+pd.result
+plot(pd.result$SR~pd.result$PD)
+Island <-rownames(pd.result)
+Island
+new.pd.result <- cbind(Island, pd.result)
+PDandGeo <- merge(new.pd.result, geo)
+head(PDandGeo)
+plot(PDandGeo$Area~PDandGeo$PD)
+plot(PDandGeo$Height~PDandGeo$PD)
+plot(PDandGeo$PD~PDandGeo$Height)
+plot(PDandGeo$Area,PDandGeo$PD)
+PnG <- cbind(PDandGeo, PDandGeo$PD/PDandGeo$Area)
+names(PnG)
+names(PnG) <- c("Island", "PD", "SR", "Area", "Height", "Distance", "ration")
+names(PnG) <- c("Island", "PD", "SR", "Area", "Height", "Distance", "ratio")
+max(PnG$ratio)
+max(PnG$ratio, na.rm=T)
+phydist <- cophenetic(prunedtree)
+head(phydist)
+Mean phylo distance
+MPD <- mpd(birds, phydist, abundance.weighted=F)
+MPD
+MNTD <- mntd(birds, phydist, abundance.weighted=F)
+plot(mntd~mpd)
+plot(MNTD~MPD)
+MPD <- ses.mpd(birds, phydist, null.model = "taxa.labels", abundance.weighted=F, runs=10)
+MPD
+head(MPD)
+head(PnG)
+MPD <- cbind(Island, MPD)#
+PnG <- merge(PnG, MPD)#
+head(PnG)
+MPD <- ses.mpd(birds, phydist, null.model = "taxa.labels", abundance.weighted=F, runs=100)#
+head(MPD)
+MPD[MPD$mpd.obs.p > .975]
+MPD$mpd.obs.p
+MPD[(MPD$mpd.obs.p > .975)]
+(MPD$mpd.obs.p > .975)
+MPD[(MPD$mpd.obs.p > .975),]
+overdisp <- MPD[(MPD$mpd.obs.p > .975),]
+underdisp <- MPD[(MPD$mpd.obs.p < ..025),]
+underdisp <- MPD[(MPD$mpd.obs.p < .025),]
+underdisp
+rm(list=ls())#
+require(auteur)#
+require(car)#
+#
+bat.tree <- read.tree(file="SingleTree.tre")#
+#plot(bat.tree)#
+bat.data <- read.csv(file="batbrains.csv")#
+olf.reg <- lm(log(bat.data$olfactory_bulb)~log(bat.data$brain_size))#
+olf.residuals <- olf.reg$residuals#
+bat.data <- cbind(bat.data, olf.residuals)#
+rownames(bat.data) <- bat.data$taxon#
+check <- name.check(bat.tree, bat.data)#
+bat.tree <- drop.tip(bat.tree, check$Tree.not.data)#
+bat.data <- bat.data[intersect(bat.data$taxon, bat.tree$tip.label),]#
+check <- name.check(bat.tree, bat.data)#
+names(olf.residuals) <- rownames(bat.data)#
+rjmcmc.bm(bat.tree, olf.residuals, filebase="batolf", ngen = 10000)#
+mydir.bats <- paste("jump-relaxedBM", "batolf", sep=".")#
+bat.data$diet <- recode(bat.data$diet, "'fruit'=0; else=1")#
+res.bats <- summarize.rjmcmc(mydir.bats)#
+res.bats$phy <- ladderize(res.bats$phy)#
+pointsizes <- bat.data$olf.residuals *3#
+names(pointsizes) <- rownames(bat.data)#
+pointcolors <- as.numeric(bat.data$diet)#
+pointcolors <- pointcolors + 2#
+names(pointcolors) <- rownames(bat.data)#
+plot(x=res.bats, par="shifts", burnin=0.25, legend=T, cex = 1,  edge.width = 2, label.offset = .02)
+plot(ladderize(bat.tree), show.tip.label=T, cex = .5, edge.width = 2, label.offset = 2)#
+tiplabels(pch=19, cex=pointsizes, col=pointcolors)#
+title("Diet and Olfactory")
+plot(x=res.bats, par="shifts", burnin=0.25, legend=T, cex = 1,  edge.width = 2, label.offset = .02)
+plot(x=res.bats, par="shifts", burnin=0.25, legend=T, cex = 1,  edge.width = 4, label.offset = .02)
+plot(x=res.bats, par="shifts", burnin=0.25, legend=T, cex = 1,  edge.width = 3, label.offset = .02)
+plot(x=res.bats, par="shifts", burnin=0.25, legend=T, cex = 1,  edge.width = 3, label.offset = .02)#
+title("Rate of Evolution of Olfactory Bulb")
+plot(x=res.bats, par="shifts", burnin=0.25, legend=T, cex = 1,  edge.width = 3, label.offset = .02)
+rjmcmc.bm(bat.tree, olf.residuals, filebase="batolf", ngen = 100000)#
+mydir.bats <- paste("jump-relaxedBM", "batolf", sep=".")#
+bat.data$diet <- recode(bat.data$diet, "'fruit'=0; else=1")#
+res.bats <- summarize.rjmcmc(mydir.bats)#
+res.bats$phy <- ladderize(res.bats$phy)#
+pointsizes <- bat.data$olf.residuals *3#
+names(pointsizes) <- rownames(bat.data)#
+pointcolors <- as.numeric(bat.data$diet)#
+pointcolors <- pointcolors + 2#
+names(pointcolors) <- rownames(bat.data)#
+plot(x=res.bats, par="shifts", burnin=0.25, legend=T, cex = 1,  edge.width = 3, label.offset = .02)
+rjmcmc.bm(bat.tree, olf.residuals, filebase="batolf", ngen = 1000000)#
+mydir.bats <- paste("jump-relaxedBM", "batolf", sep=".")#
+bat.data$diet <- recode(bat.data$diet, "'fruit'=0; else=1")#
+res.bats <- summarize.rjmcmc(mydir.bats)#
+res.bats$phy <- ladderize(res.bats$phy)#
+pointsizes <- bat.data$olf.residuals *3#
+names(pointsizes) <- rownames(bat.data)#
+pointcolors <- as.numeric(bat.data$diet)#
+pointcolors <- pointcolors + 2#
+names(pointcolors) <- rownames(bat.data)#
+plot(x=res.bats, par="shifts", burnin=0.25, legend=T, cex = 1,  edge.width = 3, label.offset = .02)
+plot(x=res.bats, par="shifts", burnin=0.25, legend=T, cex = 1,  edge.width = 3, label.offset = .02)
+plot(ladderize(bat.tree), show.tip.label=T, cex = .5, edge.width = 2, label.offset = 2)#
+tiplabels(pch=19, cex=pointsizes, col=pointcolors)#
+title("Diet and Olfaction")
+pointcolors <- as.numeric(bat.data$diet)#
+pointcolors <- pointcolors + 2
+plot(ladderize(bat.tree), show.tip.label=T, cex = .5, edge.width = 2, label.offset = 2)#
+tiplabels(pch=19, cex=pointsizes, col=pointcolors)#
+title("Diet and Olfaction")
+setwd('~/Google Drive/SB Class')#
+library(phytools)#
+library(geiger)#
+library(nlme)#
+fulltree <- read.tree(file="fishtreeFinalPL_Feb8.tre")#
+fishdata <- read.csv('brains_and_fishbase.csv', header=TRUE)#
+rownames(fishdata) <- as.character(fishdata$Species)#
+smalltree <- drop.tip(fulltree, fulltree$tip.label[!fulltree$tip.label %in% fishdata$Species]) #Trims tree to species in both tree and data set#
+smalldata <- fishdata[intersect(fulltree$tip.label, fishdata$Species),]  #Trim data to species in both#
+taxa.in.both <- intersect(fulltree$tip.label, fishdata$Species)  #Gest list of species in intersection#
+smalltree2 <- drop.tip(fulltree, setdiff(fulltree$tip.label, fishdata$Species))  #Same as two lines above, different way of doing it#
+smalldata <-smalldata[!is.na(smalldata$Encephalization),]  #Trim to spp with encephalization data#
+smalldata <-smalldata[!is.na(smalldata$Max.depth),]  #Trim to spp with max abs lat#
+smalltree <- drop.tip(fulltree, fulltree$tip.label[!fulltree$tip.label %in% smalldata$Species]) #Trims tree to species in #
+pglsModel <- gls(Encephalization~Max.depth, correlation=corBrownian(1,smalltree), data=smalldata)
+names(smalltree)
+tmp <- smalltree$tip.label
+tm
+tmp
+tmp["Polyodon_spathula"]
+tmp["Polydon_spathula"]
+tmp["Gymnothorax_javanicus"]
+tmp["Echidna_nebulosa"]
+load package 'raster'#
+require(raster)#
+#
+#load the file#
+test <- raster('~/Dropbox/For Dan Oct 2012/Ambystoma_gracile/betamultiplier=0/Ambystoma_gracile_0_px.grd')#
+#
+#plot it#
+plot(test)
+load the file#
+test <- raster('~/Dropbox/For Dan Oct 2012/Ambystoma_gracile/betamultiplier=0/Ambystoma_gracile_0_px.grd')#
+#plot it#
+plot(test)
+load the file#
+test1 <- raster('~/Dropbox/For Dan Oct 2012/Sceloporus_occidentalis/betamultiplier=0/Sceloporus_occidentalis_0_px.grd')#
+test2 <- raster('~/Dropbox/For Dan Oct 2012/Sceloporus_occidentalis/betamultiplier=10/Sceloporus_occidentalis_10_px.grd')#
+test3 <- raster('~/Dropbox/For Dan Oct 2012/Sceloporus_occidentalis/betamultiplier=20/Sceloporus_occidentalis_20_px.grd')#
+test4 <- raster('~/Dropbox/For Dan Oct 2012/Sceloporus_occidentalis/betamultiplier=30/Sceloporus_occidentalis_30_px.grd')#
+#
+#plot it#
+plot(test1, test2, test3, test4)
+plot(test1)#
+plot(test2)#
+plot(test3)#
+plot(test4)
+test1 <- raster('~/Dropbox/For Dan Oct 2012/Sceloporus_occidentalis/betamultiplier=0/Sceloporus_occidentalis_0_px.grd')#
+test2 <- raster('~/Dropbox/For Dan Oct 2012/Sceloporus_occidentalis/betamultiplier=10/Sceloporus_occidentalis_10_px.grd')#
+test3 <- raster('~/Dropbox/For Dan Oct 2012/Sceloporus_occidentalis/betamultiplier=20/Sceloporus_occidentalis_20_px.grd')#
+test4 <- raster('~/Dropbox/For Dan Oct 2012/Sceloporus_occidentalis/betamultiplier=30/Sceloporus_occidentalis_30_px.grd')
+test1 <- raster('~/Dropbox/For Dan Oct 2012/Sceloporus_occidentalis/betamultiplier=0/Sceloporus_occidentalis_0_px.grd')
+require(raster)
+test1 <- raster('~/Dropbox/For Dan Oct 2012/Sceloporus_occidentalis/betamultiplier=0/Sceloporus_occidentalis_0_px.grd')
+load package 'raster'#
+require(raster)#
+#
+#load the file#
+test1 <- raster('~/Dropbox/For Dan Oct 2012/Sceloporus_occidentalis/betamultiplier=0/Sceloporus_occidentalis_0_px.grd')#
+test2 <- raster('~/Dropbox/For Dan Oct 2012/Sceloporus_occidentalis/betamultiplier=10/Sceloporus_occidentalis_10_px.grd')#
+test3 <- raster('~/Dropbox/For Dan Oct 2012/Sceloporus_occidentalis/betamultiplier=20/Sceloporus_occidentalis_20_px.grd')#
+test4 <- raster('~/Dropbox/For Dan Oct 2012/Sceloporus_occidentalis/betamultiplier=30/Sceloporus_occidentalis_30_px.grd')
+load package 'raster'#
+require(raster)#
+#
+#load the file#
+test1 <- raster('~/Dropbox/For Dan Oct 2012/Ambystoma_gracile/betamultiplier=0/Ambystoma_gracile_0_px.grd')#
+test2 <- raster('~/Dropbox/For Dan Oct 2012/Ambystoma_gracile/betamultiplier=10/Ambystoma_gracile_10_px.grd')#
+test3 <- raster('~/Dropbox/For Dan Oct 2012/Ambystoma_gracile/betamultiplier=20/Ambystoma_gracile_20_px.grd')#
+test4 <- raster('~/Dropbox/For Dan Oct 2012/Ambystoma_gracile/betamultiplier=30/Ambystoma_gracile_30_px.grd')#
+#
+#plot it#
+plot(test1)#
+plot(test2)#
+plot(test3)#
+plot(test4)
+plot it#
+layout(matrix(1:4, 2, 2))#
+plot(test1)#
+plot(test2)#
+plot(test3)#
+plot(test4)
+help(plot)
+layout(matrix(1:4, 2, 2))#
+plot(test1)#
+plot(test2)#
+plot(test3)#
+plot(test4)
+plot(test1, test2)
+plot(test2, test3)
+plot(test3, test4)
+load the file#
+test1 <- raster('~/Dropbox/For Dan Oct 2012/Buvo_alvarius/betamultiplier=0/Buvo_alvarius_0_px.grd')#
+test2 <- raster('~/Dropbox/For Dan Oct 2012/Buvo_alvarius/betamultiplier=10/Buvo_alvarius_10_px.grd')#
+test3 <- raster('~/Dropbox/For Dan Oct 2012/Buvo_alvarius/betamultiplier=20/Buvo_alvarius_20_px.grd')#
+test4 <- raster('~/Dropbox/For Dan Oct 2012/Buvo_alvarius/betamultiplier=30/Buvo_alvarius_30_px.grd')#
+#plot it#
+layout(matrix(1:4, 2, 2))#
+plot(test1)#
+plot(test2)#
+plot(test3)#
+plot(test4)
+load the file#
+test1 <- raster('~/Dropbox/For Dan Oct 2012/Buvo_alvarius/betamultiplier=0/Buvo_alvarius_0_px.grd')#
+test2 <- raster('~/Dropbox/For Dan Oct 2012/Buvo_alvarius/betamultiplier=10/Buvo_alvarius_1_px.grd')#
+test3 <- raster('~/Dropbox/For Dan Oct 2012/Buvo_alvarius/betamultiplier=20/Buvo_alvarius_2_px.grd')#
+test4 <- raster('~/Dropbox/For Dan Oct 2012/Buvo_alvarius/betamultiplier=30/Buvo_alvarius_3_px.grd')#
+#plot it#
+layout(matrix(1:4, 2, 2))#
+plot(test1)#
+plot(test2)#
+plot(test3)#
+plot(test4)
+load the file#
+test1 <- raster('~/Dropbox/For Dan Oct 2012/Ambystoma_gracile/betamultiplier=0/Ambystoma_gracile_0_px.grd')#
+test2 <- raster('~/Dropbox/For Dan Oct 2012/Ambystoma_gracile/betamultiplier=10/Ambystoma_gracile_10_px.grd')#
+test3 <- raster('~/Dropbox/For Dan Oct 2012/Ambystoma_gracile/betamultiplier=20/Ambystoma_gracile_20_px.grd')#
+test4 <- raster('~/Dropbox/For Dan Oct 2012/Ambystoma_gracile/betamultiplier=30/Ambystoma_gracile_30_px.grd')#
+#
+#plot it#
+plot(test1)#
+plot(test2)#
+plot(test3)#
+plot(test4)
+plot it#
+layout(matrix(1:4, 2, 2))#
+plot(test1)#
+plot(test2)#
+plot(test3)#
+plot(test4)
+plot(test1, test2)
+average(test1)
+mean(test1)
+mean(test2)
+histogram(test1)
+sum(test1)
+sum(test1[])
+test1[]
+sum(test1[,] na.rm=T)
+sum(test1[] na.rm=T)
+sum(test1[], na.rm=T)
+sum(test2[], na.rm=T)
+sum(test3[], na.rm=T)
+sum(test4[], na.rm=T)
+mean(test4[], na.rm=T)
+mean(test3[], na.rm=T)
+mean(test2[], na.rm=T)
+mean(test1[], na.rm=T)
+plot it#
+layout(matrix(1:4, 2, 2))#
+plot(test1)#
+plot(test2)#
+plot(test3)#
+plot(test4)
+hist(test1[], na.rm=T)
+hist(test2[], na.rm=T)
+hist(test3[], na.rm=T)
+hist(test4[], na.rm=T)
+hist(test1[], na.rm=T)
+max(test1[])
+max(test1[], na.rm=T)
+max(test2[], na.rm=T)
+plot(test1, test2)
+load package 'raster'#
+require(raster)#
+#
+#load the file#
+test1 <- raster('~/Dropbox/For Dan Oct 2012/Buvo_alvarius/betamultiplier=0/Buvo_alvarius_0_px.grd')#
+test2 <- raster('~/Dropbox/For Dan Oct 2012/Buvo_alvarius/betamultiplier=10/Buvo_alvarius_10_px.grd')#
+test3 <- raster('~/Dropbox/For Dan Oct 2012/Buvo_alvarius/betamultiplier=20/Buvo_alvarius_20_px.grd')#
+test4 <- raster('~/Dropbox/For Dan Oct 2012/Buvo_alvarius/betamultiplier=30/Buvo_alvarius_30_px.grd')#
+#plot it#
+layout(matrix(1:4, 2, 2))#
+plot(test1)#
+plot(test2)#
+plot(test3)#
+plot(test4)
+plot(test1, test2)
+max(test1[], na.rm=T)
+max(test2[], na.rm=T)
+test1 <- raster('~/Dropbox/For Dan Oct 2012/Bufo_alvarius/betamultiplier=0/Bufo_alvarius_0_px.grd')
+load the file#
+test1 <- raster('~/Dropbox/For Dan Oct 2012/Bufo_alvarius/betamultiplier=0/Bufo_alvarius_0_px.grd')#
+test2 <- raster('~/Dropbox/For Dan Oct 2012/Bufo_alvarius/betamultiplier=10/Bufo_alvarius_10_px.grd')#
+test3 <- raster('~/Dropbox/For Dan Oct 2012/Bufo_alvarius/betamultiplier=20/Bufo_alvarius_20_px.grd')#
+test4 <- raster('~/Dropbox/For Dan Oct 2012/Bufo_alvarius/betamultiplier=30/Bufo_alvarius_30_px.grd')#
+#plot it#
+layout(matrix(1:4, 2, 2))#
+plot(test1)#
+plot(test2)#
+plot(test3)#
+plot(test4)
+plot(test1, test2)
+plot(test2, test3)
+max(test2[], na.rm=T)
+max(test1[], na.rm=T)
+setwd("~/Desktop/R/Elaphe")#
+library("ape")#
+library("picante")#
+library("caper")#
+library("geiger")#
+library("phytools")#
+library("nlme")#
+#
+for(i in 1:10){#
+	fulltree <- read.nexus(file=paste("tree_", i, ".tre", sep="")#
+	SVLMassdata <- read.csv("Hatchling_table.csv")#
+	rownames(SVLMassdata) <- as.character(SVLMassdata$Population)#
+	smalltree <- drop.tip(fulltree, fulltree$tip.label[!fulltree$tip.label %in% SVLMassdata$Population]) #Trims tree to species in both tree and data set#
+	smalldata <- SVLMassdata[intersect(fulltree$tip.label, SVLMassdata$Population),]  #Trim data to species in both#
+	taxa.in.both <- intersect(fulltree$tip.label, SVLMassdata$Population)  #Gest list of species in intersection#
+	lizardDO <- comparative.data(phy = smalltree, data = smalldata, names.col = Population)#
+	model.ic <- crunch(log(SVL) ~ log(Mass), data = lizardDO)#
+	summary(model.ic)#
+	caic.table(model.ic)#
+	svlmasscontrasts<-caic.table(model.ic)#
+	plot(svlmasscontrasts[,1] ~ svlmasscontrasts[,2], xlab = "log SVL", ylab = "log Mass")#
+	abline(model.ic)#
+	capture.output(summary(model.ic), file="test2.txt")#
+}
+fulltree <- read.nexus(file=paste("tree_", i, ".tre", sep="")
+for(i in 1:10){#
+	fulltree <- read.nexus(file=paste("tree_", i, ".tre", sep="")#
+	SVLMassdata <- read.csv("Hatchling_table.csv")#
+	rownames(SVLMassdata) <- as.character(SVLMassdata$Population)#
+	smalltree <- drop.tip(fulltree, fulltree$tip.label[!fulltree$tip.label %in% SVLMassdata$Population]) #Trims tree to species in both tree and data set#
+	smalldata <- SVLMassdata[intersect(fulltree$tip.label, SVLMassdata$Population),]  #Trim data to species in both#
+	taxa.in.both <- intersect(fulltree$tip.label, SVLMassdata$Population)  #Gest list of species in intersection#
+	lizardDO <- comparative.data(phy = smalltree, data = smalldata, names.col = Population)#
+	model.ic <- crunch(log(SVL) ~ log(Mass), data = lizardDO)#
+	summary(model.ic)#
+	caic.table(model.ic)#
+	svlmasscontrasts<-caic.table(model.ic)#
+	plot(svlmasscontrasts[,1] ~ svlmasscontrasts[,2], xlab = "log SVL", ylab = "log Mass")#
+	abline(model.ic)#
+	capture.output(summary(model.ic), file="test2.txt")#
+}
+source("Test_ENMTools.R")
