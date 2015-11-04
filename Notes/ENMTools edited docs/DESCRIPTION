@@ -1,9 +1,0 @@
-Package: ENMTools
-Type: Package
-Title: Tools and utilities for conducting hypothesis tests using environmental niche models
-Version: 1.0
-Date: 2012-11-27
-Author: Dan Warren and Rich Glor
-Maintainer: Dan Warren <dan.l.warren@gmail.com>
-Description: At present ENMTools R package contains functions for performing tests from Warren et al. 2008, but it will eventually contain most or all of the functions from the ENMTools Perl script/executable file available from enmtools.com.
-License: GPL version 3
