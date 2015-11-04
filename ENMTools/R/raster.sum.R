@@ -12,7 +12,7 @@
 #' 
 #' @keywords keywords
 #'
-#' @export sum1
+#' @export raster.sum
 #' @examples
 #' raster.sum(x)
 
