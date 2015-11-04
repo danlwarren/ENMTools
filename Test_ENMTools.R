@@ -12,3 +12,5 @@ test7 <- reps.rangebreak.line(infiles = c("ahli.csv", "allogus_east.csv"), outfi
 test8 <- reps.rangebreak.blob(infiles = c("allogus_east.csv", "ahli.csv"), outfile = "rangebreak_blob.csv", reps = 10)
 test9 <- reps.rangebreak.ribbon(infiles = c("allogus_east.csv", "ahli.csv"), outfile = "rangebreak_ribbon.csv", reps = 10, width=.2, background.raster="pc2.asc")
 test10 <- raster.sample(infile = "pc2.asc", outfile = "rastersample.csv", sample.type="linear", points = 10, reps = 10)
+
+#note to self: add function for raster correlations and produce a corrplot using library(corrplot)

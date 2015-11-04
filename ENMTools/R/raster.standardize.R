@@ -1,5 +1,5 @@
 raster.standardize <-
-function(infile = x, outfile = y){
+function(infile = x, outfile = y, verbose=FALSE){
   if(verbose){print(paste("Starting standardize on", infile, "at", Sys.time(), "writing results to", outfile))}
   output1 <- file(outfile, "wt")
   sum1 <- raster.sum(infile)

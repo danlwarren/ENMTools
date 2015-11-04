@@ -1,5 +1,5 @@
 reps.background.asc <-
-function(infile = x, outfile = FALSE, points, reps = 10){
+function(infile = x, outfile = FALSE, points, reps = 10, verbose=FALSE){
   # Will write an output csv file if it receives an outfile name, otherwise just returns the matrix of reps
   proceed <- TRUE
   if(!file.exists(infile)){

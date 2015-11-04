@@ -1,5 +1,5 @@
 reps.identity <-
-function(infiles = x, outfile = FALSE, reps = 10){
+function(infiles = x, outfile = FALSE, reps = 10, verbose=FALSE){
   # Will write an output csv file if it receives an outfile name, otherwise just returns the matrix of reps
   proceed <- TRUE
   for(i in 1:length(infiles)){ # Checking to see if files are really there

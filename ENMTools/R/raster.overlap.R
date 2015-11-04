@@ -1,5 +1,5 @@
 raster.overlap <-
-function(x, y){
+function(x, y, verbose=FALSE){
   proceed <- TRUE
   if(!file.exists(x)){
     print(paste(x, "not found!"))

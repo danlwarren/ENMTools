@@ -1,5 +1,5 @@
 raster.breadth <-
-function(x){
+function(x, verbose=FALSE){
   proceed <- TRUE
   if(!file.exists(x)){
     print(paste(x, "not found!"))

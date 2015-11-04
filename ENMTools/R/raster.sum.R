@@ -1,5 +1,5 @@
 raster.sum <-
-function(x){
+function(x, verbose=FALSE){
   if(verbose){print(paste("Starting sums on", x, "at", Sys.time()))}
   sum1 <- 0
   con <- file(x, "rt")
