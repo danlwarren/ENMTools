@@ -1,3 +1,24 @@
+#' reps.identity, creates Monte Carlo replicates for ENM identity test
+#' 
+#' This function generates replicates for the identity test, as described in 
+#' Warren et al. 2008
+#' 
+#'
+#' @param x One or more .csv files containing species occurrence data
+#' @param outfile An output .csv file to write replicates to.  If not provided, ENMTools
+#'        will return a data frame instead.
+#' @param reps The number of replicates to create
+#' @param verbose Controls printing of diagnostic messages
+#'
+#' @return output A data frame containing Monte Carlo replicates to be used in constructing 
+#'         models for the identity test.
+#' 
+#' @keywords keywords
+#'
+#' @export reps.identity
+#' @examples
+#' reps.identity(infiles = "~/myfile.csv", outfile = "~/myreps.csv", reps=100)
+
 reps.identity <-
 function(infiles = x, outfile = FALSE, reps = 10, verbose=FALSE){
   # Will write an output csv file if it receives an outfile name, otherwise just returns the matrix of reps

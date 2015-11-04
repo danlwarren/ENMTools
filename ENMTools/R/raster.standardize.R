@@ -1,3 +1,19 @@
+#' raster.standardize, standardizes all values in a raster file
+#' 
+#' This function is used by a lot of the metrics calculated by ENMTools, in order to
+#' standardize suitability scores so they sum to 1 over a geographic space.
+#' 
+#'
+#' @param x A raster file in the .asc format, provided as a path
+#' @param y A path to output a standardized raster file
+#' @param verbose Controls printing of diagnostic messages
+#'
+#' 
+#' @keywords keywords
+#'
+#' @examples
+#' raster.standardize(x)
+
 raster.standardize <-
 function(infile = x, outfile = y, verbose=FALSE){
   if(verbose){print(paste("Starting standardize on", infile, "at", Sys.time(), "writing results to", outfile))}
@@ -23,5 +39,4 @@ function(infile = x, outfile = y, verbose=FALSE){
   }
   close(con1)
   close(output1)
-  return (TRUE)
 }

@@ -1,3 +1,21 @@
+#' raster.sum, sums all values in a raster file
+#' 
+#' This function is used by a lot of the metrics calculated by ENMTools, in order to
+#' standardize suitability scores so they sum to 1 over a geographic space.
+#' 
+
+#'
+#' @param x A raster file
+#' @param verbose Controls printing of diagnostic messages
+#'
+#' @return sum1 The sum of all suitability scores in the raster
+#' 
+#' @keywords keywords
+#'
+#' @export sum1
+#' @examples
+#' raster.sum(x)
+
 raster.sum <-
 function(x, verbose=FALSE){
   if(verbose){print(paste("Starting sums on", x, "at", Sys.time()))}

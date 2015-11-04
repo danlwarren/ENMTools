@@ -1,3 +1,25 @@
+#' reps.background.asc, creates Monte Carlo replicates for ENM background test using .asc
+#' input files
+#' 
+#' This function generates replicates for the background test, as described in 
+#' Warren et al. 2008
+#' 
+#'
+#' @param x Path to an .asc file to be used for drawing random points
+#' @param outfile An output .csv file to write replicates to.  If not provided, ENMTools
+#'        will return a data frame instead.
+#' @param reps The number of replicates to create
+#' @param verbose Controls printing of diagnostic messages
+#'
+#' @return output A data frame containing Monte Carlo replicates to be used in constructing 
+#'         models for the background test.
+#' 
+#' @keywords keywords
+#'
+#' @export reps.background.asc
+#' @examples
+#' reps.background.asc(infiles = "~/myfile.asc", outfile = "~/myreps.asc", reps=100)
+
 reps.background.asc <-
 function(infile = x, outfile = FALSE, points, reps = 10, verbose=FALSE){
   # Will write an output csv file if it receives an outfile name, otherwise just returns the matrix of reps
