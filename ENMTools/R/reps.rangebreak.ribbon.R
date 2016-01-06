@@ -24,20 +24,33 @@
 #' reps.rangebreak.ribbon("~/species_A_and_B.csv", reps=100)
 
 reps.rangebreak.ribbon <- function(infiles = x, outfile = FALSE, separate = TRUE, reps = 10, width = 1, plotty=TRUE, background.raster=NA, verbose=FALSE){
-  # Will write an output csv file if it receives an outfile name, otherwise just returns the matrix of reps
+  
   proceed <- TRUE
-  for(i in 1:length(infiles)){ # Checking to see if files are really there
+  
+  # Checking to see if files are really there
+  for(i in 1:length(infiles)){ 
     if(!file.exists(infiles[i])){
       print(paste(infiles[i], "not found!"))
       proceed <- FALSE
     }
   }
+  
   if(proceed){
+    
     if(verbose){print(paste("Starting ribbon rangebreak reps on", paste(infiles, collapse = " and "), "at", Sys.time()))}
-    thisdata <- do.call("rbind", lapply(infiles, read.csv, header = TRUE, stringsAsFactors = FALSE))  #Throwing all input data files into a single matrix
-    output <- matrix(ncol=length(thisdata[1,]), nrow=reps*length(thisdata[,1]))
+    
+    #Throwing all input data files into a single data frame
+    thisdata <- do.call("rbind", lapply(infiles, read.csv, header = TRUE, stringsAsFactors = FALSE))  
+    
+    output <- data.frame(ncol=length(thisdata[1,]), nrow=reps*length(thisdata[,1]))
     colnames(output) <- colnames(thisdata)
-    if(verbose){print(table(thisdata[,1]))}  #Prints number of points per species
+    
+    #Prints number of points per species
+    if(verbose){
+      print(table(thisdata[,1]))
+    }  
+    
+    # Plot reps as they are made
     if(plotty == TRUE){
       if(is.na(background.raster)){
           plot(c(min(thisdata[,2]),max(thisdata[,2])), c(min(thisdata[,3]),max(thisdata[,3])), type = "n", xlab="X", ylab="Y", asp = 1)
@@ -47,16 +60,22 @@ reps.rangebreak.ribbon <- function(infiles = x, outfile = FALSE, separate = TRUE
       }
       points(thisdata[,2], thisdata[,3])
     }
+    
     speciesnames <- table(thisdata[,1])
     pointcounter <- 1
     ncolumns <- ncol(thisdata)
-    #print(dim(output))
+    
+    # Now we do the actual reps
     for(i in 1:reps){
+      
+      # Select a random slope
       angle <- runif(1, min=0, max=pi)
       slope = sin(angle)/cos(angle)
+      
+      # Figure out how much to add/subtract from intercept for ribbons
       intercept_modifier <- (width/2)/cos(angle)
       if(slope < 0){intercept_modifier <- 0 - intercept_modifier}
-      #print(slope)
+      
       thisrep <- thisdata
       for(j in 1:length(thisrep[,1])){
         thisrep[j,ncolumns + 1] <- thisrep[j,3] - (slope * thisrep[j,2])
