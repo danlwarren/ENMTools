@@ -13,10 +13,14 @@
 #' @export raster.standardize
 #'
 #' @examples
-#' raster.standardize(x)
+#' raster.standardize(env[[1]])
 
 
 raster.standardize <- function(x, verbose=FALSE){
-  if(verbose){print(paste("Starting standardize on", x, "at", Sys.time()))}
-  x/cellStats(x, stat=sum)
+
+  if(verbose){
+    print(paste("Starting standardize on", x, "at", Sys.time()))
+  }
+
+  return(x/cellStats(x, stat=sum))
 }

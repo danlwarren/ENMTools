@@ -14,7 +14,7 @@ raster.overlap(x, y, verbose = FALSE)
 \item{x}{Another raster file}
 }
 \value{
-results A vector containing the two metrics
+results A vector containing the three metrics (I, D, and Spearman rank correlation)
 }
 \description{
 This function measures similarity in the geographic distribution of suitability scores
@@ -22,7 +22,7 @@ from two ENMs.  It returns two metrics, I and D.  These metrics are described in
 Warren et al. 2008.
 }
 \examples{
-raster.overlap("~/species1.asc", "~/species2.asc")
+raster.overlap(ahli.raster, allogus.raster)
 }
 \keyword{keywords}
 
