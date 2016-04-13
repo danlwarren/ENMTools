@@ -5,7 +5,7 @@
 #' Warren et al. 2008.
 #'
 #' @param x A raster file
-#' @param x Another raster file
+#' @param y Another raster file
 #' @param verbose Controls printing of diagnostic messages
 #'
 #' @return results A vector containing the three metrics (I, D, and Spearman rank correlation)
@@ -23,6 +23,15 @@ raster.overlap <- function(x, y, verbose=FALSE){
 
     if(verbose){
       print(paste("Starting overlap at", Sys.time()))
+    }
+
+    # Test if the args are raster objects or paths to files
+    if(class(x) == "character"){
+      x <- raster(x)
+    }
+
+    if(class(y) == "character"){
+      y <- raster(y)
     }
 
     x <- raster.standardize(x)
