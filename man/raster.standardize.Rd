@@ -7,7 +7,7 @@
 raster.standardize(x, verbose = FALSE)
 }
 \arguments{
-\item{x}{A raster object}
+\item{x}{A raster object or path to a raster.}
 
 \item{verbose}{Controls printing of diagnostic messages}
 }

@@ -7,7 +7,7 @@
 raster.breadth(x, verbose = FALSE)
 }
 \arguments{
-\item{x}{A raster file}
+\item{x}{A raster file or path to raster file.}
 
 \item{verbose}{Controls printing of diagnostic messages}
 }

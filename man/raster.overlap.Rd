@@ -9,9 +9,9 @@ raster.overlap(x, y, verbose = FALSE)
 \arguments{
 \item{x}{A raster file}
 
-\item{verbose}{Controls printing of diagnostic messages}
+\item{y}{Another raster file}
 
-\item{x}{Another raster file}
+\item{verbose}{Controls printing of diagnostic messages}
 }
 \value{
 results A vector containing the three metrics (I, D, and Spearman rank correlation)

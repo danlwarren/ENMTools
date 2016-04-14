@@ -2,22 +2,21 @@
 % Please edit documentation in R/raster.resid.R
 \name{raster.resid}
 \alias{raster.resid}
-\title{raster.resid Measure correlation coefficients between two rasters}
+\title{raster.resid Measure standardized residuals from a linear regression between two rasters.}
 \usage{
-raster.resid(x, y, method = "spearman")
+raster.resid(x, y)
 }
 \arguments{
-\item{x}{A raster file}
+\item{x}{A raster file or path to a raster.}
 
-\item{y}{Another raster file}
+\item{y}{Another raster file or path.}
 }
 \value{
-results A raster of residuals from a linear regression between the two supplied rasters
+results A list containing a raster of residuals from a linear regression between the two supplied rasters and the linear model itself.
 }
 \description{
-This function measures similarity in the geographic distribution of values
-from two rasters.  Various methods can be specified, but it defaults to
-spearman rank correaltion
+This function builds a linear model for the relationship between two rasters, and returns the linear model
+and a spatial raster of the residuals from that model.
 }
 \examples{
 raster.resid(ahli.raster, allogus.raster)
