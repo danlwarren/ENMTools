@@ -40,6 +40,7 @@ reps.background <- function(x, outfile = FALSE, npoints, reps = 10, species= "sp
   if(class(x) == "RasterLayer"){
     output <- as.data.frame(cbind(paste(species, "rep", rep(seq(1, reps), each=npoints), sep="_"),
                                   randomPoints(x, npoints*reps, ...)))
+    colnames(output) <- c("species", "lon", "lat")
   }
 
   # Background points from data frame
@@ -57,15 +58,17 @@ reps.background <- function(x, outfile = FALSE, npoints, reps = 10, species= "sp
       inds <- c(inds, sample(1:length(x[,1]), npoints))
     }
     output <- as.data.frame(cbind(paste(species, "rep", rep(seq(1, reps), each=npoints), sep="_"), x[inds,]))
+    colnames(output) <- c("species", colnames(x))
   }
 
   if(class(x) == "SpatialPolygons"){
     output <- as.data.frame(cbind(paste(species, "rep", rep(seq(1, reps), each=npoints), sep="_"),
                                   as.data.frame(spsample(x, npoints*reps, type = "random", ...))))
     rownames(output) <- seq(1:nrow(output))
+    colnames(output) <- c("species", "lon", "lat")
   }
 
-  colnames(output) <- c("species", "lon", "lat")
+
 
   if(outfile != FALSE){write.csv(output, file=outfile, quote=FALSE, row.names=FALSE)}
   return(output)
