@@ -9,6 +9,9 @@
 #'    be stuffed in there as we go along
 #'
 #' @export enmtools.species
+#' @export summary.enmtools.species
+#' @export print.enmtools.species
+#' @export plot.enmtools.species
 
 
 enmtools.species <- function(range = NA, presence.points = NA, background.points = NA,
@@ -52,5 +55,74 @@ enmtools.species <- function(range = NA, presence.points = NA, background.points
   class(output) <- c("list", "enmtools.species")
 
   return(output)
+}
+
+
+summary.enmtools.species <- function(this.species){
+  stopifnot(inherits(this.species, "enmtools.species"))
+
+  if(class(this.species$range) == "RasterLayer"){
+    cat("\n\nRange raster: \n")
+    print(this.species$range)
+  } else {
+    cat("\n\nRange raster not defined.")
+  }
+
+  if(class(this.species$presence.points) %in% c("data.frame", "matrix")){
+    cat("\n\nPresence points (first ten only): ")
+    print(kable(head(this.species$presence.points, 10)))
+  } else{
+    cat("\n\nPresence points not defined.")
+  }
+
+  if(class(this.species$background.points)  %in% c("data.frame", "matrix")){
+    cat("\n\nBackground points (first ten only): ")
+    print(kable(head(this.species$background.points, 10)))
+  } else{
+    cat("\n\nBackground points not defined.")
+  }
+
+  if(!is.na(this.species$models)){
+    for(i in 1:length(this.species$models)){
+      print(summary(this.species$models[[i]]))
+    }
+  }
+
+  if(class(this.species$species.name) == "character"){
+    cat(paste("\n\nSpecies name: ", this.species$species.name))
+  } else {
+    cat("\n\nSpecies name not defined.")
+  }
+
+  cat("\n\n")
+
+}
+
+
+plot.enmtools.species <- function(this.species){
+  stopifnot(inherits(this.species, "enmtools.species"))
+
+  if(class(this.species$range) == "RasterLayer"){
+    plot(this.species$range)
+  }
+
+  if(class(this.species$background.points)  %in% c("data.frame", "matrix")){
+    points(this.species$background.points[,1:2], pch = 4, col = "red")
+  }
+
+  if(class(this.species$presence.points) %in% c("data.frame", "matrix")){
+    points(this.species$presence.points[,1:2], pch = 16, col = "black")
+  }
+
+  if(class(this.species$species.name) == "character"){
+    title(this.species$species.name)
+  }
+
+}
+
+print.enmtools.species <- function(this.species){
+
+  summary(this.species)
+
 }
 

@@ -11,4 +11,5 @@ LazyData: TRUE
 RoxygenNote: 5.0.1
 Depends:
 	dismo,
-	rgeos
+	rgeos,
+	knitr

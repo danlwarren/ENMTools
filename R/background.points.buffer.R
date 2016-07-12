@@ -23,5 +23,5 @@ background.points.buffer <- function(points, radius, n, mask){
 
   colnames(xy)[1:2] <- c("lon", "lat")
 
-  return(xy[,1:2])
+  return(as.data.frame(xy[,1:2]))
 }
