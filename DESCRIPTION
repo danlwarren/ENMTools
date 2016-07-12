@@ -1,13 +1,14 @@
 Package: ENMTools
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Analysis of niche evolution using niche and distribution models
 Version: 0.1
 Date: 2016-01-11
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
+Author: Dan Warren <dan.l.warren@gmail.com>
+Maintainer: an Warren <dan.l.warren@gmail.com>
 Description: More about what it does (maybe more than one line)
 License: What license is it under?
 LazyData: TRUE
 RoxygenNote: 5.0.1
 Depends:
-	dismo
+	dismo,
+	rgeos
