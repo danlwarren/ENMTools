@@ -36,10 +36,27 @@ plot(ahli)
 summary(two.anoles)
 plot(two.anoles)
 
+ahli.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, ahli)
+ahli.glm
+
 # NOTE TO SELF: started off passing a vector of args to insist on to make testing easier,
 # but this quickly turned into a nightmare.  We'll just check the existence of the important
 # bits manually before each analysis.
 
 
+
+ahli.noenv <- enmtools.species(species.name = "ahli.noenv", presence.points = read.csv("testdata/ahli.csv")[,3:4])
+check.species(ahli.noenv)
+ahli.noenv$background.points <- background.points.buffer(points = ahli.noenv$presence.points,radius = 10000, n = 1000, mask = env[[1]])
+ahli.noenv
+
+# This should barf an error because no env data were supplied
+ahli.noenv.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, ahli.noenv)
+
+# This should work
+ahli.noenv.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, ahli.noenv, env)
+
+ahli.noenv.glm
+ahli.glm
 
 

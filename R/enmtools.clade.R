@@ -78,6 +78,7 @@ plot.enmtools.clade <- function(this.clade){
     plot(this.clade$species[[i]])
   }
 
+  par(mfrow = c(1,1))
 
 }
 
