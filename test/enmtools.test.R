@@ -24,6 +24,11 @@ two.anoles <- enmtools.clade(list(ahli, allogus))
 two.anoles
 check.clade(two.anoles)
 
+two.anoles <- add.env(two.anoles, env)
+
+ahli <- add.env(ahli, env)
+allogus <- add.env(allogus, env)
+
 summary(ahli)
 print(ahli)
 plot(ahli)
