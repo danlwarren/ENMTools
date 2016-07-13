@@ -2,21 +2,20 @@
 #'
 #' @param formula Standard GLM formula
 #' @param species An enmtools.species object
-#' @param env A raster or raster stack of environmental data.  Can be skipped if enmtools.species
-#'            object already has environmental data associated with presence and background points.
+#' @param env A raster or raster stack of environmental data.
 #' @param ... Arguments to be passed to glm()
 #'
 #' @export enmtools.glm
+#' @export print.enmtools.glm
+#' @export summary.enmtools.glm
 
-enmtools.glm <- function(f, species, env = NA, ...){
 
-  enm.precheck(species)
+enmtools.glm <- function(f, species, env, ...){
 
-  ### Add env data if only lat/lon and a raster stack were supplied
-  if(ncol(species$presence.points) == 2 | ncol(species$background.points) == 2){
-    species <- add.env(species, env)
-  }
+  glm.precheck(f, species, env)
 
+  ### Add env data
+  species <- add.env(species, env)
 
   # Recast this formula so that the response variable is named "presence"
   # regardless of what was passed.
@@ -27,11 +26,8 @@ enmtools.glm <- function(f, species, env = NA, ...){
 
   this.glm <- glm(f, analysis.df, family="binomial", ...)
 
-  suitability <- "Suitability map not available, no environmental data supplied"
+  suitability <- predict(env, this.glm)
 
-  if(any(c("raster", "RasterLayer", "RasterStack") %in% class(env))){
-    suitability <- predict(env, this.glm)
-  }
 
   output <- list(formula = f,
                  analysis.df = analysis.df,
@@ -44,6 +40,7 @@ enmtools.glm <- function(f, species, env = NA, ...){
 
 }
 
+# Summary for objects of class enmtools.glm
 summary.enmtools.glm <- function(this.glm){
 
   cat("\n\nFormula:  ")
@@ -53,20 +50,54 @@ summary.enmtools.glm <- function(this.glm){
   print(kable(head(this.glm$analysis.df, 10)))
 
   cat("\n\nModel:  ")
-  print(this.glm$model)
+  print(summary(this.glm$model))
 
   cat("\n\nSuitability:  \n")
   print(this.glm$suitability)
-  if("RasterLayer" %in% class(this.glm$suitability)){
-    plot(this.glm$suitability)
-  }
+  plot(this.glm$suitability)
 
 }
 
-
+# Print method for objects of class enmtools.glm
 print.enmtools.glm <- function(this.glm){
 
   summary(this.glm)
 
+}
+
+# Function for checking data prior to running enmtools.glm
+glm.precheck <- function(f, species, env){
+
+  # Check to see if the function is the right class
+  if(!class(f) == "formula"){
+    stop("Argument \'formula\' must contain an R formula object!")
+  }
+
+  ### Check to make sure the data we need is there
+  if(!"enmtools.species" %in% class(species)){
+    stop("Argument \'species\' must contain an enmtools.species object!")
+  }
+
+  check.species(species)
+
+  if(!any(c("data.frame") %in% class(species$presence.points))){
+    stop("Species presence.points do not appear to be an object of class data.frame")
+  }
+
+  if(!any(c("data.frame") %in% class(species$background.points))){
+    stop("Species background.points do not appear to be an object of class data.frame")
+  }
+
+  if(!any(c("raster", "RasterLayer", "RasterStack") %in% class(env))){
+    stop("No environmental rasters were supplied!")
+  }
+
+  if(ncol(species$presence.points) != 2){
+    stop("Species presence points do not contain longitude and latitude data!")
+  }
+
+  if(ncol(species$background.points) != 2){
+    stop("Species background points do not contain longitude and latitude data!")
+  }
 }
 

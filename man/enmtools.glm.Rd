@@ -4,13 +4,12 @@
 \alias{enmtools.glm}
 \title{Takes an emtools.species object with presence and background points, and builds a GLM}
 \usage{
-enmtools.glm(f, species, env = NA, ...)
+enmtools.glm(f, species, env, ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
 
-\item{env}{A raster or raster stack of environmental data.  Can be skipped if enmtools.species
-object already has environmental data associated with presence and background points.}
+\item{env}{A raster or raster stack of environmental data.}
 
 \item{...}{Arguments to be passed to glm()}
 

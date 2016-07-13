@@ -36,11 +36,19 @@ check.species <- function(this.species){
     }
   }
 
+  if(!isTRUE(is.na(this.species$background.points)) & !isTRUE(is.na(this.species$presence.points))){
+    if(any(!colnames(this.species$presence.points) %in% colnames(this.species$background.points))){
+      stop("Column names for presence and background points do not match")
+    }
+  }
+
   if(!isTRUE(is.na(this.species$species.name))){
     if(!any("character" %in% class(this.species$species.name))){
       stop("Argument species.name requires an object of class character")
     }
   }
+
+
 
   # Might actually turn off returning the species eventually
   return(this.species)
