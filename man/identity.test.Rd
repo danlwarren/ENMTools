@@ -2,7 +2,7 @@
 % Please edit documentation in R/identity.test.R
 \name{identity.test}
 \alias{identity.test}
-\title{identity.test Measure standardized residuals from a linear regression between two rasters.}
+\title{identity.test Conduct a niche identity/equivalency test as described in Warren et al. 2008.}
 \usage{
 identity.test(species.1, species.2, env, type, f = NULL, nreps = 99, ...)
 }
@@ -25,8 +25,7 @@ identity.test(species.1, species.2, env, type, f = NULL, nreps = 99, ...)
 results A list containing a replicates, models for the empirical data, and summary statistics and plots.
 }
 \description{
-This function builds a linear model for the relationship between two rasters, and returns the linear model
-and a spatial raster of the residuals from that model.
+identity.test Conduct a niche identity/equivalency test as described in Warren et al. 2008.
 }
 \examples{
 identity.test(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, ...)
