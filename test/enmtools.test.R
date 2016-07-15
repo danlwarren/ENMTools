@@ -110,3 +110,4 @@ bg.mx.sym <- background.test(species.1 = ahli, species.2 = allogus, env = env, t
 
 bg.mx.asym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "mx",
                              f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4, test.type = "asymmetric" )
+
