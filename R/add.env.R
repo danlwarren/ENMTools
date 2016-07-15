@@ -18,7 +18,7 @@ add.env <- function(species, env){
   if("enmtools.species" %in% class(species)){
 
     # Adding env data to a single species
-    print(paste("Adding environmental data to species", species$species.name))
+    cat(paste("Adding environmental data to species", species$species.name, "\n"))
     if(class(species$presence.points) %in% c("data.frame", "matrix")){
       cat("\tProcessing presence points...\n")
       species$presence.points <- cbind(species$presence.points, extract(env, species$presence.points[,1:2]))

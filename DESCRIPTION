@@ -12,4 +12,7 @@ RoxygenNote: 5.0.1
 Depends:
 	dismo,
 	rgeos,
-	knitr
+	knitr,
+	ggplot2,
+	grid,
+	gridExtra

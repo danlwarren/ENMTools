@@ -16,7 +16,7 @@ enmtools.maxent <- function(species, env, ...){
   analysis.df <- rbind(species$presence.points, species$background.points)
   analysis.df$presence <- c(rep(1, nrow(species$presence.points)), rep(0, nrow(species$background.points)))
 
-  this.mx <- maxent(env, p = analysis.df[analysis.df$presence == 1,1:2], analysis.df[analysis.df$presence == 0,1:2], ...)
+  this.mx <- maxent(env, p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)
 
   suitability <- predict(env, this.mx)
 

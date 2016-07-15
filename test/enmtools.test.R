@@ -46,8 +46,67 @@ ahli.glm
 ahli.twovar.glm <- enmtools.glm(pres ~ layer.1 + layer.4, ahli, env)
 ahli.twovar.glm
 
+# Presently leaving out GAM, as it is hard to see how I'm going to be able to
+# use it in the same way as the other methods.
+# ahli.gam <- enmtools.gam(presence ~, ahli, env)
+
+
 ahli.bc <- enmtools.bc(ahli, env)
 ahli.bc2 <- enmtools.bc(ahli, env[[c("layer.1", "layer.4")]])
 
 
 ahli.mx <- enmtools.maxent(ahli, env)
+ahli.mx
+
+ahli.dm <- enmtools.dm(ahli, env)
+ahli.dm
+
+allogus.dm <- enmtools.dm(allogus, env)
+allogus.dm
+
+raster.cor(allogus.dm, ahli.dm)
+raster.cor(ahli.mx, ahli.dm)
+
+plot(raster.standardize(ahli.dm))
+
+raster.breadth(allogus.dm)
+
+raster.overlap(allogus.dm, allogus.dm$suitability)
+raster.overlap(ahli.dm, allogus.dm)
+
+raster.resid(ahli.mx, ahli.dm)
+
+plot(raster.resid(ahli.mx, ahli.dm)$residuals)
+
+
+id.glm <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm", f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 19)
+
+id.mx <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "mx", nreps = 4)
+
+id.bc <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "bc", nreps = 4)
+
+id.dm <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "dm", nreps = 4)
+
+bg.glm.sym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm",
+                           f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4, test.type = "symmetric" )
+
+bg.glm.asym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm",
+                              f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4, test.type = "asymmetric" )
+
+bg.bc.sym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "bc",
+                              f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4, test.type = "symmetric" )
+
+bg.bc.asym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "bc",
+                               f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4, test.type = "asymmetric" )
+
+bg.dm.sym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "dm",
+                             f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4, test.type = "symmetric" )
+
+bg.dm.asym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "dm",
+                              f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4, test.type = "asymmetric" )
+
+bg.mx.sym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "mx",
+                             f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4, test.type = "symmetric" )
+
+bg.mx.asym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "mx",
+                             f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4, test.type = "asymmetric" )
