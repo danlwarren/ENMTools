@@ -124,16 +124,16 @@ ahli
 ## 
 ## | Longitude| Latitude|
 ## |---------:|--------:|
-## | -80.12059| 22.00420|
-## | -80.37892| 22.17087|
-## | -79.82059| 21.91254|
-## | -80.34559| 22.14587|
-## | -79.98726| 21.73754|
-## | -80.35392| 22.02920|
-## | -80.25392| 22.06254|
-## | -79.80392| 21.94587|
-## | -80.45392| 22.06254|
-## | -80.19559| 22.07920|
+## | -79.62892| 21.73754|
+## | -80.35392| 22.03754|
+## | -79.88726| 22.04587|
+## | -80.11226| 22.09587|
+## | -79.92059| 21.85420|
+## | -79.90392| 21.91254|
+## | -80.25392| 21.92920|
+## | -80.24559| 22.15420|
+## | -79.87059| 21.96254|
+## | -79.89559| 22.08754|
 ## 
 ## 
 ## Species name:  ahli
@@ -188,16 +188,16 @@ allogus
 ## 
 ## | Longitude| Latitude|
 ## |---------:|--------:|
-## | -78.66226| 22.08754|
-## | -77.80392| 21.74587|
-## | -75.63726| 20.26254|
-## | -76.89559| 20.22920|
-## | -75.57059| 20.52087|
-## | -78.12059| 21.62087|
-## | -76.87892| 20.24587|
-## | -77.89559| 21.20420|
-## | -74.57059| 20.23754|
-## | -76.10392| 20.05420|
+## | -75.67892| 20.02087|
+## | -78.13726| 21.11254|
+## | -75.86226| 20.29587|
+## | -76.33726| 19.97920|
+## | -77.99559| 21.49587|
+## | -78.76226| 22.13754|
+## | -75.07892| 20.54587|
+## | -75.41226| 20.73754|
+## | -75.72892| 20.28754|
+## | -77.87892| 21.50420|
 ## 
 ## 
 ## Species name:  allogus
@@ -240,7 +240,7 @@ ahli.glm
 ## 
 ## 
 ## Formula:  presence ~ layer.1 + layer.2 + layer.3 + layer.4
-## <environment: 0x113e6f8d0>
+## <environment: 0x125082aa8>
 ## 
 ## 
 ## Data table (top ten lines): 
@@ -265,23 +265,23 @@ ahli.glm
 ## 
 ## Deviance Residuals: 
 ##      Min        1Q    Median        3Q       Max  
-## -0.52220  -0.20665  -0.13992  -0.09256   3.06852  
+## -0.67517  -0.20619  -0.13961  -0.09466   3.06215  
 ## 
 ## Coefficients:
 ##              Estimate Std. Error z value Pr(>|z|)  
-## (Intercept) 45.237607  23.643922   1.913   0.0557 .
-## layer.1     -0.012876   0.006142  -2.096   0.0361 *
-## layer.2     -0.011215   0.006332  -1.771   0.0765 .
-## layer.3      0.003824   0.006396   0.598   0.5500  
-## layer.4     -0.016092   0.022730  -0.708   0.4790  
+## (Intercept) 44.997430  24.043474   1.872   0.0613 .
+## layer.1     -0.012778   0.006030  -2.119   0.0341 *
+## layer.2     -0.011438   0.006406  -1.786   0.0742 .
+## layer.3      0.003074   0.006724   0.457   0.6476  
+## layer.4     -0.011497   0.021529  -0.534   0.5933  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
 ##     Null deviance: 164.58  on 1015  degrees of freedom
-## Residual deviance: 150.29  on 1011  degrees of freedom
-## AIC: 160.29
+## Residual deviance: 149.88  on 1011  degrees of freedom
+## AIC: 159.88
 ## 
 ## Number of Fisher Scoring iterations: 8
 ## 
@@ -295,7 +295,7 @@ ahli.glm
 ## coord. ref. : NA 
 ## data source : in memory
 ## names       : layer 
-## values      : 2.418945e-10, 0.9999811  (min, max)
+## values      : 1.930953e-08, 0.9999703  (min, max)
 ```
 
 ![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
@@ -323,10 +323,10 @@ raster.breadth(ahli.glm)
 
 ```
 ## $B1
-## [1] 0.1802603
+## [1] 0.1961099
 ## 
 ## $B2
-## [1] 0.8738874
+## [1] 0.8802145
 ```
 
 
@@ -339,20 +339,20 @@ raster.overlap(ahli.glm, allogus.glm)
 
 ```
 ## $D
-## [1] 0.4063311
+## [1] 0.4205463
 ## 
 ## $I
-## [1] 0.6884148
+## [1] 0.7019995
 ## 
 ## $rank.cor
-## [1] 0.8070075
+## [1] 0.8298744
 ```
 
 ## Hypothesis testing
 
 ### Niche identity or equivalency test
 
-In this example, we will run a niche identity or equivalency test, as in Warren et al. 2008.  This test takes the presence points for a pair of species and randomly reassigns them to each species, then builds ENMs for these randomized occurrences.  By doing this many times, we can estimate the probability distribution for ENM overlap between species 
+In this example, we will run a niche identity (also called equivalency) test, as in Warren et al. 2008.  This test takes the presence points for a pair of species and randomly reassigns them to each species, then builds ENMs for these randomized occurrences.  By doing this many times, we can estimate the probability distribution for ENM overlap between species under the null hypothesis that the two species' occurrences in the environment are effectivel a random draw from the same underlying distribution.  Note that niche evolution is only one of many reasons why two species' realized environmental distributions might cause departures from this null hypothesis.  See Warren et al. 2014 for details.
 
 
 
@@ -366,3 +366,5 @@ In this example, we will run a niche identity or equivalency test, as in Warren 
 *Schoener, T. W. 1968. Anolis lizards of Bimini: resource partitioning in a complex fauna. Ecology 49:704- 726.*
 
 *Warren, D.L., R.E. Glor, and M. Turelli.  2008. Environmental niche identity versus conservatism: quantitative approaches to niche evolution.  Evolution 62:2868-2883. doi: 10.1111/j.1558-5646.2008.00482.x*
+
+*Warren, D.L., M. Cardillo, D.F. Rosauer, and D.I. Bolnick. 2014. Mistaking geography for biology: inferring processes from species distributions. Trends in Ecology and Evolution 29 (10), 572-580. doi: 10.1016/j.tree.2014.08.003*
