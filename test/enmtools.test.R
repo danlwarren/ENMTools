@@ -103,4 +103,5 @@ bg.dm.asym <- background.test(species.1 = ahli, species.2 = allogus, env = env, 
 
 bg.mx.sym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "mx", nreps = 4, test.type = "symmetric" )
 
+
 bg.mx.asym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "mx", nreps = 4, test.type = "asymmetric" )
