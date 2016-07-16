@@ -124,16 +124,16 @@ ahli
 ## 
 ## | Longitude| Latitude|
 ## |---------:|--------:|
-## | -80.26226| 22.03754|
-## | -80.31226| 22.12920|
-## | -79.86226| 21.85420|
-## | -79.99559| 21.86254|
-## | -80.07892| 21.95420|
-## | -79.63726| 21.71254|
-## | -79.67059| 21.81254|
-## | -79.79559| 21.85420|
-## | -80.27059| 21.90420|
-## | -80.12059| 22.15420|
+## | -80.43726| 22.11254|
+## | -80.29559| 21.97920|
+## | -80.02892| 22.01254|
+## | -80.25392| 22.07087|
+## | -79.82892| 22.03754|
+## | -79.80392| 21.86254|
+## | -80.23726| 22.07920|
+## | -79.89559| 21.81254|
+## | -80.35392| 22.08754|
+## | -79.97059| 22.08754|
 ## 
 ## 
 ## Species name:  ahli
@@ -188,16 +188,16 @@ allogus
 ## 
 ## | Longitude| Latitude|
 ## |---------:|--------:|
-## | -76.98726| 20.70420|
-## | -77.63726| 20.93754|
-## | -78.50392| 22.09587|
-## | -74.93726| 20.57920|
-## | -78.90392| 22.22087|
-## | -76.52059| 20.39587|
-## | -78.12892| 21.81254|
-## | -78.88726| 22.32087|
-## | -74.15392| 20.22087|
-## | -75.12892| 20.48754|
+## | -77.57059| 21.02087|
+## | -75.92059| 20.26254|
+## | -78.02059| 20.93754|
+## | -78.07059| 21.30420|
+## | -74.43726| 20.29587|
+## | -75.65392| 20.00420|
+## | -75.49559| 20.55420|
+## | -75.02892| 20.67920|
+## | -77.48726| 19.98754|
+## | -75.10392| 19.97920|
 ## 
 ## 
 ## Species name:  allogus
@@ -223,14 +223,14 @@ ahli.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, ahli, env
 ```
 
 ```r
-print(ahli.glm)
+ahli.glm
 ```
 
 ```
 ## 
 ## 
 ## Formula:  presence ~ layer.1 + layer.2 + layer.3 + layer.4
-## <environment: 0x11cd9e318>
+## <environment: 0x11cd36270>
 ## 
 ## 
 ## Data table (top ten lines): 
@@ -255,23 +255,23 @@ print(ahli.glm)
 ## 
 ## Deviance Residuals: 
 ##      Min        1Q    Median        3Q       Max  
-## -0.53920  -0.20427  -0.14098  -0.09313   3.10858  
+## -0.52900  -0.20935  -0.13540  -0.08696   3.09483  
 ## 
 ## Coefficients:
 ##              Estimate Std. Error z value Pr(>|z|)  
-## (Intercept) 50.002411  24.145553   2.071   0.0384 *
-## layer.1     -0.013693   0.006192  -2.211   0.0270 *
-## layer.2     -0.013122   0.006478  -2.026   0.0428 *
-## layer.3      0.001374   0.006309   0.218   0.8276  
-## layer.4     -0.005035   0.021949  -0.229   0.8185  
+## (Intercept) 50.853276  24.568306   2.070   0.0385 *
+## layer.1     -0.014894   0.006352  -2.345   0.0190 *
+## layer.2     -0.013001   0.006529  -1.991   0.0464 *
+## layer.3      0.004644   0.006568   0.707   0.4795  
+## layer.4     -0.011003   0.021875  -0.503   0.6150  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
 ##     Null deviance: 164.58  on 1015  degrees of freedom
-## Residual deviance: 150.29  on 1011  degrees of freedom
-## AIC: 160.29
+## Residual deviance: 148.50  on 1011  degrees of freedom
+## AIC: 158.5
 ## 
 ## Number of Fisher Scoring iterations: 8
 ## 
@@ -285,7 +285,7 @@ print(ahli.glm)
 ## coord. ref. : NA 
 ## data source : in memory
 ## names       : layer 
-## values      : -12.95668, 10.96518  (min, max)
+## values      : -19.70765, 12.67787  (min, max)
 ```
 
 ![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
@@ -299,9 +299,5 @@ The procedure for building Bioclim, Domain, and Maxent models is similar to the 
 ahli.dm <- enmtools.dm(ahli, env)
 ahli.bc <- enmtools.bc(ahli, env)
 ahli.mx <- enmtools.maxent(ahli, env)
-```
-
-```
-## Error in .jcheck(silent = TRUE): No running JVM detected. Maybe .jinit() would help.
 ```
 

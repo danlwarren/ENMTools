@@ -89,14 +89,14 @@ ENMTools contains functions to simplify the ENM construction process.  Using enm
 GLMs require the user to supply a formula, an enmtools.species object, and some environmental data.
 ```{r}
 ahli.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, ahli, env)
-print(ahli.glm)
+ahli.glm
 ```
 
 ### Bioclim, Domain, and Maxent
 
 The procedure for building Bioclim, Domain, and Maxent models is similar to the procedure for GLMs, with the exception that you do not need to pass a formula to the model function.  Note that running Maxent models requires a bit of extra setup; see dismo documentation for details.
 
-```{r}
+```{r eval = FALSE}
 ahli.dm <- enmtools.dm(ahli, env)
 ahli.bc <- enmtools.bc(ahli, env)
 ahli.mx <- enmtools.maxent(ahli, env)
