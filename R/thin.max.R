@@ -19,7 +19,7 @@
 #' @export thin.max
 #'
 #' @examples
-#' thin.max(my.data, c("latitude", "longitude"), 200)
+#' thinned.allogus <- thin.max(allogus_east, c("Latitude", "Longitude"), 20)
 
 thin.max <- function(x, cols, npoints){
   #Create empty vector for output
