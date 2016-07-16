@@ -89,7 +89,7 @@ ENMTools contains functions to simplify the ENM construction process.  Using enm
 GLMs require the user to supply a formula, an enmtools.species object, and some environmental data.
 ```{r}
 ahli.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, ahli, env)
-summary(ahli.glm)
+print(ahli.glm)
 ```
 
 ### Bioclim, Domain, and Maxent
