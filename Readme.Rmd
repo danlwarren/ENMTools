@@ -29,4 +29,65 @@ install_local("PATH")
 library(ENMTools)
 ```
 
+
+```{r include=FALSE}
+library(ENMTools)
+```
+
 -----
+
+
+# Interacting with ENMTools
+
+### Creating enmtools.species objects
+
+First we're going to load in some environmental data.
+```{r}
+env.files <- list.files(path = "test/testdata/", pattern = "pc", full.names = TRUE)
+env <- stack(env.files)
+```
+
+ENMTools is primarily designed to examine patterns of similarity and difference between ENMs for different species.  In order to simplify interactions with the functions in ENMTools, you need to put your data for each of your species into an enmtools.species object.  You can create and view an empty enmtools.species object just by typing:
+
+```{r}
+ahli <- enmtools.species()
+ahli
+```
+
+You can add data to this object manually:
+```{r}
+names(ahli)
+ahli$species.name <- "anolis.ahli"
+ahli$presence.points <- read.csv("test/testdata/ahli.csv")[,3:4]
+ahli$range <- background.raster.buffer(ahli$presence.points, 50000, mask = env)
+ahli$background.points <- background.points.buffer(points = ahli$presence.points,
+                                                   radius = 20000, n = 1000, mask = env[[1]])
+
+ahli
+```
+
+
+Or you can add bits of it when the object is created:
+```{r}
+allogus <- enmtools.species(species.name = "allogus", 
+                            presence.points = read.csv("test/testdata/allogus.csv")[,3:4])
+
+allogus$range <- background.raster.buffer(allogus$presence.points, 50000, mask = env)
+allogus$background.points <- background.points.buffer(points = allogus$presence.points,
+                                                      radius = 20000, n = 1000, mask = env[[1]])
+
+allogus
+```
+
+
+## Building an ENM
+
+ENMTools contains functions to simplify the ENM construction process.  Using enmtools.species objects and the corrected modeling commands, we can build models very quickly.  These commands are primarily wrappers to dismo model construction and projection functions, and at present are only available for GLM, Maxent, Domain, and Bioclim models.
+
+### GLM
+
+GLMs require the user to supply a formula, an enmtools.species object, and some environmental data.
+```{r}
+ahli.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, ahli, env)
+summary(ahli.glm)
+```

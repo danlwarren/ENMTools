@@ -21,7 +21,7 @@ background.points.buffer <- function(points, radius, n, mask){
 
   xy <- sampleRandom(buffer.raster, size=n, xy=TRUE)
 
-  colnames(xy)[1:2] <- c("lon", "lat")
+  colnames(xy)[1:2] <- c(colnames(points))
 
   return(as.data.frame(xy[,1:2]))
 }
