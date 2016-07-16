@@ -124,16 +124,16 @@ ahli
 ## 
 ## | Longitude| Latitude|
 ## |---------:|--------:|
-## | -79.76226| 21.92920|
-## | -80.03726| 22.02920|
-## | -79.91226| 21.98754|
-## | -80.15392| 22.12920|
-## | -80.19559| 22.04587|
-## | -79.80392| 21.77920|
-## | -79.84559| 21.97920|
-## | -79.94559| 22.07920|
-## | -79.87059| 22.11254|
-## | -80.12059| 22.08754|
+## | -79.97892| 22.07920|
+## | -79.97059| 22.02087|
+## | -79.89559| 21.90420|
+## | -80.00392| 22.06254|
+## | -79.99559| 21.83754|
+## | -80.29559| 22.01254|
+## | -79.82892| 21.82087|
+## | -79.93726| 21.91254|
+## | -79.62892| 21.70420|
+## | -80.05392| 21.91254|
 ## 
 ## 
 ## Species name:  ahli
@@ -188,16 +188,16 @@ allogus
 ## 
 ## | Longitude| Latitude|
 ## |---------:|--------:|
-## | -75.79559| 20.26254|
-## | -76.53726| 20.39587|
-## | -78.02059| 21.30420|
-## | -79.22892| 22.07920|
-## | -77.62892| 20.93754|
-## | -75.20392| 20.54587|
-## | -74.72059| 20.43754|
-## | -74.94559| 20.02920|
-## | -77.90392| 21.69587|
-## | -76.89559| 20.84587|
+## | -77.39559| 20.97087|
+## | -78.92892| 22.15420|
+## | -76.34559| 20.07087|
+## | -76.41226| 20.19587|
+## | -76.69559| 20.23754|
+## | -76.56226| 20.12087|
+## | -75.70392| 20.49587|
+## | -78.17892| 21.02087|
+## | -74.20392| 20.15420|
+## | -77.05392| 20.90420|
 ## 
 ## 
 ## Species name:  allogus
@@ -240,7 +240,7 @@ ahli.glm
 ## 
 ## 
 ## Formula:  presence ~ layer.1 + layer.2 + layer.3 + layer.4
-## <environment: 0x107659ca8>
+## <environment: 0x10e98b478>
 ## 
 ## 
 ## Data table (top ten lines): 
@@ -265,23 +265,23 @@ ahli.glm
 ## 
 ## Deviance Residuals: 
 ##      Min        1Q    Median        3Q       Max  
-## -0.55702  -0.20788  -0.14153  -0.09286   3.09568  
+## -0.65614  -0.20398  -0.13775  -0.09092   3.06593  
 ## 
 ## Coefficients:
 ##              Estimate Std. Error z value Pr(>|z|)  
-## (Intercept) 47.682619  25.048562   1.904   0.0570 .
-## layer.1     -0.014138   0.006541  -2.161   0.0307 *
-## layer.2     -0.012517   0.006716  -1.864   0.0624 .
-## layer.3      0.004042   0.006529   0.619   0.5359  
-## layer.4     -0.006479   0.022738  -0.285   0.7757  
+## (Intercept) 54.350528  25.362745   2.143   0.0321 *
+## layer.1     -0.014744   0.006369  -2.315   0.0206 *
+## layer.2     -0.013545   0.006645  -2.038   0.0415 *
+## layer.3      0.001597   0.006594   0.242   0.8086  
+## layer.4     -0.010125   0.020983  -0.483   0.6294  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
 ##     Null deviance: 164.58  on 1015  degrees of freedom
-## Residual deviance: 150.56  on 1011  degrees of freedom
-## AIC: 160.56
+## Residual deviance: 149.15  on 1011  degrees of freedom
+## AIC: 159.15
 ## 
 ## Number of Fisher Scoring iterations: 8
 ## 
@@ -295,7 +295,7 @@ ahli.glm
 ## coord. ref. : NA 
 ## data source : in memory
 ## names       : layer 
-## values      : 1.720404e-07, 0.9999896  (min, max)
+## values      : 2.255333e-07, 0.9999922  (min, max)
 ```
 
 ![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
@@ -323,10 +323,10 @@ raster.breadth(ahli.glm)
 
 ```
 ## $B1
-## [1] 0.2287029
+## [1] 0.2293215
 ## 
 ## $B2
-## [1] 0.8892694
+## [1] 0.8889006
 ```
 
 
@@ -339,13 +339,13 @@ raster.overlap(ahli.glm, allogus.glm)
 
 ```
 ## $D
-## [1] 0.4730996
+## [1] 0.4487702
 ## 
 ## $I
-## [1] 0.7386463
+## [1] 0.7187306
 ## 
 ## $rank.cor
-## [1] 0.8556342
+## [1] 0.8516102
 ```
 
 ## Hypothesis testing
@@ -357,61 +357,12 @@ In this example, we will run a niche identity (also called equivalency) test, as
 To run an identity test, we need to decide what type of models we will build, how many replicates we will run, and (in the case of GLM) a model formula to use for empirical models and the Monte Carlo replicates.  The resulting object contains the replicate models, p values, and plots of the results.
 
 
+
+
 ```r
 id.glm <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm", f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)
 ```
 
-```
-## 
-## Building empirical models...
-## Adding environmental data to species ahli 
-## 	Processing presence points...
-## 	Processing background points...
-```
-
-```
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-```
-
-```
-## Adding environmental data to species allogus 
-## 	Processing presence points...
-## 	Processing background points...
-## 
-## Building replicate models...
-## 
-## Replicate 1 ...
-## Adding environmental data to species ahli 
-## 	Processing presence points...
-## 	Processing background points...
-## Adding environmental data to species allogus 
-## 	Processing presence points...
-## 	Processing background points...
-## 
-## Replicate 2 ...
-## Adding environmental data to species ahli 
-## 	Processing presence points...
-## 	Processing background points...
-## Adding environmental data to species allogus 
-## 	Processing presence points...
-## 	Processing background points...
-## 
-## Replicate 3 ...
-## Adding environmental data to species ahli 
-## 	Processing presence points...
-## 	Processing background points...
-## Adding environmental data to species allogus 
-## 	Processing presence points...
-## 	Processing background points...
-## 
-## Replicate 4 ...
-## Adding environmental data to species ahli 
-## 	Processing presence points...
-## 	Processing background points...
-## Adding environmental data to species allogus 
-## 	Processing presence points...
-## 	Processing background points...
-```
 
 ```r
 id.glm
@@ -434,14 +385,14 @@ id.glm
 ## 
 ## |          |         D|         I|   rank.cor|
 ## |:---------|---------:|---------:|----------:|
-## |empirical | 0.2080842| 0.4449950| -0.5264604|
-## |rep 1     | 0.8443018| 0.9820114|  0.8297136|
-## |rep 2     | 0.8383169| 0.9810832|  0.8899121|
-## |rep 3     | 0.7710835| 0.9587076|  0.8997591|
-## |rep 4     | 0.8127282| 0.9754421|  0.6953960|
+## |empirical | 0.2296211| 0.4746654| -0.4846668|
+## |rep 1     | 0.7243723| 0.9430028|  0.8719247|
+## |rep 2     | 0.6149077| 0.8829507| -0.3823921|
+## |rep 3     | 0.8728419| 0.9829971|  0.8566643|
+## |rep 4     | 0.7445990| 0.9500961|  0.9186322|
 ```
 
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-1.png)
+![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png)
 
 ### Literature cited
 

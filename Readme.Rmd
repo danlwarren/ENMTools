@@ -127,8 +127,15 @@ In this example, we will run a niche identity (also called equivalency) test, as
 
 To run an identity test, we need to decide what type of models we will build, how many replicates we will run, and (in the case of GLM) a model formula to use for empirical models and the Monte Carlo replicates.  The resulting object contains the replicate models, p values, and plots of the results.
 
-```{r warnings = FALSE}
+```{r include = FALSE}
 id.glm <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm", f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)
+```
+
+```{r eval = FALSE}
+id.glm <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm", f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)
+```
+
+```{r warnings = FALSE}
 id.glm
 ```
 
