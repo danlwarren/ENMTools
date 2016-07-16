@@ -27,6 +27,9 @@ identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99,
 
   identity.precheck(species.1, species.2, env, type, f, nreps)
 
+  # Initialize a list to store reps in
+  replicate.models <- list()
+
   # For starters we need to combine species background points so that each model
   # is being built with the same background
   species.1$background.points <- rbind(species.1$background.points, species.2$background.points)
@@ -34,15 +37,13 @@ identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99,
 
   combined.presence.points <- rbind(species.1$presence.points, species.2$presence.points)
 
-#   combined.presence.points <- combined.presence.points[rep(seq_len(nrow(combined.presence.points)), nreps), ]
-#   print(dim(combined.presence.points))
-
+  # Identity test using GLM models
   if(type == "glm"){
 
     cat("\nBuilding empirical models...\n")
-    empirical.species.1.glm <- enmtools.glm(f, species.1, env, ...)
-    empirical.species.2.glm <- enmtools.glm(f, species.2, env, ...)
-    empirical.overlap <- raster.overlap(empirical.species.1.glm, empirical.species.2.glm)
+    empirical.species.1.model <- enmtools.glm(f, species.1, env, ...)
+    empirical.species.2.model <- enmtools.glm(f, species.2, env, ...)
+    empirical.overlap <- raster.overlap(empirical.species.1.model, empirical.species.2.model)
     reps.overlap <- unlist(empirical.overlap)
 
     cat("\nBuilding replicate models...\n")
@@ -54,20 +55,26 @@ identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99,
       rep.species.1$presence.points <- combined.presence.points[1:nrow(species.1$presence.points),]
       rep.species.2$presence.points <- combined.presence.points[(nrow(species.1$presence.points) + 1):nrow(combined.presence.points),]
 
+      # Building models for reps
       rep.species.1.glm <- enmtools.glm(f, rep.species.1, env, ...)
       rep.species.2.glm <- enmtools.glm(f, rep.species.2, env, ...)
+
+      # Appending models to replicates list
+      replicate.models[[paste0(species.1$species.name, ".rep.", i)]] <- rep.species.1.glm
+      replicate.models[[paste0(species.2$species.name, ".rep.", i)]] <- rep.species.2.glm
 
       reps.overlap <- rbind(reps.overlap, unlist(raster.overlap(rep.species.1.glm, rep.species.2.glm)))
 
     }
   }
 
+  # Identity test using Maxent models
   if(type == "mx"){
 
     cat("\nBuilding empirical models...\n")
-    empirical.species.1.mx <- enmtools.maxent(species.1, env, ...)
-    empirical.species.2.mx <- enmtools.maxent(species.2, env, ...)
-    empirical.overlap <- raster.overlap(empirical.species.1.mx, empirical.species.2.mx)
+    empirical.species.1.model <- enmtools.maxent(species.1, env, ...)
+    empirical.species.2.model <- enmtools.maxent(species.2, env, ...)
+    empirical.overlap <- raster.overlap(empirical.species.1.model, empirical.species.2.model)
     reps.overlap <- unlist(empirical.overlap)
 
     cat("\nBuilding replicate models...\n")
@@ -79,20 +86,26 @@ identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99,
       rep.species.1$presence.points <- combined.presence.points[1:nrow(species.1$presence.points),]
       rep.species.2$presence.points <- combined.presence.points[(nrow(species.1$presence.points) + 1):nrow(combined.presence.points),]
 
+      # Building the models for reps
       rep.species.1.mx <- enmtools.maxent(rep.species.1, env, ...)
       rep.species.2.mx <- enmtools.maxent(rep.species.2, env, ...)
+
+      # Appending models to replicates list
+      replicate.models[[paste0(species.1$species.name, ".rep.", i)]] <- rep.species.1.mx
+      replicate.models[[paste0(species.2$species.name, ".rep.", i)]] <- rep.species.2.mx
 
       reps.overlap <- rbind(reps.overlap, unlist(raster.overlap(rep.species.1.mx, rep.species.2.mx)))
 
     }
   }
 
+  # Identity test using Bioclim models
   if(type == "bc"){
 
     cat("\nBuilding empirical models...\n")
-    empirical.species.1.bc <- enmtools.bc(species.1, env, ...)
-    empirical.species.2.bc <- enmtools.bc(species.2, env, ...)
-    empirical.overlap <- raster.overlap(empirical.species.1.bc, empirical.species.2.bc)
+    empirical.species.1.model <- enmtools.bc(species.1, env, ...)
+    empirical.species.2.model <- enmtools.bc(species.2, env, ...)
+    empirical.overlap <- raster.overlap(empirical.species.1.model, empirical.species.2.model)
     reps.overlap <- unlist(empirical.overlap)
 
     cat("\nBuilding replicate models...\n")
@@ -104,19 +117,25 @@ identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99,
       rep.species.1$presence.points <- combined.presence.points[1:nrow(species.1$presence.points),]
       rep.species.2$presence.points <- combined.presence.points[(nrow(species.1$presence.points) + 1):nrow(combined.presence.points),]
 
+      # Building the models for reps
       rep.species.1.bc <- enmtools.bc(rep.species.1, env, ...)
       rep.species.2.bc <- enmtools.bc(rep.species.2, env, ...)
+
+      # Appending models to replicates list
+      replicate.models[[paste0(species.1$species.name, ".rep.", i)]] <- rep.species.1.bc
+      replicate.models[[paste0(species.2$species.name, ".rep.", i)]] <- rep.species.2.bc
 
       reps.overlap <- rbind(reps.overlap, unlist(raster.overlap(rep.species.1.bc, rep.species.2.bc)))
     }
   }
 
+  # Identity test using Domain models
   if(type == "dm"){
 
     cat("\nBuilding empirical models...\n")
-    empirical.species.1.dm <- enmtools.dm(species.1, env, ...)
-    empirical.species.2.dm <- enmtools.dm(species.2, env, ...)
-    empirical.overlap <- raster.overlap(empirical.species.1.dm, empirical.species.2.dm)
+    empirical.species.1.model <- enmtools.dm(species.1, env, ...)
+    empirical.species.2.model <- enmtools.dm(species.2, env, ...)
+    empirical.overlap <- raster.overlap(empirical.species.1.model, empirical.species.2.model)
     reps.overlap <- unlist(empirical.overlap)
 
     cat("\nBuilding replicate models...\n")
@@ -128,8 +147,13 @@ identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99,
       rep.species.1$presence.points <- combined.presence.points[1:nrow(species.1$presence.points),]
       rep.species.2$presence.points <- combined.presence.points[(nrow(species.1$presence.points) + 1):nrow(combined.presence.points),]
 
+      # Building the models for reps
       rep.species.1.dm <- enmtools.dm(rep.species.1, env, ...)
       rep.species.2.dm <- enmtools.dm(rep.species.2, env, ...)
+
+      # Appending models to replicates list
+      replicate.models[[paste0(species.1$species.name, ".rep.", i)]] <- rep.species.1.dm
+      replicate.models[[paste0(species.2$species.name, ".rep.", i)]] <- rep.species.2.dm
 
       reps.overlap <- rbind(reps.overlap, unlist(raster.overlap(rep.species.1.dm, rep.species.2.dm)))
     }
@@ -141,22 +165,27 @@ identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99,
 
   d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"D"], geom = "density", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"D"], linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D")
+    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
+    ggtitle(paste("Identity test:", species.1$species.name, "vs.", species.2$species.name))
 
   i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"I"], geom = "density", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"I"], linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I")
+    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") +
+    ggtitle(paste("Identity test:", species.1$species.name, "vs.", species.2$species.name))
 
   cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"rank.cor"], geom = "density", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"rank.cor"], linetype = "longdash") +
-    xlim(-1,1) + guides(fill = FALSE, alpha = FALSE) + xlab("Rank Correlation")
+    xlim(-1,1) + guides(fill = FALSE, alpha = FALSE) + xlab("Rank Correlation") +
+    ggtitle(paste("Identity test:", species.1$species.name, "vs.", species.2$species.name))
 
   # mean(id.dm[,1] > id.dm[1,1])
 
-  output <- list(reps.overlap = reps.overlap,
+  output <- list(description = paste("\n\nIdentity test", species.1$species.name, "vs.", species.2$species.name),
+                 reps.overlap = reps.overlap,
                  p.values = p.values,
-                 empirical.species.1.glm = empirical.species.1.glm,
-                 empirical.species.2.glm = empirical.species.1.glm,
+                 empirical.species.1.model = empirical.species.1.model,
+                 empirical.species.2.model = empirical.species.2.model,
+                 replicate.models = replicate.models,
                  d.plot = d.plot,
                  i.plot = i.plot,
                  cor.plot = cor.plot)
@@ -223,11 +252,20 @@ identity.precheck <- function(species.1, species.2, env, type, f, nreps){
     stop("Column names for species presence points do not match!")
   }
 
+  if(is.na(species.1$species.name)){
+    stop("Species 1 does not have a species.name set!")
+  }
+
+  if(is.na(species.2$species.name)){
+    stop("Species 2 does not have a species.name set!")
+  }
 
 }
 
 
 summary.identity.test <- function(id){
+
+  cat(paste("\n\n", id$description))
 
   cat("\n\nIdentity test p-values:\n")
   print(id$p.values)
@@ -241,10 +279,11 @@ summary.identity.test <- function(id){
 
 print.identity.test <- function(id){
 
-  print(summary(id))
+  summary(id)
 
 }
 
 plot.identity.test <- function(id){
   grid.arrange(id$d.plot, id$i.plot, id$cor.plot)
 }
+

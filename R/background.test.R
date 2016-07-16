@@ -28,12 +28,21 @@
 
 background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99, test.type = "asymmetric", ...){
 
-#   if(type == "mx"){
-#     bg.source = "range"
-#   }
+  # Build a description of the analysis to use for summaries and plot titles
+  if(test.type == "symmetric"){
+    description <- paste("\n\nSymmetric background test", species.1$species.name, "background vs.", species.2$species.name, "background")
+  } else {
+    description <- paste("\n\nAsymmetric background test", species.1$species.name, "vs.", species.2$species.name, "background")
+  }
+  cat(paste("\n", description, "\n"))
 
+  # Check to make sure everything's okay
   background.precheck(species.1, species.2, env, type, f, nreps, test.type)
 
+  # Initialize a list to store reps in
+  replicate.models <- list()
+
+  # Running background test, using GLM models
   if(type == "glm"){
 
     cat("\nBuilding empirical models...\n")
@@ -48,7 +57,6 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
       rep.species.1 <- species.1
       rep.species.2 <- species.2
-
 
       if(test.type == "symmetric"){
 
@@ -72,11 +80,17 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
       rep.species.1.glm <- enmtools.glm(f, rep.species.1, env, ...)
       rep.species.2.glm <- enmtools.glm(f, rep.species.2, env, ...)
 
-      # Appending to results
+      # Appending models to replicates list
+      replicate.models[[paste0(species.1$species.name, ".rep.", i)]] <- rep.species.1.glm
+      replicate.models[[paste0(species.2$species.name, ".rep.", i)]] <- rep.species.2.glm
+
+      # Appending overlap to results
       reps.overlap <- rbind(reps.overlap, unlist(raster.overlap(rep.species.1.glm, rep.species.2.glm)))
     }
   }
 
+
+  # Running background test using Maxent models
   if(type == "mx"){
 
     cat("\nBuilding empirical models...\n")
@@ -110,14 +124,21 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
       rep.species.2$presence.points <- combined.points[1:nrow(species.2$presence.points),]
       rep.species.2$background.points <- combined.points[(nrow(species.2$presence.points) + 1):nrow(combined.points),]
 
+      # Building models for reps
       rep.species.1.mx <- enmtools.maxent(rep.species.1, env, ...)
       rep.species.2.mx <- enmtools.maxent(rep.species.2, env, ...)
+
+      # Appending models to replicates list
+      replicate.models[[paste0(species.1$species.name, ".rep.", i)]] <- rep.species.1.mx
+      replicate.models[[paste0(species.2$species.name, ".rep.", i)]] <- rep.species.2.mx
 
       # Appending to results
       reps.overlap <- rbind(reps.overlap, unlist(raster.overlap(rep.species.1.mx, rep.species.2.mx)))
     }
   }
 
+
+  # Running background test using Bioclim models
   if(type == "bc"){
 
     cat("\nBuilding empirical models...\n")
@@ -152,14 +173,21 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
       rep.species.2$presence.points <- combined.points[1:nrow(species.2$presence.points),]
       rep.species.2$background.points <- combined.points[(nrow(species.2$presence.points) + 1):nrow(combined.points),]
 
+      # Building models for reps
       rep.species.1.bc <- enmtools.bc(rep.species.1, env, ...)
       rep.species.2.bc <- enmtools.bc(rep.species.2, env, ...)
+
+      # Appending models to replicates list
+      replicate.models[[paste0(species.1$species.name, ".rep.", i)]] <- rep.species.1.bc
+      replicate.models[[paste0(species.2$species.name, ".rep.", i)]] <- rep.species.2.bc
 
       # Appending to results
       reps.overlap <- rbind(reps.overlap, unlist(raster.overlap(rep.species.1.bc, rep.species.2.bc)))
     }
   }
 
+
+  # Running background test using Domain models
   if(type == "dm"){
 
     cat("\nBuilding empirical models...\n")
@@ -193,8 +221,13 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
       rep.species.2$presence.points <- combined.points[1:nrow(species.2$presence.points),]
       rep.species.2$background.points <- combined.points[(nrow(species.2$presence.points) + 1):nrow(combined.points),]
 
+      # Building models for reps
       rep.species.1.dm <- enmtools.dm(rep.species.1, env, ...)
       rep.species.2.dm <- enmtools.dm(rep.species.2, env, ...)
+
+      # Appending models to replicates list
+      replicate.models[[paste0(species.1$species.name, ".rep.", i)]] <- rep.species.1.dm
+      replicate.models[[paste0(species.2$species.name, ".rep.", i)]] <- rep.species.2.dm
 
       # Appending to results
       reps.overlap <- rbind(reps.overlap, unlist(raster.overlap(rep.species.1.dm, rep.species.2.dm)))
@@ -205,24 +238,26 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
   p.values <- apply(reps.overlap, 2, function(x) 1 - mean(x > x[1]))
 
+
   d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"D"], geom = "density", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"D"], linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D")
+    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") + ggtitle(description)
 
   i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"I"], geom = "density", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"I"], linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I")
+    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") + ggtitle(description)
 
   cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"rank.cor"], geom = "density", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"rank.cor"], linetype = "longdash") +
-    xlim(-1,1) + guides(fill = FALSE, alpha = FALSE) + xlab("Rank Correlation")
+    xlim(-1,1) + guides(fill = FALSE, alpha = FALSE) + xlab("Rank Correlation") + ggtitle(description)
 
-  # mean(bg.dm[,1] > bg.dm[1,1])
 
-  output <- list(reps.overlap = reps.overlap,
+  output <- list(description = description,
+                 reps.overlap = reps.overlap,
                  p.values = p.values,
                  empirical.species.1.model = empirical.species.1.model,
-                 empirical.species.2.model = empirical.species.1.model,
+                 empirical.species.2.model = empirical.species.2.model,
+                 replicate.models = replicate.models,
                  d.plot = d.plot,
                  i.plot = i.plot,
                  cor.plot = cor.plot)
@@ -257,17 +292,6 @@ background.precheck <- function(species.1, species.2, env, type, f, nreps, test.
     }
   }
 
-#   if(type == "mx"){
-#     if(!grepl("raster", class(species.1$range), ignore.case = TRUE)){
-#       stop("Maxent cannot use points for background, and species 1 does not have a range raster!")
-#     }
-#
-#     if(!grepl("raster", class(species.2$range), ignore.case = TRUE)){
-#       stop("Maxent cannot use points for background, and species 2 does not have a range raster!")
-#     }
-#   }
-
-
   if(!type %in% c("glm", "mx", "bc", "dm")){
     stop(paste("Model type", type, "not understood! Select either bc, dm, mx, or glm."))
   }
@@ -284,40 +308,28 @@ background.precheck <- function(species.1, species.2, env, type, f, nreps, test.
 
   check.species(species.2)
 
-#   if(bg.source == "points"){
-#
-#     if(!any(c("data.frame") %in% class(species.2$presence.points))){
-#       stop("Species 2 presence.points do not appear to be an object of class data.frame")
-#     }
-#
-#     if(!any(c("data.frame") %in% class(species.2$background.points))){
-#       stop("Species 2 background.points do not appear to be an object of class data.frame")
-#     }
-#
-#     if(any(!colnames(species.1$background.points) %in% colnames(species.2$background.points))){
-#       stop("Column names for species background points do not match!")
-#     }
-#
-#     if(any(!colnames(species.1$presence.points) %in% colnames(species.2$presence.points))){
-#       stop("Column names for species presence points do not match!")
-#     }
-#   }
+  if(!any(c("data.frame") %in% class(species.2$presence.points))){
+    stop("Species 2 presence.points do not appear to be an object of class data.frame")
+  }
 
-#   if(bg.source == "range"){
-#     if(!grepl("raster", class(species.1$range), ignore.case = TRUE)){
-#       stop("Species 1 does not have a range raster!")
-#     }
-#
-#     if(!grepl("raster", class(species.2$range), ignore.case = TRUE)){
-#       stop("Species 2 does not have a range raster!")
-#     }
-#   }
+  if(!any(c("data.frame") %in% class(species.2$background.points))){
+    stop("Species 2 background.points do not appear to be an object of class data.frame")
+  }
 
+  if(is.na(species.1$species.name)){
+    stop("Species 1 does not have a species.name set!")
+  }
+
+  if(is.na(species.2$species.name)){
+    stop("Species 2 does not have a species.name set!")
+  }
 
 }
 
 
 summary.background.test <- function(bg){
+
+  cat(paste("\n\n", bg$description))
 
   cat("\n\nbackground test p-values:\n")
   print(bg$p.values)
