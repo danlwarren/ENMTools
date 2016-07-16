@@ -3,8 +3,8 @@
 #' This function builds a linear model for the relationship between two rasters, and returns the linear model
 #' and a spatial raster of the residuals from that model.
 #'
-#' @param x A raster or RasterLayer object, or ENMTools model object containing a suitability raster.
-#' @param y Another raster  or RasterLayer object, or ENMTools model object containing a suitability raster.
+#' @param x A raster file or path to a raster.
+#' @param y Another raster file or path.
 #'
 #' @return results A list containing a raster of residuals from a linear regression between the two supplied rasters and the linear model itself.
 #'
@@ -18,12 +18,13 @@
 
 raster.resid <- function(x, y){
 
-  if(grepl("enmtools", class(x))){
-    x <- x$suitability
+  # Test if the args are raster objects or paths to files
+  if(class(x) == "character"){
+    x <- raster(x)
   }
 
-  if(grepl("enmtools", class(y))){
-    y <- y$suitability
+  if(class(y) == "character"){
+    y <- raster(y)
   }
 
   resid.raster <- y

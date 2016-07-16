@@ -2,29 +2,18 @@
 % Please edit documentation in R/raster.cor.R
 \name{raster.cor}
 \alias{raster.cor}
-\title{raster.cor Measure correlation coefficients between two rasters}
+\title{Calculates the correlation coefficient between two rasters.}
 \usage{
 raster.cor(x, y, method = "spearman")
 }
 \arguments{
-\item{x}{A raster file}
+\item{x}{A raster representing the spatial projection of an SDM, or an ENMTools model object with a suitability raster.}
 
-\item{y}{Another raster file}
+\item{y}{A raster representing the spatial projection of an SDM, or an ENMTools model object with a suitability raster.}
 
-\item{method}{Determines which method to be used for calculating correlations (from cor function)}
-}
-\value{
-results A correlation coefficient
+\item{method}{The method to be used for calculating correlations.  Defaults to spearman, but can take "kendall" or "pearson" as well.}
 }
 \description{
-This function measures similarity in the geographic distribution of values
-from two rasters.  Various methods can be specified, but it defaults to
-spearman rank correaltion
+Calculates the correlation coefficient between two rasters.
 }
-\examples{
-raster.cor(env[[1]], env[[2]])
-
-}
-\keyword{correlation,}
-\keyword{raster}
 

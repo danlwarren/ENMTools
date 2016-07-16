@@ -7,9 +7,9 @@
 raster.resid(x, y)
 }
 \arguments{
-\item{x}{A raster file or path to a raster.}
+\item{x}{A raster or RasterLayer object, or ENMTools model object containing a suitability raster.}
 
-\item{y}{Another raster file or path.}
+\item{y}{Another raster  or RasterLayer object, or ENMTools model object containing a suitability raster.}
 }
 \value{
 results A list containing a raster of residuals from a linear regression between the two supplied rasters and the linear model itself.

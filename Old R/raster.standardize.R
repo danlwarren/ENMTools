@@ -4,7 +4,7 @@
 #' standardize suitability scores so they sum to 1 over a geographic space.
 #'
 #'
-#' @param x A raster or RasterLayer object, or an ENMTools model object containing a suitability raster.
+#' @param x A raster object or path to a raster.
 #' @param verbose Controls printing of diagnostic messages
 #'
 #'
@@ -17,9 +17,9 @@
 
 
 raster.standardize <- function(x, verbose=FALSE){
-
-  if(grepl("enmtools", class(x))){
-    x <- x$suitability
+  # Test if the args are raster objects or paths to files
+  if(class(x) == "character"){
+    x <- raster(x)
   }
 
   if(verbose){

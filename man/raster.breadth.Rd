@@ -7,7 +7,7 @@
 raster.breadth(x, verbose = FALSE)
 }
 \arguments{
-\item{x}{A raster file or path to raster file.}
+\item{x}{An object of class raster or RasterLayer, or an ENMTools model object containing a suitability raster.}
 
 \item{verbose}{Controls printing of diagnostic messages}
 }
@@ -19,7 +19,7 @@ This function measures the spatial heterogeneity of the distribution of suitabil
 scores from an ENM.  It returns Levins' two metrics of niche breadth.
 }
 \examples{
-raster.breadth("~/species1.asc")
+raster.breadth("env[[1]]")
 }
 \keyword{keywords}
 

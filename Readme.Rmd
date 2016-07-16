@@ -1,0 +1,32 @@
+ENMTools
+======================
+This package implements various tests, visualizations, and metrics for use with environmental niche models (ENMs) and species distribution models (SDMs). 
+
+-----
+
+# Installation
+
+At present, ENMTools is downloadable from https://github.com/danlwarren/ENMTools.  There are multiple ways to download it.  The easiest is to use devtools and install from GitHub.
+
+### Installing from GitHub using devtools
+Run the following code from your R console:
+
+```{r eval=FALSE}
+install.packages("devtools")
+library(devtools)
+install_github("danlwarren/ENMTools")
+library(ENMTools)
+```
+
+### Install from zip file
+
+A zipped version of the package is available at https://github.com/danlwarren/RWTY/archive/master.zip.  To install from the zip file, download a copy of it to your system.  Once it's finished downloading, type the following (where PATH is the path to the zip file):
+
+```{r eval=FALSE}
+install.packages("devtools")
+library(devtools)
+install_local("PATH")
+library(ENMTools)
+```
+
+-----

@@ -7,7 +7,7 @@
 raster.standardize(x, verbose = FALSE)
 }
 \arguments{
-\item{x}{A raster object or path to a raster.}
+\item{x}{A raster or RasterLayer object, or an ENMTools model object containing a suitability raster.}
 
 \item{verbose}{Controls printing of diagnostic messages}
 }

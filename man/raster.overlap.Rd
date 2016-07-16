@@ -7,9 +7,9 @@
 raster.overlap(x, y, verbose = FALSE)
 }
 \arguments{
-\item{x}{A raster file}
+\item{x}{A raster or RasterLayer object, or ENMTools model object containing a suitability raster.}
 
-\item{y}{Another raster file}
+\item{y}{Another raster or RasterLayer object, or ENMTools model object containing a suitability raster.}
 
 \item{verbose}{Controls printing of diagnostic messages}
 }
