@@ -57,7 +57,7 @@ ahli
 You can add data to this object manually:
 ```{r}
 names(ahli)
-ahli$species.name <- "anolis.ahli"
+ahli$species.name <- "ahli"
 ahli$presence.points <- read.csv("test/testdata/ahli.csv")[,3:4]
 ahli$range <- background.raster.buffer(ahli$presence.points, 50000, mask = env)
 ahli$background.points <- background.points.buffer(points = ahli$presence.points,
@@ -91,3 +91,14 @@ GLMs require the user to supply a formula, an enmtools.species object, and some 
 ahli.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, ahli, env)
 summary(ahli.glm)
 ```
+
+### Bioclim, Domain, and Maxent
+
+The procedure for building Bioclim, Domain, and Maxent models is similar to the procedure for GLMs, with the exception that you do not need to pass a formula to the model function.  Note that running Maxent models requires a bit of extra setup; see dismo documentation for details.
+
+```{r}
+ahli.dm <- enmtools.dm(ahli, env)
+ahli.bc <- enmtools.bc(ahli, env)
+ahli.mx <- enmtools.maxent(ahli, env)
+```
+
