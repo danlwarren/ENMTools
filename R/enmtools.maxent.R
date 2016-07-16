@@ -18,7 +18,7 @@ enmtools.maxent <- function(species, env, ...){
 
   this.mx <- maxent(env, p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)
 
-  suitability <- predict(env, this.mx)
+  suitability <- predict(env, this.mx, type = "response")
 
 
   output <- list(analysis.df = analysis.df,

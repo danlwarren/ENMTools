@@ -14,7 +14,7 @@ enmtools.dm <- function(species, env = NA, ...){
 
   this.dm <- bioclim(env, species$presence.points[,1:2])
 
-  suitability <- suitability <- predict(env, this.dm)
+  suitability <- suitability <- predict(env, this.dm, type = "response")
 
   output <- list(analysis.df = species$presence.points[,1:2],
                  model = this.dm,

@@ -26,7 +26,7 @@ enmtools.glm <- function(f, species, env, ...){
 
   this.glm <- glm(f, analysis.df, family="binomial", ...)
 
-  suitability <- predict(env, this.glm)
+  suitability <- predict(env, this.glm, type = "response")
 
 
   output <- list(formula = f,

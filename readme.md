@@ -124,16 +124,16 @@ ahli
 ## 
 ## | Longitude| Latitude|
 ## |---------:|--------:|
-## | -80.43726| 22.11254|
-## | -80.29559| 21.97920|
-## | -80.02892| 22.01254|
-## | -80.25392| 22.07087|
-## | -79.82892| 22.03754|
-## | -79.80392| 21.86254|
-## | -80.23726| 22.07920|
-## | -79.89559| 21.81254|
-## | -80.35392| 22.08754|
-## | -79.97059| 22.08754|
+## | -80.12059| 22.00420|
+## | -80.37892| 22.17087|
+## | -79.82059| 21.91254|
+## | -80.34559| 22.14587|
+## | -79.98726| 21.73754|
+## | -80.35392| 22.02920|
+## | -80.25392| 22.06254|
+## | -79.80392| 21.94587|
+## | -80.45392| 22.06254|
+## | -80.19559| 22.07920|
 ## 
 ## 
 ## Species name:  ahli
@@ -188,16 +188,16 @@ allogus
 ## 
 ## | Longitude| Latitude|
 ## |---------:|--------:|
-## | -77.57059| 21.02087|
-## | -75.92059| 20.26254|
-## | -78.02059| 20.93754|
-## | -78.07059| 21.30420|
-## | -74.43726| 20.29587|
-## | -75.65392| 20.00420|
-## | -75.49559| 20.55420|
-## | -75.02892| 20.67920|
-## | -77.48726| 19.98754|
-## | -75.10392| 19.97920|
+## | -78.66226| 22.08754|
+## | -77.80392| 21.74587|
+## | -75.63726| 20.26254|
+## | -76.89559| 20.22920|
+## | -75.57059| 20.52087|
+## | -78.12059| 21.62087|
+## | -76.87892| 20.24587|
+## | -77.89559| 21.20420|
+## | -74.57059| 20.23754|
+## | -76.10392| 20.05420|
 ## 
 ## 
 ## Species name:  allogus
@@ -223,6 +223,16 @@ ahli.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, ahli, env
 ```
 
 ```r
+allogus.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, allogus, env)
+```
+
+```
+## Adding environmental data to species allogus 
+## 	Processing presence points...
+## 	Processing background points...
+```
+
+```r
 ahli.glm
 ```
 
@@ -230,7 +240,7 @@ ahli.glm
 ## 
 ## 
 ## Formula:  presence ~ layer.1 + layer.2 + layer.3 + layer.4
-## <environment: 0x11cd36270>
+## <environment: 0x113e6f8d0>
 ## 
 ## 
 ## Data table (top ten lines): 
@@ -255,23 +265,23 @@ ahli.glm
 ## 
 ## Deviance Residuals: 
 ##      Min        1Q    Median        3Q       Max  
-## -0.52900  -0.20935  -0.13540  -0.08696   3.09483  
+## -0.52220  -0.20665  -0.13992  -0.09256   3.06852  
 ## 
 ## Coefficients:
 ##              Estimate Std. Error z value Pr(>|z|)  
-## (Intercept) 50.853276  24.568306   2.070   0.0385 *
-## layer.1     -0.014894   0.006352  -2.345   0.0190 *
-## layer.2     -0.013001   0.006529  -1.991   0.0464 *
-## layer.3      0.004644   0.006568   0.707   0.4795  
-## layer.4     -0.011003   0.021875  -0.503   0.6150  
+## (Intercept) 45.237607  23.643922   1.913   0.0557 .
+## layer.1     -0.012876   0.006142  -2.096   0.0361 *
+## layer.2     -0.011215   0.006332  -1.771   0.0765 .
+## layer.3      0.003824   0.006396   0.598   0.5500  
+## layer.4     -0.016092   0.022730  -0.708   0.4790  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
 ##     Null deviance: 164.58  on 1015  degrees of freedom
-## Residual deviance: 148.50  on 1011  degrees of freedom
-## AIC: 158.5
+## Residual deviance: 150.29  on 1011  degrees of freedom
+## AIC: 160.29
 ## 
 ## Number of Fisher Scoring iterations: 8
 ## 
@@ -285,7 +295,7 @@ ahli.glm
 ## coord. ref. : NA 
 ## data source : in memory
 ## names       : layer 
-## values      : -19.70765, 12.67787  (min, max)
+## values      : 2.418945e-10, 0.9999811  (min, max)
 ```
 
 ![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
@@ -301,3 +311,58 @@ ahli.bc <- enmtools.bc(ahli, env)
 ahli.mx <- enmtools.maxent(ahli, env)
 ```
 
+
+## Metrics: breadth, correlation, and overlap
+
+ENMTools provides a number of metrics for ENMs and for similarities between ENMs.  These include measures of niche breadth, based on Levins(1968).  An important caveat when interpreting these metrics is that they are driven to some (variable) extent by the availability of different combinations of environmental variables.  As such they are more accurately interpreted as a measurment of the smoothness of the geographic distribution of suitability scores than as an estimate of the breadth of the fundamental niche; an orgamism with narrow fundamental niche breadth that nonetheless encompasses a set of environmental conditions that is quite common will have a high breadth when measured using ENMs, while having a low breadth in environment space.
+
+
+```r
+raster.breadth(ahli.glm)
+```
+
+```
+## $B1
+## [1] 0.1802603
+## 
+## $B2
+## [1] 0.8738874
+```
+
+
+ENMTools also provides metrics for measuring similarity between ENMs.  These include Schoener's D (Schoener 1968), I (Warren et al. 2008), and the Spearman rank correlation coefficient between two rasters.  While D and I are commonly used in the ENM literature, they may tend to overestimate similarity between ENMs when many grid cells are of similar values (e.g., when two species prefer different habitat but the region contains a great deal of habitat that is unsuitable for both).  
+
+
+```r
+raster.overlap(ahli.glm, allogus.glm)
+```
+
+```
+## $D
+## [1] 0.4063311
+## 
+## $I
+## [1] 0.6884148
+## 
+## $rank.cor
+## [1] 0.8070075
+```
+
+## Hypothesis testing
+
+### Niche identity or equivalency test
+
+In this example, we will run a niche identity or equivalency test, as in Warren et al. 2008.  This test takes the presence points for a pair of species and randomly reassigns them to each species, then builds ENMs for these randomized occurrences.  By doing this many times, we can estimate the probability distribution for ENM overlap between species 
+
+
+
+
+
+### Literature cited
+
+
+*Levins, R. 1968. Evolution In Changing Environments. Monographs in Population Biology, volume 2. Princeton University Press, Princeton, New Jersey, USA.*
+
+*Schoener, T. W. 1968. Anolis lizards of Bimini: resource partitioning in a complex fauna. Ecology 49:704- 726.*
+
+*Warren, D.L., R.E. Glor, and M. Turelli.  2008. Environmental niche identity versus conservatism: quantitative approaches to niche evolution.  Evolution 62:2868-2883. doi: 10.1111/j.1558-5646.2008.00482.x*

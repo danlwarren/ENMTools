@@ -1,6 +1,8 @@
 setwd("~/GitHub/ENMTools/test")
 library(ENMTools)
 
+# This code builds the readme.rmd file into a regular md file, which GitHub understands better
+knit(input="Readme.Rmd", output = "readme.md")
 
 env.files <- list.files(path = "testdata/", pattern = "pc", full.names = TRUE)
 env <- stack(env.files)

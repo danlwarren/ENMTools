@@ -17,12 +17,14 @@
 
 raster.breadth <- function(x, verbose=FALSE){
 
-  if(grepl("enmtools", class(x))){
+  if(any(grepl("enmtools", class(x)))){
     x <- x$suitability
   }
 
   if(verbose){print(paste("Starting breadth on", x, "at", Sys.time()))}
   x <- raster.standardize(x)
+
+  x[which(getValues(x) == 0)] <- 1e-40
 
   ncells <- sum(!is.na(getValues(x)))
 
