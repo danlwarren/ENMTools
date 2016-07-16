@@ -124,16 +124,16 @@ ahli
 ## 
 ## | Longitude| Latitude|
 ## |---------:|--------:|
-## | -79.62892| 21.73754|
-## | -80.35392| 22.03754|
-## | -79.88726| 22.04587|
-## | -80.11226| 22.09587|
-## | -79.92059| 21.85420|
-## | -79.90392| 21.91254|
-## | -80.25392| 21.92920|
-## | -80.24559| 22.15420|
-## | -79.87059| 21.96254|
-## | -79.89559| 22.08754|
+## | -80.14559| 21.97920|
+## | -79.89559| 21.88754|
+## | -80.02059| 21.78754|
+## | -79.93726| 21.97920|
+## | -79.99559| 21.90420|
+## | -80.14559| 21.87087|
+## | -79.94559| 21.89587|
+## | -80.24559| 22.07087|
+## | -80.02892| 22.01254|
+## | -79.83726| 21.70420|
 ## 
 ## 
 ## Species name:  ahli
@@ -188,16 +188,16 @@ allogus
 ## 
 ## | Longitude| Latitude|
 ## |---------:|--------:|
-## | -75.67892| 20.02087|
-## | -78.13726| 21.11254|
-## | -75.86226| 20.29587|
-## | -76.33726| 19.97920|
-## | -77.99559| 21.49587|
-## | -78.76226| 22.13754|
-## | -75.07892| 20.54587|
-## | -75.41226| 20.73754|
-## | -75.72892| 20.28754|
-## | -77.87892| 21.50420|
+## | -78.05392| 20.93754|
+## | -78.07059| 21.06254|
+## | -74.54559| 20.37920|
+## | -78.13726| 21.70420|
+## | -75.73726| 20.00420|
+## | -76.35392| 20.25420|
+## | -75.39559| 20.69587|
+## | -77.43726| 19.93754|
+## | -78.07892| 21.71254|
+## | -77.36226| 21.03754|
 ## 
 ## 
 ## Species name:  allogus
@@ -240,7 +240,7 @@ ahli.glm
 ## 
 ## 
 ## Formula:  presence ~ layer.1 + layer.2 + layer.3 + layer.4
-## <environment: 0x125082aa8>
+## <environment: 0x12748d678>
 ## 
 ## 
 ## Data table (top ten lines): 
@@ -265,23 +265,23 @@ ahli.glm
 ## 
 ## Deviance Residuals: 
 ##      Min        1Q    Median        3Q       Max  
-## -0.67517  -0.20619  -0.13961  -0.09466   3.06215  
+## -0.54882  -0.20608  -0.14213  -0.09573   3.09378  
 ## 
 ## Coefficients:
 ##              Estimate Std. Error z value Pr(>|z|)  
-## (Intercept) 44.997430  24.043474   1.872   0.0613 .
-## layer.1     -0.012778   0.006030  -2.119   0.0341 *
-## layer.2     -0.011438   0.006406  -1.786   0.0742 .
-## layer.3      0.003074   0.006724   0.457   0.6476  
-## layer.4     -0.011497   0.021529  -0.534   0.5933  
+## (Intercept) 47.718203  24.544024   1.944   0.0519 .
+## layer.1     -0.013607   0.006376  -2.134   0.0328 *
+## layer.2     -0.012531   0.006547  -1.914   0.0556 .
+## layer.3      0.002635   0.006287   0.419   0.6751  
+## layer.4     -0.005766   0.021544  -0.268   0.7890  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
 ##     Null deviance: 164.58  on 1015  degrees of freedom
-## Residual deviance: 149.88  on 1011  degrees of freedom
-## AIC: 159.88
+## Residual deviance: 150.46  on 1011  degrees of freedom
+## AIC: 160.46
 ## 
 ## Number of Fisher Scoring iterations: 8
 ## 
@@ -295,7 +295,7 @@ ahli.glm
 ## coord. ref. : NA 
 ## data source : in memory
 ## names       : layer 
-## values      : 1.930953e-08, 0.9999703  (min, max)
+## values      : 2.077607e-06, 0.9999813  (min, max)
 ```
 
 ![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
@@ -323,10 +323,10 @@ raster.breadth(ahli.glm)
 
 ```
 ## $B1
-## [1] 0.1961099
+## [1] 0.2272109
 ## 
 ## $B2
-## [1] 0.8802145
+## [1] 0.8894404
 ```
 
 
@@ -339,13 +339,13 @@ raster.overlap(ahli.glm, allogus.glm)
 
 ```
 ## $D
-## [1] 0.4205463
+## [1] 0.4715394
 ## 
 ## $I
-## [1] 0.7019995
+## [1] 0.7388009
 ## 
 ## $rank.cor
-## [1] 0.8298744
+## [1] 0.8737144
 ```
 
 ## Hypothesis testing
@@ -354,9 +354,94 @@ raster.overlap(ahli.glm, allogus.glm)
 
 In this example, we will run a niche identity (also called equivalency) test, as in Warren et al. 2008.  This test takes the presence points for a pair of species and randomly reassigns them to each species, then builds ENMs for these randomized occurrences.  By doing this many times, we can estimate the probability distribution for ENM overlap between species under the null hypothesis that the two species' occurrences in the environment are effectivel a random draw from the same underlying distribution.  Note that niche evolution is only one of many reasons why two species' realized environmental distributions might cause departures from this null hypothesis.  See Warren et al. 2014 for details.
 
+To run an identity test, we need to decide what type of models we will build, how many replicates we will run, and (in the case of GLM) a model formula to use for empirical models and the Monte Carlo replicates.  The resulting object contains the replicate models, p values, and plots of the results.
 
 
+```r
+id.glm <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm", f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)
+```
 
+```
+## 
+## Building empirical models...
+## Adding environmental data to species ahli 
+## 	Processing presence points...
+## 	Processing background points...
+```
+
+```
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+```
+
+```
+## Adding environmental data to species allogus 
+## 	Processing presence points...
+## 	Processing background points...
+## 
+## Building replicate models...
+## 
+## Replicate 1 ...
+## Adding environmental data to species ahli 
+## 	Processing presence points...
+## 	Processing background points...
+## Adding environmental data to species allogus 
+## 	Processing presence points...
+## 	Processing background points...
+## 
+## Replicate 2 ...
+## Adding environmental data to species ahli 
+## 	Processing presence points...
+## 	Processing background points...
+## Adding environmental data to species allogus 
+## 	Processing presence points...
+## 	Processing background points...
+## 
+## Replicate 3 ...
+## Adding environmental data to species ahli 
+## 	Processing presence points...
+## 	Processing background points...
+## Adding environmental data to species allogus 
+## 	Processing presence points...
+## 	Processing background points...
+## 
+## Replicate 4 ...
+## Adding environmental data to species ahli 
+## 	Processing presence points...
+## 	Processing background points...
+## Adding environmental data to species allogus 
+## 	Processing presence points...
+## 	Processing background points...
+```
+
+```r
+id.glm
+```
+
+```
+## 
+## 
+##  
+## 
+## Identity test ahli vs. allogus
+## 
+## Identity test p-values:
+##        D        I rank.cor 
+##      0.2      0.2      0.2 
+## 
+## 
+## Replicates:
+## 
+## 
+## |          |         D|         I|   rank.cor|
+## |:---------|---------:|---------:|----------:|
+## |empirical | 0.2397549| 0.4899691| -0.4991584|
+## |rep 1     | 0.8817572| 0.9880068|  0.9395090|
+## |rep 2     | 0.9106340| 0.9935519|  0.9602592|
+## |rep 3     | 0.9089809| 0.9925170|  0.8911130|
+## |rep 4     | 0.7588395| 0.9433018|  0.5286053|
+```
+
+![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-1.png)
 
 ### Literature cited
 
