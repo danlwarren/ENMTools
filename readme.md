@@ -124,16 +124,16 @@ ahli
 ## 
 ## | Longitude| Latitude|
 ## |---------:|--------:|
-## | -79.97892| 22.07920|
-## | -79.97059| 22.02087|
-## | -79.89559| 21.90420|
-## | -80.00392| 22.06254|
-## | -79.99559| 21.83754|
-## | -80.29559| 22.01254|
-## | -79.82892| 21.82087|
-## | -79.93726| 21.91254|
-## | -79.62892| 21.70420|
-## | -80.05392| 21.91254|
+## | -79.79559| 21.93754|
+## | -79.94559| 22.01254|
+## | -80.27892| 22.13754|
+## | -79.93726| 21.95420|
+## | -80.29559| 22.17920|
+## | -79.76226| 21.73754|
+## | -80.49559| 22.05420|
+## | -80.17892| 21.97087|
+## | -79.77059| 21.72920|
+## | -80.33726| 21.96254|
 ## 
 ## 
 ## Species name:  ahli
@@ -188,16 +188,16 @@ allogus
 ## 
 ## | Longitude| Latitude|
 ## |---------:|--------:|
-## | -77.39559| 20.97087|
-## | -78.92892| 22.15420|
-## | -76.34559| 20.07087|
-## | -76.41226| 20.19587|
-## | -76.69559| 20.23754|
-## | -76.56226| 20.12087|
-## | -75.70392| 20.49587|
-## | -78.17892| 21.02087|
-## | -74.20392| 20.15420|
-## | -77.05392| 20.90420|
+## | -75.07059| 20.31254|
+## | -76.27059| 20.27087|
+## | -75.66226| 20.73754|
+## | -78.09559| 21.82920|
+## | -75.52892| 20.54587|
+## | -77.93726| 21.41254|
+## | -75.11226| 20.61254|
+## | -76.97059| 20.01254|
+## | -77.81226| 21.78754|
+## | -75.81226| 20.67087|
 ## 
 ## 
 ## Species name:  allogus
@@ -240,7 +240,7 @@ ahli.glm
 ## 
 ## 
 ## Formula:  presence ~ layer.1 + layer.2 + layer.3 + layer.4
-## <environment: 0x10e98b478>
+## <environment: 0x1188bdb88>
 ## 
 ## 
 ## Data table (top ten lines): 
@@ -265,23 +265,23 @@ ahli.glm
 ## 
 ## Deviance Residuals: 
 ##      Min        1Q    Median        3Q       Max  
-## -0.65614  -0.20398  -0.13775  -0.09092   3.06593  
+## -0.67296  -0.20228  -0.13947  -0.09445   3.10288  
 ## 
 ## Coefficients:
 ##              Estimate Std. Error z value Pr(>|z|)  
-## (Intercept) 54.350528  25.362745   2.143   0.0321 *
-## layer.1     -0.014744   0.006369  -2.315   0.0206 *
-## layer.2     -0.013545   0.006645  -2.038   0.0415 *
-## layer.3      0.001597   0.006594   0.242   0.8086  
-## layer.4     -0.010125   0.020983  -0.483   0.6294  
+## (Intercept) 50.938974  24.674054   2.064   0.0390 *
+## layer.1     -0.013914   0.006207  -2.242   0.0250 *
+## layer.2     -0.013155   0.006577  -2.000   0.0455 *
+## layer.3      0.001630   0.006472   0.252   0.8012  
+## layer.4     -0.007416   0.022042  -0.336   0.7365  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
 ##     Null deviance: 164.58  on 1015  degrees of freedom
-## Residual deviance: 149.15  on 1011  degrees of freedom
-## AIC: 159.15
+## Residual deviance: 149.97  on 1011  degrees of freedom
+## AIC: 159.97
 ## 
 ## Number of Fisher Scoring iterations: 8
 ## 
@@ -295,7 +295,7 @@ ahli.glm
 ## coord. ref. : NA 
 ## data source : in memory
 ## names       : layer 
-## values      : 2.255333e-07, 0.9999922  (min, max)
+## values      : 1.773163e-06, 0.9999875  (min, max)
 ```
 
 ![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
@@ -323,10 +323,10 @@ raster.breadth(ahli.glm)
 
 ```
 ## $B1
-## [1] 0.2293215
+## [1] 0.2248204
 ## 
 ## $B2
-## [1] 0.8889006
+## [1] 0.8883967
 ```
 
 
@@ -339,13 +339,13 @@ raster.overlap(ahli.glm, allogus.glm)
 
 ```
 ## $D
-## [1] 0.4487702
+## [1] 0.4712461
 ## 
 ## $I
-## [1] 0.7187306
+## [1] 0.7383371
 ## 
 ## $rank.cor
-## [1] 0.8516102
+## [1] 0.8907695
 ```
 
 ## Hypothesis testing
@@ -354,7 +354,7 @@ raster.overlap(ahli.glm, allogus.glm)
 
 In this example, we will run a niche identity (also called equivalency) test, as in Warren et al. 2008.  This test takes the presence points for a pair of species and randomly reassigns them to each species, then builds ENMs for these randomized occurrences.  By doing this many times, we can estimate the probability distribution for ENM overlap between species under the null hypothesis that the two species' occurrences in the environment are effectivel a random draw from the same underlying distribution.  Note that niche evolution is only one of many reasons why two species' realized environmental distributions might cause departures from this null hypothesis.  See Warren et al. 2014 for details.
 
-To run an identity test, we need to decide what type of models we will build, how many replicates we will run, and (in the case of GLM) a model formula to use for empirical models and the Monte Carlo replicates.  The resulting object contains the replicate models, p values, and plots of the results.
+To run an identity test, we need to decide what type of models we will build, how many replicates we will run, and (in the case of GLM) a model formula to use for empirical models and the Monte Carlo replicates.  The resulting object contains the replicate models, p values, and plots of the results.  Typically idenity tests are run with at least 99 replicates, but we are using a smaller number here for the sake of execution time.
 
 
 
@@ -385,14 +385,101 @@ id.glm
 ## 
 ## |          |         D|         I|   rank.cor|
 ## |:---------|---------:|---------:|----------:|
-## |empirical | 0.2296211| 0.4746654| -0.4846668|
-## |rep 1     | 0.7243723| 0.9430028|  0.8719247|
-## |rep 2     | 0.6149077| 0.8829507| -0.3823921|
-## |rep 3     | 0.8728419| 0.9829971|  0.8566643|
-## |rep 4     | 0.7445990| 0.9500961|  0.9186322|
+## |empirical | 0.2471983| 0.4982702| -0.4207794|
+## |rep 1     | 0.8449009| 0.9807613|  0.8093011|
+## |rep 2     | 0.7083306| 0.9365849|  0.9237444|
+## |rep 3     | 0.7951422| 0.9676197|  0.6248240|
+## |rep 4     | 0.6911242| 0.9285969|  0.9328996|
 ```
 
 ![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png)
+
+
+### Background or similarity test
+
+The background or similarity test compares the overlap seen between two species' ENMs to the overlap expected by chance if one or both species was effectively choosing habitat at random from within their broad geographic range.  The purpose of this test is to correct for the availability of habitat and ask whether the observed similarity between species or populations is significantly more (or less) than expected given the available set of environments in the regions in which they occur.  
+
+In Warren et al. 2008, we developed this test in the context of comparing one species' actual occurrence to the random background occurrences of the other species.  This is what we call an "asymmetric" test, and in our case we did the test in both directions with the idea that we might compare the results of A vs. B background to the results of B vs. A background.  This may be informative in some cases, but many people have also found this asymmetry confusing (and indeed it is often difficult to interpret).  For that reason, the background test here can be conducted against a null hypothesis that is generated from "asymmetric" (species.1 vs species.2 background) or "symmetric" (species.1 background vs. species.2 background) comparisons.
+
+Here, for instance, is a Bioclim background test using the classical asymmetric approach:
+
+
+
+```r
+bg.bc.asym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "bc", nreps = 4, test.type = "asymmetric" )
+```
+
+
+```r
+bg.bc.asym
+```
+
+```
+## 
+## 
+##  
+## 
+## Asymmetric background test ahli vs. allogus background
+## 
+## background test p-values:
+##        D        I rank.cor 
+##      0.4      0.8      0.6 
+## 
+## 
+## Replicates:
+## 
+## 
+## |          |         D|         I|  rank.cor|
+## |:---------|---------:|---------:|---------:|
+## |empirical | 0.1328502| 0.3177390| 0.0706201|
+## |rep 1     | 0.1363728| 0.3051854| 0.0812764|
+## |rep 2     | 0.1362094| 0.3133505| 0.0873307|
+## |rep 3     | 0.1259829| 0.2925272| 0.0045207|
+## |rep 4     | 0.1418544| 0.3191782| 0.0705111|
+```
+
+![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-17-1.png)
+
+
+And here is a Domain background test using the symmetric approach:
+
+
+
+```r
+bg.dm.sym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "dm", nreps = 4, test.type = "symmetric" )
+```
+
+
+```r
+bg.dm.sym
+```
+
+```
+## 
+## 
+##  
+## 
+## Symmetric background test ahli background vs. allogus background
+## 
+## background test p-values:
+##        D        I rank.cor 
+##      0.4      0.6      0.8 
+## 
+## 
+## Replicates:
+## 
+## 
+## |          |         D|         I|   rank.cor|
+## |:---------|---------:|---------:|----------:|
+## |empirical | 0.1328502| 0.3177390|  0.0706201|
+## |rep 1     | 0.1463295| 0.3007643| -0.0047616|
+## |rep 2     | 0.2024762| 0.3994131|  0.0197081|
+## |rep 3     | 0.1149880| 0.3167491|  0.0828925|
+## |rep 4     | 0.1915355| 0.3790515|  0.0235343|
+```
+
+![plot of chunk unnamed-chunk-20](figure/unnamed-chunk-20-1.png)
+
 
 ### Literature cited
 
