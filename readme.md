@@ -21,7 +21,7 @@ library(ENMTools)
 
 ### Install from zip file
 
-A zipped version of the package is available at https://github.com/danlwarren/RWTY/archive/master.zip.  To install from the zip file, download a copy of it to your system.  Once it's finished downloading, type the following (where PATH is the path to the zip file):
+A zipped version of the package is available at https://github.com/danlwarren/ENMTools/archive/master.zip.  To install from the zip file, download a copy of it to your system.  Once it's finished downloading, type the following (where PATH is the path to the zip file):
 
 
 ```r
@@ -124,16 +124,16 @@ ahli
 ## 
 ## | Longitude| Latitude|
 ## |---------:|--------:|
-## | -79.79559| 21.93754|
-## | -79.94559| 22.01254|
-## | -80.27892| 22.13754|
-## | -79.93726| 21.95420|
-## | -80.29559| 22.17920|
-## | -79.76226| 21.73754|
-## | -80.49559| 22.05420|
-## | -80.17892| 21.97087|
-## | -79.77059| 21.72920|
-## | -80.33726| 21.96254|
+## | -79.78726| 21.72920|
+## | -79.82892| 21.73754|
+## | -79.83726| 21.69587|
+## | -80.01226| 22.01254|
+## | -79.63726| 21.76254|
+## | -79.92892| 21.78754|
+## | -79.99559| 22.12920|
+## | -79.81226| 21.87087|
+## | -80.30392| 22.07920|
+## | -79.97892| 21.85420|
 ## 
 ## 
 ## Species name:  ahli
@@ -188,16 +188,16 @@ allogus
 ## 
 ## | Longitude| Latitude|
 ## |---------:|--------:|
-## | -75.07059| 20.31254|
-## | -76.27059| 20.27087|
-## | -75.66226| 20.73754|
-## | -78.09559| 21.82920|
-## | -75.52892| 20.54587|
-## | -77.93726| 21.41254|
-## | -75.11226| 20.61254|
-## | -76.97059| 20.01254|
-## | -77.81226| 21.78754|
-## | -75.81226| 20.67087|
+## | -77.43726| 20.93754|
+## | -78.80392| 22.15420|
+## | -76.78726| 20.72087|
+## | -75.02892| 20.10420|
+## | -75.02059| 20.66254|
+## | -75.81226| 20.95420|
+## | -75.37892| 20.51254|
+## | -77.40392| 21.12087|
+## | -78.09559| 21.10420|
+## | -74.87892| 20.23754|
 ## 
 ## 
 ## Species name:  allogus
@@ -206,14 +206,14 @@ allogus
 
 ## Building an ENM
 
-ENMTools contains functions to simplify the ENM construction process.  Using enmtools.species objects and the corrected modeling commands, we can build models very quickly.  These commands are primarily wrappers to dismo model construction and projection functions, and at present are only available for GLM, Maxent, Domain, and Bioclim models.
+ENMTools contains functions to simplify the ENM construction process.  Using enmtools.species objects and the correcte modeling commands, we can build models very quickly.  These commands are primarily wrappers to dismo model construction and projection functions, and at present are only available for GLM, Maxent, Domain, and Bioclim models.
 
 ### GLM
 
 GLMs require the user to supply a formula, an enmtools.species object, and some environmental data.
 
 ```r
-ahli.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, ahli, env)
+ahli.glm <- enmtools.glm(f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, species = ahli, env = env)
 ```
 
 ```
@@ -240,7 +240,7 @@ ahli.glm
 ## 
 ## 
 ## Formula:  presence ~ layer.1 + layer.2 + layer.3 + layer.4
-## <environment: 0x1188bdb88>
+## <environment: 0x1277e0ee0>
 ## 
 ## 
 ## Data table (top ten lines): 
@@ -265,23 +265,23 @@ ahli.glm
 ## 
 ## Deviance Residuals: 
 ##      Min        1Q    Median        3Q       Max  
-## -0.67296  -0.20228  -0.13947  -0.09445   3.10288  
+## -0.67171  -0.20485  -0.14150  -0.09528   3.08762  
 ## 
 ## Coefficients:
 ##              Estimate Std. Error z value Pr(>|z|)  
-## (Intercept) 50.938974  24.674054   2.064   0.0390 *
-## layer.1     -0.013914   0.006207  -2.242   0.0250 *
-## layer.2     -0.013155   0.006577  -2.000   0.0455 *
-## layer.3      0.001630   0.006472   0.252   0.8012  
-## layer.4     -0.007416   0.022042  -0.336   0.7365  
+## (Intercept) 46.178922  24.777923   1.864   0.0624 .
+## layer.1     -0.013347   0.006276  -2.127   0.0334 *
+## layer.2     -0.011985   0.006612  -1.813   0.0699 .
+## layer.3      0.003485   0.006586   0.529   0.5967  
+## layer.4     -0.009092   0.021248  -0.428   0.6687  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
 ##     Null deviance: 164.58  on 1015  degrees of freedom
-## Residual deviance: 149.97  on 1011  degrees of freedom
-## AIC: 159.97
+## Residual deviance: 150.15  on 1011  degrees of freedom
+## AIC: 160.15
 ## 
 ## Number of Fisher Scoring iterations: 8
 ## 
@@ -295,7 +295,7 @@ ahli.glm
 ## coord. ref. : NA 
 ## data source : in memory
 ## names       : layer 
-## values      : 1.773163e-06, 0.9999875  (min, max)
+## values      : 6.419793e-08, 0.999983  (min, max)
 ```
 
 ![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
@@ -323,10 +323,10 @@ raster.breadth(ahli.glm)
 
 ```
 ## $B1
-## [1] 0.2248204
+## [1] 0.2093322
 ## 
 ## $B2
-## [1] 0.8883967
+## [1] 0.8841077
 ```
 
 
@@ -339,22 +339,24 @@ raster.overlap(ahli.glm, allogus.glm)
 
 ```
 ## $D
-## [1] 0.4712461
+## [1] 0.4624379
 ## 
 ## $I
-## [1] 0.7383371
+## [1] 0.7342008
 ## 
 ## $rank.cor
-## [1] 0.8907695
+## [1] 0.8829746
 ```
 
 ## Hypothesis testing
 
 ### Niche identity or equivalency test
 
-In this example, we will run a niche identity (also called equivalency) test, as in Warren et al. 2008.  This test takes the presence points for a pair of species and randomly reassigns them to each species, then builds ENMs for these randomized occurrences.  By doing this many times, we can estimate the probability distribution for ENM overlap between species under the null hypothesis that the two species' occurrences in the environment are effectivel a random draw from the same underlying distribution.  Note that niche evolution is only one of many reasons why two species' realized environmental distributions might cause departures from this null hypothesis.  See Warren et al. 2014 for details.
+In this example, we will run a niche identity (also called equivalency) test, as in Warren et al. 2008.  This test takes the presence points for a pair of species and randomly reassigns them to each species, then builds ENMs for these randomized occurrences.  By doing this many times, we can estimate the probability distribution for ENM overlap between species under the null hypothesis that the two species' occurrences in the environment are effectively a random draw from the same underlying distribution.  Note that niche evolution is only one of many reasons why two species' realized environmental distributions might cause departures from this null hypothesis.  See Warren et al. 2014 for details.
 
 To run an identity test, we need to decide what type of models we will build, how many replicates we will run, and (in the case of GLM) a model formula to use for empirical models and the Monte Carlo replicates.  The resulting object contains the replicate models, p values, and plots of the results.  Typically idenity tests are run with at least 99 replicates, but we are using a smaller number here for the sake of execution time.
+
+_NOTE:_ In order for models to be comparable, both empirical and pseudoreplicate models for the identity test are conducted with pseudoabsence points pooled for the two species being compared.
 
 
 
@@ -385,11 +387,11 @@ id.glm
 ## 
 ## |          |         D|         I|   rank.cor|
 ## |:---------|---------:|---------:|----------:|
-## |empirical | 0.2471983| 0.4982702| -0.4207794|
-## |rep 1     | 0.8449009| 0.9807613|  0.8093011|
-## |rep 2     | 0.7083306| 0.9365849|  0.9237444|
-## |rep 3     | 0.7951422| 0.9676197|  0.6248240|
-## |rep 4     | 0.6911242| 0.9285969|  0.9328996|
+## |empirical | 0.2221752| 0.4661581| -0.4761597|
+## |rep 1     | 0.8883545| 0.9899271|  0.8942366|
+## |rep 2     | 0.8486324| 0.9828760|  0.9315827|
+## |rep 3     | 0.8227838| 0.9742077|  0.8881490|
+## |rep 4     | 0.7255044| 0.9469161|  0.5551645|
 ```
 
 ![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png)
@@ -398,6 +400,8 @@ id.glm
 ### Background or similarity test
 
 The background or similarity test compares the overlap seen between two species' ENMs to the overlap expected by chance if one or both species was effectively choosing habitat at random from within their broad geographic range.  The purpose of this test is to correct for the availability of habitat and ask whether the observed similarity between species or populations is significantly more (or less) than expected given the available set of environments in the regions in which they occur.  
+
+_NOTE:_ In order for models to be comparable, both empirical and pseudoreplicate models for the background test are conducted with pseudoabsence points pooled for the two species being compared.
 
 In Warren et al. 2008, we developed this test in the context of comparing one species' actual occurrence to the random background occurrences of the other species.  This is what we call an "asymmetric" test, and in our case we did the test in both directions with the idea that we might compare the results of A vs. B background to the results of B vs. A background.  This may be informative in some cases, but many people have also found this asymmetry confusing (and indeed it is often difficult to interpret).  For that reason, the background test here can be conducted against a null hypothesis that is generated from "asymmetric" (species.1 vs species.2 background) or "symmetric" (species.1 background vs. species.2 background) comparisons.
 
@@ -423,7 +427,7 @@ bg.bc.asym
 ## 
 ## background test p-values:
 ##        D        I rank.cor 
-##      0.4      0.8      0.6 
+##      0.4      0.8      0.4 
 ## 
 ## 
 ## Replicates:
@@ -432,10 +436,10 @@ bg.bc.asym
 ## |          |         D|         I|  rank.cor|
 ## |:---------|---------:|---------:|---------:|
 ## |empirical | 0.1328502| 0.3177390| 0.0706201|
-## |rep 1     | 0.1363728| 0.3051854| 0.0812764|
-## |rep 2     | 0.1362094| 0.3133505| 0.0873307|
-## |rep 3     | 0.1259829| 0.2925272| 0.0045207|
-## |rep 4     | 0.1418544| 0.3191782| 0.0705111|
+## |rep 1     | 0.1430965| 0.3114858| 0.0824412|
+## |rep 2     | 0.1284871| 0.2801639| 0.0156034|
+## |rep 3     | 0.1599120| 0.3384525| 0.1136082|
+## |rep 4     | 0.1431022| 0.3101197| 0.0766638|
 ```
 
 ![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-17-1.png)
@@ -463,19 +467,19 @@ bg.dm.sym
 ## 
 ## background test p-values:
 ##        D        I rank.cor 
-##      0.4      0.6      0.8 
+##      0.6      0.6      0.2 
 ## 
 ## 
 ## Replicates:
 ## 
 ## 
-## |          |         D|         I|   rank.cor|
-## |:---------|---------:|---------:|----------:|
-## |empirical | 0.1328502| 0.3177390|  0.0706201|
-## |rep 1     | 0.1463295| 0.3007643| -0.0047616|
-## |rep 2     | 0.2024762| 0.3994131|  0.0197081|
-## |rep 3     | 0.1149880| 0.3167491|  0.0828925|
-## |rep 4     | 0.1915355| 0.3790515|  0.0235343|
+## |          |         D|         I|  rank.cor|
+## |:---------|---------:|---------:|---------:|
+## |empirical | 0.1328502| 0.3177390| 0.0706201|
+## |rep 1     | 0.2382775| 0.4428653| 0.1774936|
+## |rep 2     | 0.1518903| 0.3555431| 0.1002003|
+## |rep 3     | 0.1250674| 0.3029139| 0.0717565|
+## |rep 4     | 0.1165355| 0.2946842| 0.0841041|
 ```
 
 ![plot of chunk unnamed-chunk-20](figure/unnamed-chunk-20-1.png)

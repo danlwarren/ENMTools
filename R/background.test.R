@@ -42,6 +42,11 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
   # Initialize a list to store reps in
   replicate.models <- list()
 
+  # For starters we need to combine species background points so that each model
+  # is being built with the same background
+  species.1$background.points <- rbind(species.1$background.points, species.2$background.points)
+  species.2$background.points <- rbind(species.1$background.points, species.2$background.points)
+
   # Running background test, using GLM models
   if(type == "glm"){
 

@@ -44,6 +44,8 @@ plot(two.anoles)
 ahli.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, ahli, env)
 ahli.glm
 
+allogus.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, allogus, env)
+allogus.glm
 
 ahli.twovar.glm <- enmtools.glm(pres ~ layer.1 + layer.4, ahli, env)
 ahli.twovar.glm
