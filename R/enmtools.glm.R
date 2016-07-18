@@ -21,10 +21,10 @@ enmtools.glm <- function(f, species, env, ...){
   # regardless of what was passed.
   f <- reformulate(attr(delete.response(terms(f)), "term.labels"), response = "presence")
 
-  analysis.df <- rbind(species$presence.points[,-c(1,2)], species$background.points[,-c(1,2)])
+  analysis.df <- rbind(species$presence.points, species$background.points)
   analysis.df$presence <- c(rep(1, nrow(species$presence.points)), rep(0, nrow(species$background.points)))
 
-  this.glm <- glm(f, analysis.df, family="binomial", ...)
+  this.glm <- glm(f, analysis.df[,-c(1,2)], family="binomial", ...)
 
   suitability <- predict(env, this.glm, type = "response")
 
@@ -55,6 +55,7 @@ summary.enmtools.glm <- function(this.glm){
   cat("\n\nSuitability:  \n")
   print(this.glm$suitability)
   plot(this.glm$suitability)
+  points(this.glm$analysis.df[this.glm$analysis.df$presence == 1,1:2], pch = 16)
 
 }
 

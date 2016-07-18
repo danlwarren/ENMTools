@@ -118,3 +118,12 @@ rbl.dm <- rangebreak.linear(ahli, allogus, env, type = "dm", nreps = 4)
 rdl.glm <- rangebreak.linear(ahli, allogus, env, type = "bc", f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)
 
 rbl.mx <- rangebreak.linear(ahli, allogus, env, type = "mx", nreps = 4)
+
+
+rbb.bc <- rangebreak.blob(ahli, allogus, env, type = "bc", nreps = 4)
+
+rbb.dm <- rangebreak.blob(ahli, allogus, env, type = "dm", nreps = 4)
+
+rbb.mx <- rangebreak.blob(ahli, allogus, env, type = "mx", nreps = 4)
+
+rbb.glm <- rangebreak.blob(ahli, allogus, env, type = "glm", f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)

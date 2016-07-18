@@ -43,6 +43,7 @@ summary.enmtools.maxent <- function(this.maxent){
   cat("\n\nSuitability:  \n")
   print(this.maxent$suitability)
   plot(this.maxent$suitability)
+  points(this.maxent$analysis.df[this.maxent$analysis.df$presence == 1,1:2], pch = 16)
 
 }
 

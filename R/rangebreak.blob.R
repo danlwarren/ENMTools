@@ -1,4 +1,4 @@
-#' rangebreak.linear Conduct a linear rangebreak test as described in Glor and Warren 2011.
+#' rangebreak.blob Conduct a blob rangebreak test as described in Glor and Warren 2011.
 #'
 #'
 #' @param species.1 An emtools.species object
@@ -13,23 +13,23 @@
 #'
 #' @keywords rangebreak, biogeography, barrier, enmtools, hypothesis testing
 #'
-#' @export rangebreak.linear
-#' @export rangebreak.linear.precheck
+#' @export rangebreak.blob
+#' @export rangebreak.blob.precheck
 #' @export print.rangebreak.test
 #' @export summary.rangebreak.test
 #' @export plot.rangebreak.test
 #'
 #' @examples
-#' rangebreak.linear(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, ...)
+#' rangebreak.blob(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, ...)
 #'
 
-rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps = 99,  ...){
+rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 99,  ...){
 
   # Just for visualization
-  #   plotraster <- env[[1]]
-  #   plotraster[!is.na(plotraster)] <- 1
+  plotraster <- env[[1]]
+  plotraster[!is.na(plotraster)] <- 1
 
-  rangebreak.linear.precheck(species.1, species.2, env, type, f, nreps)
+  rangebreak.blob.precheck(species.1, species.2, env, type, f, nreps)
 
   # Initialize a list to store reps in
   replicate.models <- list()
@@ -67,7 +67,9 @@ rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps =
   empirical.overlap <- raster.overlap(empirical.species.1.model, empirical.species.2.model)
   reps.overlap <- unlist(empirical.overlap)
 
-  lines.df <- data.frame(slope = rep(NA, nreps), intercept = rep(NA, nreps))
+  # Not sure if I'm going to use this or not, but for the moment I'm going
+  # to create a list where I'll store polygons for MCPs of the blobs
+  blobs <- list
 
   cat("\nBuilding replicate models...\n")
   for(i in 1:nreps){
@@ -76,10 +78,10 @@ rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps =
     rep.species.1 <- species.1
     rep.species.2 <- species.2
 
-    angle <- runif(1, min=0, max=pi)
-    slope <- sin(angle)/cos(angle)
+    start.point <- combined.presence.points[runif(1, 1, nrow(combined.presence.points)),]
 
-    part.points <- cbind(combined.presence.points, combined.presence.points[,2] - slope * combined.presence.points[,1])
+    # Get Euclidean distance from part.points
+    part.points <- cbind(combined.presence.points, apply(combined.presence.points, 1, function(x) (x[1] - start.point[1])**2 + (x[2] - start.point[2])**2))
 
     # Flip a coin to decide whether we're going from top to bottom or other way around
     if(rbinom(1,1,0.5) == 0){
@@ -88,20 +90,8 @@ rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps =
       part.points <- part.points[order(part.points[,3], decreasing = TRUE),]
     }
 
-    # The intercept to split the two into the appropriate sizes should now be
-    # the mean of the Nth and Nth + 1 values for column 3, where N is the sample size
-    # of one of the species
-    intercept <- mean(c(part.points[nrow(species.1$presence.points), 3],
-                        part.points[nrow(species.2$presence.points), 3]))
-
     rep.species.1$presence.points <- part.points[1:nrow(species.1$presence.points), 1:2]
     rep.species.2$presence.points <- part.points[(nrow(species.1$presence.points) + 1):nrow(part.points), 1:2]
-
-
-    #       plot(plotraster)
-    #       abline(intercept, slope)
-
-    lines.df[i,] <- c(slope, intercept)
 
     # Building models for reps
     if(type == "glm"){
@@ -153,24 +143,24 @@ rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps =
     ggtitle(paste("Rangebreak test:", species.1$species.name, "vs.", species.2$species.name))
 
 
-  output <- list(description = paste("\n\nLinear rangebreak test", species.1$species.name, "vs.", species.2$species.name),
+  output <- list(description = paste("\n\nblob rangebreak test", species.1$species.name, "vs.", species.2$species.name),
                  reps.overlap = reps.overlap,
                  p.values = p.values,
                  empirical.species.1.model = empirical.species.1.model,
                  empirical.species.2.model = empirical.species.2.model,
                  replicate.models = replicate.models,
-                 lines.df = lines.df,
+                 blobs = blobs,
                  d.plot = d.plot,
                  i.plot = i.plot,
                  cor.plot = cor.plot)
 
-  class(output) <- "rangebreak.linear"
+  class(output) <- "rangebreak.blob"
 
   return(output)
 
 }
 
-rangebreak.linear.precheck <- function(species.1, species.2, env, type, f, nreps){
+rangebreak.blob.precheck <- function(species.1, species.2, env, type, f, nreps){
 
   if(!"enmtools.species" %in% class(species.1)){
     stop("Species.1 is not an enmtools.species object!")
@@ -237,7 +227,7 @@ rangebreak.linear.precheck <- function(species.1, species.2, env, type, f, nreps
 }
 
 
-summary.rangebreak.linear <- function(bg){
+summary.rangebreak.blob <- function(bg){
 
   cat(paste("\n\n", bg$description))
 
@@ -251,20 +241,18 @@ summary.rangebreak.linear <- function(bg){
 
 }
 
-print.rangebreak.linear <- function(bg){
+print.rangebreak.blob <- function(bg){
 
   summary(bg)
 
 }
 
-plot.rangebreak.linear <- function(bg){
+plot.rangebreak.blob <- function(bg){
 
-  bg.raster <- bg$empirical.species.1.model$suitability
-  bg.raster[!is.na(bg.raster)] <- 1
-  plot(bg.raster)
-  for(i in 1:nrow(bg$lines.df)){
-    abline(bg$lines.df[i,2], bg$lines.df[i,1])
-  }
+  #   bg.raster <- bg$empirical.species.1.model$suitability
+  #   bg.raster[!is.na(bg.raster)] <- 1
+  #   plot(bg.raster)
+
 
   grid.arrange(bg$d.plot, bg$i.plot, bg$cor.plot)
 }
