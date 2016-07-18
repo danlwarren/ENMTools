@@ -47,196 +47,85 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
   species.1$background.points <- rbind(species.1$background.points, species.2$background.points)
   species.2$background.points <- rbind(species.1$background.points, species.2$background.points)
 
-  # Running background test, using GLM models
-  if(type == "glm"){
 
-    cat("\nBuilding empirical models...\n")
+  # Building models for empirical data
+  cat("\nBuilding empirical models...\n")
+  if(type == "glm"){
     empirical.species.1.model <- enmtools.glm(f, species.1, env, ...)
     empirical.species.2.model <- enmtools.glm(f, species.2, env, ...)
-    empirical.overlap <- raster.overlap(empirical.species.1.model, empirical.species.2.model)
-    reps.overlap <- unlist(empirical.overlap)
-
-    cat("\nBuilding replicate models...\n")
-    for(i in 1:nreps){
-      cat(paste("\nReplicate", i, "...\n"))
-
-      rep.species.1 <- species.1
-      rep.species.2 <- species.2
-
-      if(test.type == "symmetric"){
-
-        #background sampling for species 1, only run when we're doing a symmetric test
-        combined.points <- rbind(rep.species.1$presence.points, rep.species.1$background.points)
-        sample.vector <- sample(nrow(combined.points))
-        combined.points <- combined.points[sample.vector,]
-        rep.species.1$presence.points <- combined.points[1:nrow(species.1$presence.points),]
-        rep.species.1$background.points <- combined.points[(nrow(species.1$presence.points) + 1):nrow(combined.points),]
-
-      }
-
-      # Background sampling for species 2, run regardless of the type of test
-      combined.points <- rbind(rep.species.2$presence.points, rep.species.2$background.points)
-      sample.vector <- sample(nrow(combined.points))
-      combined.points <- combined.points[sample.vector,]
-      rep.species.2$presence.points <- combined.points[1:nrow(species.2$presence.points),]
-      rep.species.2$background.points <- combined.points[(nrow(species.2$presence.points) + 1):nrow(combined.points),]
-
-      # Building the models for reps
-      rep.species.1.glm <- enmtools.glm(f, rep.species.1, env, ...)
-      rep.species.2.glm <- enmtools.glm(f, rep.species.2, env, ...)
-
-      # Appending models to replicates list
-      replicate.models[[paste0(species.1$species.name, ".rep.", i)]] <- rep.species.1.glm
-      replicate.models[[paste0(species.2$species.name, ".rep.", i)]] <- rep.species.2.glm
-
-      # Appending overlap to results
-      reps.overlap <- rbind(reps.overlap, unlist(raster.overlap(rep.species.1.glm, rep.species.2.glm)))
-    }
   }
 
-
-  # Running background test using Maxent models
   if(type == "mx"){
-
-    cat("\nBuilding empirical models...\n")
     empirical.species.1.model <- enmtools.maxent(species.1, env, ...)
     empirical.species.2.model <- enmtools.maxent(species.2, env, ...)
-    empirical.overlap <- raster.overlap(empirical.species.1.model, empirical.species.2.model)
-    reps.overlap <- unlist(empirical.overlap)
-
-    cat("\nBuilding replicate models...\n")
-    for(i in 1:nreps){
-      cat(paste("\nReplicate", i, "...\n"))
-
-      rep.species.1 <- species.1
-      rep.species.2 <- species.2
-
-      if(test.type == "symmetric"){
-
-        #background sampling for species 1, only run when we're doing a symmetric test
-        combined.points <- rbind(rep.species.1$presence.points, rep.species.1$background.points)
-        sample.vector <- sample(nrow(combined.points))
-        combined.points <- combined.points[sample.vector,]
-        rep.species.1$presence.points <- combined.points[1:nrow(species.1$presence.points),]
-        rep.species.1$background.points <- combined.points[(nrow(species.1$presence.points) + 1):nrow(combined.points),]
-
-      }
-
-      # Background sampling for species 2, run regardless of the type of test
-      combined.points <- rbind(rep.species.2$presence.points, rep.species.2$background.points)
-      sample.vector <- sample(nrow(combined.points))
-      combined.points <- combined.points[sample.vector,]
-      rep.species.2$presence.points <- combined.points[1:nrow(species.2$presence.points),]
-      rep.species.2$background.points <- combined.points[(nrow(species.2$presence.points) + 1):nrow(combined.points),]
-
-      # Building models for reps
-      rep.species.1.mx <- enmtools.maxent(rep.species.1, env, ...)
-      rep.species.2.mx <- enmtools.maxent(rep.species.2, env, ...)
-
-      # Appending models to replicates list
-      replicate.models[[paste0(species.1$species.name, ".rep.", i)]] <- rep.species.1.mx
-      replicate.models[[paste0(species.2$species.name, ".rep.", i)]] <- rep.species.2.mx
-
-      # Appending to results
-      reps.overlap <- rbind(reps.overlap, unlist(raster.overlap(rep.species.1.mx, rep.species.2.mx)))
-    }
   }
 
-
-  # Running background test using Bioclim models
   if(type == "bc"){
-
-    cat("\nBuilding empirical models...\n")
-
     empirical.species.1.model <- enmtools.bc(species.1, env, ...)
     empirical.species.2.model <- enmtools.bc(species.2, env, ...)
-    empirical.overlap <- raster.overlap(empirical.species.1.model, empirical.species.2.model)
-    reps.overlap <- unlist(empirical.overlap)
+  }
 
-    cat("\nBuilding replicate models...\n")
-    for(i in 1:nreps){
-      cat(paste("\nReplicate", i, "...\n"))
-
-      rep.species.1 <- species.1
-      rep.species.2 <- species.2
-
-      if(test.type == "symmetric"){
-
-        #background sampling for species 1, only run when we're doing a symmetric test
-        combined.points <- rbind(rep.species.1$presence.points, rep.species.1$background.points)
-        sample.vector <- sample(nrow(combined.points))
-        combined.points <- combined.points[sample.vector,]
-        rep.species.1$presence.points <- combined.points[1:nrow(species.1$presence.points),]
-        rep.species.1$background.points <- combined.points[(nrow(species.1$presence.points) + 1):nrow(combined.points),]
-
-      }
-
-      # Background sampling for species 2, run regardless of the type of test
-      combined.points <- rbind(rep.species.2$presence.points, rep.species.2$background.points)
-      sample.vector <- sample(nrow(combined.points))
-      combined.points <- combined.points[sample.vector,]
-      rep.species.2$presence.points <- combined.points[1:nrow(species.2$presence.points),]
-      rep.species.2$background.points <- combined.points[(nrow(species.2$presence.points) + 1):nrow(combined.points),]
-
-      # Building models for reps
-      rep.species.1.bc <- enmtools.bc(rep.species.1, env, ...)
-      rep.species.2.bc <- enmtools.bc(rep.species.2, env, ...)
-
-      # Appending models to replicates list
-      replicate.models[[paste0(species.1$species.name, ".rep.", i)]] <- rep.species.1.bc
-      replicate.models[[paste0(species.2$species.name, ".rep.", i)]] <- rep.species.2.bc
-
-      # Appending to results
-      reps.overlap <- rbind(reps.overlap, unlist(raster.overlap(rep.species.1.bc, rep.species.2.bc)))
-    }
+  if(type == "dm"){
+    empirical.species.1.model <- enmtools.dm(species.1, env, ...)
+    empirical.species.2.model <- enmtools.dm(species.2, env, ...)
   }
 
 
-  # Running background test using Domain models
-  if(type == "dm"){
+  empirical.overlap <- raster.overlap(empirical.species.1.model, empirical.species.2.model)
+  reps.overlap <- unlist(empirical.overlap)
 
-    cat("\nBuilding empirical models...\n")
-    empirical.species.1.model <- enmtools.dm(species.1, env, ...)
-    empirical.species.2.model <- enmtools.dm(species.2, env, ...)
-    empirical.overlap <- raster.overlap(empirical.species.1.model, empirical.species.2.model)
-    reps.overlap <- unlist(empirical.overlap)
+  cat("\nBuilding replicate models...\n")
+  for(i in 1:nreps){
+    cat(paste("\nReplicate", i, "...\n"))
 
-    cat("\nBuilding replicate models...\n")
-    for(i in 1:nreps){
-      cat(paste("\nReplicate", i, "...\n"))
+    rep.species.1 <- species.1
+    rep.species.2 <- species.2
 
-      rep.species.1 <- species.1
-      rep.species.2 <- species.2
+    if(test.type == "symmetric"){
 
-      if(test.type == "symmetric"){
-
-        #background sampling for species 1, only run when we're doing a symmetric test
-        combined.points <- rbind(rep.species.1$presence.points, rep.species.1$background.points)
-        sample.vector <- sample(nrow(combined.points))
-        combined.points <- combined.points[sample.vector,]
-        rep.species.1$presence.points <- combined.points[1:nrow(species.1$presence.points),]
-        rep.species.1$background.points <- combined.points[(nrow(species.1$presence.points) + 1):nrow(combined.points),]
-
-      }
-
-      # Background sampling for species 2, run regardless of the type of test
-      combined.points <- rbind(rep.species.2$presence.points, rep.species.2$background.points)
+      #background sampling for species 1, only run when we're doing a symmetric test
+      combined.points <- rbind(rep.species.1$presence.points, rep.species.1$background.points)
       sample.vector <- sample(nrow(combined.points))
       combined.points <- combined.points[sample.vector,]
-      rep.species.2$presence.points <- combined.points[1:nrow(species.2$presence.points),]
-      rep.species.2$background.points <- combined.points[(nrow(species.2$presence.points) + 1):nrow(combined.points),]
+      rep.species.1$presence.points <- combined.points[1:nrow(species.1$presence.points),]
+      rep.species.1$background.points <- combined.points[(nrow(species.1$presence.points) + 1):nrow(combined.points),]
 
-      # Building models for reps
-      rep.species.1.dm <- enmtools.dm(rep.species.1, env, ...)
-      rep.species.2.dm <- enmtools.dm(rep.species.2, env, ...)
-
-      # Appending models to replicates list
-      replicate.models[[paste0(species.1$species.name, ".rep.", i)]] <- rep.species.1.dm
-      replicate.models[[paste0(species.2$species.name, ".rep.", i)]] <- rep.species.2.dm
-
-      # Appending to results
-      reps.overlap <- rbind(reps.overlap, unlist(raster.overlap(rep.species.1.dm, rep.species.2.dm)))
     }
+
+    # Background sampling for species 2, run regardless of the type of test
+    combined.points <- rbind(rep.species.2$presence.points, rep.species.2$background.points)
+    sample.vector <- sample(nrow(combined.points))
+    combined.points <- combined.points[sample.vector,]
+    rep.species.2$presence.points <- combined.points[1:nrow(species.2$presence.points),]
+    rep.species.2$background.points <- combined.points[(nrow(species.2$presence.points) + 1):nrow(combined.points),]
+
+    # Building the models for reps
+    if(type == "glm"){
+      rep.species.1.model <- enmtools.glm(f, rep.species.1, env, ...)
+      rep.species.2.model <- enmtools.glm(f, rep.species.2, env, ...)
+    }
+
+    if(type == "mx"){
+      rep.species.1.model <- enmtools.maxent(rep.species.1, env, ...)
+      rep.species.2.model <- enmtools.maxent(rep.species.2, env, ...)
+    }
+
+    if(type == "bc"){
+      rep.species.1.model <- enmtools.bc(rep.species.1, env, ...)
+      rep.species.2.model <- enmtools.bc(rep.species.2, env, ...)
+    }
+
+    if(type == "dm"){
+      rep.species.1.model <- enmtools.dm(rep.species.1, env, ...)
+      rep.species.2.model <- enmtools.dm(rep.species.2, env, ...)
+    }
+
+    # Appending models to replicates list
+    replicate.models[[paste0(species.1$species.name, ".rep.", i)]] <- rep.species.1.model
+    replicate.models[[paste0(species.2$species.name, ".rep.", i)]] <- rep.species.2.model
+
+    # Appending overlap to results
+    reps.overlap <- rbind(reps.overlap, unlist(raster.overlap(rep.species.1.model, rep.species.2.model)))
   }
 
   rownames(reps.overlap) <- c("empirical", paste("rep", 1:nreps))

@@ -12,7 +12,7 @@ enmtools.dm <- function(species, env = NA, ...){
 
   dm.precheck(species, env)
 
-  this.dm <- bioclim(env, species$presence.points[,1:2])
+  this.dm <- domain(env, species$presence.points[,1:2])
 
   suitability <- suitability <- predict(env, this.dm, type = "response")
 
