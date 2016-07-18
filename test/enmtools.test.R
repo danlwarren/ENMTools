@@ -111,4 +111,10 @@ bg.mx.sym <- background.test(species.1 = ahli, species.2 = allogus, env = env, t
 bg.mx.asym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "mx", nreps = 4, test.type = "asymmetric" )
 
 
-rb.bc <- rangebreak.linear(ahli, allogus, env, type = "bc", nreps = 4)
+rbl.bc <- rangebreak.linear(ahli, allogus, env, type = "bc", nreps = 4)
+
+rbl.dm <- rangebreak.linear(ahli, allogus, env, type = "dm", nreps = 4)
+
+rdl.glm <- rangebreak.linear(ahli, allogus, env, type = "bc", f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)
+
+rbl.mx <- rangebreak.linear(ahli, allogus, env, type = "mx", nreps = 4)
