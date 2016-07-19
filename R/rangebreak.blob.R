@@ -15,9 +15,9 @@
 #'
 #' @export rangebreak.blob
 #' @export rangebreak.blob.precheck
-#' @export print.rangebreak.test
-#' @export summary.rangebreak.test
-#' @export plot.rangebreak.test
+#' @export print.rangebreak.blob
+#' @export summary.rangebreak.blob
+#' @export plot.rangebreak.blob
 #'
 #' @examples
 #' rangebreak.blob(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, ...)

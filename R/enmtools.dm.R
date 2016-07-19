@@ -39,8 +39,8 @@ summary.enmtools.dm <- function(this.dm){
   cat("\n\nSuitability:  \n")
   print(this.dm$suitability)
   if("RasterLayer" %in% class(this.dm$suitability)){
-    plot(this.dm$suitability)
-    points(this.dm$analysis.df, pch = 16)
+    plot(this.dm$suitability, col = plasma(64))
+    points(this.dm$analysis.df, pch = 21, bg = "white")
   }
 
 }

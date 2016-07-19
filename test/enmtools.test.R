@@ -127,3 +127,6 @@ rbb.dm <- rangebreak.blob(ahli, allogus, env, type = "dm", nreps = 4)
 rbb.mx <- rangebreak.blob(ahli, allogus, env, type = "mx", nreps = 4)
 
 rbb.glm <- rangebreak.blob(ahli, allogus, env, type = "glm", f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)
+
+
+# Next steps: ribbon bg test, convert model plotting to viridis color ramps

@@ -54,8 +54,8 @@ summary.enmtools.glm <- function(this.glm){
 
   cat("\n\nSuitability:  \n")
   print(this.glm$suitability)
-  plot(this.glm$suitability)
-  points(this.glm$analysis.df[this.glm$analysis.df$presence == 1,1:2], pch = 16)
+  plot(this.glm$suitability, col = plasma(64))
+  points(this.glm$analysis.df[this.glm$analysis.df$presence == 1,1:2], , pch = 21, bg = "white")
 
 }
 
