@@ -8,8 +8,11 @@
 #' @export enmtools.maxent
 #' @export print.enmtools.maxent
 #' @export summary.enmtools.maxent
+#' @export plot.enmtools.maxent
 
 enmtools.maxent <- function(species, env, ...){
+
+  species <- check.bg(species, env, ...)
 
   maxent.precheck(f, species, env)
 
@@ -18,11 +21,15 @@ enmtools.maxent <- function(species, env, ...){
 
   this.mx <- maxent(env, p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)
 
+  model.evaluation <- evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+                               this.mx, env)
+
   suitability <- predict(env, this.mx, type = "response")
 
 
   output <- list(analysis.df = analysis.df,
                  model = this.mx,
+                 model.evaluation = model.evaluation,
                  suitability = suitability)
 
   class(output) <- "enmtools.maxent"
@@ -40,10 +47,12 @@ summary.enmtools.maxent <- function(this.maxent){
   cat("\n\nModel:  ")
   print(summary(this.maxent$model))
 
+  cat("\n\nModel fit:  ")
+  print(this.maxent$model.evaluation)
+
   cat("\n\nSuitability:  \n")
   print(this.maxent$suitability)
-  plot(this.maxent$suitability, col = plasma(64))
-  points(this.maxent$analysis.df[this.maxent$analysis.df$presence == 1,1:2], pch = 21, bg = "white")
+  plot(this.maxent)
 
 }
 
@@ -51,6 +60,14 @@ summary.enmtools.maxent <- function(this.maxent){
 print.enmtools.maxent <- function(this.maxent){
 
   summary(this.maxent)
+
+}
+
+# Plot method for objects of class enmtools.maxent
+plot.enmtools.maxent <- function(this.maxent){
+
+  plot(this.maxent$suitability, col = plasma(64))
+  points(this.maxent$analysis.df[this.maxent$analysis.df$presence == 1,1:2], pch = 21, bg = "white")
 
 }
 

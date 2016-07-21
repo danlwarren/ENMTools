@@ -56,6 +56,8 @@ ahli.twovar.glm
 
 
 ahli.bc <- enmtools.bc(ahli, env)
+ahli.bc
+
 ahli.bc2 <- enmtools.bc(ahli, env[[c("layer.1", "layer.4")]])
 
 
@@ -78,9 +80,9 @@ raster.breadth(allogus.dm)
 raster.overlap(allogus.dm, allogus.dm$suitability)
 raster.overlap(ahli.dm, allogus.dm)
 
-raster.resid(ahli.mx, ahli.dm)
+raster.resid(ahli.dm, ahli.glm)
 
-plot(raster.resid(ahli.mx, ahli.dm)$residuals)
+plot(raster.resid(ahli.glm, ahli.dm)$residuals)
 
 
 id.glm <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm", f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)
@@ -128,5 +130,25 @@ rbb.mx <- rangebreak.blob(ahli, allogus, env, type = "mx", nreps = 4)
 
 rbb.glm <- rangebreak.blob(ahli, allogus, env, type = "glm", f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)
 
+# Should draw background from env
+ahli.2 <- enmtools.species(species.name = "ahli", presence.points = read.csv("testdata/ahli.csv")[,3:4])
+ahli.glm.nobg <- enmtools.glm(ahli.2, env = env, f = pres ~ layer.1 + layer.2)
+ahli.glm.nobg
 
-# Next steps: ribbon bg test, convert model plotting to viridis color ramps
+# Should draw background from range
+ahli.3 <- ahli
+ahli.3$background.points <- NA
+ahli.3
+ahli.glm.rangebg <- enmtools.glm(ahli.3, env = env, f = pres ~ layer.1 + layer.2)
+ahli.glm.rangebg
+
+
+allogus.nobg <- enmtools.species(species.name = "allogus", presence.points = read.csv("testdata/allogus.csv")[,3:4])
+ahli.nobg <- enmtools.species(species.name = "ahli", presence.points = read.csv("testdata/ahli.csv")[,3:4])
+
+id.nobg <- identity.test(allogus.nobg, ahli.nobg, env = env, type = "dm", nreps = 4)
+
+# Next steps: ribbon bg test
+# Have a think about the idea of incorporating test data,
+# particularly now that the interface for modeling is so nice.
+# ppmlasso

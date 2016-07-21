@@ -25,6 +25,9 @@
 
 identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99, ...){
 
+  species.1 <- check.bg(species.1, env, ...)
+  species.2 <- check.bg(species.2, env, ...)
+
   identity.precheck(species.1, species.2, env, type, f, nreps)
 
   # Initialize a list to store reps in

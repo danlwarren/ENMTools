@@ -29,6 +29,9 @@ rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps =
   #   plotraster <- env[[1]]
   #   plotraster[!is.na(plotraster)] <- 1
 
+  species.1 <- check.bg(species.1, env, ...)
+  species.2 <- check.bg(species.2, env, ...)
+
   rangebreak.linear.precheck(species.1, species.2, env, type, f, nreps)
 
   # Initialize a list to store reps in

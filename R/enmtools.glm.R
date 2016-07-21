@@ -8,9 +8,12 @@
 #' @export enmtools.glm
 #' @export print.enmtools.glm
 #' @export summary.enmtools.glm
+#' @export plot.enmtools.glm
 
 
 enmtools.glm <- function(f, species, env, ...){
+
+  species <- check.bg(species, env, ...)
 
   glm.precheck(f, species, env)
 
@@ -28,10 +31,13 @@ enmtools.glm <- function(f, species, env, ...){
 
   suitability <- predict(env, this.glm, type = "response")
 
+  model.evaluation <- evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+                               this.glm, env)
 
   output <- list(formula = f,
                  analysis.df = analysis.df,
                  model = this.glm,
+                 model.evaluation = model.evaluation,
                  suitability = suitability)
 
   class(output) <- "enmtools.glm"
@@ -52,17 +58,26 @@ summary.enmtools.glm <- function(this.glm){
   cat("\n\nModel:  ")
   print(summary(this.glm$model))
 
+  cat("\n\nModel fit:  ")
+  print(this.glm$model.evaluation)
+
   cat("\n\nSuitability:  \n")
   print(this.glm$suitability)
-  plot(this.glm$suitability, col = plasma(64))
-  points(this.glm$analysis.df[this.glm$analysis.df$presence == 1,1:2], , pch = 21, bg = "white")
-
+  plot(this.glm)
 }
 
 # Print method for objects of class enmtools.glm
 print.enmtools.glm <- function(this.glm){
 
   summary(this.glm)
+
+}
+
+# Plot method for objects of class enmtools.glm
+plot.enmtools.glm <- function(this.glm){
+
+  plot(this.glm$suitability, col = plasma(64))
+  points(this.glm$analysis.df[this.glm$analysis.df$presence == 1,1:2], pch = 21, bg = "white")
 
 }
 

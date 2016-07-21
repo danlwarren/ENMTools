@@ -7,17 +7,24 @@
 #' @export enmtools.dm
 #' @export print.enmtools.dm
 #' @export summary.enmtools.dm
+#' @export plot.enmtools.dm
 
 enmtools.dm <- function(species, env = NA, ...){
+
+  species <- check.bg(species, env, ...)
 
   dm.precheck(species, env)
 
   this.dm <- domain(env, species$presence.points[,1:2])
 
+  model.evaluation <- evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+                               this.dm, env)
+
   suitability <- suitability <- predict(env, this.dm, type = "response")
 
   output <- list(analysis.df = species$presence.points[,1:2],
                  model = this.dm,
+                 model.evaluation = model.evaluation,
                  suitability = suitability)
 
   class(output) <- "enmtools.dm"
@@ -36,12 +43,12 @@ summary.enmtools.dm <- function(this.dm){
   cat("\n\nModel:  ")
   print(this.dm$model)
 
+  cat("\n\nModel fit:  ")
+  print(this.dm$model.evaluation)
+
   cat("\n\nSuitability:  \n")
   print(this.dm$suitability)
-  if("RasterLayer" %in% class(this.dm$suitability)){
-    plot(this.dm$suitability, col = plasma(64))
-    points(this.dm$analysis.df, pch = 21, bg = "white")
-  }
+  plot(this.dm)
 
 }
 
@@ -53,6 +60,13 @@ print.enmtools.dm <- function(this.dm){
 
 }
 
+# Plot method for objects of class enmtools.dm
+plot.enmtools.dm <- function(this.dm){
+
+  plot(this.dm$suitability, col = plasma(64))
+  points(this.dm$analysis.df, pch = 21, bg = "white")
+
+}
 
 # Checking data for analysis using enmtools.dm
 dm.precheck <- function(species, env, f){
