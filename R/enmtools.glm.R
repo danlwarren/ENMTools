@@ -58,7 +58,7 @@ enmtools.glm <- function(f, species, env, test.prop = 0, ...){
                  test.evaluation = test.evaluation,
                  suitability = suitability)
 
-  class(output) <- "enmtools.glm"
+  class(output) <- c("enmtools.glm", "enmtools.model")
 
   return(output)
 
@@ -112,26 +112,26 @@ plot.enmtools.glm <- function(this.glm){
 glm.precheck <- function(f, species, env){
 
   # Check to see if the function is the right class
-  if(!class(f) == "formula"){
+  if(!inherits(f, "formula")){
     stop("Argument \'formula\' must contain an R formula object!")
   }
 
   ### Check to make sure the data we need is there
-  if(!"enmtools.species" %in% class(species)){
+  if(!inherits(species, "enmtools.species")){
     stop("Argument \'species\' must contain an enmtools.species object!")
   }
 
   check.species(species)
 
-  if(!any(c("data.frame") %in% class(species$presence.points))){
+  if(!inherits(species$presence.points, "data.frame")){
     stop("Species presence.points do not appear to be an object of class data.frame")
   }
 
-  if(!any(c("data.frame") %in% class(species$background.points))){
+  if(!inherits(species$background.points, "data.frame")){
     stop("Species background.points do not appear to be an object of class data.frame")
   }
 
-  if(!any(c("raster", "RasterLayer", "RasterStack") %in% class(env))){
+  if(!inherits(env, c("raster", "RasterLayer", "RasterStack"))){
     stop("No environmental rasters were supplied!")
   }
 

@@ -6,6 +6,8 @@ knit(input="Readme.Rmd", output = "readme.md")
 
 env.files <- list.files(path = "testdata/", pattern = "pc", full.names = TRUE)
 env <- stack(env.files)
+names(env) <- c("layer.1", "layer.2", "layer.3", "layer.4")
+env <- setMinMax(env)
 
 ahli <- enmtools.species()
 check.species(ahli)
@@ -97,7 +99,7 @@ bg.glm.sym <- background.test(species.1 = ahli, species.2 = allogus, env = env, 
                            f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4, test.type = "symmetric" )
 
 bg.glm.asym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm",
-                              f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4, test.type = "asymmetric" )
+                              f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 19, test.type = "asymmetric" )
 
 bg.bc.sym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "bc", nreps = 4, test.type = "symmetric" )
 

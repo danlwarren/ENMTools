@@ -19,19 +19,19 @@ check.species <- function(this.species){
   # was passed in.
 
   if(!isTRUE(is.na(this.species$range))){
-    if(!any(c("raster", "RasterLayer", "SpatialPolygons") %in% class(this.species$range))){
-      stop("Argument range requires an object of class raster, RasterLayer, or SpatialPolygons")
+    if(!inherits(this.species$range, c("raster", "RasterLayer", "RasterBrick"))){
+      stop("Argument range requires an object of class raster or RasterLayer")
     }
   }
 
   if(!isTRUE(is.na(this.species$presence.points))){
-    if(!any(c("data.frame") %in% class(this.species$presence.points))){
+    if(!inherits(this.species$presence.points, "data.frame")){
       stop("Argument presence.points requires an object of class data.frame")
     }
   }
 
   if(!isTRUE(is.na(this.species$background.points))){
-    if(!any("data.frame" %in% class(this.species$background.points))){
+    if(!inherits(this.species$background.points, "data.frame")){
       stop("Argument background.points requires an object of class data.frame")
     }
   }
@@ -43,7 +43,7 @@ check.species <- function(this.species){
   }
 
   if(!isTRUE(is.na(this.species$species.name))){
-    if(!any("character" %in% class(this.species$species.name))){
+    if(!inherits(this.species$species.name, "character")){
       stop("Argument species.name requires an object of class character")
     }
   }

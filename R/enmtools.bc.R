@@ -45,7 +45,7 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, ...){
                  test.evaluation = test.evaluation,
                  suitability = suitability)
 
-  class(output) <- "enmtools.bc"
+  class(output) <- c("enmtools.bc", "enmtools.model")
 
   return(output)
 
@@ -97,27 +97,24 @@ plot.enmtools.bc <- function(this.bc){
 bc.precheck <- function(species, env, f){
 
   ### Check to make sure the data we need is there
-  if(!"enmtools.species" %in% class(species)){
+  if(!inherits(species, "enmtools.species")){
     stop("Argument \'species\' must contain an enmtools.species object!")
   }
 
   check.species(species)
 
-  if(!any(c("data.frame") %in% class(species$presence.points))){
+  if(!inherits(species$presence.points, "data.frame")){
     stop("Species presence.points do not appear to be an object of class data.frame")
   }
 
-  if(ncol(species$presence.points) < 2){
+  if(!inherits(env, c("raster", "RasterLayer", "RasterStack"))){
+    stop("No environmental rasters were supplied!")
+  }
+
+  if(ncol(species$presence.points) != 2){
     stop("Species presence points do not contain longitude and latitude data!")
   }
 
-  if(ncol(species$background.points) < 2){
-    stop("Species background points do not contain longitude and latitude data!")
-  }
-
-  if(!any(c("raster", "RasterLayer", "RasterStack") %in% class(env))){
-    stop("Bioclim models require a RasterLayer or RasterStack object for argument env")
-  }
 }
 
 

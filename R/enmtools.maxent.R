@@ -50,7 +50,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, ...){
                  test.evaluation = test.evaluation,
                  suitability = suitability)
 
-  class(output) <- "enmtools.maxent"
+  class(output) <- c("enmtools.maxent", "enmtools.model")
 
   return(output)
 
@@ -102,21 +102,21 @@ plot.enmtools.maxent <- function(this.maxent){
 maxent.precheck <- function(f, species, env){
 
   ### Check to make sure the data we need is there
-  if(!"enmtools.species" %in% class(species)){
+  if(!inherits(species, "enmtools.species")){
     stop("Argument \'species\' must contain an enmtools.species object!")
   }
 
   check.species(species)
 
-  if(!any(c("data.frame") %in% class(species$presence.points))){
+  if(!inherits(species$presence.points, "data.frame")){
     stop("Species presence.points do not appear to be an object of class data.frame")
   }
 
-  if(!any(c("data.frame") %in% class(species$background.points))){
+  if(!inherits(species$background.points, "data.frame")){
     stop("Species background.points do not appear to be an object of class data.frame")
   }
 
-  if(!any(c("raster", "RasterLayer", "RasterStack") %in% class(env))){
+  if(!inherits(env, c("raster", "RasterLayer", "RasterStack"))){
     stop("No environmental rasters were supplied!")
   }
 
