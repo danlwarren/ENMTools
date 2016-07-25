@@ -41,7 +41,7 @@ plot(ahli)
 summary(two.anoles)
 plot(two.anoles)
 
-ahli.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, ahli, env)
+ahli.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, ahli, env, test.prop = 0.2)
 ahli.glm
 
 allogus.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, allogus, env)
@@ -55,16 +55,16 @@ ahli.twovar.glm
 # ahli.gam <- enmtools.gam(presence ~, ahli, env)
 
 
-ahli.bc <- enmtools.bc(ahli, env)
+ahli.bc <- enmtools.bc(ahli, env, test.prop = 0.2)
 ahli.bc
 
 ahli.bc2 <- enmtools.bc(ahli, env[[c("layer.1", "layer.4")]])
 
 
-ahli.mx <- enmtools.maxent(ahli, env)
+ahli.mx <- enmtools.maxent(ahli, env, test.prop = 0.2)
 ahli.mx
 
-ahli.dm <- enmtools.dm(ahli, env)
+ahli.dm <- enmtools.dm(ahli, env, test.prop = 0.2)
 ahli.dm
 
 allogus.dm <- enmtools.dm(allogus, env)

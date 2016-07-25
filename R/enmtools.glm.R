@@ -3,6 +3,7 @@
 #' @param formula Standard GLM formula
 #' @param species An enmtools.species object
 #' @param env A raster or raster stack of environmental data.
+#' @param test.prop Proportion of data to withhold for model evaluation
 #' @param ... Arguments to be passed to glm()
 #'
 #' @export enmtools.glm
@@ -11,11 +12,20 @@
 #' @export plot.enmtools.glm
 
 
-enmtools.glm <- function(f, species, env, ...){
+enmtools.glm <- function(f, species, env, test.prop = 0, ...){
 
   species <- check.bg(species, env, ...)
 
   glm.precheck(f, species, env)
+
+  test.data <- NA
+  test.evaluation <- NA
+
+  if(test.prop > 0 & test.prop < 1){
+    test.inds <- sample(1:nrow(species$presence.points), ceiling(nrow(species$presence.points) * test.prop))
+    test.data <- species$presence.points[test.inds,]
+    species$presence.points <- species$presence.points[-test.inds,]
+  }
 
   ### Add env data
   species <- add.env(species, env)
@@ -34,10 +44,18 @@ enmtools.glm <- function(f, species, env, ...){
   model.evaluation <- evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                this.glm, env)
 
+  if(test.prop > 0 & test.prop < 1){
+    test.evaluation <- evaluate(test.data, species$background.points[,1:2],
+                                this.glm, env)
+  }
+
   output <- list(formula = f,
                  analysis.df = analysis.df,
+                 test.data = test.data,
+                 test.prop = test.prop,
                  model = this.glm,
-                 model.evaluation = model.evaluation,
+                 training.evaluation = model.evaluation,
+                 test.evaluation = test.evaluation,
                  suitability = suitability)
 
   class(output) <- "enmtools.glm"
@@ -58,8 +76,14 @@ summary.enmtools.glm <- function(this.glm){
   cat("\n\nModel:  ")
   print(summary(this.glm$model))
 
-  cat("\n\nModel fit:  ")
-  print(this.glm$model.evaluation)
+  cat("\n\nModel fit (training data):  ")
+  print(this.glm$training.evaluation)
+
+  cat("\n\nProportion of data wittheld for model fitting:  ")
+  cat(this.glm$test.prop)
+
+  cat("\n\nModel fit (test data):  ")
+  print(this.glm$test.evaluation)
 
   cat("\n\nSuitability:  \n")
   print(this.glm$suitability)
@@ -78,6 +102,9 @@ plot.enmtools.glm <- function(this.glm){
 
   plot(this.glm$suitability, col = plasma(64))
   points(this.glm$analysis.df[this.glm$analysis.df$presence == 1,1:2], pch = 21, bg = "white")
+  if(!is.na(this.glm$test.prop)){
+    points(this.glm$test.data, pch = 21, bg = "green")
+  }
 
 }
 

@@ -15,4 +15,5 @@ Depends:
 	knitr,
 	ggplot2,
 	grid,
-	gridExtra
+	gridExtra,
+	viridis

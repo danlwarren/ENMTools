@@ -4,12 +4,14 @@
 \alias{enmtools.dm}
 \title{Takes an emtools.species object with presence and background points, and builds a Domain model}
 \usage{
-enmtools.dm(species, env = NA, ...)
+enmtools.dm(species, env = NA, test.prop = 0, ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
 
 \item{env}{A raster or raster stack of environmental data.}
+
+\item{test.prop}{Proportion of data to withhold for model evaluation}
 
 \item{...}{Arguments to be passed to bioclim()}
 }

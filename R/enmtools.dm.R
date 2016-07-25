@@ -2,6 +2,7 @@
 #'
 #' @param species An enmtools.species object
 #' @param env A raster or raster stack of environmental data.
+#' @param test.prop Proportion of data to withhold for model evaluation
 #' @param ... Arguments to be passed to bioclim()
 #'
 #' @export enmtools.dm
@@ -9,22 +10,39 @@
 #' @export summary.enmtools.dm
 #' @export plot.enmtools.dm
 
-enmtools.dm <- function(species, env = NA, ...){
+enmtools.dm <- function(species, env = NA, test.prop = 0, ...){
 
   species <- check.bg(species, env, ...)
 
   dm.precheck(species, env)
+
+  test.data <- NA
+  test.evaluation <- NA
+
+  if(test.prop > 0 & test.prop < 1){
+    test.inds <- sample(1:nrow(species$presence.points), ceiling(nrow(species$presence.points) * test.prop))
+    test.data <- species$presence.points[test.inds,]
+    species$presence.points <- species$presence.points[-test.inds,]
+  }
 
   this.dm <- domain(env, species$presence.points[,1:2])
 
   model.evaluation <- evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                this.dm, env)
 
+  if(test.prop > 0 & test.prop < 1){
+    test.evaluation <- evaluate(test.data, species$background.points[,1:2],
+                                this.dm, env)
+  }
+
   suitability <- suitability <- predict(env, this.dm, type = "response")
 
   output <- list(analysis.df = species$presence.points[,1:2],
+                 test.data = test.data,
+                 test.prop = test.prop,
                  model = this.dm,
-                 model.evaluation = model.evaluation,
+                 training.evaluation = model.evaluation,
+                 test.evaluation = test.evaluation,
                  suitability = suitability)
 
   class(output) <- "enmtools.dm"
@@ -43,8 +61,14 @@ summary.enmtools.dm <- function(this.dm){
   cat("\n\nModel:  ")
   print(this.dm$model)
 
-  cat("\n\nModel fit:  ")
-  print(this.dm$model.evaluation)
+  cat("\n\nModel fit (training data):  ")
+  print(this.dm$training.evaluation)
+
+  cat("\n\nProportion of data wittheld for model fitting:  ")
+  cat(this.dm$test.prop)
+
+  cat("\n\nModel fit (test data):  ")
+  print(this.dm$test.evaluation)
 
   cat("\n\nSuitability:  \n")
   print(this.dm$suitability)
@@ -65,6 +89,9 @@ plot.enmtools.dm <- function(this.dm){
 
   plot(this.dm$suitability, col = plasma(64))
   points(this.dm$analysis.df, pch = 21, bg = "white")
+  if(!is.na(this.dm$test.prop)){
+    points(this.dm$test.data, pch = 21, bg = "green")
+  }
 
 }
 
