@@ -152,3 +152,4 @@ id.nobg <- identity.test(allogus.nobg, ahli.nobg, env = env, type = "dm", nreps 
 # Have a think about the idea of incorporating test data,
 # particularly now that the interface for modeling is so nice.
 # ppmlasso
+# use inherits instead of %in% class
