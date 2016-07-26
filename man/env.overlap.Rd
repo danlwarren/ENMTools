@@ -4,7 +4,8 @@
 \alias{env.overlap}
 \title{Calculates overlap between models in environment space using latin hypercube sampling}
 \usage{
-env.overlap(model.1, model.2, env, tolerance = 1e-05, max.reps = 10)
+env.overlap(model.1, model.2, env, tolerance = 1e-05, max.reps = 10,
+  cor.method = "spearman")
 }
 \arguments{
 \item{model.1}{A model object that can be projected using the predict() function}

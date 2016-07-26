@@ -9,7 +9,7 @@
 #' @export env.overlap
 
 
-env.overlap <- function(model.1, model.2, env, tolerance = .00001, max.reps = 10){
+env.overlap <- function(model.1, model.2, env, tolerance = .00001, max.reps = 10, cor.method = "spearman"){
 
   if(inherits(model.1, "enmtools.model")){
     model.1 <- model.1$model
@@ -36,10 +36,12 @@ env.overlap <- function(model.1, model.2, env, tolerance = .00001, max.reps = 10
     colnames(predict.table) <- names(env)
     pred1 <- as.numeric(predict(model.1, data.frame(predict.table), type = "response"))
     pred2 <- as.numeric(predict(model.2, data.frame(predict.table), type = "response"))
-    this.diff <- 1 - sum(abs(pred1/sum(pred1) - pred2/(sum(pred2))))/2
+    this.d <- 1 - sum(abs(pred1/sum(pred1) - pred2/(sum(pred2))))/2
+    this.i <- 1 - sum((sqrt(pred1/sum(pred1)) - sqrt(pred2/sum(pred2)))**2)/2
+    this.cor <- cor(pred1, pred2, method = cor.method)
 
     # Check to see if the value is usable, roll again if not
-    if(!is.nan(this.diff)){
+    if(!is.nan(this.d) & !is.nan(this.i)){
       continue <- TRUE
     } else {
       n.reps <- n.reps + 1
@@ -49,7 +51,9 @@ env.overlap <- function(model.1, model.2, env, tolerance = .00001, max.reps = 10
   # If we fail to find useful starting conditions we'll just barf an NA and give up
   if(n.reps == max.reps){
     cat("\n\nCould not find suitable starting conditions for environmental overlap, returning NA\n\n")
-    this.diff <- NA
+    this.d <- NA
+    this.i <- NA
+    this.cor <- NA
   } else {
 
     # So here we've got good starting conditions and we're going to keep going
@@ -72,13 +76,20 @@ env.overlap <- function(model.1, model.2, env, tolerance = .00001, max.reps = 10
       # Make new predictions and recalculate metrics
       pred1 <- predict(model.1, data.frame(predict.table), type = "response")
       pred2 <- predict(model.2, data.frame(predict.table), type = "response")
-      this.diff <- c(this.diff, 1 - sum(abs(pred1/sum(pred1) - pred2/(sum(pred2))))/2)
+      this.d <- c(this.d, 1 - sum(abs(pred1/sum(pred1) - pred2/(sum(pred2))))/2)
+      this.i <- c(this.i, 1 - sum((sqrt(pred1/sum(pred1)) - sqrt(pred2/sum(pred2)))**2)/2)
+      this.cor <- c(this.cor, cor(pred1, pred2, method = cor.method))
 
       # Calculate delta for this iteration
-      delta <- abs(mean(this.diff) - mean(this.diff[-length(this.diff)]))
+      delta <- max(c(abs(mean(this.d) - mean(this.d[-length(this.d)])),
+                     abs(mean(this.i) - mean(this.i[-length(this.i)])),
+                     abs(mean(this.cor) - mean(this.cor[-length(this.cor)]))))
     }
   }
 
-  return(mean(this.diff))
+  output <- list(env.D = mean(this.d),
+                 env.I = mean(this.i),
+                 env.cor = mean(this.cor))
 
+  return(output)
 }

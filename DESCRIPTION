@@ -16,4 +16,5 @@ Depends:
 	ggplot2,
 	grid,
 	gridExtra,
-	viridis
+	viridis,
+	lhs
