@@ -4,7 +4,7 @@
 \alias{env.overlap}
 \title{Calculates overlap between models in environment space using latin hypercube sampling}
 \usage{
-env.overlap(model.1, model.2, env, tolerance = 1e-05, max.reps = 10,
+env.overlap(model.1, model.2, env, tolerance = 0.001, max.reps = 10,
   cor.method = "spearman")
 }
 \arguments{
@@ -15,6 +15,8 @@ env.overlap(model.1, model.2, env, tolerance = 1e-05, max.reps = 10,
 \item{tolerance}{How close do successive overlap metrics have to be before we decide we're close enough to the final answer}
 
 \item{max.reps}{Maximum number of attempts that will be made to find suitable starting conditions}
+
+\item{cor.method}{Which method to use for calculating correlations between models}
 
 \item{model.1}{Another model object that can be projected using the predict() function}
 }

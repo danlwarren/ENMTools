@@ -45,6 +45,7 @@ plot(two.anoles)
 
 ahli.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, ahli, env, test.prop = 0.2)
 ahli.glm
+ahli.glm$response.plots
 
 allogus.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, allogus, env)
 allogus.glm
@@ -54,20 +55,24 @@ ahli.twovar.glm
 
 # Presently leaving out GAM, as it is hard to see how I'm going to be able to
 # use it in the same way as the other methods.
+# Might eventually write a function to parse GLM-style functions to a GAMmable function
 # ahli.gam <- enmtools.gam(presence ~, ahli, env)
 
 
 ahli.bc <- enmtools.bc(ahli, env, test.prop = 0.2)
 ahli.bc
+ahli.bc$response.plots
 
 ahli.bc2 <- enmtools.bc(ahli, env[[c("layer.1", "layer.4")]])
 
 
 ahli.mx <- enmtools.maxent(ahli, env, test.prop = 0.2)
 ahli.mx
+ahli.mx$response.plots
 
 ahli.dm <- enmtools.dm(ahli, env, test.prop = 0.2)
 ahli.dm
+ahli.dm$response.plots
 
 allogus.dm <- enmtools.dm(allogus, env)
 allogus.dm
@@ -86,6 +91,10 @@ raster.resid(ahli.dm, ahli.glm)
 
 plot(raster.resid(ahli.glm, ahli.dm)$residuals)
 
+env.overlap(ahli.dm, ahli.glm, env)
+
+
+
 
 id.glm <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm", f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)
 
@@ -99,7 +108,7 @@ bg.glm.sym <- background.test(species.1 = ahli, species.2 = allogus, env = env, 
                            f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4, test.type = "symmetric" )
 
 bg.glm.asym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm",
-                              f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 19, test.type = "asymmetric" )
+                              f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4, test.type = "asymmetric" )
 
 bg.bc.sym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "bc", nreps = 4, test.type = "symmetric" )
 
@@ -150,7 +159,7 @@ ahli.nobg <- enmtools.species(species.name = "ahli", presence.points = read.csv(
 
 id.nobg <- identity.test(allogus.nobg, ahli.nobg, env = env, type = "dm", nreps = 4)
 
-# Next steps: ribbon bg test
+# Next steps: ribbon bg test - currently have precheck code working but need to do the rest
 # Have a think about the idea of incorporating test data,
 # particularly now that the interface for modeling is so nice.
 # ppmlasso

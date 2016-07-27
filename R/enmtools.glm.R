@@ -49,6 +49,8 @@ enmtools.glm <- function(f, species, env, test.prop = 0, ...){
                                 this.glm, env)
   }
 
+
+
   output <- list(formula = f,
                  analysis.df = analysis.df,
                  test.data = test.data,
@@ -59,6 +61,16 @@ enmtools.glm <- function(f, species, env, test.prop = 0, ...){
                  suitability = suitability)
 
   class(output) <- c("enmtools.glm", "enmtools.model")
+
+  # Doing response plots for each variable.  Doing this bit after creating
+  # the output object because plot.response expects an enmtools.model object
+  response.plots <- list()
+
+  for(i in names(env)){
+    response.plots[[i]] <- plot.response(output, env, i)
+  }
+
+  output[["response.plots"]] <- response.plots
 
   return(output)
 

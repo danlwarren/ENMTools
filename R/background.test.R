@@ -74,8 +74,9 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
   }
 
 
-  empirical.overlap <- raster.overlap(empirical.species.1.model, empirical.species.2.model)
-  reps.overlap <- unlist(empirical.overlap)
+  empirical.overlap <- c(unlist(raster.overlap(empirical.species.1.model, empirical.species.2.model)),
+                         unlist(env.overlap(empirical.species.1.model, empirical.species.2.model, env = env, ...)))
+  reps.overlap <- empirical.overlap
 
   cat("\nBuilding replicate models...\n")
   for(i in 1:nreps){
@@ -128,7 +129,9 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
     replicate.models[[paste0(species.2$species.name, ".rep.", i)]] <- rep.species.2.model
 
     # Appending overlap to results
-    reps.overlap <- rbind(reps.overlap, unlist(raster.overlap(rep.species.1.model, rep.species.2.model)))
+    reps.overlap <- rbind(reps.overlap, c(unlist(raster.overlap(rep.species.1.model, rep.species.2.model)),
+                                          unlist(env.overlap(rep.species.1.model, rep.species.2.model, env = env, ...))))
+
   }
 
   rownames(reps.overlap) <- c("empirical", paste("rep", 1:nreps))
@@ -148,6 +151,21 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
     geom_vline(xintercept = reps.overlap[1,"rank.cor"], linetype = "longdash") +
     xlim(-1,1) + guides(fill = FALSE, alpha = FALSE) + xlab("Rank Correlation") + ggtitle(description)
 
+  env.d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.D"], geom = "density", fill = "density", alpha = 0.5) +
+    geom_vline(xintercept = reps.overlap[1,"env.D"], linetype = "longdash") +
+    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D, Environmental Space") +
+    ggtitle(description)
+
+  env.i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.I"], geom = "density", fill = "density", alpha = 0.5) +
+    geom_vline(xintercept = reps.overlap[1,"env.I"], linetype = "longdash") +
+    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I, Environmental Space") +
+    ggtitle(description)
+
+  env.cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.cor"], geom = "density", fill = "density", alpha = 0.5) +
+    geom_vline(xintercept = reps.overlap[1,"env.cor"], linetype = "longdash") +
+    xlim(-1,1) + guides(fill = FALSE, alpha = FALSE) + xlab("Rank Correlation, Environmental Space") +
+    ggtitle(description)
+
 
   output <- list(description = description,
                  reps.overlap = reps.overlap,
@@ -157,7 +175,10 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
                  replicate.models = replicate.models,
                  d.plot = d.plot,
                  i.plot = i.plot,
-                 cor.plot = cor.plot)
+                 cor.plot = cor.plot,
+                 env.d.plot = env.d.plot,
+                 env.i.plot = env.i.plot,
+                 env.cor.plot = env.cor.plot)
 
   class(output) <- "background.test"
 
@@ -167,15 +188,15 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
 background.precheck <- function(species.1, species.2, env, type, f, nreps, test.type){
 
-  if(!"enmtools.species" %in% class(species.1)){
+  if(!inherits(species.1, "enmtools.species")){
     stop("Species.1 is not an enmtools.species object!")
   }
 
-  if(!"enmtools.species" %in% class(species.2)){
+  if(!inherits(species.2, "enmtools.species")){
     stop("Species.2 is not an enmtools.species object!")
   }
 
-  if(!grepl("Raster", class(env))){
+  if(!inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
     stop("Environmental layers are not a RasterLayer or RasterStack object!")
   }
 
@@ -184,7 +205,7 @@ background.precheck <- function(species.1, species.2, env, type, f, nreps, test.
       stop("Type is set to GLM and no formula has been supplied!")
     }
 
-    if(!"formula" %in% class(f)){
+    if(!inherits(f, "formula")){
       stop("Type is set to GLM and f is not a formula object!")
     }
   }
@@ -195,22 +216,30 @@ background.precheck <- function(species.1, species.2, env, type, f, nreps, test.
 
   check.species(species.1)
 
-  if(!any(c("data.frame") %in% class(species.1$presence.points))){
+  if(!inherits(species.1$presence.points, "data.frame")){
     stop("Species 1 presence.points do not appear to be an object of class data.frame")
   }
 
-  if(!any(c("data.frame") %in% class(species.1$background.points))){
+  if(!inherits(species.1$background.points, "data.frame")){
     stop("Species 1 background.points do not appear to be an object of class data.frame")
   }
 
   check.species(species.2)
 
-  if(!any(c("data.frame") %in% class(species.2$presence.points))){
+  if(!inherits(species.2$presence.points, "data.frame")){
     stop("Species 2 presence.points do not appear to be an object of class data.frame")
   }
 
-  if(!any(c("data.frame") %in% class(species.2$background.points))){
+  if(!inherits(species.2$background.points, "data.frame")){
     stop("Species 2 background.points do not appear to be an object of class data.frame")
+  }
+
+  if(any(!colnames(species.1$background.points) %in% colnames(species.2$background.points))){
+    stop("Column names for species background points do not match!")
+  }
+
+  if(any(!colnames(species.1$presence.points) %in% colnames(species.2$presence.points))){
+    stop("Column names for species presence points do not match!")
   }
 
   if(is.na(species.1$species.name)){
@@ -245,5 +274,7 @@ print.background.test <- function(bg){
 }
 
 plot.background.test <- function(bg){
-  grid.arrange(bg$d.plot, bg$i.plot, bg$cor.plot)
+  grid.arrange(bg$d.plot, bg$env.d.plot,
+               bg$i.plot, bg$env.i.plot,
+               bg$cor.plot, bg$env.cor.plot, ncol = 2)
 }

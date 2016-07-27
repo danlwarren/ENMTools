@@ -5,11 +5,11 @@
 #' @param env A raster or raster stack of environmental data.
 #' @param tolerance How close do successive overlap metrics have to be before we decide we're close enough to the final answer
 #' @param max.reps Maximum number of attempts that will be made to find suitable starting conditions
+#' @param cor.method Which method to use for calculating correlations between models
 #'
 #' @export env.overlap
 
-
-env.overlap <- function(model.1, model.2, env, tolerance = .00001, max.reps = 10, cor.method = "spearman"){
+env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, cor.method = "spearman"){
 
   if(inherits(model.1, "enmtools.model")){
     model.1 <- model.1$model
@@ -29,7 +29,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .00001, max.reps = 10
   while(continue == FALSE & n.reps < max.reps){
 
     # Draw a starting latin hypercube scheme
-    this.lhs <- randomLHS(1000, length(names(env)))
+    this.lhs <- randomLHS(10000, length(names(env)))
     predict.table <- t(t(this.lhs) * (maxValue(env)  - minValue(env)) + minValue(env))
 
     # Use that sample space to get a starting overlap value
@@ -84,6 +84,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .00001, max.reps = 10
       delta <- max(c(abs(mean(this.d) - mean(this.d[-length(this.d)])),
                      abs(mean(this.i) - mean(this.i[-length(this.i)])),
                      abs(mean(this.cor) - mean(this.cor[-length(this.cor)]))))
+      #print(delta)
     }
   }
 

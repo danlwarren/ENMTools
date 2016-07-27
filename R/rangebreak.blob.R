@@ -67,8 +67,9 @@ rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 9
   }
 
 
-  empirical.overlap <- raster.overlap(empirical.species.1.model, empirical.species.2.model)
-  reps.overlap <- unlist(empirical.overlap)
+  empirical.overlap <- c(unlist(raster.overlap(empirical.species.1.model, empirical.species.2.model)),
+                         unlist(env.overlap(empirical.species.1.model, empirical.species.2.model, env = env, ...)))
+  reps.overlap <- empirical.overlap
 
   # Not sure if I'm going to use this or not, but for the moment I'm going
   # to create a list where I'll store polygons for MCPs of the blobs
@@ -121,7 +122,8 @@ rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 9
     replicate.models[[paste0(species.1$species.name, ".rep.", i)]] <- rep.species.1.model
     replicate.models[[paste0(species.2$species.name, ".rep.", i)]] <- rep.species.2.model
 
-    reps.overlap <- rbind(reps.overlap, unlist(raster.overlap(rep.species.1.model, rep.species.2.model)))
+    reps.overlap <- rbind(reps.overlap, c(unlist(raster.overlap(rep.species.1.model, rep.species.2.model)),
+                                          unlist(env.overlap(rep.species.1.model, rep.species.2.model, env = env, ...))))
 
   }
 
@@ -145,6 +147,20 @@ rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 9
     xlim(-1,1) + guides(fill = FALSE, alpha = FALSE) + xlab("Rank Correlation") +
     ggtitle(paste("Rangebreak test:", species.1$species.name, "vs.", species.2$species.name))
 
+  env.d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.D"], geom = "density", fill = "density", alpha = 0.5) +
+    geom_vline(xintercept = reps.overlap[1,"env.D"], linetype = "longdash") +
+    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D, Environmental Space") +
+    ggtitle(paste("Rangebreak test:", species.1$species.name, "vs.", species.2$species.name))
+
+  env.i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.I"], geom = "density", fill = "density", alpha = 0.5) +
+    geom_vline(xintercept = reps.overlap[1,"env.I"], linetype = "longdash") +
+    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I, Environmental Space") +
+    ggtitle(paste("Rangebreak test:", species.1$species.name, "vs.", species.2$species.name))
+
+  env.cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.cor"], geom = "density", fill = "density", alpha = 0.5) +
+    geom_vline(xintercept = reps.overlap[1,"env.cor"], linetype = "longdash") +
+    xlim(-1,1) + guides(fill = FALSE, alpha = FALSE) + xlab("Rank Correlation, Environmental Space") +
+    ggtitle(paste("Rangebreak test:", species.1$species.name, "vs.", species.2$species.name))
 
   output <- list(description = paste("\n\nblob rangebreak test", species.1$species.name, "vs.", species.2$species.name),
                  reps.overlap = reps.overlap,
@@ -155,7 +171,10 @@ rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 9
                  blobs = blobs,
                  d.plot = d.plot,
                  i.plot = i.plot,
-                 cor.plot = cor.plot)
+                 cor.plot = cor.plot,
+                 env.d.plot = env.d.plot,
+                 env.i.plot = env.i.plot,
+                 env.cor.plot = env.cor.plot)
 
   class(output) <- "rangebreak.blob"
 
@@ -165,15 +184,15 @@ rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
 rangebreak.blob.precheck <- function(species.1, species.2, env, type, f, nreps){
 
-  if(!"enmtools.species" %in% class(species.1)){
+  if(!inherits(species.1, "enmtools.species")){
     stop("Species.1 is not an enmtools.species object!")
   }
 
-  if(!"enmtools.species" %in% class(species.2)){
+  if(!inherits(species.2, "enmtools.species")){
     stop("Species.2 is not an enmtools.species object!")
   }
 
-  if(!grepl("Raster", class(env))){
+  if(!inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
     stop("Environmental layers are not a RasterLayer or RasterStack object!")
   }
 
@@ -182,7 +201,7 @@ rangebreak.blob.precheck <- function(species.1, species.2, env, type, f, nreps){
       stop("Type is set to GLM and no formula has been supplied!")
     }
 
-    if(!"formula" %in% class(f)){
+    if(!inherits(f, "formula")){
       stop("Type is set to GLM and f is not a formula object!")
     }
   }
@@ -193,21 +212,21 @@ rangebreak.blob.precheck <- function(species.1, species.2, env, type, f, nreps){
 
   check.species(species.1)
 
-  if(!any(c("data.frame") %in% class(species.1$presence.points))){
+  if(!inherits(species.1$presence.points, "data.frame")){
     stop("Species 1 presence.points do not appear to be an object of class data.frame")
   }
 
-  if(!any(c("data.frame") %in% class(species.1$background.points))){
+  if(!inherits(species.1$background.points, "data.frame")){
     stop("Species 1 background.points do not appear to be an object of class data.frame")
   }
 
   check.species(species.2)
 
-  if(!any(c("data.frame") %in% class(species.2$presence.points))){
+  if(!inherits(species.2$presence.points, "data.frame")){
     stop("Species 2 presence.points do not appear to be an object of class data.frame")
   }
 
-  if(!any(c("data.frame") %in% class(species.2$background.points))){
+  if(!inherits(species.2$background.points, "data.frame")){
     stop("Species 2 background.points do not appear to be an object of class data.frame")
   }
 
@@ -230,33 +249,34 @@ rangebreak.blob.precheck <- function(species.1, species.2, env, type, f, nreps){
 }
 
 
-summary.rangebreak.blob <- function(bg){
+summary.rangebreak.blob <- function(rb){
 
-  cat(paste("\n\n", bg$description))
+  cat(paste("\n\n", rb$description))
 
   cat("\n\nrangebreak test p-values:\n")
-  print(bg$p.values)
+  print(rb$p.values)
 
   cat("\n\nReplicates:\n")
-  print(kable(head(bg$reps.overlap)))
+  print(kable(head(rb$reps.overlap)))
 
-  plot(bg)
-
-}
-
-print.rangebreak.blob <- function(bg){
-
-  summary(bg)
+  plot(rb)
 
 }
 
-plot.rangebreak.blob <- function(bg){
+print.rangebreak.blob <- function(rb){
 
-  #   bg.raster <- bg$empirical.species.1.model$suitability
-  #   bg.raster[!is.na(bg.raster)] <- 1
-  #   plot(bg.raster)
+  summary(rb)
 
+}
 
-  grid.arrange(bg$d.plot, bg$i.plot, bg$cor.plot)
+plot.rangebreak.blob <- function(rb){
+
+  #   rb.raster <- rb$empirical.species.1.model$suitability
+  #   rb.raster[!is.na(rb.raster)] <- 1
+  #   plot(rb.raster)
+
+  grid.arrange(rb$d.plot, rb$env.d.plot,
+               rb$i.plot, rb$env.i.plot,
+               rb$cor.plot, rb$env.cor.plot, ncol = 2)
 }
 
