@@ -27,7 +27,7 @@
 
 rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL, width = 1, nreps = 99,  ...){
 
-  stop("Ribbon test is disabled for now!")
+  # stop("Ribbon test is disabled for now!")
 
   species.1 <- check.bg(species.1, env, ...)
   species.2 <- check.bg(species.2, env, ...)
