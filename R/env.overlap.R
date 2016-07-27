@@ -36,6 +36,11 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
     colnames(predict.table) <- names(env)
     pred1 <- as.numeric(predict(model.1, data.frame(predict.table), type = "response"))
     pred2 <- as.numeric(predict(model.2, data.frame(predict.table), type = "response"))
+
+    if(sd(pred1) == 0 | sd(pred2) == 0){
+      stop("Standard deviation of one or more predictions is zero, overlap cannot be calculated.")
+    }
+
     this.d <- 1 - sum(abs(pred1/sum(pred1) - pred2/(sum(pred2))))/2
     this.i <- 1 - sum((sqrt(pred1/sum(pred1)) - sqrt(pred2/sum(pred2)))**2)/2
     this.cor <- cor(pred1, pred2, method = cor.method)
@@ -76,14 +81,24 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
       # Make new predictions and recalculate metrics
       pred1 <- predict(model.1, data.frame(predict.table), type = "response")
       pred2 <- predict(model.2, data.frame(predict.table), type = "response")
+
+      if(sd(pred1) == 0 | sd(pred2) == 0){
+        stop("Standard deviation of one or more predictions is zero, overlap cannot be calculated.")
+      }
+
       this.d <- c(this.d, 1 - sum(abs(pred1/sum(pred1) - pred2/(sum(pred2))))/2)
       this.i <- c(this.i, 1 - sum((sqrt(pred1/sum(pred1)) - sqrt(pred2/sum(pred2)))**2)/2)
-      this.cor <- c(this.cor, cor(pred1, pred2, method = cor.method))
+      if(sd(pred1) == 0 | sd(pred2) == 0){
+        this.cor <- c(this.cor, 0)
+      } else {
+        this.cor <- c(this.cor, cor(pred1, pred2, method = cor.method))
+      }
+
 
       # Calculate delta for this iteration
       delta <- max(c(abs(mean(this.d) - mean(this.d[-length(this.d)])),
                      abs(mean(this.i) - mean(this.i[-length(this.i)])),
-                     abs(mean(this.cor) - mean(this.cor[-length(this.cor)]))))
+                     abs(mean(this.cor) - mean(this.cor[-length(this.cor)]))), na.rm=TRUE)
       #print(delta)
     }
   }

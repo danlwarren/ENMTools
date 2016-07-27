@@ -95,7 +95,6 @@ env.overlap(ahli.dm, ahli.glm, env)
 
 
 
-
 id.glm <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm", f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)
 
 id.mx <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "mx", nreps = 4)
@@ -164,3 +163,13 @@ id.nobg <- identity.test(allogus.nobg, ahli.nobg, env = env, type = "dm", nreps 
 # particularly now that the interface for modeling is so nice.
 # ppmlasso
 # use inherits instead of %in% class
+
+ribbon <- enmtools.species(species.name = "ribbon")
+ribbon$presence.points <- data.frame(Longitude = runif(n = 10, min = -79, max = -78.5),
+                                      Latitude = runif(n = 10, min = 21.7, max = 22.1))
+plot(env[[1]])
+points(ribbon$presence.points)
+ribbon$range <- background.raster.buffer(ribbon$presence.points, 20000, mask = env)
+ribbon
+
+rbr <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "dm", width = 0.3, nreps = 4)

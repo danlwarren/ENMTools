@@ -4,13 +4,15 @@
 \alias{rangebreak.ribbon}
 \title{rangebreak.ribbon Conduct a ribbon rangebreak test as described in Glor and Warren 2011.}
 \usage{
-rangebreak.ribbon(species.1, species.2, env, type, f = NULL, width = 1,
-  nreps = 99, ...)
+rangebreak.ribbon(species.1, species.2, ribbon, env, type, f = NULL,
+  width = 1, nreps = 99, ...)
 }
 \arguments{
 \item{species.1}{An emtools.species object}
 
 \item{species.2}{An enmtools.species object}
+
+\item{ribbon}{An enmtools.species object representing the region of marginal habtiat in the overlap between the species' ranges}
 
 \item{env}{A RasterLayer or RasterStack object containing environmental data}
 
