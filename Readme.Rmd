@@ -1,0 +1,205 @@
+ENMTools
+======================
+This package implements various tests, visualizations, and metrics for use with environmental niche models (ENMs) and species distribution models (SDMs). 
+
+-----
+
+# Installation
+
+At present, ENMTools is downloadable from https://github.com/danlwarren/ENMTools.  There are multiple ways to download it.  The easiest is to use devtools and install from GitHub.
+
+### Installing from GitHub using devtools
+Run the following code from your R console:
+
+```{r eval=FALSE}
+install.packages("devtools")
+library(devtools)
+install_github("danlwarren/ENMTools")
+library(ENMTools)
+```
+
+### Install from zip file
+
+A zipped version of the package is available at https://github.com/danlwarren/ENMTools/archive/master.zip.  To install from the zip file, download a copy of it to your system.  Once it's finished downloading, type the following (where PATH is the path to the zip file):
+
+```{r eval=FALSE}
+install.packages("devtools")
+library(devtools)
+install_local("PATH")
+library(ENMTools)
+```
+
+
+```{r include=FALSE}
+library(ENMTools)
+```
+
+-----
+
+
+# Interacting with ENMTools
+
+### Creating enmtools.species objects
+
+First we're going to load in some environmental data.
+```{r}
+env.files <- list.files(path = "test/testdata/", pattern = "pc", full.names = TRUE)
+env <- stack(env.files)
+names(env) <- c("layer.1", "layer.2", "layer.3", "layer.4")
+env <- setMinMax(env)
+```
+
+ENMTools is primarily designed to examine patterns of similarity and difference between ENMs for different species.  In order to simplify interactions with the functions in ENMTools, you need to put your data for each of your species into an enmtools.species object.  You can create and view an empty enmtools.species object just by typing:
+
+```{r}
+ahli <- enmtools.species()
+ahli
+```
+
+You can add data to this object manually:
+```{r}
+names(ahli)
+ahli$species.name <- "ahli"
+ahli$presence.points <- read.csv("test/testdata/ahli.csv")[,3:4]
+ahli$range <- background.raster.buffer(ahli$presence.points, 50000, mask = env)
+ahli$background.points <- background.points.buffer(points = ahli$presence.points,
+                                                   radius = 20000, n = 1000, mask = env[[1]])
+
+ahli
+```
+
+
+Or you can add bits of it when the object is created:
+```{r}
+allogus <- enmtools.species(species.name = "allogus", 
+                            presence.points = read.csv("test/testdata/allogus.csv")[,3:4])
+
+allogus$range <- background.raster.buffer(allogus$presence.points, 50000, mask = env)
+allogus$background.points <- background.points.buffer(points = allogus$presence.points,
+                                                      radius = 20000, n = 1000, mask = env[[1]])
+
+allogus
+```
+
+
+## Building an ENM
+
+ENMTools contains functions to simplify the ENM construction process.  Using enmtools.species objects and the correct modeling commands, we can build models very quickly.  These commands are primarily wrappers to dismo model construction and projection functions, and at present are only available for GLM, Maxent, Domain, and Bioclim models.  One of the nice bits about this setup is that it allows enmtools to automatically generate suitability maps, do model evaluation, and plot the marginal suitability of habitat for each variable separately.
+
+### GLM
+
+GLMs require the user to supply a formula, an enmtools.species object, and some environmental data.
+```{r}
+ahli.glm <- enmtools.glm(f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, species = ahli, env = env, test.prop = 0.2)
+allogus.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, allogus, env, test.prop = 0.2)
+ahli.glm
+```
+
+To check out the marginal response functions, you only need to type
+
+```{r}
+ahli.glm$response.plots
+```
+
+### Bioclim, Domain, and Maxent
+
+The procedure for building Bioclim, Domain, and Maxent models is similar to the procedure for GLMs, with the exception that you do not need to pass a formula to the model function.  Note that running Maxent models requires a bit of extra setup; see dismo documentation for details.
+
+```{r eval = FALSE}
+ahli.dm <- enmtools.dm(ahli, env, test.prop = 0.2)
+ahli.bc <- enmtools.bc(ahli, env, test.prop = 0.2)
+ahli.mx <- enmtools.maxent(ahli, env, test.prop = 0.2)
+```
+
+
+## Metrics: breadth, correlation, and overlap
+
+ENMTools provides a number of metrics for ENMs and for similarities between ENMs.  These include measures of niche breadth, based on Levins(1968).  An important caveat when interpreting these metrics is that they are driven to some (variable) extent by the availability of different combinations of environmental variables.  As such they are more accurately interpreted as a measurment of the smoothness of the geographic distribution of suitability scores than as an estimate of the breadth of the fundamental niche; an orgamism with narrow fundamental niche breadth that nonetheless encompasses a set of environmental conditions that is quite common will have a high breadth when measured using ENMs, while having a low breadth in environment space.
+
+```{r}
+raster.breadth(ahli.glm)
+```
+
+
+ENMTools also provides metrics for measuring similarity between ENMs.  These include Schoener's D (Schoener 1968), I (Warren et al. 2008), and the Spearman rank correlation coefficient between two rasters.  While D and I are commonly used in the ENM literature, they may tend to overestimate similarity between ENMs when many grid cells are of similar values (e.g., when two species prefer different habitat but the region contains a great deal of habitat that is unsuitable for both).  
+
+```{r}
+raster.overlap(ahli.glm, allogus.glm)
+```
+
+
+A new feature of the R version of ENMTools is that you can now use these same metrics in the n-dimensional space of all combinations of environmental variables, instead of restricting your measures of model similarity to those sets of conditions that appear in the training region.  This is done by repeatedly drawing Latin hypercube samples from the space of all possible combinations of environmental variables given the min and max of each variable within the training region.  ENMTools continues to draw samples until subsequent iterations differ by less than a specified tolerance value.  Lower tolerance values result in more precise estimates of overlap, but can take much longer to calculate.
+
+```{r}
+env.overlap(ahli.glm, allogus.glm, env, tolerance = .001)
+```
+
+## Hypothesis testing
+
+### Niche identity or equivalency test
+
+In this example, we will run a niche identity (also called equivalency) test, as in Warren et al. 2008.  This test takes the presence points for a pair of species and randomly reassigns them to each species, then builds ENMs for these randomized occurrences.  By doing this many times, we can estimate the probability distribution for ENM overlap between species under the null hypothesis that the two species' occurrences in the environment are effectively a random draw from the same underlying distribution.  Note that niche evolution is only one of many reasons why two species' realized environmental distributions might cause departures from this null hypothesis.  See Warren et al. 2014 for details.
+
+To run an identity test, we need to decide what type of models we will build, how many replicates we will run, and (in the case of GLM) a model formula to use for empirical models and the Monte Carlo replicates.  The resulting object contains the replicate models, p values, and plots of the results.  Typically idenity tests are run with at least 99 replicates, but we are using a smaller number here for the sake of execution time.
+
+_NOTE:_ In order for models to be comparable, both empirical and pseudoreplicate models for the identity test are conducted with pseudoabsence points pooled for the two species being compared.
+
+```{r include = FALSE}
+id.glm <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm", f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)
+```
+
+```{r eval = FALSE}
+id.glm <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm", f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)
+```
+
+```{r, warnings = FALSE, fig.width = 12, fig.height=8}
+id.glm
+```
+
+
+### Background or similarity test
+
+The background or similarity test compares the overlap seen between two species' ENMs to the overlap expected by chance if one or both species was effectively choosing habitat at random from within their broad geographic range.  The purpose of this test is to correct for the availability of habitat and ask whether the observed similarity between species or populations is significantly more (or less) than expected given the available set of environments in the regions in which they occur.  
+
+_NOTE:_ In order for models to be comparable, both empirical and pseudoreplicate models for the background test are conducted with pseudoabsence points pooled for the two species being compared.
+
+In Warren et al. 2008, we developed this test in the context of comparing one species' actual occurrence to the random background occurrences of the other species.  This is what we call an "asymmetric" test, and in our case we did the test in both directions with the idea that we might compare the results of A vs. B background to the results of B vs. A background.  This may be informative in some cases, but many people have also found this asymmetry confusing (and indeed it is often difficult to interpret).  For that reason, the background test here can be conducted against a null hypothesis that is generated from "asymmetric" (species.1 vs species.2 background) or "symmetric" (species.1 background vs. species.2 background) comparisons.
+
+Here, for instance, is a Bioclim background test using the classical asymmetric approach:
+```{r include = FALSE}
+bg.bc.asym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "bc", nreps = 4, test.type = "asymmetric" )
+```
+
+```{r eval = FALSE}
+bg.bc.asym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "bc", nreps = 4, test.type = "asymmetric" )
+```
+
+```{r, warnings = FALSE, fig.width = 12, fig.height=8}
+bg.bc.asym
+```
+
+
+And here is a Domain background test using the symmetric approach:
+```{r include = FALSE}
+bg.dm.sym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "dm", nreps = 4, test.type = "symmetric" )
+```
+
+```{r eval = FALSE}
+bg.dm.sym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "dm", nreps = 4, test.type = "symmetric" )
+```
+
+```{r, warnings = FALSE, fig.width = 12, fig.height=8}
+bg.dm.sym
+```
+
+
+### Literature cited
+
+
+*Levins, R. 1968. Evolution In Changing Environments. Monographs in Population Biology, volume 2. Princeton University Press, Princeton, New Jersey, USA.*
+
+*Schoener, T. W. 1968. Anolis lizards of Bimini: resource partitioning in a complex fauna. Ecology 49:704- 726.*
+
+*Warren, D.L., R.E. Glor, and M. Turelli.  2008. Environmental niche identity versus conservatism: quantitative approaches to niche evolution.  Evolution 62:2868-2883. doi: 10.1111/j.1558-5646.2008.00482.x*
+
+*Warren, D.L., M. Cardillo, D.F. Rosauer, and D.I. Bolnick. 2014. Mistaking geography for biology: inferring processes from species distributions. Trends in Ecology and Evolution 29 (10), 572-580. doi: 10.1016/j.tree.2014.08.003*
