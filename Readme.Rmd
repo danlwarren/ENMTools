@@ -45,6 +45,8 @@ First we're going to load in some environmental data.
 ```{r}
 env.files <- list.files(path = "test/testdata/", pattern = "pc", full.names = TRUE)
 env <- stack(env.files)
+names(env) <- c("layer.1", "layer.2", "layer.3", "layer.4")
+env <- setMinMax(env)
 ```
 
 ENMTools is primarily designed to examine patterns of similarity and difference between ENMs for different species.  In order to simplify interactions with the functions in ENMTools, you need to put your data for each of your species into an enmtools.species object.  You can create and view an empty enmtools.species object just by typing:
@@ -82,14 +84,14 @@ allogus
 
 ## Building an ENM
 
-ENMTools contains functions to simplify the ENM construction process.  Using enmtools.species objects and the correcte modeling commands, we can build models very quickly.  These commands are primarily wrappers to dismo model construction and projection functions, and at present are only available for GLM, Maxent, Domain, and Bioclim models.
+ENMTools contains functions to simplify the ENM construction process.  Using enmtools.species objects and the correct modeling commands, we can build models very quickly.  These commands are primarily wrappers to dismo model construction and projection functions, and at present are only available for GLM, Maxent, Domain, and Bioclim models.  One of the nice bits about this setup is that it allows enmtools to automatically generate suitability maps, do model evaluation, and plot the marginal suitability of habitat for each variable separately.
 
 ### GLM
 
 GLMs require the user to supply a formula, an enmtools.species object, and some environmental data.
 ```{r}
-ahli.glm <- enmtools.glm(f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, species = ahli, env = env)
-allogus.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, allogus, env)
+ahli.glm <- enmtools.glm(f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, species = ahli, env = env, test.prop = 0.2)
+allogus.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, allogus, env, test.prop = 0.2)
 ahli.glm
 ```
 
@@ -98,9 +100,9 @@ ahli.glm
 The procedure for building Bioclim, Domain, and Maxent models is similar to the procedure for GLMs, with the exception that you do not need to pass a formula to the model function.  Note that running Maxent models requires a bit of extra setup; see dismo documentation for details.
 
 ```{r eval = FALSE}
-ahli.dm <- enmtools.dm(ahli, env)
-ahli.bc <- enmtools.bc(ahli, env)
-ahli.mx <- enmtools.maxent(ahli, env)
+ahli.dm <- enmtools.dm(ahli, env, test.prop = 0.2)
+ahli.bc <- enmtools.bc(ahli, env, test.prop = 0.2)
+ahli.mx <- enmtools.maxent(ahli, env, test.prop = 0.2)
 ```
 
 
@@ -117,6 +119,13 @@ ENMTools also provides metrics for measuring similarity between ENMs.  These inc
 
 ```{r}
 raster.overlap(ahli.glm, allogus.glm)
+```
+
+
+A new feature of the R version of ENMTools is that you can now use these same metrics in the n-dimensional space of all combinations of environmental variables, instead of restricting your measures of model similarity to those sets of conditions that appear in the training region.  This is done by repeatedly drawing Latin hypercube samples from the space of all possible combinations of environmental variables given the min and max of each variable within the training region.  ENMTools continues to draw samples until subsequent iterations differ by less than a specified tolerance value.  Lower tolerance values result in more precise estimates of overlap, but can take much longer to calculate.
+
+```{r}
+env.overlap(ahli.glm, allogus.glm, env, tolerance = .001)
 ```
 
 ## Hypothesis testing
@@ -137,7 +146,7 @@ id.glm <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type =
 id.glm <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm", f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)
 ```
 
-```{r warnings = FALSE}
+```{r, warnings = FALSE, fig.width = 12, fig.height=8}
 id.glm
 ```
 
@@ -159,7 +168,7 @@ bg.bc.asym <- background.test(species.1 = ahli, species.2 = allogus, env = env, 
 bg.bc.asym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "bc", nreps = 4, test.type = "asymmetric" )
 ```
 
-```{r warnings = FALSE}
+```{r, warnings = FALSE, fig.width = 12, fig.height=8}
 bg.bc.asym
 ```
 
@@ -173,7 +182,7 @@ bg.dm.sym <- background.test(species.1 = ahli, species.2 = allogus, env = env, t
 bg.dm.sym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "dm", nreps = 4, test.type = "symmetric" )
 ```
 
-```{r warnings = FALSE}
+```{r, warnings = FALSE, fig.width = 12, fig.height=8}
 bg.dm.sym
 ```
 

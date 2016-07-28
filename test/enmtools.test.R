@@ -47,6 +47,10 @@ ahli.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, ahli, env
 ahli.glm
 ahli.glm$response.plots
 
+onevar.glm <- enmtools.glm(pres ~ layer.1, ahli, env, test.prop = 0.2)
+onevar.glm
+onevar.glm$response.plots
+
 allogus.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, allogus, env)
 allogus.glm
 
