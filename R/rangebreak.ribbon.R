@@ -29,9 +29,9 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
 
   # stop("Ribbon test is disabled for now!")
 
-  species.1 <- check.rb(species.1, env, ...)
-  species.2 <- check.rb(species.2, env, ...)
-  ribbon <- check.rb(ribbon, env, ...)
+  species.1 <- check.bg(species.1, env, ...)
+  species.2 <- check.bg(species.2, env, ...)
+  ribbon <- check.bg(ribbon, env, ...)
 
   rangebreak.ribbon.precheck(species.1, species.2, ribbon, env, type, f, width, nreps)
 
