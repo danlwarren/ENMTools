@@ -38,7 +38,11 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
     pred2 <- as.numeric(predict(model.2, data.frame(predict.table), type = "response"))
 
     if(sd(pred1) == 0 | sd(pred2) == 0){
-      stop("Standard deviation of one or more predictions is zero, overlap cannot be calculated.")
+      output <- list(env.D = NA,
+                     env.I = NA,
+                     env.cor = NA)
+
+      return(output)
     }
 
     this.d <- 1 - sum(abs(pred1/sum(pred1) - pred2/(sum(pred2))))/2
@@ -83,7 +87,11 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
       pred2 <- predict(model.2, data.frame(predict.table), type = "response")
 
       if(sd(pred1) == 0 | sd(pred2) == 0){
-        stop("Standard deviation of one or more predictions is zero, overlap cannot be calculated.")
+        output <- list(env.D = NA,
+                       env.I = NA,
+                       env.cor = NA)
+
+        return(output)
       }
 
       this.d <- c(this.d, 1 - sum(abs(pred1/sum(pred1) - pred2/(sum(pred2))))/2)

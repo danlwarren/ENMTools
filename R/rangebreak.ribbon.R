@@ -29,9 +29,9 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
 
   # stop("Ribbon test is disabled for now!")
 
-  species.1 <- check.bg(species.1, env, ...)
-  species.2 <- check.bg(species.2, env, ...)
-  ribbon <- check.bg(ribbon, env, ...)
+  species.1 <- check.rb(species.1, env, ...)
+  species.2 <- check.rb(species.2, env, ...)
+  ribbon <- check.rb(ribbon, env, ...)
 
   rangebreak.ribbon.precheck(species.1, species.2, ribbon, env, type, f, width, nreps)
 
@@ -159,7 +159,7 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
     #       plot(plotraster)
     #       abline(intercept, slope)
 
-    lines.df[i,] <- c(slope, intercept, intercept.modifier)
+    lines.df[keepers,] <- c(slope, intercept, intercept.modifier)
 
 
     if(type == "glm"){
@@ -191,10 +191,10 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
     }
 
     # Appending models to replicates list
-    replicate.models[[paste0(species.1$species.name, ".rep.", i)]] <- rep.species.1.model
-    replicate.models[[paste0(species.2$species.name, ".rep.", i)]] <- rep.species.2.model
-    replicate.models[[paste0("ribbon.rep.", i)]] <- rep.ribbon.model
-    replicate.models[[paste0("outside.rep.", i)]] <- rep.outside.model
+    replicate.models[[paste0(species.1$species.name, ".rep.", keepers)]] <- rep.species.1.model
+    replicate.models[[paste0(species.2$species.name, ".rep.", keepers)]] <- rep.species.2.model
+    replicate.models[[paste0("ribbon.rep.", keepers)]] <- rep.ribbon.model
+    replicate.models[[paste0("outside.rep.", keepers)]] <- rep.outside.model
 
     # Measure overlaps
     reps.overlap.sp1.vs.sp2 <- rbind(reps.overlap.sp1.vs.sp2, c(unlist(raster.overlap(rep.species.1.model, rep.species.2.model)),
@@ -217,10 +217,10 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
   rownames(reps.overlap.sp2.vs.ribbon) <- c("empirical", paste("rep", 1:nreps))
   rownames(reps.overlap.outside.vs.ribbon) <- c("empirical", paste("rep", 1:nreps))
 
-  p.values.sp1.vs.sp2 <- apply(reps.overlap.sp1.vs.sp2, 2, function(x) 1 - mean(x > x[1]))
-  p.values.sp1.vs.ribbon <- apply(reps.overlap.sp1.vs.ribbon, 2, function(x) 1 - mean(x > x[1]))
-  p.values.sp2.vs.ribbon <- apply(reps.overlap.sp2.vs.ribbon, 2, function(x) 1 - mean(x > x[1]))
-  p.values.outside.vs.ribbon <- apply(reps.overlap.outside.vs.ribbon, 2, function(x) 1 - mean(x > x[1]))
+  p.values.sp1.vs.sp2 <- apply(reps.overlap.sp1.vs.sp2, 2, function(x) 1 - mean(x > x[1], na.rm=FALSE))
+  p.values.sp1.vs.ribbon <- apply(reps.overlap.sp1.vs.ribbon, 2, function(x) 1 - mean(x > x[1], na.rm=FALSE))
+  p.values.sp2.vs.ribbon <- apply(reps.overlap.sp2.vs.ribbon, 2, function(x) 1 - mean(x > x[1], na.rm=FALSE))
+  p.values.outside.vs.ribbon <- apply(reps.overlap.outside.vs.ribbon, 2, function(x) 1 - mean(x > x[1], na.rm=FALSE))
 
 
   ### Plots for sp1 vs sp2
@@ -324,39 +324,47 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
   d.plot.outside.vs.ribbon <- qplot(reps.overlap.outside.vs.ribbon[2:nrow(reps.overlap.outside.vs.ribbon),"D"], geom = "density", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap.outside.vs.ribbon[1,"D"], linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
-    ggtitle(paste("Rangebreak test: Outside vs. ribbon"))
+    ggtitle(paste("Rangebreak test: outside vs. ribbon"))
 
   i.plot.outside.vs.ribbon <- qplot(reps.overlap.outside.vs.ribbon[2:nrow(reps.overlap.outside.vs.ribbon),"I"], geom = "density", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap.outside.vs.ribbon[1,"I"], linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") +
-    ggtitle(paste("Rangebreak test: Outside vs. ribbon"))
+    ggtitle(paste("Rangebreak test: outside vs. ribbon"))
 
   cor.plot.outside.vs.ribbon <- qplot(reps.overlap.outside.vs.ribbon[2:nrow(reps.overlap.outside.vs.ribbon),"rank.cor"], geom = "density", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap.outside.vs.ribbon[1,"rank.cor"], linetype = "longdash") +
     xlim(-1,1) + guides(fill = FALSE, alpha = FALSE) + xlab("Rank Correlation") +
-    ggtitle(paste("Rangebreak test: Outside vs. ribbon"))
+    ggtitle(paste("Rangebreak test: outside vs. ribbon"))
 
   env.d.plot.outside.vs.ribbon <- qplot(reps.overlap.outside.vs.ribbon[2:nrow(reps.overlap.outside.vs.ribbon),"env.D"], geom = "density", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap.outside.vs.ribbon[1,"env.D"], linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D, Environmental Space") +
-    ggtitle(paste("Rangebreak test: Outside vs. ribbon"))
+    ggtitle(paste("Rangebreak test: outside vs. ribbon"))
 
   env.i.plot.outside.vs.ribbon <- qplot(reps.overlap.outside.vs.ribbon[2:nrow(reps.overlap.outside.vs.ribbon),"env.I"], geom = "density", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap.outside.vs.ribbon[1,"env.I"], linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I, Environmental Space") +
-    ggtitle(paste("Rangebreak test: Outside vs. ribbon"))
+    ggtitle(paste("Rangebreak test: outside vs. ribbon"))
 
   env.cor.plot.outside.vs.ribbon <- qplot(reps.overlap.outside.vs.ribbon[2:nrow(reps.overlap.outside.vs.ribbon),"env.cor"], geom = "density", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap.outside.vs.ribbon[1,"env.cor"], linetype = "longdash") +
     xlim(-1,1) + guides(fill = FALSE, alpha = FALSE) + xlab("Rank Correlation, Environmental Space") +
-    ggtitle(paste("Rangebreak test: Outside vs. ribbon"))
+    ggtitle(paste("Rangebreak test: outside vs. ribbon"))
 
 
   output <- list(description = paste("\n\nribbon rangebreak test", species.1$species.name, "vs.", species.2$species.name),
-                 reps.overlap = reps.overlap,
-                 p.values = p.values,
+                 reps.overlap.sp1.vs.sp2 = reps.overlap.sp1.vs.sp2,
+                 reps.overlap.sp1.vs.ribbon = reps.overlap.sp1.vs.ribbon,
+                 reps.overlap.sp2.vs.ribbon = reps.overlap.sp2.vs.ribbon,
+                 reps.overlap.outside.vs.ribbon = reps.overlap.outside.vs.ribbon,
+                 p.values.sp1.vs.sp2 = p.values.sp1.vs.sp2,
+                 p.values.sp1.vs.ribbon = p.values.sp1.vs.ribbon,
+                 p.values.sp2.vs.ribbon = p.values.sp2.vs.ribbon,
+                 p.values.outside.vs.ribbon = p.values.outside.vs.ribbon,
                  empirical.species.1.model = empirical.species.1.model,
                  empirical.species.2.model = empirical.species.2.model,
+                 empirical.ribbon.model = empirical.ribbon.model,
+                 empirical.outside.model = empirical.outside.model,
                  replicate.models = replicate.models,
                  lines.df = lines.df,
                  d.plot.sp1.vs.sp2 = d.plot.sp1.vs.sp2,
@@ -491,37 +499,63 @@ rangebreak.ribbon.precheck <- function(species.1, species.2, ribbon, env, type, 
 }
 
 
-summary.rangebreak.ribbon <- function(bg){
+summary.rangebreak.ribbon <- function(rb){
 
-  cat(paste("\n\n", bg$description))
+  cat(paste("\n\n", rb$description))
 
-  cat("\n\nrangebreak test p-values:\n")
-  print(bg$p.values)
+  cat("\n\nrangebreak test p-values...\n")
+  cat("\nSpecies 1 vs. Species 2:\n")
+  print(rb$p.values.sp1.vs.sp2)
+  cat("\nSpecies 1 vs. Ribbon:\n")
+  print(rb$p.values.sp1.vs.ribbon)
+  cat("\nSpecies 2 vs. Ribbon:\n")
+  print(rb$p.values.sp2.vs.ribbon)
+  cat("\nOutside vs. Ribbon:\n")
+  print(rb$p.values.outside.vs.ribbon)
 
   cat("\n\nReplicates:\n")
-  print(kable(head(bg$reps.overlap)))
+  cat("\nSpecies 1 vs. Species 2:\n")
+  print(rb$reps.overlap.sp1.vs.sp2)
+  cat("\nSpecies 1 vs. Ribbon:\n")
+  print(rb$reps.overlap.sp1.vs.ribbon)
+  cat("\nSpecies 2 vs. Ribbon:\n")
+  print(rb$reps.overlap.sp2.vs.ribbon)
+  cat("\nOutside vs. Ribbon:\n")
+  print(rb$reps.overlap.outside.vs.ribbon)
 
-  plot(bg)
+  plot(rb)
 
 }
 
-print.rangebreak.ribbon <- function(bg){
+print.rangebreak.ribbon <- function(rb){
 
-  summary(bg)
+  summary(rb)
 
 }
 
-plot.rangebreak.ribbon <- function(bg){
+plot.rangebreak.ribbon <- function(rb){
 
-  rb.raster <- rb$empirical.species.1.model$suitability
-  rb.raster[!is.na(rb.raster)] <- 1
-  plot(rb.raster)
-  for(i in 1:nrow(rb$lines.df)){
-    abline(rb$lines.df[i,2], rb$lines.df[i,1])
-  }
+#   rb.raster <- rb$empirical.species.1.model$suitability
+#   rb.raster[!is.na(rb.raster)] <- 1
+#   plot(rb.raster)
+#   for(i in 1:nrow(rb$lines.df)){
+#     abline(rb$lines.df[i,2], rb$lines.df[i,1])
+#   }
 
-  grid.arrange(rb$d.plot, rb$env.d.plot,
-               rb$i.plot, rb$env.i.plot,
-               rb$cor.plot, rb$env.cor.plot, ncol = 2)
+  grid.arrange(rb$d.plot.sp1.vs.sp2, rb$env.d.plot.sp1.vs.sp2,
+               rb$i.plot.sp1.vs.sp2, rb$env.i.plot.sp1.vs.sp2,
+               rb$cor.plot.sp1.vs.sp2, rb$env.cor.plot.sp1.vs.sp2, ncol = 2)
+
+  grid.arrange(rb$d.plot.sp1.vs.ribbon, rb$env.d.plot.sp1.vs.ribbon,
+               rb$i.plot.sp1.vs.ribbon, rb$env.i.plot.sp1.vs.ribbon,
+               rb$cor.plot.sp1.vs.ribbon, rb$env.cor.plot.sp1.vs.ribbon, ncol = 2)
+
+  grid.arrange(rb$d.plot.sp2.vs.ribbon, rb$env.d.plot.sp2.vs.ribbon,
+               rb$i.plot.sp2.vs.ribbon, rb$env.i.plot.sp2.vs.ribbon,
+               rb$cor.plot.sp2.vs.ribbon, rb$env.cor.plot.sp2.vs.ribbon, ncol = 2)
+
+  grid.arrange(rb$d.plot.outside.vs.ribbon, rb$env.d.plot.outside.vs.ribbon,
+               rb$i.plot.outside.vs.ribbon, rb$env.i.plot.outside.vs.ribbon,
+               rb$cor.plot.outside.vs.ribbon, rb$env.cor.plot.outside.vs.ribbon, ncol = 2)
 }
 
