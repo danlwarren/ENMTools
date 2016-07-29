@@ -889,80 +889,20 @@ rbr.dm <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "dm", width = 0.5
 ## Building replicate models...
 ## 
 ## Replicate 1 ...
-##         D         I  rank.cor     env.D     env.I   env.cor 
-## 0.6846521 0.8665909 0.4600357 0.3226541 0.5601823 0.4845990 
-##          D          I   rank.cor      env.D      env.I    env.cor 
-## 0.65588702 0.84088971 0.12636184 0.09884288 0.29839634 0.24024892 
-##         D         I  rank.cor     env.D     env.I   env.cor 
-## 0.9050779 0.9832932 0.1212042 0.3409030 0.5716900 0.3756286 
-##         D         I  rank.cor     env.D     env.I   env.cor 
-## 0.9111651 0.9830882 0.3093816 0.3784117 0.6027961 0.3749295 
 ## 
 ## Replicate 2 ...
 ## 
 ## Replicate 2 ...
-##         D         I  rank.cor     env.D     env.I   env.cor 
-## 0.8960064 0.9885885 0.2994574 0.6706227 0.8401742 0.6828033 
-##          D          I   rank.cor      env.D      env.I    env.cor 
-## 0.04691615 0.20674401 0.07047254         NA         NA         NA 
-##            D            I     rank.cor        env.D        env.I 
-## 0.0459158964 0.2039897711 0.0778296906 0.0004679498 0.0216232400 
-##      env.cor 
-## 0.0179328801 
-##          D          I   rank.cor      env.D      env.I    env.cor 
-## 0.04648786 0.20561564 0.15037915         NA         NA         NA 
 ## 
 ## Replicate 2 ...
-##         D         I  rank.cor     env.D     env.I   env.cor 
-## 0.6611263 0.8513009 0.2493066 0.2330747 0.4667884 0.4004520 
-##         D         I  rank.cor     env.D     env.I   env.cor 
-## 0.6556938 0.8411919 0.2069590 0.1075786 0.3116909 0.2577156 
-##           D           I    rank.cor       env.D       env.I     env.cor 
-##  0.88940108  0.98791156 -0.06664244  0.53703960  0.74362739  0.57947296 
-##         D         I  rank.cor     env.D     env.I   env.cor 
-## 0.9010250 0.9895761 0.2088421 0.5317397 0.7380877 0.5573723 
 ## 
 ## Replicate 3 ...
-##         D         I  rank.cor     env.D     env.I   env.cor 
-## 0.8046226 0.9357732 0.1816351 0.2268383 0.4622041 0.3431165 
-##         D         I  rank.cor     env.D     env.I   env.cor 
-## 0.1277271 0.3373168 0.2549777        NA        NA        NA 
-##         D         I  rank.cor     env.D     env.I   env.cor 
-## 0.1002526 0.2986134 0.2242326        NA        NA        NA 
-##          D          I   rank.cor      env.D      env.I    env.cor 
-## 0.09936122 0.29717812 0.24526935         NA         NA         NA 
 ## 
 ## Replicate 3 ...
-##         D         I  rank.cor     env.D     env.I   env.cor 
-## 0.8230465 0.9639148 0.1273736 0.5142871 0.6845860 0.4506137 
-##             D             I      rank.cor         env.D         env.I 
-##  0.0598582756  0.2306355871 -0.0076100510  0.0005730721  0.0216911401 
-##       env.cor 
-##  0.0130337694 
-##         D         I  rank.cor     env.D     env.I   env.cor 
-## 0.0691080 0.2499660 0.2439176        NA        NA        NA 
-##           D           I    rank.cor       env.D       env.I     env.cor 
-## 0.068068483 0.248194766 0.240685614 0.000747269 0.026778148 0.027677592 
 ## 
 ## Replicate 3 ...
-##           D           I    rank.cor       env.D       env.I     env.cor 
-## 0.803152318 0.940422544 0.003535681 0.202496065 0.435076358 0.329000017 
-##          D          I   rank.cor      env.D      env.I    env.cor 
-## 0.47841438 0.68843516 0.12331086 0.07135872 0.21891820 0.17329843 
-##          D          I   rank.cor      env.D      env.I    env.cor 
-## 0.49001859 0.70820545 0.60878920 0.02615427 0.14977493 0.15881126 
-##          D          I   rank.cor      env.D      env.I    env.cor 
-## 0.48480520 0.70377125 0.66764912 0.02457978 0.14500747 0.16053109 
 ## 
 ## Replicate 4 ...
-##         D         I  rank.cor     env.D     env.I   env.cor 
-## 0.7920106 0.9304913 0.2130408 0.2237546 0.4600826 0.3507531 
-##          D          I   rank.cor      env.D      env.I    env.cor 
-## 0.08093423 0.26524618 0.14304919 0.01134944 0.09584924 0.07321640 
-##          D          I   rank.cor      env.D      env.I    env.cor 
-## 0.07048917 0.25142859 0.35260598 0.00168588 0.03879267 0.04002204 
-##           D           I    rank.cor       env.D       env.I     env.cor 
-## 0.068896860 0.248242550 0.336439385 0.001418316 0.036283020 0.037699110
 ```
 
 ```r
