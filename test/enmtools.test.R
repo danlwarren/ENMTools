@@ -131,7 +131,7 @@ rbl.bc <- rangebreak.linear(ahli, allogus, env, type = "bc", nreps = 4)
 
 rbl.dm <- rangebreak.linear(ahli, allogus, env, type = "dm", nreps = 4)
 
-rdl.glm <- rangebreak.linear(ahli, allogus, env, type = "bc", f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)
+rbl.glm <- rangebreak.linear(ahli, allogus, env, type = "bc", f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)
 
 rbl.mx <- rangebreak.linear(ahli, allogus, env, type = "mx", nreps = 4)
 

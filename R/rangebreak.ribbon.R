@@ -101,7 +101,8 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
 
   cat("\nBuilding replicate models...\n")
 
-  keepers <- 0
+  # We'll use this to keep track of how many iterations were successful
+  keepers <- 1
 
   while(keepers < nreps){
     cat(paste("\nReplicate", keepers + 1, "...\n"))
@@ -149,16 +150,12 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
     rep.species.2$presence.points <- part.points[(floor(prop * nrow(part.points)) + 1):nrow(part.points), 1:2]
 
 
-    # Make sure we actually got some ribbon points
-    if(nrow(rep.ribbon$presence.points) > 1){
-      keepers <- keepers + 1
-    } else {
+    # Make sure we actually got some ribbon points.  If not, fail this round and try again.
+    if(!nrow(rep.ribbon$presence.points) > 1){
       next
-    }
+    } 
 
-    #       plot(plotraster)
-    #       abline(intercept, slope)
-
+    # Store the slope, intercept, and modifier for this round
     lines.df[keepers,] <- c(slope, intercept, intercept.modifier)
 
 
@@ -208,6 +205,14 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
 
     reps.overlap.outside.vs.ribbon <- rbind(reps.overlap.outside.vs.ribbon, c(unlist(raster.overlap(rep.outside.model, rep.ribbon.model)),
                                              unlist(env.overlap(rep.outside.model, rep.ribbon.model, env = env, ...))))
+    
+    # If we can't get a good overlap value for this rep, chuck it and try again.
+    if(any(is.na(reps.overlap.sp1.vs.sp2)) | any(is.na(reps.overlap.sp1.vs.ribbon)) |any(is.na(reps.overlap.sp2.vs.ribbon)) |any(is.na(reps.overlap.outside.vs.ribbon))){
+      next
+    } 
+    
+    # Everything went right with this iteration
+    keepers <- keepers + 1
 
   }
 
