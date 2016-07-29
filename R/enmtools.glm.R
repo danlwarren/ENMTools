@@ -105,18 +105,31 @@ summary.enmtools.glm <- function(this.glm){
 # Print method for objects of class enmtools.glm
 print.enmtools.glm <- function(this.glm){
 
-  summary(this.glm)
+  print(summary(this.glm))
 
 }
+
 
 # Plot method for objects of class enmtools.glm
 plot.enmtools.glm <- function(this.glm){
 
-  plot(this.glm$suitability, col = plasma(64))
-  points(this.glm$analysis.df[this.glm$analysis.df$presence == 1,1:2], pch = 21, bg = "white")
-  if(!is.na(this.glm$test.prop)){
-    points(this.glm$test.data, pch = 21, bg = "green")
+
+  suit.points <- data.frame(rasterToPoints(this.glm$suitability))
+  colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
+
+  suit.plot <- ggplot(data = suit.points, aes(y = Latitude, x = Longitude)) +
+    geom_raster(aes(fill = Suitability)) +
+    scale_fill_viridis(option = "C", guide = guide_colourbar(title = "Suitability")) +
+    coord_fixed() + theme_classic() +
+    geom_point(data = this.glm$analysis.df[this.glm$analysis.df$presence == 1,], aes(x = Longitude, y = Latitude),
+               pch = 21, fill = "white", color = "black", size = 2)
+
+  if(!(all(is.na(this.glm$test.data)))){
+    suit.plot <- suit.plot + geom_point(data = this.glm$test.data, aes(x = Longitude, y = Latitude),
+                                        pch = 21, fill = "green", color = "black", size = 2)
   }
+
+  return(suit.plot)
 
 }
 

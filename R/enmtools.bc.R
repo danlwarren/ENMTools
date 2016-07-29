@@ -88,18 +88,30 @@ summary.enmtools.bc <- function(this.bc){
 #Print method for objects of class enmtools.bc
 print.enmtools.bc <- function(this.bc){
 
-  summary(this.bc)
+  print(summary(this.bc))
 
 }
 
 # Plot method for objects of class enmtools.bc
 plot.enmtools.bc <- function(this.bc){
 
-  plot(this.bc$suitability, col = plasma(64))
-  points(this.bc$analysis.df, pch = 21, bg = "white")
-  if(!is.na(this.bc$test.prop)){
-    points(this.bc$test.data, pch = 21, bg = "green")
+
+  suit.points <- data.frame(rasterToPoints(this.bc$suitability))
+  colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
+
+  suit.plot <- ggplot(data = suit.points, aes(y = Latitude, x = Longitude)) +
+    geom_raster(aes(fill = Suitability)) +
+    scale_fill_viridis(option = "C", guide = guide_colourbar(title = "Suitability")) +
+    coord_fixed() + theme_classic() +
+    geom_point(data = this.bc$analysis.df, aes(x = Longitude, y = Latitude),
+               pch = 21, fill = "white", color = "black", size = 2)
+
+  if(!(all(is.na(this.bc$test.data)))){
+    suit.plot <- suit.plot + geom_point(data = this.bc$test.data, aes(x = Longitude, y = Latitude),
+                                        pch = 21, fill = "green", color = "black", size = 2)
   }
+
+  return(suit.plot)
 
 }
 

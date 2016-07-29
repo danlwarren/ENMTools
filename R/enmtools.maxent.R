@@ -100,11 +100,23 @@ print.enmtools.maxent <- function(this.maxent){
 # Plot method for objects of class enmtools.maxent
 plot.enmtools.maxent <- function(this.maxent){
 
-  plot(this.maxent$suitability, col = plasma(64))
-  points(this.maxent$analysis.df[this.maxent$analysis.df$presence == 1,1:2], pch = 21, bg = "white")
-  if(!is.na(this.maxent$test.prop)){
-    points(this.maxent$test.data, pch = 21, bg = "green")
+
+  suit.points <- data.frame(rasterToPoints(this.maxent$suitability))
+  colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
+
+  suit.plot <- ggplot(data = suit.points, aes(y = Latitude, x = Longitude)) +
+    geom_raster(aes(fill = Suitability)) +
+    scale_fill_viridis(option = "C", guide = guide_colourbar(title = "Suitability")) +
+    coord_fixed() + theme_classic() +
+    geom_point(data = this.maxent$analysis.df[this.maxent$analysis.df$presence ==1,], aes(x = Longitude, y = Latitude),
+               pch = 21, fill = "white", color = "black", size = 2)
+
+  if(!(all(is.na(this.maxent$test.data)))){
+    suit.plot <- suit.plot + geom_point(data = this.maxent$test.data, aes(x = Longitude, y = Latitude),
+                                        pch = 21, fill = "green", color = "black", size = 2)
   }
+
+  return(suit.plot)
 
 }
 

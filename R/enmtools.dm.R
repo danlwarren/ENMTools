@@ -35,7 +35,7 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, ...){
                                 this.dm, env)
   }
 
-  suitability <- suitability <- predict(env, this.dm, type = "response")
+  suitability <- predict(env, this.dm, type = "response")
 
   output <- list(analysis.df = species$presence.points[,1:2],
                  test.data = test.data,
@@ -90,19 +90,29 @@ summary.enmtools.dm <- function(this.dm){
 #Print method for objects of class enmtools.dm
 print.enmtools.dm <- function(this.dm){
 
-  summary(this.dm)
+  print(summary(this.dm))
 
 }
 
 # Plot method for objects of class enmtools.dm
 plot.enmtools.dm <- function(this.dm){
 
-  plot(this.dm$suitability, col = plasma(64))
-  points(this.dm$analysis.df, pch = 21, bg = "white")
-  if(!is.na(this.dm$test.prop)){
-    points(this.dm$test.data, pch = 21, bg = "green")
+  suit.points <- data.frame(rasterToPoints(this.dm$suitability))
+  colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
+
+  suit.plot <- ggplot(data = suit.points, aes(y = Latitude, x = Longitude)) +
+    geom_raster(aes(fill = Suitability)) +
+    scale_fill_viridis(option = "C", guide = guide_colourbar(title = "Suitability")) +
+    coord_fixed() + theme_classic() +
+    geom_point(data = this.dm$analysis.df, aes(x = Longitude, y = Latitude),
+               pch = 21, fill = "white", color = "black", size = 2)
+
+  if(!(all(is.na(this.dm$test.data)))){
+    suit.plot <- suit.plot + geom_point(data = this.dm$test.data, aes(x = Longitude, y = Latitude),
+                                        pch = 21, fill = "green", color = "black", size = 2)
   }
 
+  return(suit.plot)
 }
 
 # Checking data for analysis using enmtools.dm
