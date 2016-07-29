@@ -82,11 +82,11 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
   }
 
   empirical.overlap.sp1.vs.sp2 <- c(unlist(raster.overlap(empirical.species.1.model, empirical.species.2.model)),
-                         unlist(env.overlap(empirical.species.1.model, empirical.species.2.model, env = env, ...)))
+                                    unlist(env.overlap(empirical.species.1.model, empirical.species.2.model, env = env, ...)))
   reps.overlap.sp1.vs.sp2 <- empirical.overlap.sp1.vs.sp2
 
   empirical.overlap.sp1.vs.ribbon <- c(unlist(raster.overlap(empirical.species.1.model, empirical.ribbon.model)),
-                                     unlist(env.overlap(empirical.species.1.model, empirical.ribbon.model, env = env, ...)))
+                                       unlist(env.overlap(empirical.species.1.model, empirical.ribbon.model, env = env, ...)))
   reps.overlap.sp1.vs.ribbon <- empirical.overlap.sp1.vs.ribbon
 
   empirical.overlap.sp2.vs.ribbon <- c(unlist(raster.overlap(empirical.species.2.model, empirical.ribbon.model)),
@@ -94,7 +94,7 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
   reps.overlap.sp2.vs.ribbon <- empirical.overlap.sp2.vs.ribbon
 
   empirical.overlap.outside.vs.ribbon <- c(unlist(raster.overlap(empirical.outside.model, empirical.ribbon.model)),
-                                       unlist(env.overlap(empirical.outside.model, empirical.ribbon.model, env = env, ...)))
+                                           unlist(env.overlap(empirical.outside.model, empirical.ribbon.model, env = env, ...)))
   reps.overlap.outside.vs.ribbon <- empirical.overlap.outside.vs.ribbon
 
   lines.df <- data.frame(slope = rep(NA, nreps), intercept = rep(NA, nreps), offset = rep(NA, nreps))
@@ -104,8 +104,8 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
   # We'll use this to keep track of how many iterations were successful
   keepers <- 1
 
-  while(keepers < nreps){
-    cat(paste("\nReplicate", keepers + 1, "...\n"))
+  while(keepers <= nreps){
+    cat(paste("\nReplicate", keepers, "...\n"))
 
     rep.species.1 <- species.1
     rep.species.2 <- species.2
@@ -153,7 +153,7 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
     # Make sure we actually got some ribbon points.  If not, fail this round and try again.
     if(!nrow(rep.ribbon$presence.points) > 1){
       next
-    } 
+    }
 
     # Store the slope, intercept, and modifier for this round
     lines.df[keepers,] <- c(slope, intercept, intercept.modifier)
@@ -194,25 +194,33 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
     replicate.models[[paste0("outside.rep.", keepers)]] <- rep.outside.model
 
     # Measure overlaps
-    reps.overlap.sp1.vs.sp2 <- rbind(reps.overlap.sp1.vs.sp2, c(unlist(raster.overlap(rep.species.1.model, rep.species.2.model)),
-                                      unlist(env.overlap(rep.species.1.model, rep.species.2.model, env = env, ...))))
+    this.overlap.sp1.vs.sp2  <- c(unlist(raster.overlap(rep.species.1.model, rep.species.2.model)),
+                                  unlist(env.overlap(rep.species.1.model, rep.species.2.model, env = env, ...)))
+    this.overlap.sp1.vs.ribbon <- c(unlist(raster.overlap(rep.species.1.model, rep.ribbon.model)),
+                                    unlist(env.overlap(rep.species.1.model, rep.ribbon.model, env = env, ...)))
+    this.overlap.sp2.vs.ribbon <- c(unlist(raster.overlap(rep.species.2.model, rep.ribbon.model)),
+                                    unlist(env.overlap(rep.species.2.model, rep.ribbon.model, env = env, ...)))
+    this.overlap.outside.vs.ribbon <- c(unlist(raster.overlap(rep.outside.model, rep.ribbon.model)),
+                                        unlist(env.overlap(rep.outside.model, rep.ribbon.model, env = env, ...)))
 
-    reps.overlap.sp1.vs.ribbon <- rbind(reps.overlap.sp1.vs.ribbon, c(unlist(raster.overlap(rep.species.1.model, rep.ribbon.model)),
-                                         unlist(env.overlap(rep.species.1.model, rep.ribbon.model, env = env, ...))))
+#     print(this.overlap.sp1.vs.sp2)
+#     print(this.overlap.sp1.vs.ribbon)
+#     print(this.overlap.sp2.vs.ribbon)
+#     print(this.overlap.outside.vs.ribbon)
 
-    reps.overlap.sp2.vs.ribbon <- rbind(reps.overlap.sp2.vs.ribbon, c(unlist(raster.overlap(rep.species.2.model, rep.ribbon.model)),
-                                         unlist(env.overlap(rep.species.2.model, rep.ribbon.model, env = env, ...))))
-
-    reps.overlap.outside.vs.ribbon <- rbind(reps.overlap.outside.vs.ribbon, c(unlist(raster.overlap(rep.outside.model, rep.ribbon.model)),
-                                             unlist(env.overlap(rep.outside.model, rep.ribbon.model, env = env, ...))))
-    
     # If we can't get a good overlap value for this rep, chuck it and try again.
-    if(any(is.na(reps.overlap.sp1.vs.sp2)) | any(is.na(reps.overlap.sp1.vs.ribbon)) |any(is.na(reps.overlap.sp2.vs.ribbon)) |any(is.na(reps.overlap.outside.vs.ribbon))){
+    if(any(is.na(this.overlap.sp1.vs.sp2)) | any(is.na(this.overlap.sp1.vs.ribbon)) |any(is.na(this.overlap.sp2.vs.ribbon)) |any(is.na(this.overlap.outside.vs.ribbon))){
       next
-    } 
-    
-    # Everything went right with this iteration
+    }
+
+    # No NAs, everything went right with this iteration
     keepers <- keepers + 1
+
+    reps.overlap.sp1.vs.sp2 <- rbind(reps.overlap.sp1.vs.sp2, this.overlap.sp1.vs.sp2)
+    reps.overlap.sp1.vs.ribbon <- rbind(reps.overlap.sp1.vs.ribbon, this.overlap.sp1.vs.ribbon)
+    reps.overlap.sp2.vs.ribbon <- rbind(reps.overlap.sp2.vs.ribbon, this.overlap.sp2.vs.ribbon)
+    reps.overlap.outside.vs.ribbon <- rbind(reps.overlap.outside.vs.ribbon, this.overlap.outside.vs.ribbon)
+
 
   }
 
@@ -540,12 +548,12 @@ print.rangebreak.ribbon <- function(rb){
 
 plot.rangebreak.ribbon <- function(rb){
 
-#   rb.raster <- rb$empirical.species.1.model$suitability
-#   rb.raster[!is.na(rb.raster)] <- 1
-#   plot(rb.raster)
-#   for(i in 1:nrow(rb$lines.df)){
-#     abline(rb$lines.df[i,2], rb$lines.df[i,1])
-#   }
+  #   rb.raster <- rb$empirical.species.1.model$suitability
+  #   rb.raster[!is.na(rb.raster)] <- 1
+  #   plot(rb.raster)
+  #   for(i in 1:nrow(rb$lines.df)){
+  #     abline(rb$lines.df[i,2], rb$lines.df[i,1])
+  #   }
 
   grid.arrange(rb$d.plot.sp1.vs.sp2, rb$env.d.plot.sp1.vs.sp2,
                rb$i.plot.sp1.vs.sp2, rb$env.i.plot.sp1.vs.sp2,

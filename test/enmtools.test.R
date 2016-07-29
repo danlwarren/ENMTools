@@ -176,4 +176,4 @@ points(ribbon$presence.points)
 ribbon$range <- background.raster.buffer(ribbon$presence.points, 20000, mask = env)
 ribbon
 
-rbr <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "dm", width = 0.3, nreps = 4)
+rbr <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "dm", width = 0.5, nreps = 4)
