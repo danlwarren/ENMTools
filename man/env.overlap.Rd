@@ -8,7 +8,7 @@ env.overlap(model.1, model.2, env, tolerance = 0.001, max.reps = 10,
   cor.method = "spearman")
 }
 \arguments{
-\item{model.1}{A model object that can be projected using the predict() function}
+\item{model.1}{An enmtools.model object model object that can be projected using the predict() function}
 
 \item{env}{A raster or raster stack of environmental data.}
 
@@ -18,7 +18,7 @@ env.overlap(model.1, model.2, env, tolerance = 0.001, max.reps = 10,
 
 \item{cor.method}{Which method to use for calculating correlations between models}
 
-\item{model.1}{Another model object that can be projected using the predict() function}
+\item{model.1}{Another enmtools.model object or other model object that can be projected using the predict() function}
 }
 \description{
 Calculates overlap between models in environment space using latin hypercube sampling

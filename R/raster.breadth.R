@@ -17,7 +17,7 @@
 
 raster.breadth <- function(x, verbose=FALSE){
 
-  if(any(grepl("enmtools", class(x)))){
+  if(inherits(x, "enmtools.model")){
     x <- x$suitability
   }
 
@@ -26,10 +26,8 @@ raster.breadth <- function(x, verbose=FALSE){
 
   x[which(getValues(x) == 0)] <- 1e-40
 
-  ncells <- sum(!is.na(getValues(x)))
-
-  B1 <- (1/cellStats(x^2, sum) - 1)/(ncells - 1)
-  B2 <- 0 - cellStats(x * log(x), sum)/log(ncells)
+  B1 <- calc.B1(getValues(x))
+  B2 <- calc.B2(getValues(x))
 
   results <- list(B1 = B1, B2 = B2)
   return(results)
