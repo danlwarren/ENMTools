@@ -74,6 +74,11 @@ ahli.mx <- enmtools.maxent(ahli, env, test.prop = 0.2)
 ahli.mx
 ahli.mx$response.plots
 
+
+allogus.mx <- enmtools.maxent(allogus, env, test.prop = 0.2)
+allogus.mx
+allogus.mx$response.plots
+
 ahli.dm <- enmtools.dm(ahli, env, test.prop = 0.2)
 ahli.dm
 ahli.dm$response.plots
@@ -97,6 +102,13 @@ plot(raster.resid(ahli.glm, ahli.dm)$residuals)
 
 env.overlap(ahli.dm, ahli.glm, env)
 
+allogus.quad.glm <- enmtools.glm(pres ~ poly(layer.1, 1) + poly(layer.2, 2) + poly(layer.3, 2) + poly(layer.4, 2), allogus, env)
+allogus.quad.glm
+visualize.enm(allogus.quad.glm, env, 100, layers = c("layer.2", "layer.4"))
+
+ahli.quad.glm <- enmtools.glm(pres ~ poly(layer.1, 1) + poly(layer.2, 2) + poly(layer.3, 2) + poly(layer.4, 2), ahli, env)
+ahli.quad.glm
+visualize.enm(ahli.quad.glm, env, 100, layers = c("layer.1", "layer.2"))
 
 
 id.glm <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm", f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)

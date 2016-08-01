@@ -101,7 +101,7 @@ plot.enmtools.bc <- function(this.bc){
 
   suit.plot <- ggplot(data = suit.points, aes(y = Latitude, x = Longitude)) +
     geom_raster(aes(fill = Suitability)) +
-    scale_fill_viridis(option = "C", guide = guide_colourbar(title = "Suitability")) +
+    scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
     geom_point(data = this.bc$analysis.df, aes(x = Longitude, y = Latitude),
                pch = 21, fill = "white", color = "black", size = 2)
