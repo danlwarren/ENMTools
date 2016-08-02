@@ -52,7 +52,7 @@ visualize.enm <- function(model, env, nbins = 100, layers, plot.points = TRUE){
   for(i in names(env)){
     if(!(i %in% layers)){
       layer.values <- extract(env[[i]], points)
-      plot.df <- cbind(plot.df, rep(mean(layer.values), nrow(plot.df)))
+      plot.df <- cbind(plot.df, rep(mean(layer.values, na.rm=TRUE), nrow(plot.df)))
       names <- c(names, i)
     }
   }
