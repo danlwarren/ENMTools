@@ -88,9 +88,14 @@ visualize.enm <- function(model, env, nbins = 100, layers, plot.points = TRUE){
       stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE) +
       xlim(layer1.min, layer1.max) + ylim(layer2.min, layer2.max) +
       scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Density")) + theme_classic() +
-      geom_point(data = pointdata, aes_string(y = names[2], x = names[1]),
-                 pch = 21, fill = "white", color = "black", size = 3) +
       ggtitle(label = "Presence points and background density in environment space")
+
+    if(plot.points == TRUE){
+      background.plot <- background.plot + geom_point(data = pointdata, aes_string(y = names[2], x = names[1]),
+                                                      pch = 21, fill = "white", color = "black", size = 3)
+    }
+
+
   }
 
   output <- list(suit.plot = suit.plot,
