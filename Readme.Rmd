@@ -88,10 +88,25 @@ ENMTools contains functions to simplify the ENM construction process.  Using enm
 
 ### GLM
 
-GLMs require the user to supply a formula, an enmtools.species object, and some environmental data.
+GLMs usually require the user to supply a formula, an enmtools.species object, and some environmental data.  If your formula is a strictly additive function of all of the environmental layers in env, though, enmtools.glm will build a formula automatically.
 ```{r build_glms}
-ahli.glm <- enmtools.glm(f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, species = ahli, env = env, test.prop = 0.2)
-allogus.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, allogus, env, test.prop = 0.2)
+ahli.glm <- enmtools.glm(species = ahli, env = env, f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, test.prop = 0.2)
+allogus.glm <- enmtools.glm(allogus, env, f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, test.prop = 0.2)
+ahli.glm
+```
+
+Notice this produces the same formula as:
+
+```{r build_glms2}
+ahli.glm <- enmtools.glm(species = ahli, env = env, test.prop = 0.2)
+ahli.glm
+```
+
+
+If you want a more complicated formula, though (e.g., with interactions or polynomial effects), you'll need to supply that manually.
+
+```{r build_glms3}
+ahli.glm <- enmtools.glm(species = ahli, env = env, f = pres ~ poly(layer.1, 2) + poly(layer.2, 2) + poly(layer.3, 2) + poly(layer.4, 2), test.prop = 0.2)
 ahli.glm
 ```
 
@@ -99,6 +114,16 @@ To check out the marginal response functions, you only need to type
 
 ```{r response_plots}
 ahli.glm$response.plots
+```
+
+You can also visualize your models and data in a 2D environment space using any pair of layers from your environment stack.  These plots hold all non-plotted variables (layer.2 and layer.3 in this case) constant at their mean value across all presence points, then vary the plotted variables between the minimum and maximum values in env.
+
+The suit.plot shows you suitability in environment space as a function of your two variables, with brighter colors representing variable combinations predicted to be more suitable.  The points represent the occurrence points for your species in that environment space.  
+
+The colored raster of the background.plot shows you the density of background points in environment space, while the white points again represent your occurrence points in environment space.
+
+```{r visualize.enm}
+visualize.enm(ahli.glm, env, layers = c("layer.2", "layer.4"))
 ```
 
 ### Bioclim, Domain, and Maxent
@@ -145,11 +170,11 @@ To run an identity test, we need to decide what type of models we will build, ho
 _NOTE:_ In order for models to be comparable, both empirical and pseudoreplicate models for the identity test are conducted with pseudoabsence points pooled for the two species being compared.
 
 ```{r id_glm, include = FALSE}
-id.glm <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm", f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)
+id.glm <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm", nreps = 4)
 ```
 
 ```{r eval = FALSE}
-id.glm <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm", f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)
+id.glm <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm", nreps = 4)
 ```
 
 ```{r, warnings = FALSE, fig.width = 12, fig.height=8}
@@ -199,7 +224,7 @@ ENMTools also allows you to perform linear, blob, and ribbon rangebreak tests as
 
 For the linear and blob tests, you call them very much like you would the identity and background tests.  Here's a linear one using GLM models:
 ```{r rangebreak_linear}
-rbl.glm <- rangebreak.linear(ahli, allogus, env, type = "bc", f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)
+rbl.glm <- rangebreak.linear(ahli, allogus, env, type = "glm", nreps = 4)
 rbl.glm
 ```
 
@@ -231,9 +256,9 @@ ribbon
 ```
 
 
-Now we'll run a ribbon rangebreak test using GLM models.  We also need to tell it the width of the ribbons to generate for the replicates.  The units for the width argument are the same units that the presence points are in; e.g., if the points are in decimal degrees you should supply the width of the barrier in decimal degrees. 
+Now we'll run a ribbon rangebreak test using GLM models with quadratic effects.  We also need to tell it the width of the ribbons to generate for the replicates.  The units for the width argument are the same units that the presence points are in; e.g., if the points are in decimal degrees you should supply the width of the barrier in decimal degrees. 
 ```{r rangebreak_ribbon, warnings = FALSE, fig.width = 12, fig.height=8}
-rbr.glm <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "glm", f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, width = 0.5, nreps = 4)
+rbr.glm <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "glm", f = pres ~ poly(layer.1, 2) + poly(layer.2, 2) + poly(layer.3, 2) + poly(layer.4, 2), width = 0.5, nreps = 4)
 rbr.glm
 ```
 

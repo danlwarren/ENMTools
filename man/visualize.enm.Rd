@@ -12,6 +12,10 @@ visualize.enm(model, env, nbins = 100, layers, plot.points = TRUE)
 \item{env}{A set of environmental layers}
 
 \item{nbins}{The number of bins per layer to use for drawing environment space}
+
+\item{layers}{A vector of layer names to use for drawing environment space}
+
+\item{plot.points}{Logical determining whether presence points should be plotted on suitability plot}
 }
 \value{
 suit.plot A two dimensional plot of an ENM

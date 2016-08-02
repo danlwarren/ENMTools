@@ -43,25 +43,23 @@ plot(ahli)
 summary(two.anoles)
 plot(two.anoles)
 
-ahli.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, ahli, env, test.prop = 0.2)
+ahli.glm <- enmtools.glm(ahli, env, pres ~ layer.1 + layer.2 + layer.3 + layer.4, test.prop = 0.2)
 ahli.glm
 ahli.glm$response.plots
 
-onevar.glm <- enmtools.glm(pres ~ layer.1, ahli, env, test.prop = 0.2)
+onevar.glm <- enmtools.glm(ahli, env, pres ~ layer.1, test.prop = 0.2)
 onevar.glm
 onevar.glm$response.plots
 
-allogus.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, allogus, env)
+allogus.glm <- enmtools.glm(allogus, env, pres ~ layer.1 + layer.2 + layer.3 + layer.4)
 allogus.glm
 env.plots <- visualize.enm(allogus.glm, env, layers = c("layer.1", "layer.2"))
+env.plots
 
-ahli.twovar.glm <- enmtools.glm(pres ~ layer.1 + layer.4, ahli, env)
+ahli.twovar.glm <- enmtools.glm(ahli, env, pres ~ layer.1 + layer.4)
 ahli.twovar.glm
 
-# Presently leaving out GAM, as it is hard to see how I'm going to be able to
-# use it in the same way as the other methods.
-# Might eventually write a function to parse GLM-style functions to a GAMmable function
-# ahli.gam <- enmtools.gam(presence ~, ahli, env)
+# Ought to work on methods for GAM and others that auto-parse functions like the GLM one does now
 
 
 ahli.bc <- enmtools.bc(ahli, env, test.prop = 0.2)
@@ -103,11 +101,11 @@ plot(raster.resid(ahli.glm, ahli.dm)$residuals)
 
 env.overlap(ahli.dm, ahli.glm, env)
 
-allogus.quad.glm <- enmtools.glm(pres ~ poly(layer.1, 1) + poly(layer.2, 2) + poly(layer.3, 2) + poly(layer.4, 2), allogus, env)
+allogus.quad.glm <- enmtools.glm(allogus, env, pres ~ poly(layer.1, 2) + poly(layer.2, 2) + poly(layer.3, 2) + poly(layer.4, 2))
 allogus.quad.glm
-visualize.enm(allogus.quad.glm, env, 100, layers = c("layer.2", "layer.4"))
+visualize.enm(allogus.quad.glm, env, 100, layers = c("layer.1", "layer.4"))
 
-ahli.quad.glm <- enmtools.glm(pres ~ poly(layer.1, 1) + poly(layer.2, 2) + poly(layer.3, 2) + poly(layer.4, 2), ahli, env)
+ahli.quad.glm <- enmtools.glm(ahli, env, pres ~ poly(layer.1, 1) + poly(layer.2, 2) + poly(layer.3, 2) + poly(layer.4, 2))
 ahli.quad.glm
 visualize.enm(ahli.quad.glm, env, 100, layers = c("layer.1", "layer.2"))
 
@@ -189,4 +187,6 @@ points(ribbon$presence.points)
 ribbon$range <- background.raster.buffer(ribbon$presence.points, 20000, mask = env)
 ribbon
 
-rbr <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "dm", width = 0.5, nreps = 4)
+rbr.dm <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "dm", width = 0.5, nreps = 4)
+
+rbr.glm <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "glm", width = 0.5, nreps = 4)

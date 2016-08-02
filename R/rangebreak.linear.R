@@ -47,8 +47,8 @@ rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps =
   # Build models for empirical data
   cat("\nBuilding empirical models...\n")
   if(type == "glm"){
-    empirical.species.1.model <- enmtools.glm(f, species.1, env, ...)
-    empirical.species.2.model <- enmtools.glm(f, species.2, env, ...)
+    empirical.species.1.model <- enmtools.glm(species.1, env, f, ...)
+    empirical.species.2.model <- enmtools.glm(species.2, env, f, ...)
   }
 
   if(type == "mx"){
@@ -109,8 +109,8 @@ rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps =
 
     # Building models for reps
     if(type == "glm"){
-      rep.species.1.model <- enmtools.glm(f, rep.species.1, env, ...)
-      rep.species.2.model <- enmtools.glm(f, rep.species.2, env, ...)
+      rep.species.1.model <- enmtools.glm(rep.species.1, env, f, ...)
+      rep.species.2.model <- enmtools.glm(rep.species.2, env, f, ...)
     }
 
     if(type == "mx"){
@@ -208,14 +208,13 @@ rangebreak.linear.precheck <- function(species.1, species.2, env, type, f, nreps
   }
 
   if(type == "glm"){
-    if(is.null(f)){
-      stop("Type is set to GLM and no formula has been supplied!")
-    }
-
-    if(!inherits(f, "formula")){
-      stop("Type is set to GLM and f is not a formula object!")
+    if(!is.null(f)){
+      if(!inherits(f, "formula")){
+        stop("Type is set to GLM and f is not a formula object!")
+      }
     }
   }
+
 
   if(!type %in% c("glm", "mx", "bc", "dm")){
     stop(paste("Model type", type, "not understood! Select either bc, dm, mx, or glm."))

@@ -12,12 +12,12 @@
 #' @export plot.enmtools.glm
 
 
-enmtools.glm <- function(f = NA, species, env, test.prop = 0, ...){
+enmtools.glm <- function(species, env, f = NULL, test.prop = 0, ...){
 
   species <- check.bg(species, env, ...)
 
   # Builds a default formula using all env
-  if(is.na(f)){
+  if(is.null(f)){
     f <- as.formula(paste("presence", paste(c(names(env)), collapse = " + "), sep = " ~ "))
   }
 

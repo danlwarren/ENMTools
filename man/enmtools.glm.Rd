@@ -4,7 +4,7 @@
 \alias{enmtools.glm}
 \title{Takes an emtools.species object with presence and background points, and builds a GLM}
 \usage{
-enmtools.glm(f, species, env, test.prop = 0, ...)
+enmtools.glm(species, env, f = NULL, test.prop = 0, ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}

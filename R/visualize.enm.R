@@ -42,7 +42,6 @@ visualize.enm <- function(model, env, nbins = 100, layers, plot.points = TRUE){
   layer2.max <- max(getValues(env[[layers[2]]]), na.rm=TRUE)
 
   # Build plot df
-
   plot.df <- cbind(rep(seq(layer1.min, layer1.max, length = nbins), nbins),
                    rep(seq(layer2.min, layer2.max, length = nbins), each = nbins))
 
@@ -94,8 +93,6 @@ visualize.enm <- function(model, env, nbins = 100, layers, plot.points = TRUE){
       background.plot <- background.plot + geom_point(data = pointdata, aes_string(y = names[2], x = names[1]),
                                                       pch = 21, fill = "white", color = "black", size = 3)
     }
-
-
   }
 
   output <- list(suit.plot = suit.plot,

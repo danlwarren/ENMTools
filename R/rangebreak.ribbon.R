@@ -27,8 +27,6 @@
 
 rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL, width = 1, nreps = 99,  ...){
 
-  # stop("Ribbon test is disabled for now!")
-
   species.1 <- check.bg(species.1, env, ...)
   species.2 <- check.bg(species.2, env, ...)
   ribbon <- check.bg(ribbon, env, ...)
@@ -54,10 +52,10 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
   # Build models for empirical data
   cat("\nBuilding empirical models...\n")
   if(type == "glm"){
-    empirical.species.1.model <- enmtools.glm(f, species.1, env, ...)
-    empirical.species.2.model <- enmtools.glm(f, species.2, env, ...)
-    empirical.ribbon.model <- enmtools.glm(f, ribbon, env, ...)
-    empirical.outside.model <- enmtools.glm(f, outside, env, ...)
+    empirical.species.1.model <- enmtools.glm(species.1, env, f, ...)
+    empirical.species.2.model <- enmtools.glm(species.2, env, f, ...)
+    empirical.ribbon.model <- enmtools.glm(ribbon, env, f, ...)
+    empirical.outside.model <- enmtools.glm(outside, env, f, ...)
   }
 
   if(type == "mx"){
@@ -160,10 +158,10 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
 
 
     if(type == "glm"){
-      rep.species.1.model <- enmtools.glm(f, rep.species.1, env, ...)
-      rep.species.2.model <- enmtools.glm(f, rep.species.2, env, ...)
-      rep.ribbon.model <- enmtools.glm(f, rep.ribbon, env, ...)
-      rep.outside.model <- enmtools.glm(f, rep.outside, env, ...)
+      rep.species.1.model <- enmtools.glm(rep.species.1, env, f, ...)
+      rep.species.2.model <- enmtools.glm(rep.species.2, env, f, ...)
+      rep.ribbon.model <- enmtools.glm(rep.ribbon, env, f, ...)
+      rep.outside.model <- enmtools.glm(rep.outside, env, f, ...)
     }
 
     if(type == "mx"){
@@ -430,12 +428,10 @@ rangebreak.ribbon.precheck <- function(species.1, species.2, ribbon, env, type, 
   }
 
   if(type == "glm"){
-    if(is.null(f)){
-      stop("Type is set to GLM and no formula has been supplied!")
-    }
-
-    if(!inherits(f, "formula")){
-      stop("Type is set to GLM and f is not a formula object!")
+    if(!is.null(f)){
+      if(!inherits(f, "formula")){
+        stop("Type is set to GLM and f is not a formula object!")
+      }
     }
   }
 
