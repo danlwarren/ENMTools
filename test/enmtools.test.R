@@ -53,6 +53,7 @@ onevar.glm$response.plots
 
 allogus.glm <- enmtools.glm(pres ~ layer.1 + layer.2 + layer.3 + layer.4, allogus, env)
 allogus.glm
+env.plots <- visualize.enm(allogus.glm, env, layers = c("layer.1", "layer.2"))
 
 ahli.twovar.glm <- enmtools.glm(pres ~ layer.1 + layer.4, ahli, env)
 ahli.twovar.glm
