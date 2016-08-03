@@ -4,7 +4,7 @@
 #' @param species.1 An emtools.species object
 #' @param species.2 An enmtools.species object
 #' @param env A RasterLayer or RasterStack object containing environmental data
-#' @param type The type of model to construct, currently accepts "glm", "mx", "bc", or "dm"
+#' @param type The type of model to construct, currently accepts "glm", "mx", "bc", "gam", or "dm"
 #' @param f A function to use for model fitting.  Only required for GLM models at the moment.
 #' @param nreps Number of replicates to perform
 #' @param ... Additional arguments to be passed to model fitting functions.
@@ -49,6 +49,11 @@ rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps =
   if(type == "glm"){
     empirical.species.1.model <- enmtools.glm(species.1, env, f, ...)
     empirical.species.2.model <- enmtools.glm(species.2, env, f, ...)
+  }
+
+  if(type == "gam"){
+    empirical.species.1.model <- enmtools.gam(species.1, env, f, ...)
+    empirical.species.2.model <- enmtools.gam(species.2, env, f, ...)
   }
 
   if(type == "mx"){
@@ -111,6 +116,11 @@ rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps =
     if(type == "glm"){
       rep.species.1.model <- enmtools.glm(rep.species.1, env, f, ...)
       rep.species.2.model <- enmtools.glm(rep.species.2, env, f, ...)
+    }
+
+    if(type == "gam"){
+      rep.species.1.model <- enmtools.gam(rep.species.1, env, f, ...)
+      rep.species.2.model <- enmtools.gam(rep.species.2, env, f, ...)
     }
 
     if(type == "mx"){
@@ -215,9 +225,16 @@ rangebreak.linear.precheck <- function(species.1, species.2, env, type, f, nreps
     }
   }
 
+  if(type == "gam"){
+    if(!is.null(f)){
+      if(!inherits(f, "formula")){
+        stop("Type is set to GAM and f is not a formula object!")
+      }
+    }
+  }
 
-  if(!type %in% c("glm", "mx", "bc", "dm")){
-    stop(paste("Model type", type, "not understood! Select either bc, dm, mx, or glm."))
+  if(!type %in% c("glm", "mx", "bc", "dm", "gam")){
+    stop(paste("Model type", type, "not understood! Select either bc, dm, mx, gam, or glm."))
   }
 
   check.species(species.1)

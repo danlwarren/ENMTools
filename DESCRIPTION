@@ -17,4 +17,5 @@ Depends:
 	grid,
 	gridExtra,
 	viridis,
-	lhs
+	lhs,
+	mgcv

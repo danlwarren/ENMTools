@@ -47,6 +47,11 @@ ahli.glm <- enmtools.glm(ahli, env, pres ~ layer.1 + layer.2 + layer.3 + layer.4
 ahli.glm
 ahli.glm$response.plots
 
+ahli.gam <- enmtools.gam(ahli, env, test.prop = 0.2)
+ahli.gam
+ahli.gam$response.plots
+visualize.enm(ahli.gam, env, layers = c("layer.1", "layer.2"))
+
 onevar.glm <- enmtools.glm(ahli, env, pres ~ layer.1, test.prop = 0.2)
 onevar.glm
 onevar.glm$response.plots
@@ -112,6 +117,8 @@ visualize.enm(ahli.quad.glm, env, 100, layers = c("layer.1", "layer.2"))
 
 id.glm <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm", f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)
 
+id.gam <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "gam", nreps = 4)
+
 id.mx <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "mx", nreps = 4)
 
 id.bc <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "bc", nreps = 4)
@@ -123,6 +130,13 @@ bg.glm.sym <- background.test(species.1 = ahli, species.2 = allogus, env = env, 
 
 bg.glm.asym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm",
                               f = presence ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4, test.type = "asymmetric" )
+
+
+bg.gam.sym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "gam",
+                              nreps = 4, test.type = "symmetric" )
+
+bg.gam.asym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "gam",
+                               nreps = 4, test.type = "asymmetric" )
 
 bg.bc.sym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "bc", nreps = 4, test.type = "symmetric" )
 
@@ -144,6 +158,8 @@ rbl.dm <- rangebreak.linear(ahli, allogus, env, type = "dm", nreps = 4)
 
 rbl.glm <- rangebreak.linear(ahli, allogus, env, type = "bc", f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)
 
+rbl.gam <- rangebreak.linear(ahli, allogus, env, type = "gam", nreps = 4)
+
 rbl.mx <- rangebreak.linear(ahli, allogus, env, type = "mx", nreps = 4)
 
 
@@ -152,6 +168,8 @@ rbb.bc <- rangebreak.blob(ahli, allogus, env, type = "bc", nreps = 4)
 rbb.dm <- rangebreak.blob(ahli, allogus, env, type = "dm", nreps = 4)
 
 rbb.mx <- rangebreak.blob(ahli, allogus, env, type = "mx", nreps = 4)
+
+rbb.gam <- rangebreak.blob(ahli, allogus, env, type = "gam", nreps = 4)
 
 rbb.glm <- rangebreak.blob(ahli, allogus, env, type = "glm", f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, nreps = 4)
 
@@ -190,3 +208,5 @@ ribbon
 rbr.dm <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "dm", width = 0.5, nreps = 4)
 
 rbr.glm <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "glm", width = 0.5, nreps = 4)
+
+rbr.glm <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "gam", width = 0.5, nreps = 4)

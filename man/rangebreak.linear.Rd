@@ -14,7 +14,7 @@ rangebreak.linear(species.1, species.2, env, type, f = NULL, nreps = 99,
 
 \item{env}{A RasterLayer or RasterStack object containing environmental data}
 
-\item{type}{The type of model to construct, currently accepts "glm", "mx", "bc", or "dm"}
+\item{type}{The type of model to construct, currently accepts "glm", "mx", "bc", "gam", or "dm"}
 
 \item{f}{A function to use for model fitting.  Only required for GLM models at the moment.}
 

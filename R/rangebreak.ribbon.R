@@ -58,6 +58,13 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
     empirical.outside.model <- enmtools.glm(outside, env, f, ...)
   }
 
+  if(type == "gam"){
+    empirical.species.1.model <- enmtools.gam(species.1, env, f, ...)
+    empirical.species.2.model <- enmtools.gam(species.2, env, f, ...)
+    empirical.ribbon.model <- enmtools.gam(ribbon, env, f, ...)
+    empirical.outside.model <- enmtools.gam(outside, env, f, ...)
+  }
+
   if(type == "mx"){
     empirical.species.1.model <- enmtools.maxent(species.1, env, ...)
     empirical.species.2.model <- enmtools.maxent(species.2, env, ...)
@@ -162,6 +169,13 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
       rep.species.2.model <- enmtools.glm(rep.species.2, env, f, ...)
       rep.ribbon.model <- enmtools.glm(rep.ribbon, env, f, ...)
       rep.outside.model <- enmtools.glm(rep.outside, env, f, ...)
+    }
+
+    if(type == "gam"){
+      rep.species.1.model <- enmtools.gam(rep.species.1, env, f, ...)
+      rep.species.2.model <- enmtools.gam(rep.species.2, env, f, ...)
+      rep.ribbon.model <- enmtools.gam(rep.ribbon, env, f, ...)
+      rep.outside.model <- enmtools.gam(rep.outside, env, f, ...)
     }
 
     if(type == "mx"){
@@ -435,8 +449,16 @@ rangebreak.ribbon.precheck <- function(species.1, species.2, ribbon, env, type, 
     }
   }
 
-  if(!type %in% c("glm", "mx", "bc", "dm")){
-    stop(paste("Model type", type, "not understood! Select either bc, dm, mx, or glm."))
+  if(type == "gam"){
+    if(!is.null(f)){
+      if(!inherits(f, "formula")){
+        stop("Type is set to GAM and f is not a formula object!")
+      }
+    }
+  }
+
+  if(!type %in% c("glm", "mx", "bc", "dm", "gam")){
+    stop(paste("Model type", type, "not understood! Select either bc, dm, mx, gam, or glm."))
   }
 
   check.species(species.1)
