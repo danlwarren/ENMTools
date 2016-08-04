@@ -575,7 +575,23 @@ visualize.enm(ahli.glm, env, layers = c("layer.2", "layer.4"))
 
 ### GAM, Bioclim, Domain, and Maxent
 
-The procedure for building Bioclim, Domain, and Maxent models is similar to the procedure for GLMs, with the exception that you do not need to pass a formula to the model function.  Note that running Maxent models requires a bit of extra setup; see dismo documentation for details.
+The procedure for building Bioclim, Domain, and Maxent models is similar to the procedure for GLMs, with the exception that you do not need to pass a formula to the model function for Bioclim, Domain, or Maxent.  Note that running Maxent models requires a bit of extra setup; see dismo documentation for details.
+
+Just like the enmtools.glm() function, enmtools.gam() has the ability to automatically build a function if you don't supply one. For instance if you have four layers in a stack called "env" named "layer.1", "layer.2", etc. and call enmtools.gam() thusly:
+
+ahli.gam = enmtools.gam(ahli, env)
+
+The function will automatically build the function:
+
+presence ~ s(layer.1, k = 4) + s(layer.2, k = 4) + s(layer.3, k = 4) + s(layer.4, k = 4)
+
+As you can see above, the default value for k, the smoothing parameter, is 4.  This is not necessarily optimal, though, and it's definitely worth exploring for your specific data.  You can either supply GAM formulas manually (using the "f" argument to enmtools.gam), or you can just provide a "k" argument, e.g,
+
+ahli.gam = enmtools.gam(ahli, env, k = 6)
+
+Which produces
+
+presence ~ s(layer.1, k = 6) + s(layer.2, k = 6) + s(layer.3, k = 6) + s(layer.4, k = 6)
 
 
 ```r
