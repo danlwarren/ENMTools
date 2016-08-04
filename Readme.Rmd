@@ -91,7 +91,6 @@ ENMTools contains functions to simplify the ENM construction process.  Using enm
 GLMs usually require the user to supply a formula, an enmtools.species object, and some environmental data.  If your formula is a strictly additive function of all of the environmental layers in env, though, enmtools.glm will build a formula automatically.
 ```{r build_glms}
 ahli.glm <- enmtools.glm(species = ahli, env = env, f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, test.prop = 0.2)
-allogus.glm <- enmtools.glm(allogus, env, f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, test.prop = 0.2)
 ahli.glm
 ```
 
@@ -126,11 +125,12 @@ The colored raster of the background.plot shows you the density of background po
 visualize.enm(ahli.glm, env, layers = c("layer.2", "layer.4"))
 ```
 
-### Bioclim, Domain, and Maxent
+### GAM, Bioclim, Domain, and Maxent
 
 The procedure for building Bioclim, Domain, and Maxent models is similar to the procedure for GLMs, with the exception that you do not need to pass a formula to the model function.  Note that running Maxent models requires a bit of extra setup; see dismo documentation for details.
 
 ```{r eval = FALSE}
+ahli.gam <- enmtools.gam(ahli, env, test.prop = 0.2)
 ahli.dm <- enmtools.dm(ahli, env, test.prop = 0.2)
 ahli.bc <- enmtools.bc(ahli, env, test.prop = 0.2)
 ahli.mx <- enmtools.maxent(ahli, env, test.prop = 0.2)
@@ -139,7 +139,7 @@ ahli.mx <- enmtools.maxent(ahli, env, test.prop = 0.2)
 
 ## Metrics: breadth, correlation, and overlap
 
-ENMTools provides a number of metrics for ENMs and for similarities between ENMs.  These include measures of niche breadth, based on Levins(1968).  An important caveat when interpreting these metrics is that they are driven to some (variable) extent by the availability of different combinations of environmental variables.  As such they are more accurately interpreted as a measurment of the smoothness of the geographic distribution of suitability scores than as an estimate of the breadth of the fundamental niche; an orgamism with narrow fundamental niche breadth that nonetheless encompasses a set of environmental conditions that is quite common will have a high breadth when measured using ENMs, while having a low breadth in environment space.
+ENMTools provides a number of metrics for ENMs and for similarities between ENMs.  These include measures of niche breadth, based on Levins(1968).  An important caveat when interpreting these metrics is that they are driven to some (variable) extent by the availability of different combinations of environmental variables.  As such they are more accurately interpreted as a measurment of the smoothness of the geographic distribution of suitability scores than as an estimate of the breadth of the fundamental niche; an organism with narrow fundamental niche breadth that nonetheless encompasses a set of environmental conditions that is quite common will have a high breadth when measured using ENMs, while having a low breadth in environment space.
 
 ```{r raster_breadth}
 raster.breadth(ahli.glm)

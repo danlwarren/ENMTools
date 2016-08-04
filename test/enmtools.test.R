@@ -21,8 +21,8 @@ check.species(ahli)
 ahli$range <- background.raster.buffer(ahli$presence.points, 50000, mask = env)
 allogus$range <- background.raster.buffer(allogus$presence.points, 50000, mask = env)
 
-ahli$background.points <- background.points.buffer(points = ahli$presence.points,radius = 20000, n = 1000, mask = env[[1]])
-allogus$background.points <- background.points.buffer(points = allogus$presence.points,radius = 20000, n = 1000, mask = env[[1]])
+ahli$background.points <- background.points.buffer(points = ahli$presence.points,radius = 40000, n = 1000, mask = env[[1]])
+allogus$background.points <- background.points.buffer(points = allogus$presence.points,radius = 40000, n = 1000, mask = env[[1]])
 
 # Should fail because presence and background have different col names
 check.species(ahli)
@@ -47,7 +47,7 @@ ahli.glm <- enmtools.glm(ahli, env, pres ~ layer.1 + layer.2 + layer.3 + layer.4
 ahli.glm
 ahli.glm$response.plots
 
-ahli.gam <- enmtools.gam(ahli, env, test.prop = 0.2)
+ahli.gam <- enmtools.gam(ahli, env, test.prop = 0.2, k = 10)
 ahli.gam
 ahli.gam$response.plots
 visualize.enm(ahli.gam, env, layers = c("layer.1", "layer.2"))
