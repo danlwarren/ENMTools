@@ -515,6 +515,8 @@ ahli.glm
 
 ![plot of chunk build_glms3](figure/build_glms3-1.png)
 
+That's a pretty ugly model by any metric, but you get the idea.
+
 To check out the marginal response functions, you only need to type
 
 
