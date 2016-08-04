@@ -19,11 +19,11 @@
 
 raster.overlap <- function(x, y, verbose=FALSE){
 
-  if(grepl("enmtools", class(x))){
+  if(any(grepl("enmtools", class(x)))){
     x <- x$suitability
   }
 
-  if(grepl("enmtools", class(y))){
+  if(any(grepl("enmtools", class(y)))){
     y <- y$suitability
   }
 

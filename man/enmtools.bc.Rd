@@ -4,12 +4,14 @@
 \alias{enmtools.bc}
 \title{Takes an emtools.species object with presence and background points, and builds a Bioclim model}
 \usage{
-enmtools.bc(species, env = NA, ...)
+enmtools.bc(species, env = NA, test.prop = 0, ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
 
 \item{env}{A raster or raster stack of environmental data.}
+
+\item{test.prop}{Proportion of data to withhold for model evaluation}
 
 \item{...}{Arguments to be passed to bioclim()}
 }

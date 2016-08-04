@@ -18,11 +18,11 @@
 
 raster.resid <- function(x, y){
 
-  if(grepl("enmtools", class(x))){
+  if(inherits(x, "enmtools.model")){
     x <- x$suitability
   }
 
-  if(grepl("enmtools", class(y))){
+  if(inherits(y, "enmtools.model")){
     y <- y$suitability
   }
 

@@ -18,7 +18,7 @@
 
 raster.standardize <- function(x, verbose=FALSE){
 
-  if(grepl("enmtools", class(x))){
+  if(inherits(x, "enmtools.model")){
     x <- x$suitability
   }
 
