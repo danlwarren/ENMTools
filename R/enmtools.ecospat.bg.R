@@ -149,7 +149,7 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
 #   image(log(chlor$z.cor), main="Chlorocyanus occupancy", col=rainbow(10))
 #   points(chlorpoints[,4:5], pch=3)
 
-  output <- list(description = paste("\n\nEcospat identity test", species.1$species.name, "vs.", species.2$species.name),
+  output <- list(description = paste("\n\nEcospat background test", test.type, species.1$species.name, "vs.", species.2$species.name),
                  sp1.env = sp1.env,
                  sp2.env = sp2.env,
                  sp1.bg.env = sp1.bg.env,
