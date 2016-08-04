@@ -97,6 +97,9 @@ summary.enmtools.gam <- function(this.gam){
   cat("\n\nModel:  ")
   print(summary(this.gam$model))
 
+  cat("\n\ngam.check results:  ")
+  print(gam.check(this.gam$model))
+
   cat("\n\nModel fit (training data):  ")
   print(this.gam$training.evaluation)
 

@@ -18,4 +18,5 @@ Depends:
 	gridExtra,
 	viridis,
 	lhs,
-	mgcv
+	mgcv,
+	ecospat
