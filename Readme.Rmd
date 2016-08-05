@@ -91,6 +91,7 @@ ENMTools contains functions to simplify the ENM construction process.  Using enm
 GLMs usually require the user to supply a formula, an enmtools.species object, and some environmental data.  If your formula is a strictly additive function of all of the environmental layers in env, though, enmtools.glm will build a formula automatically.
 ```{r build_glms}
 ahli.glm <- enmtools.glm(species = ahli, env = env, f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, test.prop = 0.2)
+allogus.glm <- enmtools.glm(species = allogus, env = env, f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, test.prop = 0.2)
 ahli.glm
 ```
 
@@ -115,7 +116,7 @@ To check out the marginal response functions, you only need to type
 ahli.glm$response.plots
 ```
 
-You can also visualize your models and data in a 2D environment space using any pair of layers from your environment stack.  These plots hold all non-plotted variables (layer.2 and layer.3 in this case) constant at their mean value across all presence points, then vary the plotted variables between the minimum and maximum values in env.
+You can also visualize your models and data in a 2D environment space using any pair of layers from your environment stack.  These plots hold all non-plotted variables (layer.1 and layer.3 in this case) constant at their mean value across all presence points, then vary the plotted variables between the minimum and maximum values in env.
 
 The suit.plot shows you suitability in environment space as a function of your two variables, with brighter colors representing variable combinations predicted to be more suitable.  The points represent the occurrence points for your species in that environment space.  
 
@@ -218,6 +219,25 @@ bg.dm.sym
 ```
 
 
+### Ecospat tests
+
+Using enmtools.species objects also provides a simplified interface to the niche equivalency and similarity tests (or identity and background tests, respectively) that were developed by Broennimann et al. (2012).  These tests do not rely on ENMs, instead using kernel density smoothing to estimate density of the species in environment space.  Ecospat also uses the density of the available environment to correct for availability when measuring overlaps, so that overlaps are not strictly driven by availability of combinations of environmental variables.  
+
+These tests only work with two environmental axes, so they are often done with the top two PC axes of a set of environments.  In our case we'll just pick a couple of environmental layers, though (layer.1 and layer.2).  Here's an equivalency/identity test:
+
+```{r ecospat_identity, fig.width = 12, fig.height=8}
+esp.id <- enmtools.ecospat.id(ahli, allogus, env[[c("layer.1", "layer.2")]])
+esp.id
+```
+
+And here's a symmetric background test.  The difference between symmetric and asymmetric for these tests is the same as for the background tests presented above.
+
+```{r ecospat_background, fig.width = 12, fig.height=8}
+esp.bg.sym <- enmtools.ecospat.bg(ahli, allogus, env[[c("layer.1", "layer.3")]], test.type = "symmetric")
+esp.bg.sym
+```
+
+
 ### Rangebreak tests
 
 ENMTools also allows you to perform linear, blob, and ribbon rangebreak tests as developed in Glor and Warren 2011.  The linear and blob tests are two versions of a test that permit one to ask whether the geographic regions occupied by two species are more environmentally different than expected by chance. The ribbon test, meanwhile, is designed to test whether the ranges of two species are divided by a region that is relatively unsuitable to one or both forms. 
@@ -270,8 +290,11 @@ rbr.glm$lines.df
 The intercept denotes the intercept corresponding to the CENTER of each ribbon.  To get the lines denoting the edges of the ribbons (for example if you want to plot the ribbons on a map), you add and substract the offset.  In other words, the top edge of the ribbon is given by y = (slope * x) + intercept + offset, while the bottom edge is given by y = (slope * x) + intercept - offset.  
 
 
+
+
 ### Literature cited
 
+*Broennimann, O., Fitzpatrick, M. C., Pearman, P. B., Petitpierre, B., Pellissier, L., Yoccoz, N. G., Thuiller, W., Fortin, M.-J., Randin, C., Zimmermann, N. E., Graham, C. H. and Guisan, A. (2012), Measuring ecological niche overlap from occurrence and spatial environmental data. Global Ecology and Biogeography, 21: 481–497. doi:10.1111/j.1466-8238.2011.00698.x*
 
 *Levins, R. 1968. Evolution In Changing Environments. Monographs in Population Biology, volume 2. Princeton University Press, Princeton, New Jersey, USA.*
 

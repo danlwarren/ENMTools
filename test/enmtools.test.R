@@ -2,7 +2,7 @@ setwd("~/GitHub/ENMTools/test")
 library(ENMTools)
 
 # This code builds the readme.rmd file into a regular md file, which GitHub understands better
-knit(input="Readme.Rmd", output = "readme.md")
+knit(input="~/GitHub/ENMTools/Readme.Rmd", output = "~/GitHub/ENMTools/readme.md")
 
 env.files <- list.files(path = "testdata/", pattern = "pc", full.names = TRUE)
 env <- stack(env.files)
@@ -210,3 +210,9 @@ rbr.dm <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "dm", width = 0.5
 rbr.glm <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "glm", width = 0.5, nreps = 4)
 
 rbr.glm <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "gam", width = 0.5, nreps = 4)
+
+esp.id <- enmtools.ecospat.id(ahli, allogus, env[[c("layer.1", "layer.2")]])
+
+esp.bg.sym <- enmtools.ecospat.bg(ahli, allogus, env[[c("layer.1", "layer.3")]], test.type = "symmetric")
+
+esp.bg.asym <- enmtools.ecospat.bg(ahli, allogus, env[[c("layer.1", "layer.3")]], test.type = "asymmetric")
