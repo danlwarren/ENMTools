@@ -16,8 +16,8 @@ env.evaluate <- function(species, model, env, bg.source = "background", ...){
     stop("Argument species must supply an enmtools.species object!")
   }
 
-  presence <- species$presence.points
-  background <- species$background.points
+  presence <- species$presence.points[,1:2]
+  background <- species$background.points[,1:2]
 
   if(inherits(model, "enmtools.model")){
     model <- model$model

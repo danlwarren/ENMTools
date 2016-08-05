@@ -25,6 +25,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, ...){
 
   test.data <- NA
   test.evaluation <- NA
+  env.test.evaluation <- NA
 
   if(test.prop > 0 & test.prop < 1){
     test.inds <- sample(1:nrow(species$presence.points), ceiling(nrow(species$presence.points) * test.prop))
@@ -48,10 +49,14 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, ...){
 
   model.evaluation <- evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                this.glm, env)
+  env.model.evaluation <- env.evaluate(species, this.glm, env)
 
   if(test.prop > 0 & test.prop < 1){
     test.evaluation <- evaluate(test.data, species$background.points[,1:2],
                                 this.glm, env)
+    temp.sp <- species
+    temp.sp$presence.points <- test.data
+    env.test.evaluation <- env.evaluate(temp.sp, this.glm, env)
   }
 
 
@@ -63,6 +68,8 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, ...){
                  model = this.glm,
                  training.evaluation = model.evaluation,
                  test.evaluation = test.evaluation,
+                 env.training.evaluation = env.model.evaluation,
+                 env.test.evaluation = env.test.evaluation,
                  suitability = suitability)
 
   class(output) <- c("enmtools.glm", "enmtools.model")
@@ -96,11 +103,17 @@ summary.enmtools.glm <- function(this.glm){
   cat("\n\nModel fit (training data):  ")
   print(this.glm$training.evaluation)
 
+  cat("\n\nEnvironment space model fit (training data):  ")
+  print(this.glm$env.training.evaluation)
+
   cat("\n\nProportion of data wittheld for model fitting:  ")
   cat(this.glm$test.prop)
 
   cat("\n\nModel fit (test data):  ")
   print(this.glm$test.evaluation)
+
+  cat("\n\nEnvironment space model fit (test data):  ")
+  print(this.glm$env.test.evaluation)
 
   cat("\n\nSuitability:  \n")
   print(this.glm$suitability)
