@@ -83,6 +83,11 @@ allogus.mx <- enmtools.maxent(allogus, env, test.prop = 0.2)
 allogus.mx
 allogus.mx$response.plots
 
+allogus.dm <- enmtools.dm(allogus, env, test.prop = 0.2)
+allogus.dm
+env.evaluate(allogus, allogus.dm, env, "background")
+visualize.enm(allogus.dm, env, layers = c("layer.1", "layer.2"))
+
 ahli.dm <- enmtools.dm(ahli, env, test.prop = 0.2)
 ahli.dm
 ahli.dm$response.plots
