@@ -126,16 +126,16 @@ ahli
 ## 
 ## | Longitude| Latitude|
 ## |---------:|--------:|
-## | -79.97892| 22.05420|
-## | -80.32892| 22.02920|
-## | -79.92892| 22.08754|
-## | -80.33726| 22.03754|
-## | -79.74559| 21.83754|
-## | -79.67892| 21.70420|
-## | -79.72059| 21.74587|
-## | -79.92892| 21.92920|
-## | -79.77059| 21.86254|
-## | -80.31226| 22.12087|
+## | -80.32892| 22.16254|
+## | -79.97059| 22.05420|
+## | -80.43726| 22.11254|
+## | -79.97892| 22.13754|
+## | -79.88726| 21.99587|
+## | -79.77059| 21.96254|
+## | -80.19559| 21.91254|
+## | -80.02059| 22.05420|
+## | -80.18726| 22.02920|
+## | -79.81226| 21.98754|
 ## 
 ## 
 ## Species name:  ahli
@@ -190,16 +190,16 @@ allogus
 ## 
 ## | Longitude| Latitude|
 ## |---------:|--------:|
-## | -79.31226| 22.31254|
-## | -77.18726| 20.05420|
-## | -77.94559| 21.28754|
-## | -76.21226| 20.03754|
-## | -77.55392| 21.07920|
-## | -78.69559| 22.23754|
-## | -77.10392| 19.89587|
-## | -75.05392| 20.01254|
-## | -77.95392| 20.99587|
-## | -77.33726| 20.93754|
+## | -76.53726| 20.10420|
+## | -78.12892| 21.22087|
+## | -75.17892| 20.26254|
+## | -75.87059| 20.62920|
+## | -78.44559| 22.24587|
+## | -75.82892| 20.65420|
+## | -75.98726| 20.20420|
+## | -77.78726| 21.73754|
+## | -79.08726| 22.23754|
+## | -77.41226| 20.92920|
 ## 
 ## 
 ## Species name:  allogus
@@ -225,6 +225,16 @@ ahli.glm <- enmtools.glm(species = ahli, env = env, f = pres ~ layer.1 + layer.2
 ```
 
 ```r
+allogus.glm <- enmtools.glm(species = allogus, env = env, f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, test.prop = 0.2)
+```
+
+```
+## Adding environmental data to species allogus 
+## 	Processing presence points...
+## 	Processing background points...
+```
+
+```r
 ahli.glm
 ```
 
@@ -232,23 +242,23 @@ ahli.glm
 ## 
 ## 
 ## Formula:  presence ~ layer.1 + layer.2 + layer.3 + layer.4
-## <environment: 0x2d833cbc0>
+## <environment: 0x126cfba00>
 ## 
 ## 
 ## Data table (top ten lines): 
 ## 
 ## |   | Longitude| Latitude| layer.1| layer.2| layer.3| layer.4| presence|
 ## |:--|---------:|--------:|-------:|-------:|-------:|-------:|--------:|
-## |1  |  -80.0106|  21.8744|    2765|    1235|    1174|     252|        1|
 ## |2  |  -79.9086|  21.8095|    2289|    1732|     957|     231|        1|
-## |3  |  -79.8065|  21.7631|    2158|    1870|     983|     253|        1|
-## |4  |  -79.8251|  21.8095|    2207|    1877|     967|     259|        1|
 ## |5  |  -79.8807|  21.8374|    2244|    1828|     945|     249|        1|
 ## |6  |  -79.9550|  21.8374|    2250|    1766|     919|     235|        1|
 ## |7  |  -80.3446|  22.0136|    2201|    1822|     978|     277|        1|
+## |8  |  -80.2983|  21.9951|    2214|    1786|     986|     284|        1|
 ## |9  |  -80.1776|  21.9023|    2287|    1722|     992|     266|        1|
 ## |10 |  -80.1591|  21.9673|    2984|     965|    1311|     237|        1|
+## |11 |  -80.1498|  21.9858|    3042|     841|    1371|     221|        1|
 ## |12 |  -80.1220|  21.9301|    2898|    1033|    1231|     242|        1|
+## |13 |  -80.1776|  21.9673|    2914|    1020|    1256|     237|        1|
 ## 
 ## 
 ## Model:  
@@ -257,22 +267,24 @@ ahli.glm
 ##     2)])
 ## 
 ## Deviance Residuals: 
-##      Min        1Q    Median        3Q       Max  
-## -0.41500  -0.17791  -0.12781  -0.09856   3.09318  
+##     Min       1Q   Median       3Q      Max  
+## -0.5641  -0.1765  -0.1026  -0.0646   3.2132  
 ## 
 ## Coefficients:
-##               Estimate Std. Error z value Pr(>|z|)
-## (Intercept)  3.441e+01  2.496e+01   1.379    0.168
-## layer.1     -8.580e-03  6.252e-03  -1.373    0.170
-## layer.2     -8.319e-03  6.794e-03  -1.225    0.221
-## layer.3     -7.615e-05  8.134e-03  -0.009    0.993
-## layer.4     -1.759e-02  2.512e-02  -0.700    0.484
+##               Estimate Std. Error z value Pr(>|z|)  
+## (Intercept)  7.255e+01  3.063e+01   2.368   0.0179 *
+## layer.1     -1.863e-02  7.880e-03  -2.364   0.0181 *
+## layer.2     -1.877e-02  8.151e-03  -2.303   0.0213 *
+## layer.3     -1.676e-03  7.994e-03  -0.210   0.8339  
+## layer.4      4.345e-06  2.518e-02   0.000   0.9999  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
 ##     Null deviance: 130.29  on 1011  degrees of freedom
-## Residual deviance: 122.93  on 1007  degrees of freedom
-## AIC: 132.93
+## Residual deviance: 115.23  on 1007  degrees of freedom
+## AIC: 125.23
 ## 
 ## Number of Fisher Scoring iterations: 8
 ## 
@@ -281,9 +293,9 @@ ahli.glm
 ## Model fit (training data):  class          : ModelEvaluation 
 ## n presences    : 12 
 ## n absences     : 1000 
-## AUC            : 0.745625 
-## cor            : 0.08323185 
-## max TPR+TNR at : -4.77558 
+## AUC            : 0.8052917 
+## cor            : 0.1115561 
+## max TPR+TNR at : -4.309774 
 ## 
 ## 
 ## Proportion of data wittheld for model fitting:  0.2
@@ -291,9 +303,9 @@ ahli.glm
 ## Model fit (test data):  class          : ModelEvaluation 
 ## n presences    : 4 
 ## n absences     : 1000 
-## AUC            : 0.801 
-## cor            : 0.07509128 
-## max TPR+TNR at : -4.519812 
+## AUC            : 0.64525 
+## cor            : 0.02951144 
+## max TPR+TNR at : -4.406271 
 ## 
 ## 
 ## Suitability:  
@@ -304,7 +316,7 @@ ahli.glm
 ## coord. ref. : NA 
 ## data source : in memory
 ## names       : layer 
-## values      : 1.78801e-08, 0.9977902  (min, max)
+## values      : 9.119923e-08, 0.9999996  (min, max)
 ```
 
 ![plot of chunk build_glms](figure/build_glms-1.png)
@@ -330,23 +342,23 @@ ahli.glm
 ## 
 ## 
 ## Formula:  presence ~ layer.1 + layer.2 + layer.3 + layer.4
-## <environment: 0x2908cb2d0>
+## <environment: 0x126d6c200>
 ## 
 ## 
 ## Data table (top ten lines): 
 ## 
 ## |   | Longitude| Latitude| layer.1| layer.2| layer.3| layer.4| presence|
 ## |:--|---------:|--------:|-------:|-------:|-------:|-------:|--------:|
+## |1  |  -80.0106|  21.8744|    2765|    1235|    1174|     252|        1|
 ## |2  |  -79.9086|  21.8095|    2289|    1732|     957|     231|        1|
 ## |3  |  -79.8065|  21.7631|    2158|    1870|     983|     253|        1|
 ## |4  |  -79.8251|  21.8095|    2207|    1877|     967|     259|        1|
+## |5  |  -79.8807|  21.8374|    2244|    1828|     945|     249|        1|
 ## |7  |  -80.3446|  22.0136|    2201|    1822|     978|     277|        1|
 ## |8  |  -80.2983|  21.9951|    2214|    1786|     986|     284|        1|
 ## |9  |  -80.1776|  21.9023|    2287|    1722|     992|     266|        1|
-## |10 |  -80.1591|  21.9673|    2984|     965|    1311|     237|        1|
 ## |11 |  -80.1498|  21.9858|    3042|     841|    1371|     221|        1|
 ## |12 |  -80.1220|  21.9301|    2898|    1033|    1231|     242|        1|
-## |13 |  -80.1776|  21.9673|    2914|    1020|    1256|     237|        1|
 ## 
 ## 
 ## Model:  
@@ -356,23 +368,23 @@ ahli.glm
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -0.6367  -0.1779  -0.1152  -0.0651   3.2546  
+## -0.4961  -0.1873  -0.1188  -0.0754   3.1778  
 ## 
 ## Coefficients:
 ##              Estimate Std. Error z value Pr(>|z|)  
-## (Intercept) 62.302542  29.499311   2.112   0.0347 *
-## layer.1     -0.019476   0.007865  -2.476   0.0133 *
-## layer.2     -0.016799   0.007768  -2.163   0.0306 *
-## layer.3      0.005911   0.006362   0.929   0.3528  
-## layer.4      0.004654   0.024018   0.194   0.8464  
+## (Intercept) 60.166862  28.426562   2.117   0.0343 *
+## layer.1     -0.017340   0.007425  -2.335   0.0195 *
+## layer.2     -0.015547   0.007528  -2.065   0.0389 *
+## layer.3      0.002409   0.006569   0.367   0.7139  
+## layer.4     -0.000335   0.024024  -0.014   0.9889  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
 ##     Null deviance: 130.29  on 1011  degrees of freedom
-## Residual deviance: 115.78  on 1007  degrees of freedom
-## AIC: 125.78
+## Residual deviance: 119.08  on 1007  degrees of freedom
+## AIC: 129.08
 ## 
 ## Number of Fisher Scoring iterations: 8
 ## 
@@ -381,9 +393,9 @@ ahli.glm
 ## Model fit (training data):  class          : ModelEvaluation 
 ## n presences    : 12 
 ## n absences     : 1000 
-## AUC            : 0.790875 
-## cor            : 0.1049627 
-## max TPR+TNR at : -4.283548 
+## AUC            : 0.75625 
+## cor            : 0.09375249 
+## max TPR+TNR at : -4.23679 
 ## 
 ## 
 ## Proportion of data wittheld for model fitting:  0.2
@@ -391,9 +403,9 @@ ahli.glm
 ## Model fit (test data):  class          : ModelEvaluation 
 ## n presences    : 4 
 ## n absences     : 1000 
-## AUC            : 0.59175 
-## cor            : 0.02386482 
-## max TPR+TNR at : -5.365433 
+## AUC            : 0.728875 
+## cor            : 0.04689053 
+## max TPR+TNR at : -4.534152 
 ## 
 ## 
 ## Suitability:  
@@ -404,7 +416,7 @@ ahli.glm
 ## coord. ref. : NA 
 ## data source : in memory
 ## names       : layer 
-## values      : 2.189607e-07, 0.9999997  (min, max)
+## values      : 4.36546e-07, 0.9999972  (min, max)
 ```
 
 ![plot of chunk build_glms2](figure/build_glms2-1.png)
@@ -432,7 +444,7 @@ ahli.glm
 ## 
 ## Formula:  presence ~ poly(layer.1, 2) + poly(layer.2, 2) + poly(layer.3, 
 ##     2) + poly(layer.4, 2)
-## <environment: 0x2908d6830>
+## <environment: 0x1028ae9f0>
 ## 
 ## 
 ## Data table (top ten lines): 
@@ -442,13 +454,13 @@ ahli.glm
 ## |1  |  -80.0106|  21.8744|    2765|    1235|    1174|     252|        1|
 ## |2  |  -79.9086|  21.8095|    2289|    1732|     957|     231|        1|
 ## |3  |  -79.8065|  21.7631|    2158|    1870|     983|     253|        1|
-## |4  |  -79.8251|  21.8095|    2207|    1877|     967|     259|        1|
+## |5  |  -79.8807|  21.8374|    2244|    1828|     945|     249|        1|
 ## |6  |  -79.9550|  21.8374|    2250|    1766|     919|     235|        1|
+## |7  |  -80.3446|  22.0136|    2201|    1822|     978|     277|        1|
+## |8  |  -80.2983|  21.9951|    2214|    1786|     986|     284|        1|
 ## |9  |  -80.1776|  21.9023|    2287|    1722|     992|     266|        1|
 ## |10 |  -80.1591|  21.9673|    2984|     965|    1311|     237|        1|
-## |11 |  -80.1498|  21.9858|    3042|     841|    1371|     221|        1|
 ## |12 |  -80.1220|  21.9301|    2898|    1033|    1231|     242|        1|
-## |14 |  -80.2148|  21.9394|    2329|    1692|    1018|     269|        1|
 ## 
 ## 
 ## Model:  
@@ -458,38 +470,38 @@ ahli.glm
 ## 
 ## Deviance Residuals: 
 ##      Min        1Q    Median        3Q       Max  
-## -0.65706  -0.16894  -0.12100  -0.06731   3.06085  
+## -0.46128  -0.18181  -0.11657  -0.07633   3.02286  
 ## 
 ## Coefficients:
-##                   Estimate Std. Error z value Pr(>|z|)    
-## (Intercept)        -5.2214     0.5805  -8.995   <2e-16 ***
-## poly(layer.1, 2)1 -94.1439    62.7216  -1.501    0.133    
-## poly(layer.1, 2)2  -6.0598    30.2442  -0.200    0.841    
-## poly(layer.2, 2)1 -62.3633    69.5668  -0.896    0.370    
-## poly(layer.2, 2)2 -16.5671    32.8127  -0.505    0.614    
-## poly(layer.3, 2)1  39.5307    41.9102   0.943    0.346    
-## poly(layer.3, 2)2  26.0294    18.5412   1.404    0.160    
-## poly(layer.4, 2)1 -21.8137    24.0338  -0.908    0.364    
-## poly(layer.4, 2)2 -25.7782    19.9908  -1.290    0.197    
+##                    Estimate Std. Error z value Pr(>|z|)    
+## (Intercept)         -4.9603     0.4503 -11.015   <2e-16 ***
+## poly(layer.1, 2)1  -99.1816    58.4062  -1.698   0.0895 .  
+## poly(layer.1, 2)2   12.0899    28.5497   0.423   0.6720    
+## poly(layer.2, 2)1 -125.0058    69.3761  -1.802   0.0716 .  
+## poly(layer.2, 2)2  -11.5871    32.4988  -0.357   0.7214    
+## poly(layer.3, 2)1  -18.7544    43.8061  -0.428   0.6686    
+## poly(layer.3, 2)2    9.3931    17.5907   0.534   0.5934    
+## poly(layer.4, 2)1    3.8132    15.0308   0.254   0.7997    
+## poly(layer.4, 2)2   -8.4261    13.0550  -0.645   0.5186    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
 ##     Null deviance: 130.29  on 1011  degrees of freedom
-## Residual deviance: 114.93  on 1003  degrees of freedom
-## AIC: 132.93
+## Residual deviance: 119.23  on 1003  degrees of freedom
+## AIC: 137.23
 ## 
-## Number of Fisher Scoring iterations: 9
+## Number of Fisher Scoring iterations: 8
 ## 
 ## 
 ## 
 ## Model fit (training data):  class          : ModelEvaluation 
 ## n presences    : 12 
 ## n absences     : 1000 
-## AUC            : 0.7842917 
-## cor            : 0.1056662 
-## max TPR+TNR at : -4.675216 
+## AUC            : 0.7816667 
+## cor            : 0.09959862 
+## max TPR+TNR at : -4.558508 
 ## 
 ## 
 ## Proportion of data wittheld for model fitting:  0.2
@@ -497,9 +509,9 @@ ahli.glm
 ## Model fit (test data):  class          : ModelEvaluation 
 ## n presences    : 4 
 ## n absences     : 1000 
-## AUC            : 0.60575 
-## cor            : 0.02658734 
-## max TPR+TNR at : -5.781522 
+## AUC            : 0.772875 
+## cor            : 0.06049041 
+## max TPR+TNR at : -4.973974 
 ## 
 ## 
 ## Suitability:  
@@ -510,12 +522,10 @@ ahli.glm
 ## coord. ref. : NA 
 ## data source : in memory
 ## names       : layer 
-## values      : 2.220446e-16, 0.9999992  (min, max)
+## values      : 2.220446e-16, 0.9998847  (min, max)
 ```
 
 ![plot of chunk build_glms3](figure/build_glms3-1.png)
-
-That's a pretty ugly model by any metric, but you get the idea.
 
 To check out the marginal response functions, you only need to type
 
@@ -577,31 +587,8 @@ visualize.enm(ahli.glm, env, layers = c("layer.2", "layer.4"))
 
 ### GAM, Bioclim, Domain, and Maxent
 
-The procedure for building Bioclim, Domain, and Maxent models is similar to the procedure for GLMs, with the exception that you do not need to pass a formula to the model function for Bioclim, Domain, or Maxent.  Note that running Maxent models requires a bit of extra setup; see dismo documentation for details.
+The procedure for building Bioclim, Domain, and Maxent models is similar to the procedure for GLMs, with the exception that you do not need to pass a formula to the model function.  Note that running Maxent models requires a bit of extra setup; see dismo documentation for details.
 
-Just like the enmtools.glm() function, enmtools.gam() has the ability to automatically build a function if you don't supply one. For instance if you have four layers in a stack called "env" named "layer.1", "layer.2", etc. and call enmtools.gam() thusly:
-
-```
-ahli.gam = enmtools.gam(ahli, env)
-```
-
-The function will automatically build the function:
-
-```
-presence ~ s(layer.1, k = 4) + s(layer.2, k = 4) + s(layer.3, k = 4) + s(layer.4, k = 4)
-```
-
-As you can see above, the default value for k, the smoothing parameter, is 4.  This is not necessarily optimal, though, and it's definitely worth exploring for your specific data.  You can either supply GAM formulas manually (using the "f" argument to enmtools.gam), or you can just provide a "k" argument, e.g,
-
-```
-ahli.gam = enmtools.gam(ahli, env, k = 6)
-```
-
-Which produces
-
-```
-presence ~ s(layer.1, k = 6) + s(layer.2, k = 6) + s(layer.3, k = 6) + s(layer.4, k = 6)
-```
 
 ```r
 ahli.gam <- enmtools.gam(ahli, env, test.prop = 0.2)
@@ -622,10 +609,10 @@ raster.breadth(ahli.glm)
 
 ```
 ## $B1
-## [1] 0.8267062
+## [1] 0.8667353
 ## 
 ## $B2
-## [1] 0.09645683
+## [1] 0.1821073
 ```
 
 
@@ -638,13 +625,13 @@ raster.overlap(ahli.glm, allogus.glm)
 
 ```
 ## $D
-## [1] 0.2142527
+## [1] 0.3020464
 ## 
 ## $I
-## [1] 0.4608975
+## [1] 0.5745882
 ## 
 ## $rank.cor
-## [1] 0.04578893
+## [1] 0.4459607
 ```
 
 
@@ -657,13 +644,13 @@ env.overlap(ahli.glm, allogus.glm, env, tolerance = .001)
 
 ```
 ## $env.D
-## [1] 0.1035241
+## [1] 0.2526322
 ## 
 ## $env.I
-## [1] 0.2893945
+## [1] 0.4690892
 ## 
 ## $env.cor
-## [1] -0.316955
+## [1] -0.05584625
 ```
 
 ## Hypothesis testing
@@ -705,11 +692,11 @@ id.glm
 ## 
 ## |          |         D|         I|   rank.cor|     env.D|     env.I|    env.cor|
 ## |:---------|---------:|---------:|----------:|---------:|---------:|----------:|
-## |empirical | 0.2510115| 0.5054745| -0.5399230| 0.0054655| 0.0343047| -0.6567199|
-## |rep 1     | 0.7898390| 0.9689705|  0.9141686| 0.7564208| 0.9471171|  0.9272695|
-## |rep 2     | 0.7355077| 0.9514230|  0.9565340| 0.7647018| 0.9471666|  0.9447897|
-## |rep 3     | 0.7491115| 0.9509117|  0.3354544| 0.3526102| 0.6545552|  0.1472238|
-## |rep 4     | 0.7161985| 0.9395274|  0.6452556| 0.5173588| 0.8062828|  0.5773150|
+## |empirical | 0.2421897| 0.4912788| -0.4481580| 0.0050797| 0.0313259| -0.6040165|
+## |rep 1     | 0.7699621| 0.9591744|  0.1996044| 0.4565387| 0.7564844|  0.3263174|
+## |rep 2     | 0.7768911| 0.9616524|  0.8075279| 0.6209186| 0.8853587|  0.7916487|
+## |rep 3     | 0.8641407| 0.9836735|  0.8644880| 0.8195573| 0.9712081|  0.9178691|
+## |rep 4     | 0.7607513| 0.9581997|  0.7794379| 0.6317426| 0.8746227|  0.7414764|
 ```
 
 ![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png)
@@ -745,7 +732,7 @@ bg.bc.asym
 ## 
 ## background test p-values:
 ##        D        I rank.cor    env.D    env.I  env.cor 
-##      0.2      0.2      0.2      0.2      0.2      0.2 
+##      0.2      0.4      0.4      0.2      0.2      0.2 
 ## 
 ## 
 ## Replicates:
@@ -753,11 +740,11 @@ bg.bc.asym
 ## 
 ## |          |         D|         I|  rank.cor|     env.D|     env.I|   env.cor|
 ## |:---------|---------:|---------:|---------:|---------:|---------:|---------:|
-## |empirical | 0.1328502| 0.3177390| 0.0706201| 0.0236120| 0.1231041| 0.0949290|
-## |rep 1     | 0.1730516| 0.3733035| 0.1975328| 0.0394479| 0.1803084| 0.1225563|
-## |rep 2     | 0.2205881| 0.4248851| 0.3416814| 0.0966895| 0.2565000| 0.1442687|
-## |rep 3     | 0.1598674| 0.3535200| 0.1874877| 0.0733675| 0.2179979| 0.1910101|
-## |rep 4     | 0.1501424| 0.3369599| 0.1434171| 0.0503523| 0.1905436| 0.1456811|
+## |empirical | 0.1328502| 0.3177390| 0.0706201| 0.0191535| 0.1049789| 0.0799434|
+## |rep 1     | 0.1516056| 0.3344584| 0.1246645| 0.0703324| 0.2252455| 0.2090850|
+## |rep 2     | 0.1351171| 0.3134528| 0.0628380| 0.0500380| 0.1608283| 0.1454528|
+## |rep 3     | 0.1496238| 0.3463450| 0.1635619| 0.0805077| 0.2605317| 0.2226771|
+## |rep 4     | 0.1716499| 0.3671396| 0.2024887| 0.0696645| 0.2016786| 0.1408024|
 ```
 
 ![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
@@ -793,14 +780,199 @@ bg.dm.sym
 ## 
 ## |          |         D|         I|  rank.cor|     env.D|     env.I|   env.cor|
 ## |:---------|---------:|---------:|---------:|---------:|---------:|---------:|
-## |empirical | 0.4929334| 0.7052122| 0.2916150| 0.1021708| 0.3028006| 0.2133162|
-## |rep 1     | 0.8749601| 0.9778469| 0.5497781| 0.2341620| 0.4690428| 0.4260698|
-## |rep 2     | 0.9188577| 0.9844278| 0.9447951| 0.3733732| 0.6049064| 0.4910687|
-## |rep 3     | 0.9823621| 0.9996219| 0.9240443| 0.8372062| 0.9492429| 0.9027849|
-## |rep 4     | 0.8875470| 0.9740548| 0.6062741| 0.3174260| 0.5572430| 0.4895902|
+## |empirical | 0.4929334| 0.7052122| 0.2916150| 0.1044532| 0.3070321| 0.2211176|
+## |rep 1     | 0.7425946| 0.8968979| 0.5250392| 0.3852931| 0.6057366| 0.4812629|
+## |rep 2     | 0.9565011| 0.9961401| 0.8583812| 0.6294749| 0.8173473| 0.7446815|
+## |rep 3     | 0.8489744| 0.9551823| 0.6463534| 0.4240551| 0.6485303| 0.5423923|
+## |rep 4     | 0.9502609| 0.9947096| 0.8405960| 0.6999417| 0.8652437| 0.7924397|
 ```
 
 ![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png)
+
+
+### Ecospat tests
+
+Using enmtools.species objects also provides a simplified interface to the niche equivalency and similarity tests (or identity and background tests, respectively) that were developed by Broennimann et al. (2012).  These tests do not rely on ENMs, instead using kernel density smoothing to estimate density of the species in environment space.  Ecospat also uses the density of the available environment to correct for availability when measuring overlaps, so that overlaps are not strictly driven by availability of combinations of environmental variables.  
+
+These tests only work with two environmental axes, so they are often done with the top two PC axes of a set of environments.  In our case we'll just pick a couple of environmental layers, though (layer.1 and layer.2).  Here's an equivalency/identity test:
+
+
+```r
+esp.id <- enmtools.ecospat.id(ahli, allogus, env[[c("layer.1", "layer.2")]])
+```
+
+```
+## ===========================================================================
+```
+
+```r
+esp.id
+```
+
+```
+## 
+## 
+##  
+## 
+## Ecospat identity test ahli vs. allogus
+## 
+## |Species | Longitude| Latitude| layer.1| layer.2|
+## |:-------|---------:|--------:|-------:|-------:|
+## |ahli    |  -80.0106|  21.8744|    2765|    1235|
+## |ahli    |  -79.9086|  21.8095|    2289|    1732|
+## |ahli    |  -79.8065|  21.7631|    2158|    1870|
+## |ahli    |  -79.8251|  21.8095|    2207|    1877|
+## |ahli    |  -79.8807|  21.8374|    2244|    1828|
+## |ahli    |  -79.9550|  21.8374|    2250|    1766|
+## 
+## 
+## |Species | Longitude| Latitude| layer.1| layer.2|
+## |:-------|---------:|--------:|-------:|-------:|
+## |ahli.bg | -80.32892| 22.16254|    2337|    1804|
+## |ahli.bg | -79.97059| 22.05420|    2822|    1256|
+## |ahli.bg | -80.43726| 22.11254|    2243|    1867|
+## |ahli.bg | -79.97892| 22.13754|    2544|    1664|
+## |ahli.bg | -79.88726| 21.99587|    2564|    1562|
+## |ahli.bg | -79.77059| 21.96254|    2451|    1766|
+## 
+## 
+## |Species    | Longitude| Latitude| layer.1| layer.2|
+## |:----------|---------:|--------:|-------:|-------:|
+## |allogus.bg |  -79.2527|  22.2109|    2656|    1683|
+## |allogus.bg |  -78.7774|  22.2241|    2373|    1967|
+## |allogus.bg |  -78.6189|  22.2373|    2317|    1980|
+## |allogus.bg |  -78.1039|  21.1809|    2461|    1669|
+## |allogus.bg |  -78.0247|  21.1809|    2437|    1684|
+## |allogus.bg |  -77.9983|  20.9301|    2315|    1746|
+## 
+## 
+## |Species | Longitude| Latitude| layer.1| layer.2|
+## |:-------|---------:|--------:|-------:|-------:|
+## |allogus | -76.53726| 20.10420|    2356|    1014|
+## |allogus | -78.12892| 21.22087|    2514|    1659|
+## |allogus | -75.17892| 20.26254|    2104|    1465|
+## |allogus | -75.87059| 20.62920|    2098|    1787|
+## |allogus | -78.44559| 22.24587|    2200|    2028|
+## |allogus | -75.82892| 20.65420|    2103|    1774|
+## 
+## 
+## |Species    | Longitude| Latitude| layer.1| layer.2|
+## |:----------|---------:|--------:|-------:|-------:|
+## |background | -80.91226| 23.27087|    2495|    1993|
+## |background | -80.90392| 23.27087|    2504|    2000|
+## |background | -80.93726| 23.26254|    2500|    1993|
+## |background | -80.92892| 23.26254|    2500|    1993|
+## |background | -80.92059| 23.26254|    2509|    2002|
+## |background | -80.91226| 23.26254|    2504|    2000|
+## 
+## 
+## ecospat.id test p-values:
+##    D    I 
+## 0.02 0.02
+```
+
+![plot of chunk ecospat_identity](figure/ecospat_identity-1.png)![plot of chunk ecospat_identity](figure/ecospat_identity-2.png)
+
+```
+## TableGrob (3 x 2) "arrange": 6 grobs
+##   z     cells    name           grob
+## 1 1 (1-1,1-1) arrange gtable[layout]
+## 2 2 (1-1,2-2) arrange gtable[layout]
+## 3 3 (2-2,1-1) arrange gtable[layout]
+## 4 4 (2-2,2-2) arrange gtable[layout]
+## 5 5 (3-3,1-1) arrange gtable[layout]
+## 6 6 (3-3,2-2) arrange gtable[layout]
+```
+
+And here's a symmetric background test.  The difference between symmetric and asymmetric for these tests is the same as for the background tests presented above.
+
+
+```r
+esp.bg.sym <- enmtools.ecospat.bg(ahli, allogus, env[[c("layer.1", "layer.3")]], test.type = "symmetric")
+```
+
+```
+## ===========================================================================
+```
+
+```r
+esp.bg.sym
+```
+
+```
+## 
+## 
+##  
+## 
+## Ecospat background test symmetric ahli vs. allogus
+## 
+## |Species | Longitude| Latitude| layer.1| layer.3|
+## |:-------|---------:|--------:|-------:|-------:|
+## |ahli    |  -80.0106|  21.8744|    2765|    1174|
+## |ahli    |  -79.9086|  21.8095|    2289|     957|
+## |ahli    |  -79.8065|  21.7631|    2158|     983|
+## |ahli    |  -79.8251|  21.8095|    2207|     967|
+## |ahli    |  -79.8807|  21.8374|    2244|     945|
+## |ahli    |  -79.9550|  21.8374|    2250|     919|
+## 
+## 
+## |Species | Longitude| Latitude| layer.1| layer.3|
+## |:-------|---------:|--------:|-------:|-------:|
+## |ahli.bg | -80.32892| 22.16254|    2337|     995|
+## |ahli.bg | -79.97059| 22.05420|    2822|    1170|
+## |ahli.bg | -80.43726| 22.11254|    2243|     955|
+## |ahli.bg | -79.97892| 22.13754|    2544|     982|
+## |ahli.bg | -79.88726| 21.99587|    2564|    1030|
+## |ahli.bg | -79.77059| 21.96254|    2451|     991|
+## 
+## 
+## |Species    | Longitude| Latitude| layer.1| layer.3|
+## |:----------|---------:|--------:|-------:|-------:|
+## |allogus.bg |  -79.2527|  22.2109|    2656|    1097|
+## |allogus.bg |  -78.7774|  22.2241|    2373|    1067|
+## |allogus.bg |  -78.6189|  22.2373|    2317|    1065|
+## |allogus.bg |  -78.1039|  21.1809|    2461|     846|
+## |allogus.bg |  -78.0247|  21.1809|    2437|     877|
+## |allogus.bg |  -77.9983|  20.9301|    2315|     907|
+## 
+## 
+## |Species | Longitude| Latitude| layer.1| layer.3|
+## |:-------|---------:|--------:|-------:|-------:|
+## |allogus | -76.53726| 20.10420|    2356|    1153|
+## |allogus | -78.12892| 21.22087|    2514|     850|
+## |allogus | -75.17892| 20.26254|    2104|    1033|
+## |allogus | -75.87059| 20.62920|    2098|     968|
+## |allogus | -78.44559| 22.24587|    2200|    1120|
+## |allogus | -75.82892| 20.65420|    2103|     944|
+## 
+## 
+## |Species    | Longitude| Latitude| layer.1| layer.3|
+## |:----------|---------:|--------:|-------:|-------:|
+## |background | -80.91226| 23.27087|    2495|    1075|
+## |background | -80.90392| 23.27087|    2504|    1082|
+## |background | -80.93726| 23.26254|    2500|    1077|
+## |background | -80.92892| 23.26254|    2500|    1077|
+## |background | -80.92059| 23.26254|    2509|    1082|
+## |background | -80.91226| 23.26254|    2504|    1080|
+## 
+## 
+## ecospat.bg test p-values:
+##    D    I 
+## 0.48 0.48
+```
+
+![plot of chunk ecospat_background](figure/ecospat_background-1.png)![plot of chunk ecospat_background](figure/ecospat_background-2.png)
+
+```
+## TableGrob (3 x 2) "arrange": 6 grobs
+##   z     cells    name           grob
+## 1 1 (1-1,1-1) arrange gtable[layout]
+## 2 2 (1-1,2-2) arrange gtable[layout]
+## 3 3 (2-2,1-1) arrange gtable[layout]
+## 4 4 (2-2,2-2) arrange gtable[layout]
+## 5 5 (3-3,1-1) arrange gtable[layout]
+## 6 6 (3-3,2-2) arrange gtable[layout]
+```
 
 
 ### Rangebreak tests
@@ -844,6 +1016,14 @@ rbl.glm <- rangebreak.linear(ahli, allogus, env, type = "glm", nreps = 4)
 ## Adding environmental data to species ahli 
 ## 	Processing presence points...
 ## 	Processing background points...
+## Adding environmental data to species allogus 
+## 	Processing presence points...
+## 	Processing background points...
+## 
+## Replicate 3 ...
+## Adding environmental data to species ahli 
+## 	Processing presence points...
+## 	Processing background points...
 ```
 
 ```
@@ -855,18 +1035,17 @@ rbl.glm <- rangebreak.linear(ahli, allogus, env, type = "glm", nreps = 4)
 ## 	Processing presence points...
 ## 	Processing background points...
 ## 
-## Replicate 3 ...
-## Adding environmental data to species ahli 
-## 	Processing presence points...
-## 	Processing background points...
-## Adding environmental data to species allogus 
-## 	Processing presence points...
-## 	Processing background points...
-## 
 ## Replicate 4 ...
 ## Adding environmental data to species ahli 
 ## 	Processing presence points...
 ## 	Processing background points...
+```
+
+```
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+```
+
+```
 ## Adding environmental data to species allogus 
 ## 	Processing presence points...
 ## 	Processing background points...
@@ -885,7 +1064,7 @@ rbl.glm
 ## 
 ## rangebreak test p-values:
 ##        D        I rank.cor    env.D    env.I  env.cor 
-##      0.6      0.6      0.8      0.4      0.4      0.6 
+##      0.8      0.6      0.8      0.4      0.2      0.8 
 ## 
 ## 
 ## Replicates:
@@ -893,11 +1072,11 @@ rbl.glm
 ## 
 ## |          |         D|         I|   rank.cor|     env.D|     env.I|    env.cor|
 ## |:---------|---------:|---------:|----------:|---------:|---------:|----------:|
-## |empirical | 0.2510115| 0.5054745| -0.5399230| 0.0057385| 0.0346831| -0.6531713|
-## |rep 1     | 0.2812367| 0.5934983| -0.8478177| 0.0151075| 0.0619896| -0.7476931|
-## |rep 2     | 0.2510115| 0.5054745| -0.5399230| 0.0055414| 0.0340545| -0.6541494|
-## |rep 3     | 0.1618797| 0.3819943|  0.7852141| 0.6708712| 0.8489328|  0.8403343|
-## |rep 4     | 0.2796547| 0.5664237| -0.6600540| 0.1359935| 0.3155255| -0.5589103|
+## |empirical | 0.2421897| 0.4912788| -0.4481580| 0.0049309| 0.0301009| -0.5994753|
+## |rep 1     | 0.2666887| 0.5747290| -0.8932739| 0.0121569| 0.0507923| -0.8109927|
+## |rep 2     | 0.2260824| 0.5347762| -0.8882999| 0.0307884| 0.1074834| -0.8108706|
+## |rep 3     | 0.0797506| 0.2547149|  0.8787676| 0.7007963| 0.8673111|  0.9102556|
+## |rep 4     | 0.2421897| 0.4912788| -0.4481580| 0.0048855| 0.0304383| -0.6000014|
 ```
 
 ![plot of chunk rangebreak_linear](figure/rangebreak_linear-1.png)![plot of chunk rangebreak_linear](figure/rangebreak_linear-2.png)
@@ -937,19 +1116,19 @@ rbb.bc
 ## 
 ## rangebreak test p-values:
 ##        D        I rank.cor    env.D    env.I  env.cor 
-##      1.0      0.8      0.8      0.6      0.6      0.6 
+##      0.8      0.8      0.8      0.2      0.4      0.6 
 ## 
 ## 
 ## Replicates:
 ## 
 ## 
-## |          |         D|         I|   rank.cor|     env.D|     env.I|   env.cor|
-## |:---------|---------:|---------:|----------:|---------:|---------:|---------:|
-## |empirical | 0.1328502| 0.3177390|  0.0706201| 0.0250656| 0.1258614| 0.1004012|
-## |rep 1     | 0.0327940| 0.1544608| -0.0172882| 0.2084441| 0.2978203| 0.2473155|
-## |rep 2     | 0.1222911| 0.3345075|  0.1829563| 0.1997239| 0.4296979| 0.3385917|
-## |rep 3     | 0.1328502| 0.3177390|  0.0706201| 0.0227099| 0.1156631| 0.0898299|
-## |rep 4     | 0.1328502| 0.3177390|  0.0706201| 0.0237241| 0.1172635| 0.0919682|
+## |          |         D|         I|  rank.cor|     env.D|     env.I|   env.cor|
+## |:---------|---------:|---------:|---------:|---------:|---------:|---------:|
+## |empirical | 0.1328502| 0.3177390| 0.0706201| 0.0214908| 0.1160630| 0.0928442|
+## |rep 1     | 0.1328502| 0.3177390| 0.0706201| 0.0221415| 0.1115121| 0.0852177|
+## |rep 2     | 0.5187961| 0.7164635| 0.2365479| 0.0940953| 0.2739076| 0.1777219|
+## |rep 3     | 0.0305200| 0.1470108| 0.0164929| 0.2044958| 0.3065521| 0.2511591|
+## |rep 4     | 0.1328502| 0.3177390| 0.0706201| 0.0228182| 0.1172822| 0.0869061|
 ```
 
 ![plot of chunk rangebreak_blob](figure/rangebreak_blob-1.png)
@@ -965,23 +1144,23 @@ rbl.glm$replicate.models$ahli.rep.1
 ## 
 ## 
 ## Formula:  presence ~ layer.1 + layer.2 + layer.3 + layer.4
-## <environment: 0x2ab6dab58>
+## <environment: 0x102a2b578>
 ## 
 ## 
 ## Data table (top ten lines): 
 ## 
 ## |   | Longitude| Latitude| layer.1| layer.2| layer.3| layer.4| presence|
 ## |:--|---------:|--------:|-------:|-------:|-------:|-------:|--------:|
-## |19 |  -78.6189|  22.2373|    2317|    1980|    1065|     374|        1|
-## |18 |  -78.7774|  22.2241|    2373|    1967|    1067|     375|        1|
-## |17 |  -79.2527|  22.2109|    2656|    1683|    1097|     325|        1|
 ## |7  |  -80.3446|  22.0136|    2201|    1822|     978|     277|        1|
 ## |8  |  -80.2983|  21.9951|    2214|    1786|     986|     284|        1|
 ## |11 |  -80.1498|  21.9858|    3042|     841|    1371|     221|        1|
-## |16 |  -79.9972|  21.9792|    2861|    1150|    1194|     259|        1|
-## |15 |  -80.0437|  21.9720|    2712|    1285|    1126|     250|        1|
-## |10 |  -80.1591|  21.9673|    2984|     965|    1311|     237|        1|
 ## |13 |  -80.1776|  21.9673|    2914|    1020|    1256|     237|        1|
+## |10 |  -80.1591|  21.9673|    2984|     965|    1311|     237|        1|
+## |14 |  -80.2148|  21.9394|    2329|    1692|    1018|     269|        1|
+## |15 |  -80.0437|  21.9720|    2712|    1285|    1126|     250|        1|
+## |17 |  -79.2527|  22.2109|    2656|    1683|    1097|     325|        1|
+## |16 |  -79.9972|  21.9792|    2861|    1150|    1194|     259|        1|
+## |12 |  -80.1220|  21.9301|    2898|    1033|    1231|     242|        1|
 ## 
 ## 
 ## Model:  
@@ -991,23 +1170,23 @@ rbl.glm$replicate.models$ahli.rep.1
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -0.4873  -0.1426  -0.0970  -0.0497   3.4084  
+## -0.4772  -0.1414  -0.0987  -0.0520   3.3968  
 ## 
 ## Coefficients:
 ##               Estimate Std. Error z value Pr(>|z|)    
-## (Intercept) -27.716806   7.759751  -3.572 0.000354 ***
-## layer.1       0.002767   0.001592   1.738 0.082244 .  
-## layer.2       0.003990   0.001968   2.028 0.042565 *  
-## layer.3       0.011243   0.004758   2.363 0.018132 *  
-## layer.4      -0.007206   0.008378  -0.860 0.389731    
+## (Intercept) -26.928799   7.716885  -3.490 0.000484 ***
+## layer.1       0.002886   0.001568   1.840 0.065738 .  
+## layer.2       0.003792   0.001950   1.944 0.051872 .  
+## layer.3       0.010475   0.004579   2.287 0.022172 *  
+## layer.4      -0.007038   0.008420  -0.836 0.403263    
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
 ##     Null deviance: 186.63  on 2015  degrees of freedom
-## Residual deviance: 166.46  on 2011  degrees of freedom
-## AIC: 176.46
+## Residual deviance: 166.67  on 2011  degrees of freedom
+## AIC: 176.67
 ## 
 ## Number of Fisher Scoring iterations: 10
 ## 
@@ -1016,9 +1195,9 @@ rbl.glm$replicate.models$ahli.rep.1
 ## Model fit (training data):  class          : ModelEvaluation 
 ## n presences    : 16 
 ## n absences     : 2000 
-## AUC            : 0.7711875 
-## cor            : 0.0732104 
-## max TPR+TNR at : -4.227436 
+## AUC            : 0.7689844 
+## cor            : 0.07635893 
+## max TPR+TNR at : -4.210373 
 ## 
 ## 
 ## Proportion of data wittheld for model fitting:  0
@@ -1034,7 +1213,7 @@ rbl.glm$replicate.models$ahli.rep.1
 ## coord. ref. : NA 
 ## data source : in memory
 ## names       : layer 
-## values      : 1.58032e-10, 0.1127977  (min, max)
+## values      : 5.328757e-10, 0.1086947  (min, max)
 ```
 
 ![plot of chunk rbl_reps](figure/rbl_reps-1.png)
@@ -1047,22 +1226,22 @@ rbl.glm$replicate.models$allogus.rep.1
 ## 
 ## 
 ## Formula:  presence ~ layer.1 + layer.2 + layer.3 + layer.4
-## <environment: 0x2baec6008>
+## <environment: 0x13c5077c8>
 ## 
 ## 
 ## Data table (top ten lines): 
 ## 
 ## |   | Longitude| Latitude| layer.1| layer.2| layer.3| layer.4| presence|
 ## |:--|---------:|--------:|-------:|-------:|-------:|-------:|--------:|
-## |4  |  -79.8251|  21.8095|    2207|    1877|     967|     259|        1|
 ## |2  |  -79.9086|  21.8095|    2289|    1732|     957|     231|        1|
-## |23 |  -77.9719|  21.7091|    2394|    1789|     966|     364|        1|
+## |4  |  -79.8251|  21.8095|    2207|    1877|     967|     259|        1|
 ## |3  |  -79.8065|  21.7631|    2158|    1870|     983|     253|        1|
+## |23 |  -77.9719|  21.7091|    2394|    1789|     966|     364|        1|
 ## |25 |  -77.9323|  21.6167|    2384|    1666|    1017|     324|        1|
 ## |24 |  -77.9719|  21.5507|    2402|    1708|     992|     325|        1|
-## |21 |  -78.0247|  21.1809|    2437|    1684|     877|     264|        1|
 ## |20 |  -78.1039|  21.1809|    2461|    1669|     846|     252|        1|
-## |50 |  -75.6611|  20.9961|    1828|    1777|    1041|     497|        1|
+## |21 |  -78.0247|  21.1809|    2437|    1684|     877|     264|        1|
+## |22 |  -77.9983|  20.9301|    2315|    1746|     907|     265|        1|
 ## |27 |  -77.4569|  20.9829|    2417|    1646|     845|     279|        1|
 ## 
 ## 
@@ -1073,23 +1252,23 @@ rbl.glm$replicate.models$allogus.rep.1
 ## 
 ## Deviance Residuals: 
 ##     Min       1Q   Median       3Q      Max  
-## -0.6153  -0.2391  -0.1342  -0.1083   3.1574  
+## -0.6340  -0.2435  -0.1341  -0.1057   3.1876  
 ## 
 ## Coefficients:
 ##               Estimate Std. Error z value Pr(>|z|)    
-## (Intercept)  7.3783288  2.6775265   2.756  0.00586 ** 
-## layer.1     -0.0028977  0.0005987  -4.840 1.30e-06 ***
-## layer.2     -0.0026045  0.0006081  -4.283 1.84e-05 ***
-## layer.3     -0.0018787  0.0009681  -1.941  0.05231 .  
-## layer.4      0.0028989  0.0011658   2.487  0.01290 *  
+## (Intercept)  8.9152046  2.7725103   3.216   0.0013 ** 
+## layer.1     -0.0029496  0.0006170  -4.781 1.75e-06 ***
+## layer.2     -0.0029550  0.0006244  -4.733 2.22e-06 ***
+## layer.3     -0.0025738  0.0010108  -2.546   0.0109 *  
+## layer.4      0.0023205  0.0011526   2.013   0.0441 *  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
 ## (Dispersion parameter for binomial family taken to be 1)
 ## 
 ##     Null deviance: 629.56  on 3064  degrees of freedom
-## Residual deviance: 569.98  on 3060  degrees of freedom
-## AIC: 579.98
+## Residual deviance: 565.77  on 3060  degrees of freedom
+## AIC: 575.77
 ## 
 ## Number of Fisher Scoring iterations: 7
 ## 
@@ -1098,9 +1277,9 @@ rbl.glm$replicate.models$allogus.rep.1
 ## Model fit (training data):  class          : ModelEvaluation 
 ## n presences    : 65 
 ## n absences     : 3000 
-## AUC            : 0.7643256 
-## cor            : 0.1415062 
-## max TPR+TNR at : -3.931098 
+## AUC            : 0.7727538 
+## cor            : 0.1463704 
+## max TPR+TNR at : -3.974762 
 ## 
 ## 
 ## Proportion of data wittheld for model fitting:  0
@@ -1116,7 +1295,7 @@ rbl.glm$replicate.models$allogus.rep.1
 ## coord. ref. : NA 
 ## data source : in memory
 ## names       : layer 
-## values      : 0.00152408, 0.1951718  (min, max)
+## values      : 0.001214865, 0.2975575  (min, max)
 ```
 
 ![plot of chunk rbl_reps](figure/rbl_reps-2.png)
@@ -1159,16 +1338,16 @@ ribbon
 ## 
 ## | Longitude| Latitude|
 ## |---------:|--------:|
-## | -78.74513| 22.03980|
-## | -78.99873| 21.94821|
-## | -78.68825| 21.71272|
-## | -78.87588| 21.76518|
-## | -78.63736| 21.87580|
-## | -78.84597| 21.88548|
-## | -78.69645| 21.80224|
-## | -78.84373| 21.89958|
-## | -78.76201| 21.99562|
-## | -78.97177| 21.93413|
+## | -78.73160| 21.91680|
+## | -78.51031| 21.82282|
+## | -78.58511| 21.73829|
+## | -78.56856| 21.97465|
+## | -78.66797| 22.05643|
+## | -78.82965| 21.87814|
+## | -78.65851| 22.07963|
+## | -78.61665| 21.77664|
+## | -78.98106| 21.90732|
+## | -78.93337| 21.75673|
 ## 
 ## 
 ## Background points not defined.
@@ -1227,6 +1406,10 @@ rbr.glm <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "glm", f = pres 
 ## Building replicate models...
 ## 
 ## Replicate 1 ...
+## 
+## Replicate 1 ...
+## 
+## Replicate 1 ...
 ## Adding environmental data to species ahli 
 ## 	Processing presence points...
 ## 	Processing background points...
@@ -1251,13 +1434,6 @@ rbr.glm <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "glm", f = pres 
 ## Adding environmental data to species ahli 
 ## 	Processing presence points...
 ## 	Processing background points...
-```
-
-```
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-```
-
-```
 ## Adding environmental data to species allogus 
 ## 	Processing presence points...
 ## 	Processing background points...
@@ -1279,13 +1455,6 @@ rbr.glm <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "glm", f = pres 
 ## Adding environmental data to species ahli 
 ## 	Processing presence points...
 ## 	Processing background points...
-```
-
-```
-## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-```
-
-```
 ## Adding environmental data to species allogus 
 ## 	Processing presence points...
 ## 	Processing background points...
@@ -1304,11 +1473,16 @@ rbr.glm <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "glm", f = pres 
 ## 	Processing background points...
 ## 
 ## Replicate 4 ...
-## 
-## Replicate 4 ...
 ## Adding environmental data to species ahli 
 ## 	Processing presence points...
 ## 	Processing background points...
+```
+
+```
+## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+```
+
+```
 ## Adding environmental data to species allogus 
 ## 	Processing presence points...
 ## 	Processing background points...
@@ -1342,15 +1516,15 @@ rbr.glm
 ## 
 ## Species 1 vs. Species 2:
 ##        D        I rank.cor    env.D    env.I  env.cor 
-##      1.0      0.6      0.6      0.4      0.4      0.8 
+##      0.6      0.6      0.8      0.4      0.4      0.8 
 ## 
 ## Species 1 vs. Ribbon:
 ##        D        I rank.cor    env.D    env.I  env.cor 
-##      0.6      0.6      0.4      0.2      0.2      0.8 
+##      0.4      0.4      0.2      0.6      0.6      0.6 
 ## 
 ## Species 2 vs. Ribbon:
 ##        D        I rank.cor    env.D    env.I  env.cor 
-##      0.2      0.2      0.2      0.2      0.2      0.4 
+##      0.2      0.2      0.2      0.2      0.2      0.6 
 ## 
 ## Outside vs. Ribbon:
 ##        D        I rank.cor    env.D    env.I  env.cor 
@@ -1361,59 +1535,59 @@ rbr.glm
 ## 
 ## Species 1 vs. Species 2:
 ##                    D         I    rank.cor      env.D      env.I
-## empirical 0.24903323 0.4775608  0.08768137 0.01787900 0.08648792
-## rep 1     0.22708436 0.4850290  0.75232652 0.41146360 0.69345209
-## rep 2     0.22377199 0.4661292 -0.31592605 0.01418302 0.07922539
-## rep 3     0.05109587 0.1875988  0.24793008 0.13126735 0.27161653
-## rep 4     0.23755356 0.5300586 -0.78975818 0.08623897 0.22575192
-##              env.cor
-## empirical -0.3327538
-## rep 1      0.4677690
-## rep 2     -0.4542478
-## rep 3     -0.3784471
-## rep 4     -0.4659210
+## empirical 0.25505166 0.4847307  0.07962718 0.03345400 0.11206906
+## rep 1     0.31492801 0.6414927 -0.90949205 0.03546522 0.11562729
+## rep 2     0.43716368 0.7290511 -0.29238059 0.11312029 0.27162324
+## rep 3     0.09105604 0.2912342  0.75887141 0.31481204 0.53728637
+## rep 4     0.24101114 0.4710123  0.04712485 0.01074355 0.05315645
+##               env.cor
+## empirical -0.24920585
+## rep 1     -0.82114375
+## rep 2     -0.50786011
+## rep 3      0.09622198
+## rep 4     -0.46873091
 ## 
 ## Species 1 vs. Ribbon:
-##                    D          I    rank.cor        env.D       env.I
-## empirical 0.10346651 0.23241334  0.08984116 0.0007993843 0.008971796
-## rep 1     0.03423873 0.11361692  0.34241995 0.0152973674 0.105354959
-## rep 2     0.42378356 0.70485315  0.64765132 0.0485579326 0.147354576
-## rep 3     0.01078654 0.04920766  0.19477770 0.0101132104 0.035029428
-## rep 4     0.31313708 0.55154641 -0.07551641 0.0414964480 0.086561251
-##               env.cor
-## empirical  0.14856191
-## rep 1      0.05065368
-## rep 2      0.74662717
-## rep 3     -0.22245497
-## rep 4     -0.31702855
+##                     D          I  rank.cor        env.D        env.I
+## empirical 0.071041118 0.18979319 0.1198372 2.766545e-04 0.0047991467
+## rep 1     0.335347430 0.58175582 0.1784809 2.709997e-01 0.4314297444
+## rep 2     0.085421347 0.25456716 0.4452348 9.069432e-05 0.0045728833
+## rep 3     0.001650135 0.01672329 0.3130459 3.942542e-05 0.0005825454
+## rep 4     0.246179647 0.48406697 0.1545095 1.255956e-03 0.0060241369
+##                env.cor
+## empirical  0.136271478
+## rep 1      0.290371427
+## rep 2     -0.009939555
+## rep 3     -0.040307617
+## rep 4      0.516838974
 ## 
 ## Species 2 vs. Ribbon:
 ##                    D         I     rank.cor        env.D       env.I
-## empirical 0.05866651 0.1910202 -0.770907555 0.0001729014 0.004375852
-## rep 1     0.09375871 0.2710504  0.315196977 0.0027596747 0.032824510
-## rep 2     0.38742466 0.6440959 -0.074332712 0.0138685124 0.054751523
-## rep 3     0.47327329 0.7560900  0.001693365 0.0281496458 0.117356894
-## rep 4     0.28003785 0.5700282  0.065595491 0.0891437269 0.231846326
+## empirical 0.04594640 0.1541063 -0.731593063 6.005712e-05 0.001663312
+## rep 1     0.22372878 0.4365391 -0.018563448 4.982705e-02 0.148272328
+## rep 2     0.07140640 0.2206139  0.063164962 2.673806e-04 0.007668446
+## rep 3     0.09026148 0.2531706  0.309535720 1.195730e-03 0.018675390
+## rep 4     0.35891830 0.6318136 -0.005079991 7.670282e-02 0.222669419
 ##               env.cor
-## empirical -0.12575202
-## rep 1      0.04579372
-## rep 2     -0.64222758
-## rep 3      0.23356557
-## rep 4      0.06664871
+## empirical -0.11102810
+## rep 1     -0.37305617
+## rep 2     -0.08417758
+## rep 3      0.02780402
+## rep 4     -0.35968925
 ## 
 ## Outside vs. Ribbon:
-##                    D         I    rank.cor        env.D       env.I
-## empirical 0.07658075 0.2265256 -0.79878223 0.0002296288 0.006247992
-## rep 1     0.08691426 0.2575740  0.23868669 0.0131663856 0.095346864
-## rep 2     0.46387091 0.7127093  0.10825104 0.0229465126 0.075102926
-## rep 3     0.44714665 0.7225964  0.10640236 0.0157411461 0.076561249
-## rep 4     0.33514529 0.6249116  0.01497017 0.0422001698 0.160974023
-##               env.cor
-## empirical -0.15339790
-## rep 1      0.04314764
-## rep 2     -0.64865423
-## rep 3     -0.04857705
-## rep 4     -0.30470525
+##                    D         I     rank.cor        env.D       env.I
+## empirical 0.06058673 0.1855039 -0.738585583 0.0001162381 0.003051796
+## rep 1     0.27074151 0.5076287  0.122279650 0.0277775286 0.133345065
+## rep 2     0.07512532 0.2277689 -0.071877904 0.0003333168 0.007801890
+## rep 3     0.07627138 0.2275844  0.228551831 0.0004567300 0.010268188
+## rep 4     0.40895346 0.6938309 -0.003088314 0.0785530532 0.240438833
+##              env.cor
+## empirical -0.1237694
+## rep 1     -0.6058604
+## rep 2     -0.1118406
+## rep 3     -0.0470752
+## rep 4     -0.4176316
 ```
 
 ![plot of chunk rangebreak_ribbon](figure/rangebreak_ribbon-1.png)![plot of chunk rangebreak_ribbon](figure/rangebreak_ribbon-2.png)![plot of chunk rangebreak_ribbon](figure/rangebreak_ribbon-3.png)![plot of chunk rangebreak_ribbon](figure/rangebreak_ribbon-4.png)
@@ -1426,17 +1600,20 @@ rbr.glm$lines.df
 ```
 
 ```
-##        slope intercept    offset
-## 1  1.3289224 123.01535 0.4157850
-## 2 -0.5328649 -20.21066 0.2832782
-## 3 -0.5921045 -24.46515 0.2905370
-## 4 -0.1259796  11.34823 0.2519760
+##          slope   intercept    offset
+## 1   0.06521924    26.11545 0.2505311
+## 2   0.99150308    97.94741 0.3520545
+## 3 -29.52548320 -2243.28807 7.3856032
+## 4  -0.75468894   -37.41399 0.3132047
 ```
 The intercept denotes the intercept corresponding to the CENTER of each ribbon.  To get the lines denoting the edges of the ribbons (for example if you want to plot the ribbons on a map), you add and substract the offset.  In other words, the top edge of the ribbon is given by y = (slope * x) + intercept + offset, while the bottom edge is given by y = (slope * x) + intercept - offset.  
 
 
+
+
 ### Literature cited
 
+*Broennimann, O., Fitzpatrick, M. C., Pearman, P. B., Petitpierre, B., Pellissier, L., Yoccoz, N. G., Thuiller, W., Fortin, M.-J., Randin, C., Zimmermann, N. E., Graham, C. H. and Guisan, A. (2012), Measuring ecological niche overlap from occurrence and spatial environmental data. Global Ecology and Biogeography, 21: 481–497. doi:10.1111/j.1466-8238.2011.00698.x*
 
 *Levins, R. 1968. Evolution In Changing Environments. Monographs in Population Biology, volume 2. Princeton University Press, Princeton, New Jersey, USA.*
 

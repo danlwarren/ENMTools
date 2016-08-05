@@ -211,7 +211,7 @@ rbr.glm <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "glm", width = 0
 
 rbr.glm <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "gam", width = 0.5, nreps = 4)
 
-esp.id <- enmtools.ecospat.id(ahli, allogus, env[[c("layer.1", "layer.3")]])
+esp.id <- enmtools.ecospat.id(ahli, allogus, env[[c("layer.1", "layer.2")]])
 
 esp.bg.sym <- enmtools.ecospat.bg(ahli, allogus, env[[c("layer.1", "layer.3")]], test.type = "symmetric")
 

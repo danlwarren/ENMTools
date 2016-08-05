@@ -16,6 +16,9 @@
 #' @keywords niche plot sdm enm
 #'
 #' @export enmtools.ecospat.bg
+#' @export summary.ecospat.bg.test
+#' @export print.ecospat.bg.test
+#' @export plot.ecospat.bg.test
 #'
 #' @examples
 #' enmtools.ecospat.bg(ahli, allogus)
@@ -84,15 +87,15 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
   d.plot <- qplot(bg$sim[,"D"], geom = "density", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = bg$obs$D, linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
-    ggtitle(paste("Ecospat identity test:", species.1$species.name, "vs.", species.2$species.name))
+    ggtitle(paste("Ecospat background test:", species.1$species.name, "vs.", species.2$species.name))
 
   i.plot <- qplot(bg$sim[,"I"], geom = "density", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = bg$obs$I, linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") +
-    ggtitle(paste("Ecospat identity test:", species.1$species.name, "vs.", species.2$species.name))
+    ggtitle(paste("Ecospat background test:", species.1$species.name, "vs.", species.2$species.name))
 
 
-  sp1.bg.points <- data.frame(rasterToPoints(raster(test$sp1.niche$Z)))
+  sp1.bg.points <- data.frame(rasterToPoints(raster(sp1.niche$Z)))
   colnames(sp1.bg.points) <- c("X", "Y", "Density")
   sp1.bg.plot <-  ggplot(data = sp1.bg.points, aes(y = Y, x = X)) +
     geom_raster(aes(fill = Density)) +
@@ -100,7 +103,7 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
     coord_fixed() + theme_classic() +
     ggtitle(paste(species.1$species.name, "available environment"))
 
-  sp1.env.points <- data.frame(rasterToPoints(raster(test$sp1.niche$z.uncor)))
+  sp1.env.points <- data.frame(rasterToPoints(raster(sp1.niche$z.uncor)))
   colnames(sp1.env.points) <- c("X", "Y", "Density")
   sp1.env.plot <-  ggplot(data = sp1.env.points, aes(y = Y, x = X)) +
     geom_raster(aes(fill = Density)) +
@@ -108,7 +111,7 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
     coord_fixed() + theme_classic() +
     ggtitle(paste(species.1$species.name, "occurrence in environment space"))
 
-  sp1.env.corr.points <- data.frame(rasterToPoints(raster(test$sp1.niche$z.cor)))
+  sp1.env.corr.points <- data.frame(rasterToPoints(raster(sp1.niche$z.cor)))
   colnames(sp1.env.corr.points) <- c("X", "Y", "Density")
   sp1.env.plot.corr <-  ggplot(data = sp1.env.corr.points, aes(y = Y, x = X)) +
     geom_raster(aes(fill = Density)) +
@@ -116,7 +119,7 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
     coord_fixed() + theme_classic() +
     ggtitle(paste(species.1$species.name, "density in environment space, scaled by availability"))
 
-  sp2.bg.points <- data.frame(rasterToPoints(raster(test$sp2.niche$Z)))
+  sp2.bg.points <- data.frame(rasterToPoints(raster(sp2.niche$Z)))
   colnames(sp2.bg.points) <- c("X", "Y", "Density")
   sp2.bg.plot <-  ggplot(data = sp2.bg.points, aes(y = Y, x = X)) +
     geom_raster(aes(fill = Density)) +
@@ -124,7 +127,7 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
     coord_fixed() + theme_classic() +
     ggtitle(paste(species.2$species.name, "available environment"))
 
-  sp2.env.points <- data.frame(rasterToPoints(raster(test$sp2.niche$z.uncor)))
+  sp2.env.points <- data.frame(rasterToPoints(raster(sp2.niche$z.uncor)))
   colnames(sp2.env.points) <- c("X", "Y", "Density")
   sp2.env.plot <-  ggplot(data = sp2.env.points, aes(y = Y, x = X)) +
     geom_raster(aes(fill = Density)) +
@@ -132,7 +135,7 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
     coord_fixed() + theme_classic() +
     ggtitle(paste(species.2$species.name, "occurrence in environment space"))
 
-  sp2.env.corr.points <- data.frame(rasterToPoints(raster(test$sp2.niche$z.cor)))
+  sp2.env.corr.points <- data.frame(rasterToPoints(raster(sp2.niche$z.cor)))
   colnames(sp2.env.corr.points) <- c("X", "Y", "Density")
   sp2.env.plot.corr <-  ggplot(data = sp2.env.corr.points, aes(y = Y, x = X)) +
     geom_raster(aes(fill = Density)) +
@@ -254,7 +257,7 @@ summary.ecospat.bg.test <- function(id){
 
 print.ecospat.bg.test <- function(id){
 
-  summary(id)
+  print(summary(id))
 
 }
 
