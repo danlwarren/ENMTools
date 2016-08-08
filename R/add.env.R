@@ -21,14 +21,21 @@ add.env <- function(species, env){
     cat(paste("Adding environmental data to species", species$species.name, "\n"))
     if(class(species$presence.points) %in% c("data.frame", "matrix")){
       cat("\tProcessing presence points...\n")
+
+      # Have to assign names manually because otherwise it fails when there's only one env layer
+      names <- c(colnames(species$presence.points), names(env))
       species$presence.points <- cbind(species$presence.points, extract(env, species$presence.points[,1:2]))
+      colnames(species$presence.points) <- names
     } else {
       print("No presence points, skipping...\n")
     }
 
     if(class(species$background.points) %in% c("data.frame", "matrix")){
       cat("\tProcessing background points...\n")
+
+      names <- c(colnames(species$background.points), names(env))
       species$background.points <- cbind(species$background.points, extract(env, species$background.points[,1:2]))
+      colnames(species$background.points) <- names
     } else {
       print("No background points, skipping...\n")
     }

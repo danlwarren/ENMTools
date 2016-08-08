@@ -4,6 +4,7 @@
 #' @param species An enmtools.species object
 #' @param env A raster or raster stack of environmental data.
 #' @param test.prop Proportion of data to withhold for model evaluation
+#' @param eval Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.
 #' @param ... Arguments to be passed to glm()
 #'
 #' @export enmtools.glm
@@ -12,19 +13,26 @@
 #' @export plot.enmtools.glm
 
 
-enmtools.glm <- function(species, env, f = NULL, test.prop = 0, ...){
+enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, ...){
+
+  notes <- NULL
 
   species <- check.bg(species, env, ...)
 
   # Builds a default formula using all env
   if(is.null(f)){
     f <- as.formula(paste("presence", paste(c(names(env)), collapse = " + "), sep = " ~ "))
+    notes <- c(notes, "No formula was provided, so a GLM formula was built automatically.")
   }
 
   glm.precheck(f, species, env)
 
+  # Declaring some NAs in case we skip evaluation
   test.data <- NA
+  model.evaluation <- NA
+  env.model.evaluation <- NA
   test.evaluation <- NA
+  env.test.evaluation <- NA
 
   if(test.prop > 0 & test.prop < 1){
     test.inds <- sample(1:nrow(species$presence.points), ceiling(nrow(species$presence.points) * test.prop))
@@ -46,15 +54,30 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, ...){
 
   suitability <- predict(env, this.glm, type = "response")
 
-  model.evaluation <- evaluate(species$presence.points[,1:2], species$background.points[,1:2],
-                               this.glm, env)
+  if(eval == TRUE){
 
-  if(test.prop > 0 & test.prop < 1){
-    test.evaluation <- evaluate(test.data, species$background.points[,1:2],
-                                this.glm, env)
+    # This is a very weird hack that has to be done because dismo's evaluate function
+    # fails if the stack only has one layer.
+    if(length(names(env)) == 1){
+      oldname <- names(env)
+      env <- stack(env, env)
+      names(env) <- c(oldname, "dummyvar")
+      notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
+    }
+
+    model.evaluation <- evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+                                 this.glm, env)
+    env.model.evaluation <- env.evaluate(species, this.glm, env)
+
+    if(test.prop > 0 & test.prop < 1){
+      test.evaluation <- evaluate(test.data, species$background.points[,1:2],
+                                  this.glm, env)
+      temp.sp <- species
+      temp.sp$presence.points <- test.data
+      env.test.evaluation <- env.evaluate(temp.sp, this.glm, env)
+    }
+
   }
-
-
 
   output <- list(formula = f,
                  analysis.df = analysis.df,
@@ -63,7 +86,10 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, ...){
                  model = this.glm,
                  training.evaluation = model.evaluation,
                  test.evaluation = test.evaluation,
-                 suitability = suitability)
+                 env.training.evaluation = env.model.evaluation,
+                 env.test.evaluation = env.test.evaluation,
+                 suitability = suitability,
+                 notes = notes)
 
   class(output) <- c("enmtools.glm", "enmtools.model")
 
@@ -96,15 +122,25 @@ summary.enmtools.glm <- function(this.glm){
   cat("\n\nModel fit (training data):  ")
   print(this.glm$training.evaluation)
 
+  cat("\n\nEnvironment space model fit (training data):  ")
+  print(this.glm$env.training.evaluation)
+
   cat("\n\nProportion of data wittheld for model fitting:  ")
   cat(this.glm$test.prop)
 
   cat("\n\nModel fit (test data):  ")
   print(this.glm$test.evaluation)
 
+  cat("\n\nEnvironment space model fit (test data):  ")
+  print(this.glm$env.test.evaluation)
+
   cat("\n\nSuitability:  \n")
   print(this.glm$suitability)
   plot(this.glm)
+
+  cat("\n\nNotes:  \n")
+  print(this.glm$notes)
+
 }
 
 # Print method for objects of class enmtools.glm

@@ -8,6 +8,8 @@
 
 check.bg <- function(species, env = NA, nback = 1000){
 
+  cat(paste("\nChecking background for ", species$species.name, "...\n"))
+
   check.species(species)
 
   if(!any(c("data.frame") %in% class(species$presence.points))){
@@ -30,7 +32,7 @@ check.bg <- function(species, env = NA, nback = 1000){
 
     if(any(c("raster", "RasterLayer", "RasterStack") %in% class(env))) {
 
-      cat("\n\nNo background points or range raster, drawing background from environmental layers.\n\n")
+      cat("\nNo background points or range raster, drawing background from environmental layers.\n\n")
       species$background.points <- as.data.frame(randomPoints(env[[1]], nback, species$presence.points))
       colnames(species$background.points) <- colnames(species$presence.points)
       return(species)

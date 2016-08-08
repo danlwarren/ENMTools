@@ -58,6 +58,8 @@ onevar.glm$response.plots
 
 allogus.glm <- enmtools.glm(allogus, env, pres ~ layer.1 + layer.2 + layer.3 + layer.4)
 allogus.glm
+allogus.glm <- enmtools.glm(allogus, env, pres ~ layer.1 + layer.2 + layer.3 + layer.4, test.prop = 0.3)
+allogus.glm
 env.plots <- visualize.enm(allogus.glm, env, layers = c("layer.1", "layer.2"))
 env.plots
 
@@ -82,6 +84,11 @@ ahli.mx$response.plots
 allogus.mx <- enmtools.maxent(allogus, env, test.prop = 0.2)
 allogus.mx
 allogus.mx$response.plots
+
+allogus.dm <- enmtools.dm(allogus, env, test.prop = 0.2)
+allogus.dm
+env.evaluate(allogus, allogus.dm, env, "background")
+visualize.enm(allogus.dm, env, layers = c("layer.1", "layer.2"))
 
 ahli.dm <- enmtools.dm(ahli, env, test.prop = 0.2)
 ahli.dm

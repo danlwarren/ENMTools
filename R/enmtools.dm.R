@@ -12,12 +12,15 @@
 
 enmtools.dm <- function(species, env = NA, test.prop = 0, ...){
 
+  notes <- NULL
+
   species <- check.bg(species, env, ...)
 
   dm.precheck(species, env)
 
   test.data <- NA
   test.evaluation <- NA
+  env.test.evaluation <- NA
 
   if(test.prop > 0 & test.prop < 1){
     test.inds <- sample(1:nrow(species$presence.points), ceiling(nrow(species$presence.points) * test.prop))
@@ -25,14 +28,37 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, ...){
     species$presence.points <- species$presence.points[-test.inds,]
   }
 
+  # This is a very weird hack that has to be done because dismo's evaluate and domain function
+  # fail if the stack only has one layer.
+  if(length(names(env)) == 1){
+    oldname <- names(env)
+    env <- stack(env, env)
+    env[[2]][!is.na(env[[2]])] <- 0
+    names(env) <- c(oldname, "dummyvar")
+    notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
+  }
+
+
   this.dm <- domain(env, species$presence.points[,1:2])
+
+  # This is a very weird hack that has to be done because dismo's evaluate function
+  # fails if the stack only has one layer.
+  if(length(names(env)) == 1){
+    oldname <- names(env)
+    env <- stack(env, env)
+    names(env) <- c(oldname, "dummyvar")
+  }
 
   model.evaluation <- evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                this.dm, env)
+  env.model.evaluation <- env.evaluate(species, this.dm, env)
 
   if(test.prop > 0 & test.prop < 1){
     test.evaluation <- evaluate(test.data, species$background.points[,1:2],
                                 this.dm, env)
+    temp.sp <- species
+    temp.sp$presence.points <- test.data
+    env.test.evaluation <- env.evaluate(temp.sp, this.dm, env)
   }
 
   suitability <- predict(env, this.dm, type = "response")
@@ -43,7 +69,10 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, ...){
                  model = this.dm,
                  training.evaluation = model.evaluation,
                  test.evaluation = test.evaluation,
-                 suitability = suitability)
+                 env.training.evaluation = env.model.evaluation,
+                 env.test.evaluation = env.test.evaluation,
+                 suitability = suitability,
+                 notes = notes)
 
   class(output) <- c("enmtools.dm", "enmtools.model")
 
@@ -74,15 +103,24 @@ summary.enmtools.dm <- function(this.dm){
   cat("\n\nModel fit (training data):  ")
   print(this.dm$training.evaluation)
 
+  cat("\n\nEnvironment space model fit (training data):  ")
+  print(this.dm$env.training.evaluation)
+
   cat("\n\nProportion of data wittheld for model fitting:  ")
   cat(this.dm$test.prop)
 
   cat("\n\nModel fit (test data):  ")
   print(this.dm$test.evaluation)
 
+  cat("\n\nEnvironment space model fit (test data):  ")
+  print(this.dm$env.test.evaluation)
+
   cat("\n\nSuitability:  \n")
   print(this.dm$suitability)
   plot(this.dm)
+
+  cat("\n\nNotes:  \n")
+  print(this.dm$notes)
 
 }
 

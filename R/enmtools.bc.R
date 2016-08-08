@@ -12,12 +12,15 @@
 
 enmtools.bc <- function(species, env = NA, test.prop = 0, ...){
 
+  notes <- NULL
+
   species <- check.bg(species, env, ...)
 
   bc.precheck(species, env)
 
   test.data <- NA
   test.evaluation <- NA
+  env.test.evaluation <- NA
 
   if(test.prop > 0 & test.prop < 1){
     test.inds <- sample(1:nrow(species$presence.points), ceiling(nrow(species$presence.points) * test.prop))
@@ -25,16 +28,38 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, ...){
     species$presence.points <- species$presence.points[-test.inds,]
   }
 
+  # This is a very weird hack that has to be done because dismo's evaluate and bioclim function
+  # fail if the stack only has one layer.
+  if(length(names(env)) == 1){
+    oldname <- names(env)
+    env <- stack(env, env)
+    env[[2]][!is.na(env[[2]])] <- 0
+    names(env) <- c(oldname, "dummyvar")
+    notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
+  }
+
   this.bc <- bioclim(env, species$presence.points[,1:2])
 
   suitability <- suitability <- predict(env, this.bc, type = "response")
 
+  # This is a very weird hack that has to be done because dismo's evaluate function
+  # fails if the stack only has one layer.
+  if(length(names(env)) == 1){
+    oldname <- names(env)
+    env <- stack(env, env)
+    names(env) <- c(oldname, "dummyvar")
+  }
+
   model.evaluation <- evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                this.bc, env)
+  env.model.evaluation <- env.evaluate(species, this.bc, env)
 
   if(test.prop > 0 & test.prop < 1){
     test.evaluation <- evaluate(test.data, species$background.points[,1:2],
                                 this.bc, env)
+    temp.sp <- species
+    temp.sp$presence.points <- test.data
+    env.test.evaluation <- env.evaluate(temp.sp, this.bc, env)
   }
 
   output <- list(analysis.df = species$presence.points[,1:2],
@@ -43,7 +68,10 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, ...){
                  model = this.bc,
                  training.evaluation = model.evaluation,
                  test.evaluation = test.evaluation,
-                 suitability = suitability)
+                 env.training.evaluation = env.model.evaluation,
+                 env.test.evaluation = env.test.evaluation,
+                 suitability = suitability,
+                 notes = notes)
 
   class(output) <- c("enmtools.bc", "enmtools.model")
 
@@ -74,15 +102,24 @@ summary.enmtools.bc <- function(this.bc){
   cat("\n\nModel fit (training data):  ")
   print(this.bc$training.evaluation)
 
+  cat("\n\nEnvironment space model fit (training data):  ")
+  print(this.bc$env.training.evaluation)
+
   cat("\n\nProportion of data wittheld for model fitting:  ")
   cat(this.bc$test.prop)
 
   cat("\n\nModel fit (test data):  ")
   print(this.bc$test.evaluation)
 
+  cat("\n\nEnvironment space model fit (test data):  ")
+  print(this.bc$env.test.evaluation)
+
   cat("\n\nSuitability:  \n")
   print(this.bc$suitability)
   plot(this.bc)
+
+  cat("\n\nNotes:  \n")
+  print(this.bc$notes)
 }
 
 #Print method for objects of class enmtools.bc
