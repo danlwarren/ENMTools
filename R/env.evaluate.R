@@ -26,8 +26,8 @@ env.evaluate <- function(species, model, env, bg.source = "background", ...){
   if(bg.source == "background"){
     allpoints <- rbind(presence, background)
     values <- extract(env, allpoints)
-    maxes <- apply(values, 2, max)
-    mins <- apply(values, 2, min)
+    maxes <- apply(values, 2, function(x) max(x, na.rm = TRUE))
+    mins <- apply(values, 2, function(x) max(x, na.rm = TRUE))
   }
 
   if(bg.source == "env") {
@@ -35,10 +35,17 @@ env.evaluate <- function(species, model, env, bg.source = "background", ...){
     mins <- minValue(env)
   }
 
+
+
   this.lhs <- randomLHS(10000, length(names(env)))
   bg.table <- t(t(this.lhs) * (maxes  - mins) + mins)
   colnames(bg.table) <- names(env)
   p.table <- extract(env, presence)
+#
+#   print(mins)
+#   print(maxes)
+#   print(head(bg.table))
+#   print(head(p.table))
 
   pred.p <- as.numeric(predict(model, data.frame(p.table), type = "response"))
   pred.bg <- as.numeric(predict(model, data.frame(bg.table), type = "response"))

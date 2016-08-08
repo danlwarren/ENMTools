@@ -12,6 +12,8 @@
 
 enmtools.bc <- function(species, env = NA, test.prop = 0, ...){
 
+  notes <- NULL
+
   species <- check.bg(species, env, ...)
 
   bc.precheck(species, env)
@@ -26,9 +28,27 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, ...){
     species$presence.points <- species$presence.points[-test.inds,]
   }
 
+  # This is a very weird hack that has to be done because dismo's evaluate and bioclim function
+  # fail if the stack only has one layer.
+  if(length(names(env)) == 1){
+    oldname <- names(env)
+    env <- stack(env, env)
+    env[[2]][!is.na(env[[2]])] <- 0
+    names(env) <- c(oldname, "dummyvar")
+    notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
+  }
+
   this.bc <- bioclim(env, species$presence.points[,1:2])
 
   suitability <- suitability <- predict(env, this.bc, type = "response")
+
+  # This is a very weird hack that has to be done because dismo's evaluate function
+  # fails if the stack only has one layer.
+  if(length(names(env)) == 1){
+    oldname <- names(env)
+    env <- stack(env, env)
+    names(env) <- c(oldname, "dummyvar")
+  }
 
   model.evaluation <- evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                this.bc, env)
@@ -50,7 +70,8 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, ...){
                  test.evaluation = test.evaluation,
                  env.training.evaluation = env.model.evaluation,
                  env.test.evaluation = env.test.evaluation,
-                 suitability = suitability)
+                 suitability = suitability,
+                 notes = notes)
 
   class(output) <- c("enmtools.bc", "enmtools.model")
 
@@ -96,6 +117,9 @@ summary.enmtools.bc <- function(this.bc){
   cat("\n\nSuitability:  \n")
   print(this.bc$suitability)
   plot(this.bc)
+
+  cat("\n\nNotes:  \n")
+  print(this.bc$notes)
 }
 
 #Print method for objects of class enmtools.bc

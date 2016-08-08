@@ -13,6 +13,8 @@
 
 enmtools.maxent <- function(species, env, test.prop = 0, ...){
 
+  notes <- NULL
+
   species <- check.bg(species, env, ...)
 
   maxent.precheck(f, species, env)
@@ -30,11 +32,23 @@ enmtools.maxent <- function(species, env, test.prop = 0, ...){
   analysis.df <- rbind(species$presence.points, species$background.points)
   analysis.df$presence <- c(rep(1, nrow(species$presence.points)), rep(0, nrow(species$background.points)))
 
+  # This is a very weird hack that has to be done because dismo's evaluate and maxent function
+  # fail if the stack only has one layer.
+  if(length(names(env)) == 1){
+    oldname <- names(env)
+    env <- stack(env, env)
+    env[[2]][!is.na(env[[2]])] <- 0
+    names(env) <- c(oldname, "dummyvar")
+    notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
+  }
+
+
   this.mx <- maxent(env, p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)
+
 
   model.evaluation <- evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                this.mx, env)
-  env.model.evaluation <- env.evaluate(species, this.glm, env)
+  env.model.evaluation <- env.evaluate(species, this.mx, env)
 
   if(test.prop > 0 & test.prop < 1){
     test.evaluation <- evaluate(test.data, species$background.points[,1:2],
@@ -55,7 +69,8 @@ enmtools.maxent <- function(species, env, test.prop = 0, ...){
                  test.evaluation = test.evaluation,
                  env.training.evaluation = env.model.evaluation,
                  env.test.evaluation = env.test.evaluation,
-                 suitability = suitability)
+                 suitability = suitability,
+                 notes = notes)
 
   class(output) <- c("enmtools.maxent", "enmtools.model")
 
@@ -100,6 +115,9 @@ summary.enmtools.maxent <- function(this.maxent){
   cat("\n\nSuitability:  \n")
   print(this.maxent$suitability)
   plot(this.maxent)
+
+  cat("\n\nNotes:  \n")
+  print(this.maxent$notes)
 
 }
 

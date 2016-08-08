@@ -4,7 +4,7 @@
 \alias{enmtools.glm}
 \title{Takes an emtools.species object with presence and background points, and builds a GLM}
 \usage{
-enmtools.glm(species, env, f = NULL, test.prop = 0, ...)
+enmtools.glm(species, env, f = NULL, test.prop = 0, eval = TRUE, ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
@@ -12,6 +12,8 @@ enmtools.glm(species, env, f = NULL, test.prop = 0, ...)
 \item{env}{A raster or raster stack of environmental data.}
 
 \item{test.prop}{Proportion of data to withhold for model evaluation}
+
+\item{eval}{Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.}
 
 \item{...}{Arguments to be passed to glm()}
 

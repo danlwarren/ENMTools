@@ -1,11 +1,17 @@
 library(ape)
 library(rgbif)
+library(ENMTools)
 hisp.anoles <- read.nexus(file = "./testdata/StarBEAST_MCC.species.txt")
 
 keepers <- c("brevirostris", "marron", "caudalis", "websteri")
 
 hisp.anoles <- drop.tip(phy = hisp.anoles, tip = hisp.anoles$tip.label[!hisp.anoles$tip.label %in% keepers])
 plot(hisp.anoles)
+
+
+hisp.env <- stack(list.files("./testdata/Hispaniola_Worldclim", full.names = TRUE))
+hisp.env <- setMinMax(hisp.env)
+
 
 
 # Automate the process of downloading data and removing duds and dupes
@@ -39,9 +45,12 @@ websteri <- species.from.gbif(genus = "Anolis", species = "websteri", env = hisp
 brev.clade <- enmtools.clade(species = list(brevirostris, marron, caudalis, websteri), tree = hisp.anoles)
 check.clade(brev.clade)
 
-hisp.env <- stack(list.files("./testdata/Hispaniola_Worldclim", full.names = TRUE))
-hisp.env <- setMinMax(hisp.env)
+# brev.dm <- enmtools.dm(species = brevirostris, env = hisp.env, test.prop = 0.2)
+# brev.glm <- enmtools.glm(species = brevirostris, env = hisp.env, test.prop = 0.2)
+# visualize.enm(brev.glm, hisp.env, layers = c("snv_1", "snv_10"))
 
-brev.dm <- enmtools.dm(species = brevirostris, env = hisp.env, test.prop = 0.2)
-brev.glm <- enmtools.glm(species = brevirostris, env = hisp.env, test.prop = 0.2)
-visualize.enm(brev.glm, hisp.env, layers = c("snv_1", "snv_10"))
+test1 <- enmtools.glm(marron, hisp.env[[1]])
+test2 <- enmtools.gam(marron, hisp.env[[1]])
+test3 <- enmtools.dm(marron, hisp.env[[1]])
+test4 <- enmtools.bc(marron, hisp.env[[1]])
+test5 <- enmtools.maxent(marron, hisp.env[[1]])
