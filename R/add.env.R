@@ -11,7 +11,7 @@
 
 add.env <- function(species, env){
 
-  if(!any(c("RasterLayer", "RasterStack", "raster") %in% class(env))){
+  if(!any(c("RasterLayer", "RasterStack", "raster", "RasterBrick") %in% class(env))){
     stop("Argument env must be a raster, RasterLayer, or RasterStack object!")
   }
 
@@ -26,6 +26,7 @@ add.env <- function(species, env){
       names <- c(colnames(species$presence.points), names(env))
       species$presence.points <- cbind(species$presence.points, extract(env, species$presence.points[,1:2]))
       colnames(species$presence.points) <- names
+      species$presence.points <- species$presence.points[complete.cases(species$presence.points),]
     } else {
       print("No presence points, skipping...\n")
     }
@@ -36,6 +37,7 @@ add.env <- function(species, env){
       names <- c(colnames(species$background.points), names(env))
       species$background.points <- cbind(species$background.points, extract(env, species$background.points[,1:2]))
       colnames(species$background.points) <- names
+      species$background.points <- species$background.points[complete.cases(species$background.points),]
     } else {
       print("No background points, skipping...\n")
     }
