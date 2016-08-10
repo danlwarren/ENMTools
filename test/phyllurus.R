@@ -36,6 +36,8 @@ tree <- read.tree(file="phyllurus.tre")
 tree <- drop.tip(tree, tree$tip.label[!tree$tip.label %in% phyltable$Species])
 plot(tree)
 
+
+# Should I write a function to auto-build clades from a csv and a tree?
 for(i in tree$tip.label){
   print(i)
   this.p <- format.latlon(phyltable[phyltable$Species == i,c("Long", "Lat")])
