@@ -58,7 +58,7 @@ summary.enmtools.clade <- function(this.clade){
   print(this.clade$tree)
 
   cat("\n\nData Summary: \n")
-  print(kable(this.clade$summary))
+  print(this.clade$summary)
 
   cat("\n")
 }

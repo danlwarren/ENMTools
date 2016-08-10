@@ -2,7 +2,7 @@ setwd("~/GitHub/ENMTools/test")
 library(ENMTools)
 
 # This code builds the readme.rmd file into a regular md file, which GitHub understands better
-knit(input="~/GitHub/ENMTools/Readme.Rmd", output = "~/GitHub/ENMTools/readme.md")
+# knit(input="~/GitHub/ENMTools/Readme.Rmd", output = "~/GitHub/ENMTools/readme.md")
 
 env.files <- list.files(path = "testdata/", pattern = "pc", full.names = TRUE)
 env <- stack(env.files)
@@ -31,8 +31,9 @@ colnames(ahli$background.points) <- colnames(ahli$presence.points)
 colnames(allogus$background.points) <- colnames(allogus$presence.points)
 
 two.anoles <- enmtools.clade(list(ahli, allogus))
+two.anoles <- check.clade(two.anoles)
 two.anoles
-check.clade(two.anoles)
+
 
 summary(ahli)
 print(ahli)
