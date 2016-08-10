@@ -47,6 +47,8 @@ enmtools.clade <- function(species = NA, tree = NA, root.species = NA){
 
 summary.enmtools.clade <- function(this.clade){
 
+  this.clade <- check.clade(this.clade)
+
   cat(paste("\n\nAn enmtools.clade object with", length(this.clade$species), "species\n"))
 
   cat("\nSpecies names: \n")
@@ -54,6 +56,9 @@ summary.enmtools.clade <- function(this.clade){
 
   cat("\n\nTree: \n")
   print(this.clade$tree)
+
+  cat("\n\nData Summary: \n")
+  print(kable(this.clade$summary))
 
   cat("\n")
 }
