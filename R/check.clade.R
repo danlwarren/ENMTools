@@ -48,7 +48,9 @@ check.clade <- function(this.clade){
   background <- unlist(lapply(this.clade$species, function(x) nrow(x$background.points)))
   background[which(is.null(background))] <- 0
 
-  range <- lapply(this.clade$species, function(x) !is.na(x$range))
+  range <- unlist(lapply(this.clade$species, function(x) inherits(x$range, c("raster", "RasterLayer"))))
+  range[which(range == TRUE)] <- "present"
+  range[which(range == FALSE)] <- "absent"
 
   this.clade$summary <- cbind(species.name, in.tree, presence, background, range)
 

@@ -84,7 +84,8 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
 
   }
 
-  output <- list(formula = f,
+  output <- list(species.name = species$species.name,
+                 formula = f,
                  analysis.df = analysis.df,
                  test.data = test.data,
                  test.prop = test.prop,
@@ -141,10 +142,11 @@ summary.enmtools.glm <- function(this.glm){
 
   cat("\n\nSuitability:  \n")
   print(this.glm$suitability)
-  plot(this.glm)
 
   cat("\n\nNotes:  \n")
   this.glm$notes
+
+  plot(this.glm)
 
 }
 

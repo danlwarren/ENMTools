@@ -63,7 +63,8 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, ...){
 
   suitability <- predict(env, this.dm, type = "response")
 
-  output <- list(analysis.df = species$presence.points[,1:2],
+  output <- list(species.names = species$species.name,
+                 analysis.df = species$presence.points[,1:2],
                  test.data = test.data,
                  test.prop = test.prop,
                  model = this.dm,
@@ -117,10 +118,11 @@ summary.enmtools.dm <- function(this.dm){
 
   cat("\n\nSuitability:  \n")
   print(this.dm$suitability)
-  plot(this.dm)
 
   cat("\n\nNotes:  \n")
   print(this.dm$notes)
+
+  plot(this.dm)
 
 }
 
@@ -167,7 +169,7 @@ dm.precheck <- function(species, env, f){
     stop("Species presence.points do not appear to be an object of class data.frame")
   }
 
-  if(!inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
+  if(!inherits(env, c("raster", "RasterLayer", "RasterStack"))){
     stop("No environmental rasters were supplied!")
   }
 

@@ -24,9 +24,6 @@ allogus$range <- background.raster.buffer(allogus$presence.points, 50000, mask =
 ahli$background.points <- background.points.buffer(points = ahli$presence.points,radius = 40000, n = 1000, mask = env[[1]])
 allogus$background.points <- background.points.buffer(points = allogus$presence.points,radius = 40000, n = 1000, mask = env[[1]])
 
-# Should fail because presence and background have different col names
-check.species(ahli)
-
 colnames(ahli$background.points) <- colnames(ahli$presence.points)
 colnames(allogus$background.points) <- colnames(allogus$presence.points)
 
