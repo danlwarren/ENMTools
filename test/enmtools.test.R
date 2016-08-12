@@ -64,7 +64,6 @@ env.plots
 ahli.twovar.glm <- enmtools.glm(ahli, env, pres ~ layer.1 + layer.4)
 ahli.twovar.glm
 
-# Ought to work on methods for GAM and others that auto-parse functions like the GLM one does now
 
 
 ahli.bc <- enmtools.bc(ahli, env, test.prop = 0.2)
@@ -79,7 +78,7 @@ ahli.mx
 ahli.mx$response.plots
 
 
-allogus.mx <- enmtools.maxent(allogus, env, test.prop = 0.2)
+allogus.mx <- enmtools.maxent(allogus, env[[c("layer.1", "layer.4")]], test.prop = 0.2)
 allogus.mx
 allogus.mx$response.plots
 
@@ -111,11 +110,11 @@ plot(raster.resid(ahli.glm, ahli.dm)$residuals)
 
 env.overlap(ahli.dm, ahli.glm, env)
 
-allogus.quad.glm <- enmtools.glm(allogus, env, pres ~ poly(layer.1, 2) + poly(layer.2, 2) + poly(layer.3, 2) + poly(layer.4, 2))
+allogus.quad.glm <- enmtools.glm(allogus, env, pres ~ poly(layer.1, 2) + poly(layer.2, 2) + poly(layer.3, 2) + poly(layer.4, 2), test.prop = 0.2)
 allogus.quad.glm
 visualize.enm(allogus.quad.glm, env, 100, layers = c("layer.1", "layer.4"))
 
-ahli.quad.glm <- enmtools.glm(ahli, env, pres ~ poly(layer.1, 1) + poly(layer.2, 2) + poly(layer.3, 2) + poly(layer.4, 2))
+ahli.quad.glm <- enmtools.glm(ahli, env, pres ~ poly(layer.1, 1) + poly(layer.2, 2) + poly(layer.3, 2) + poly(layer.4, 2), test.prop = 0.2)
 ahli.quad.glm
 visualize.enm(ahli.quad.glm, env, 100, layers = c("layer.1", "layer.2"))
 

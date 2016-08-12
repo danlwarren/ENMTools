@@ -8,8 +8,6 @@
 
 check.bg <- function(species, env = NA, nback = 1000){
 
-  cat(paste("\nChecking background for ", species$species.name, "...\n"))
-
   check.species(species)
 
   if(!any(c("data.frame") %in% class(species$presence.points))){
