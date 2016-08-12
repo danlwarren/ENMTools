@@ -8,8 +8,6 @@
 
 check.bg <- function(species, env = NA, nback = 1000){
 
-  cat(paste("\nChecking background for ", species$species.name, "...\n"))
-
   check.species(species)
 
   if(!any(c("data.frame") %in% class(species$presence.points))){
@@ -20,7 +18,7 @@ check.bg <- function(species, env = NA, nback = 1000){
   if(!any(c("data.frame") %in% class(species$background.points))){
     # Now we know we need to add data points
 
-    if(any(c("raster", "RasterLayer", "RasterStack") %in% class(species$range))){
+    if(any(c("raster", "RasterLayer", "RasterStack", "RasterBrick") %in% class(species$range))){
 
       # Drawing background points from range raster
       cat("\n\nNo background points provided, drawing background from range raster.\n\n")
@@ -30,7 +28,7 @@ check.bg <- function(species, env = NA, nback = 1000){
 
     }
 
-    if(any(c("raster", "RasterLayer", "RasterStack") %in% class(env))) {
+    if(any(c("raster", "RasterLayer", "RasterStack", "RasterBrick") %in% class(env))) {
 
       cat("\nNo background points or range raster, drawing background from environmental layers.\n\n")
       species$background.points <- as.data.frame(randomPoints(env[[1]], nback, species$presence.points))

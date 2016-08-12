@@ -62,7 +62,8 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, ...){
     env.test.evaluation <- env.evaluate(temp.sp, this.bc, env)
   }
 
-  output <- list(analysis.df = species$presence.points[,1:2],
+  output <- list(species.name = species$species.name,
+                 analysis.df = species$presence.points[,1:2],
                  test.data = test.data,
                  test.prop = test.prop,
                  model = this.bc,
@@ -116,10 +117,13 @@ summary.enmtools.bc <- function(this.bc){
 
   cat("\n\nSuitability:  \n")
   print(this.bc$suitability)
-  plot(this.bc)
 
   cat("\n\nNotes:  \n")
   print(this.bc$notes)
+
+  #Note to self: plot command HAS to come last!
+  plot(this.bc)
+
 }
 
 #Print method for objects of class enmtools.bc
@@ -166,7 +170,7 @@ bc.precheck <- function(species, env, f){
     stop("Species presence.points do not appear to be an object of class data.frame")
   }
 
-  if(!inherits(env, c("raster", "RasterLayer", "RasterStack"))){
+  if(!inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
     stop("No environmental rasters were supplied!")
   }
 

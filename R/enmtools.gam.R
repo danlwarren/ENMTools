@@ -78,7 +78,8 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, ...){
 
 
 
-  output <- list(formula = f,
+  output <- list(species.name = species$species.name,
+                 formula = f,
                  analysis.df = analysis.df,
                  test.data = test.data,
                  test.prop = test.prop,
@@ -135,12 +136,14 @@ summary.enmtools.gam <- function(this.gam){
 
   cat("\n\nEnvironment space model fit (test data):  ")
   print(this.gam$env.test.evaluation)
+
   cat("\n\nSuitability:  \n")
   print(this.gam$suitability)
-  plot(this.gam)
 
   cat("\n\nNotes:  \n")
   print(this.gam$notes)
+
+  plot(this.gam)
 }
 
 # Print method for objects of class enmtools.gam

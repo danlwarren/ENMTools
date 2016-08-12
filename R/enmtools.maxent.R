@@ -61,7 +61,8 @@ enmtools.maxent <- function(species, env, test.prop = 0, ...){
   suitability <- predict(env, this.mx, type = "response")
 
 
-  output <- list(analysis.df = analysis.df,
+  output <- list(species.name = species$species.name,
+                 analysis.df = analysis.df,
                  test.data = test.data,
                  test.prop = test.prop,
                  model = this.mx,
@@ -114,10 +115,11 @@ summary.enmtools.maxent <- function(this.maxent){
 
   cat("\n\nSuitability:  \n")
   print(this.maxent$suitability)
-  plot(this.maxent)
 
   cat("\n\nNotes:  \n")
   print(this.maxent$notes)
+
+  plot(this.maxent)
 
 }
 

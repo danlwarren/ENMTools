@@ -13,11 +13,11 @@
 #' @export plot.enmtools.glm
 
 
-enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, ...){
+enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, ...){
 
   notes <- NULL
 
-  species <- check.bg(species, env, ...)
+  species <- check.bg(species, env, nback = nback, ...)
 
   # Builds a default formula using all env
   if(is.null(f)){
@@ -52,6 +52,11 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, ...
 
   this.glm <- glm(f, analysis.df[,-c(1,2)], family="binomial", ...)
 
+
+  if(as.integer(this.glm$aic) == 2 * length(this.glm$coefficients)){
+    notes <- c(notes, "AIC is 2x number of coefficients, indicating an uninformative model.  This often indicates that you have too many predictors for your number of data points.")
+  }
+
   suitability <- predict(env, this.glm, type = "response")
 
   if(eval == TRUE){
@@ -79,7 +84,8 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, ...
 
   }
 
-  output <- list(formula = f,
+  output <- list(species.name = species$species.name,
+                 formula = f,
                  analysis.df = analysis.df,
                  test.data = test.data,
                  test.prop = test.prop,
@@ -136,10 +142,11 @@ summary.enmtools.glm <- function(this.glm){
 
   cat("\n\nSuitability:  \n")
   print(this.glm$suitability)
-  plot(this.glm)
 
   cat("\n\nNotes:  \n")
-  print(this.glm$notes)
+  this.glm$notes
+
+  plot(this.glm)
 
 }
 
@@ -197,7 +204,7 @@ glm.precheck <- function(f, species, env){
     stop("Species background.points do not appear to be an object of class data.frame")
   }
 
-  if(!inherits(env, c("raster", "RasterLayer", "RasterStack"))){
+  if(!inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
     stop("No environmental rasters were supplied!")
   }
 

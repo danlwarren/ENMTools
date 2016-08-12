@@ -24,6 +24,7 @@ check.clade <- function(this.clade){
       stop(names(which(unlist(lapply(this.clade$species, function(x) !inherits(x, "enmtools.species"))))))
     }
     lapply(this.clade$species, function(x) check.species(x))
+    names(this.clade$species) <- lapply(this.clade$species, function(x) x$species.name)
 
   }
 
@@ -33,6 +34,25 @@ check.clade <- function(this.clade){
       stop("Argument tree requires a phylo object")
     }
   }
+
+  # Build a summary table of data, chuck it into clade object
+  species.name <- names(this.clade$species)
+
+  in.tree <- rep(NA, length(species.name))
+  if(!isTRUE(is.na(this.clade$tree))){
+    in.tree <- species.name %in% this.clade$tree$tip.label
+  }
+
+  presence <- lapply(this.clade$species, function(x) nrow(x$presence.points))
+
+  background <- unlist(lapply(this.clade$species, function(x) nrow(x$background.points)))
+  background[which(is.null(background))] <- 0
+
+  range <- unlist(lapply(this.clade$species, function(x) inherits(x$range, c("raster", "RasterLayer"))))
+  range[which(range == TRUE)] <- "present"
+  range[which(range == FALSE)] <- "absent"
+
+  this.clade$summary <- cbind(species.name, in.tree, presence, background, range)
 
   return(this.clade)
 }
