@@ -27,7 +27,7 @@ env.evaluate <- function(species, model, env, bg.source = "background", ...){
     allpoints <- rbind(presence, background)
     values <- extract(env, allpoints)
     maxes <- apply(values, 2, function(x) max(x, na.rm = TRUE))
-    mins <- apply(values, 2, function(x) max(x, na.rm = TRUE))
+    mins <- apply(values, 2, function(x) min(x, na.rm = TRUE))
   }
 
   if(bg.source == "env") {
