@@ -41,11 +41,11 @@ plot(ahli)
 summary(two.anoles)
 plot(two.anoles)
 
-ahli.glm <- enmtools.glm(ahli, env, pres ~ layer.1 + layer.2 + layer.3 + layer.4, test.prop = 0.2)
+ahli.glm <- enmtools.glm(ahli, env, pres ~ layer.1 + layer.2 + layer.3 + layer.4, test.prop = 0.2, report = "ahli.glm.html", overwrite = TRUE)
 ahli.glm
 ahli.glm$response.plots
 
-ahli.gam <- enmtools.gam(ahli, env, test.prop = 0.2, k = 10)
+ahli.gam <- enmtools.gam(ahli, env, test.prop = 0.2, k = 10, report = "ahli.gam.html", overwrite = TRUE)
 ahli.gam
 ahli.gam$response.plots
 visualize.enm(ahli.gam, env, layers = c("layer.1", "layer.2"))
@@ -66,14 +66,14 @@ ahli.twovar.glm
 
 
 
-ahli.bc <- enmtools.bc(ahli, env, test.prop = 0.2)
+ahli.bc <- enmtools.bc(ahli, env, test.prop = 0.2, report = "ahli.bc.html", overwrite = TRUE)
 ahli.bc
 ahli.bc$response.plots
 
 ahli.bc2 <- enmtools.bc(ahli, env[[c("layer.1", "layer.4")]])
 
 
-ahli.mx <- enmtools.maxent(ahli, env, test.prop = 0.2)
+ahli.mx <- enmtools.maxent(ahli, env, test.prop = 0.2, report = "ahli.mx.html", overwrite = TRUE)
 ahli.mx
 ahli.mx$response.plots
 
@@ -87,7 +87,7 @@ allogus.dm
 env.evaluate(allogus, allogus.dm, env, "background")
 visualize.enm(allogus.dm, env, layers = c("layer.1", "layer.2"))
 
-ahli.dm <- enmtools.dm(ahli, env, test.prop = 0.2)
+ahli.dm <- enmtools.dm(ahli, env, test.prop = 0.2, report = "ahli.dm.html", overwrite = TRUE)
 ahli.dm
 ahli.dm$response.plots
 

@@ -3,6 +3,8 @@
 #' @param species An enmtools.species object
 #' @param env A raster or raster stack of environmental data.
 #' @param test.prop Proportion of data to withhold for model evaluation
+#' @param report Optional name of an html file for generating reports
+#' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
 #' @param ... Arguments to be passed to bioclim()
 #'
 #' @export enmtools.dm
@@ -10,7 +12,7 @@
 #' @export summary.enmtools.dm
 #' @export plot.enmtools.dm
 
-enmtools.dm <- function(species, env = NA, test.prop = 0, ...){
+enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, overwrite = FALSE, ...){
 
   notes <- NULL
 
@@ -86,6 +88,15 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, ...){
   }
 
   output[["response.plots"]] <- response.plots
+
+  if(!is.null(report)){
+    if(file.exists(report) & overwrite == FALSE){
+      stop("Report file exists, and overwrite is set to FALSE!")
+    } else {
+      cat("\n\nGenerating html report...\n")
+      makereport(output, outfile = report)
+    }
+  }
 
   return(output)
 

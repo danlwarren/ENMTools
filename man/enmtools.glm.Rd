@@ -5,7 +5,7 @@
 \title{Takes an emtools.species object with presence and background points, and builds a GLM}
 \usage{
 enmtools.glm(species, env, f = NULL, test.prop = 0, eval = TRUE,
-  nback = 1000, ...)
+  nback = 1000, report = NULL, overwrite = FALSE, ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
@@ -15,6 +15,12 @@ enmtools.glm(species, env, f = NULL, test.prop = 0, eval = TRUE,
 \item{test.prop}{Proportion of data to withhold for model evaluation}
 
 \item{eval}{Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.}
+
+\item{nback}{Number of background points to draw from range or env, if background points aren't provided}
+
+\item{report}{Optional name of an html file for generating reports}
+
+\item{overwrite}{TRUE/FALSE whether to overwrite a report file if it already exists}
 
 \item{...}{Arguments to be passed to glm()}
 

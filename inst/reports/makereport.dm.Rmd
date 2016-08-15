@@ -1,0 +1,99 @@
+---
+title: "makereport.dm"
+output: html_document
+---
+
+# Summary of ENMTools Domain object for `r x$species.name`
+
+## Spatial prediction
+```{r plot-suitability, echo = FALSE, fig.width = 12}
+plot(x)
+```
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+## Model
+```{r response-plots, echo = FALSE, fig.width = 12}
+n <- length(x$response.plots)
+n.col <- floor(sqrt(n))
+do.call("grid.arrange", c(x$response.plots, ncol=n.col))
+
+print(summary(x$model))
+```
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+## Evaluation
+### Geographic space
+```{r eval-geo-train, echo = FALSE, fig.width = 10, fig.align = "center"}
+qplot(x$training.evaluation@FPR, x$training.evaluation@TPR, geom = "path") + theme_bw() + xlab(label = "False Positive Rate") + ylab(label = "True Positive Rate") + geom_path(size=1) + ggtitle("Evaluation on training data, geographic space")
+x$training.evaluation
+```
+<br>
+<br>
+```{r eval-geo-test, echo = FALSE, fig.width = 10, fig.align = "center"}
+cat("\n\nProportion of data wittheld for model testing:  ")
+x$test.prop
+if(x$test.prop > 0){
+  qplot(x$test.evaluation@FPR, x$test.evaluation@TPR, geom = "path") + theme_bw() + xlab(label = "False Positive Rate") + ylab(label = "True Positive Rate") + geom_path(size=1) + ggtitle("Evaluation on test data, geographic space")
+}
+
+if(x$test.prop > 0){
+  x$test.evaluation 
+}
+```
+<br>
+<br>
+<br>
+<br>
+
+### Environment space
+```{r eval-env-train, echo = FALSE, fig.width = 10, fig.align = "center"}
+qplot(x$env.training.evaluation@FPR, x$env.training.evaluation@TPR, geom = "path") + theme_bw() + xlab(label = "False Positive Rate") + ylab(label = "True Positive Rate") + geom_path(size=1) + ggtitle("Evaluation on training data, environment space")
+x$env.training.evaluation
+```
+<br>
+```{r eval-env-test, echo = FALSE, fig.width = 10, fig.align = "center"}
+cat("\n\nProportion of data wittheld for model testing:  ")
+x$test.prop
+if(x$test.prop > 0){
+  qplot(x$env.test.evaluation@FPR, x$env.test.evaluation@TPR, geom = "path") + theme_bw() + xlab(label = "False Positive Rate") + ylab(label = "True Positive Rate") + geom_path(size=1) + ggtitle("Evaluation on test data, environment space")
+}
+
+if(x$test.prop > 0){
+  x$env.test.evaluation 
+}
+```
+<br>
+<br>
+<br>
+<br>
+
+
+# Notes
+```{r notes, echo = FALSE}
+if(is.null(x$notes)){
+  print ("None")
+} else {
+  x$notes  
+}
+
+```
+<br>
+<br>
+<br>
+<br>
+
+# Citations
+Warren, D.L. (2016) Package ‘enmtools’. Available online at: https://github.com/danlwarren/ENMTools
+
+Hijmans, R.J, Phillips, S., Leathwick, J. and Elith, J. (2011), Package ‘dismo’. Available online at: http://cran.r-project.org/web/packages/dismo/index.html.

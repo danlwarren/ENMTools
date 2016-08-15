@@ -48,7 +48,7 @@ plot.response <- function(model, env, layer){
   #print(pred)
 
   response.plot <- qplot(plot.df[,1], pred, geom = "line",
-                         xlab = layer, ylab = "Response")
+                         xlab = layer, ylab = "Response") + theme_bw()
 
   return(response.plot)
 
