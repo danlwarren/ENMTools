@@ -82,6 +82,11 @@ allogus.mx <- enmtools.maxent(allogus, env[[c("layer.1", "layer.4")]], test.prop
 allogus.mx
 allogus.mx$response.plots
 
+args <- c("betamultiplier=0.5", "product=FALSE", "hinge=FALSE", "threshold=FALSE")
+allogus.mx.args <- enmtools.maxent(allogus, env[[c("layer.1", "layer.4")]], test.prop = 0.2, args)
+allogus.mx.args
+allogus.mx$response.plots
+
 allogus.dm <- enmtools.dm(allogus, env, test.prop = 0.2)
 allogus.dm
 env.evaluate(allogus, allogus.dm, env, "background")
