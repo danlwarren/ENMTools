@@ -49,12 +49,12 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, report = 
   this.mx <- maxent(env, p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)
 
 
-  model.evaluation <- evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+  model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                this.mx, env)
   env.model.evaluation <- env.evaluate(species, this.mx, env)
 
   if(test.prop > 0 & test.prop < 1){
-    test.evaluation <- evaluate(test.data, species$background.points[,1:2],
+    test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
                                 this.mx, env)
     temp.sp <- species
     temp.sp$presence.points <- test.data

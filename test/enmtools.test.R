@@ -1,4 +1,5 @@
 setwd("~/GitHub/ENMTools/test")
+Sys.setenv(NOAWT=TRUE)
 library(ENMTools)
 
 # This code builds the readme.rmd file into a regular md file, which GitHub understands better
@@ -83,9 +84,9 @@ allogus.mx
 allogus.mx$response.plots
 
 args <- c("betamultiplier=0.5", "product=FALSE", "hinge=FALSE", "threshold=FALSE")
-allogus.mx.args <- enmtools.maxent(allogus, env[[c("layer.1", "layer.4")]], test.prop = 0.2, args)
+allogus.mx.args <- enmtools.maxent(allogus, env, test.prop = 0.2, args = args)
 allogus.mx.args
-allogus.mx$response.plots
+allogus.mx.args$response.plots
 
 allogus.dm <- enmtools.dm(allogus, env, test.prop = 0.2)
 allogus.dm

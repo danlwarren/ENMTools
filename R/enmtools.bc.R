@@ -52,12 +52,12 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
     names(env) <- c(oldname, "dummyvar")
   }
 
-  model.evaluation <- evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+  model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                this.bc, env)
   env.model.evaluation <- env.evaluate(species, this.bc, env)
 
   if(test.prop > 0 & test.prop < 1){
-    test.evaluation <- evaluate(test.data, species$background.points[,1:2],
+    test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
                                 this.bc, env)
     temp.sp <- species
     temp.sp$presence.points <- test.data

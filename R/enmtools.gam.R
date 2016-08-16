@@ -66,13 +66,13 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
     notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
   }
 
-  model.evaluation <- evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+  model.evaluation <- dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                this.gam, env)
   env.model.evaluation <- env.evaluate(species, this.gam, env)
 
 
   if(test.prop > 0 & test.prop < 1){
-    test.evaluation <- evaluate(test.data, species$background.points[,1:2],
+    test.evaluation <- dismo::evaluate(test.data, species$background.points[,1:2],
                                 this.gam, env)
     temp.sp <- species
     temp.sp$presence.points <- test.data

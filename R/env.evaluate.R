@@ -51,7 +51,7 @@ env.evaluate <- function(species, model, env, bg.source = "background", ...){
   pred.p <- as.numeric(predict(model, data.frame(p.table), type = "response"))
   pred.bg <- as.numeric(predict(model, data.frame(bg.table), type = "response"))
 
-  env.evaluation <- evaluate(pred.p, pred.bg)
+  env.evaluation <-dismo::evaluate(pred.p, pred.bg)
 
   return(env.evaluation)
 }
