@@ -5,6 +5,9 @@
 #' @param env A raster or raster stack of environmental data.
 #' @param test.prop Proportion of data to withhold for model evaluation
 #' @param k Dimension of the basis used to represent the smooth term.  See documentation for s() for details.
+#' @param nback Number of background points to draw from range or env, if background points aren't provided
+#' @param report Optional name of an html file for generating reports
+#' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
 #' @param ... Arguments to be passed to gam()
 #'
 #' @export enmtools.gam
@@ -13,11 +16,11 @@
 #' @export plot.enmtools.gam
 
 
-enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, ...){
+enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000, report = NULL, overwrite = FALSE, ...){
 
   notes <- NULL
 
-  species <- check.bg(species, env, ...)
+  species <- check.bg(species, env, nback = nback)
 
   # Builds a default formula using all env
   if(is.null(f)){
@@ -102,6 +105,15 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, ...){
   }
 
   output[["response.plots"]] <- response.plots
+
+  if(!is.null(report)){
+    if(file.exists(report) & overwrite == FALSE){
+      stop("Report file exists, and overwrite is set to FALSE!")
+    } else {
+      cat("\n\nGenerating html report...\n")
+      makereport(output, outfile = report)
+    }
+  }
 
   return(output)
 

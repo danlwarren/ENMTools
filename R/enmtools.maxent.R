@@ -4,6 +4,9 @@
 #' @param species An enmtools.species object
 #' @param env A raster or raster stack of environmental data.
 #' @param test.prop Proportion of data to withhold for model evaluation
+#' @param nback Number of background points to draw from range or env, if background points aren't provided
+#' @param report Optional name of an html file for generating reports
+#' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
 #' @param ... Arguments to be passed to maxent()
 #'
 #' @export enmtools.maxent
@@ -11,11 +14,11 @@
 #' @export summary.enmtools.maxent
 #' @export plot.enmtools.maxent
 
-enmtools.maxent <- function(species, env, test.prop = 0, ...){
+enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, report = NULL, overwrite = FALSE,   ...){
 
   notes <- NULL
 
-  species <- check.bg(species, env, ...)
+  species <- check.bg(species, env, nback = nback)
 
   maxent.precheck(f, species, env)
 
@@ -84,6 +87,15 @@ enmtools.maxent <- function(species, env, test.prop = 0, ...){
   }
 
   output[["response.plots"]] <- response.plots
+
+  if(!is.null(report)){
+    if(file.exists(report) & overwrite == FALSE){
+      stop("Report file exists, and overwrite is set to FALSE!")
+    } else {
+      cat("\n\nGenerating html report...\n")
+      makereport(output, outfile = report)
+    }
+  }
 
   return(output)
 

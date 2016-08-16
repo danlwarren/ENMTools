@@ -40,6 +40,7 @@ env.evaluate <- function(species, model, env, bg.source = "background", ...){
   this.lhs <- randomLHS(10000, length(names(env)))
   bg.table <- t(t(this.lhs) * (maxes  - mins) + mins)
   colnames(bg.table) <- names(env)
+
   p.table <- extract(env, presence)
 #
 #   print(mins)
