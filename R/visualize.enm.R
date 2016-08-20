@@ -95,8 +95,8 @@ visualize.enm <- function(model, env, nbins = 100, layers, plot.points = TRUE){
     }
   }
 
-  output <- list(suit.plot = suit.plot,
-                 background.plot = background.plot)
+  output <- list(background.plot = background.plot,
+                 suit.plot = suit.plot)
 
   return(output)
 }
