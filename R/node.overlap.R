@@ -20,20 +20,31 @@ node.overlap <- function(overlap, tree, usebrlens = FALSE){
   if(any(!rownames(overlap) %in% tree$tip.label)){
     stop("Overlap matrix names and tip labels do not match!")
   }
+  
+  branchcomps <- NA
 
   # Get numbers for internal nodes
   nodes <- unique(tree$edge[,1])
+  
+  if(usebrlens == TRUE){
+    # Test that they exist
+    
+    # Figure out how many comparisons will be made across each internal branch
+    branchcomps <- sapply(unique(tree$edge[,1]), 
+                          function(x) length(descendants(tree, node = x)))
+    branchcomps <- (branchcomps * (length(tree$tip.label) - branchcomps))/2
+  }
 
   # Return a table of node numbers and scaled overlap values
   return(cbind(nodes,
-               sapply(nodes, function(x) single.node.overlap(x, overlap, tree))))
+               sapply(nodes, function(x) single.node.overlap(x, overlap, tree, usebrlens, branchcomps))))
 }
 
 
 # This function takes an internal node number, overlap matrix, and tree
 # and calculates the scaled overlap using the FT method for all pairs of 
 # daughter nodes
-single.node.overlap <- function(node, overlap, tree){
+single.node.overlap <- function(node, overlap, tree, usebrlens, branchcomps){
 
   # Initialize node overlap
   this.node.overlap <- 0
@@ -45,7 +56,7 @@ single.node.overlap <- function(node, overlap, tree){
   daughter.comparisons <- t(combn(daughters, 2))
 
   # Get overlap for each pair of daughter clades
-  daughter.overlaps <- apply(daughter.comparisons, 1, function(x) get.daughter.overlap(tree, overlap, x))
+  daughter.overlaps <- apply(daughter.comparisons, 1, function(x) get.daughter.overlap(tree, overlap, x, usebrlens))
 
   # Add it up and return it
   this.node.overlap <- sum(daughter.overlaps)
@@ -54,14 +65,14 @@ single.node.overlap <- function(node, overlap, tree){
 }
 
 # Get the scaled overlap for a single pair of daughters
-get.daughter.overlap <- function(tree, overlap, nodes){
+get.daughter.overlap <- function(tree, overlap, nodes, usebrlens, branchcomps){
 
   clade1 <- descendants(tree, nodes[1])
   clade2 <- descendants(tree, nodes[2])
 
   comparisons <- expand.grid(clade1, clade2)
 
-  mults <- apply(comparisons, 1, function(x) get.mult(tree, as.numeric(x)))
+  mults <- apply(comparisons, 1, function(x) get.mult(tree, as.numeric(x), usebrlens))
 
   raw.overlaps <- apply(comparisons, 1, function(x) overlap[tree$tip.label[x[1]], tree$tip.label[x[2]]])
 
@@ -71,7 +82,7 @@ get.daughter.overlap <- function(tree, overlap, nodes){
 # This function takes two tips and calculates the multiplier needed for their
 # overlap value.  Function is a heavily modified version of the one from
 # phyloclim.
-get.mult <- function (tree, tips){
+get.mult <- function (tree, tips, usebrlens, branchcomps){
 
   ntips <- length(tree$tip.label)
   mrca <- getMRCA(tree, tips)
