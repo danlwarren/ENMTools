@@ -89,7 +89,7 @@ node.overlap(phyloverlaps, tree)
 test.tree <- compute.brlen(read.tree(text = "((((A,B,C,D),E,(F,G)),(H,I)),J);"))
 test.overlap <- matrix(data = 1, nrow = 10, ncol = 10)
 colnames(test.overlap) <- rownames(test.overlap) <- test.tree$tip.label
-node.overlap(overlap = test.overlap, tree = test.tree, usebrlens = TRUE)
+node.overlap(overlap = test.overlap, tree = test.tree)
 
 # SHould all be ones
 node.overlap(overlap = test.overlap, tree = test.tree)
