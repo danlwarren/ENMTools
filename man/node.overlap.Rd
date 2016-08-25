@@ -2,14 +2,18 @@
 % Please edit documentation in R/node.overlap.R
 \name{node.overlap}
 \alias{node.overlap}
-\title{Takes an overlap matrix and a tree and returns average overlap at nodes using FT averaging method}
+\title{Takes an overlap matrix and a tree and returns average overlap at
+nodes using Fitzpatrick & Turelli averaging method}
 \usage{
 node.overlap(overlap, tree)
 }
 \arguments{
-\item{tree}{}
+\item{overlap}{An overlap matrix}
+
+\item{tree}{A tree}
 }
 \description{
-Takes an overlap matrix and a tree and returns average overlap at nodes using FT averaging method
+Takes an overlap matrix and a tree and returns average overlap at
+nodes using Fitzpatrick & Turelli averaging method
 }
 
