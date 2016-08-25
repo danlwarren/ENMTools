@@ -1,3 +1,4 @@
+rm(list=ls(all=TRUE))
 
 library(ENMTools)
 setwd("~/GitHub/ENMTools/test")
@@ -34,6 +35,7 @@ phyltable <- read.csv("~/Dropbox/ongoing projects/Model Selection Niche Modeling
 phyltable <- phyltable[phyltable$Use == 1,]
 tree <- read.tree(file="phyllurus.tre")
 tree <- drop.tip(tree, tree$tip.label[!tree$tip.label %in% phyltable$Species])
+tree <- compute.brlen(tree)
 plot(tree)
 
 

@@ -25,7 +25,7 @@ node.overlap <- function(overlap, tree){
   nodes <- unique(tree$edge[,1])
   
   # Return a table of node numbers and scaled overlap values
-  return(cbind(nodes,
+  return(cbind(branching.times(tree),
                sapply(nodes, function(x) single.node.overlap(x, overlap, tree, usebrlens, branchcomps))))
 }
 
@@ -63,7 +63,9 @@ get.daughter.overlap <- function(tree, overlap, nodes, usebrlens, branchcomps){
   comparisons <- expand.grid(clade1, clade2)
   
   raw.overlaps <- apply(comparisons, 1, function(x) overlap[tree$tip.label[x[1]], tree$tip.label[x[2]]])
-  
+ 
+  mults <- apply(comparisons, 1, function(x) get.mult(tree, as.numeric(x))) 
+   
   return(sum(mults * raw.overlaps))
 }
 
