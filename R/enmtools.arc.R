@@ -2,29 +2,67 @@
 #' determine the statistical significance of the relationship between
 #' overlap and time
 #'
-#' @param overlap An overlap matrix
-#' @param tree A tree
+#' @param clade An enmtools.clade object containing species data and a phylogeny
 #' @param nreps A number of reps to do
+#' @param source The source of the overlaps to calculate.  Choices are "bc", "dm", "gam", "glm", "mx", "range", and "point"
+#' @param model The model to be used for GLM and GAM comparisons
+#' @param overlap.matrix A matrix of overlaps to use, for option source = "matrix"
+#' @param metric The overlap metric to use. For ENM sources, this can be any combination of "D", "I", "cor", "env.D", "env.I", and "env.cor", or just "all".
+#' for range and point overlap this argument is ignored.
 #'
 #' @export age.overlap.correlation
 
-age.overlap.correlation <- function(overlap, tree, nreps){
+enmtools.arc <- function(clade, nreps, source, env = NULL,  model = NULL, overlap.matrix = NULL, metric = "all"){
 
   description <- "Age-Overlap Correlation from Monte Carlo Test"
 
-  # de-triangularize matrix
-  if(is.na(overlap[1, ncol(overlap)])){
-    overlap[upper.tri(overlap)] <- t(overlap)[upper.tri(overlap)]
-  }
-
-  if(is.na(overlap[nrow(overlap),1])){
-    overlap[lower.tri(overlap)] <- t(overlap)[lower.tri(overlap)]
+  if(metric = "all"){
+    metric = c("D", "I", "cor", "env.D", "env.I", "env.cor")
   }
 
   # Make sure the data's okay
-  age.overlap.correlation.precheck(overlap, tree, nreps)
+  age.overlap.correlation.precheck(clade, nreps, source, env,  model, overlap.matrix, metric)
 
-  # Get overlaps for empirical data
+  # Generate empirical overlaps
+
+  # Bioclim models
+  if(source == "bc"){
+
+  }
+
+  # Domain models
+  if(source == "dm"){
+
+  }
+
+  # GAM models
+  if(source == "gam"){
+
+  }
+
+  # GLM models
+  if(source == "glm"){
+
+  }
+
+  # Maxent models
+  if(source == "mx"){
+
+  }
+
+  # Range rasters
+  if(source == "range"){
+
+  }
+
+  # Presence points
+  if(source == "points"){
+
+  }
+
+
+
+  # Scale empirical overlaps for phylogeny
   empirical.df <- node.overlap(overlap, tree)
 
   # Build an empirical lm
@@ -41,8 +79,8 @@ age.overlap.correlation <- function(overlap, tree, nreps){
   reps <- list()
 
   for(i in 1:nreps){
-     this.rep <- sample(nrow(overlap))
-     reps[[paste0("rep.", i)]] <- do.rep(sample(length(tree$tip.label)))$rep.lm
+    this.rep <- sample(nrow(overlap))
+    reps[[paste0("rep.", i)]] <- do.rep(sample(length(tree$tip.label)))$rep.lm
   }
 
   reps.aoc <- rbind(empirical.model$coefficients,
@@ -63,8 +101,8 @@ age.overlap.correlation <- function(overlap, tree, nreps){
   regressions.plot <- qplot(age, overlap, data = empirical.df) + theme_bw()
   for(i in 2:min(100, nrow(reps.aoc))){
     regressions.plot <- regressions.plot + geom_abline(slope=reps.aoc[i,2],
-                                       intercept=reps.aoc[i,1],
-                                       color="grey86")
+                                                       intercept=reps.aoc[i,1],
+                                                       color="grey86")
   }
   regressions.plot <- regressions.plot + geom_abline(slope = reps.aoc[1,2], intercept = reps.aoc[1,1]) +
     geom_point()
@@ -114,6 +152,8 @@ age.overlap.correlation.precheck <- function(overlap, tree, nreps){
   if(is.null(tree$edge.length)){
     stop("Tree does not have branch lengths!")
   }
+
+
 
   if(any(is.na(overlap))){
     stop("Overlap matrix contains NAs!")

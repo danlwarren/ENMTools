@@ -70,7 +70,7 @@ for(i in 1:length(names(phyl.clade$species))){
       this.overlap <- 1
     } else {
       this.overlap <- raster.overlap(enmtools.glm(phyl.clade$species[[i]], env),
-                                    enmtools.glm(phyl.clade$species[[j]], env))
+                                     enmtools.glm(phyl.clade$species[[j]], env))
     }
     overlap[i,j] <- this.overlap
   }
@@ -92,18 +92,19 @@ test.tree <- compute.brlen(read.tree(text = "((((A,B,C,D),E,(F,G)),(H,I)),J);"))
 test.overlap <- matrix(data = 1, nrow = 10, ncol = 10)
 colnames(test.overlap) <- rownames(test.overlap) <- test.tree$tip.label
 node.overlap(overlap = test.overlap, tree = test.tree)
+test <- age.overlap.correlation(test.overlap, test.tree, 50)
 
 # SHould all be ones
 node.overlap(overlap = test.overlap, tree = test.tree)
 
-test.tree <- compute.brlen(rtree(20))
-test.overlap <- matrix(data = runif(400), nrow = 20, ncol = 20)
+test.tree <- compute.brlen(rtree(50))
+test.overlap <- matrix(data = runif(2500), nrow = 50, ncol = 50)
 colnames(test.overlap) <- rownames(test.overlap) <- test.tree$tip.label
-system.time(test1 <- node.overlap(overlap = test.overlap, tree = test.tree))
-system.time(test2 <- age.range.correlation(test.tree, test.overlap, n = 1)$age.range.correlation)
-test1[,2] == test2[,2]
+system.time(test1 <- age.overlap.correlation(overlap = test.overlap, tree = test.tree, nreps = 10))
+system.time(test2 <- age.range.correlation(test.tree, test.overlap, n = 10))
 
-ntax <- rep(seq(4, 60, by = 4), 2)
+
+ntax <- rep(seq(4, 60, by = 4))
 newtimes <- rep(NA, length(ntax))
 oldtimes <- rep(NA, length(ntax))
 for(i in 1:length(ntax)){
@@ -111,9 +112,10 @@ for(i in 1:length(ntax)){
   this.tree <- compute.brlen(rtree(ntax[i]))
   this.overlap <- data.frame(matrix(data = runif(ntax[i] ** 2), nrow = ntax[i], ncol = ntax[i]))
   colnames(this.overlap) <- rownames(this.overlap) <- this.tree$tip.label
-  newtimes[i] <- system.time(test1 <- node.overlap(overlap = this.overlap, tree = this.tree))[3]
-  oldtimes[i] <- system.time(test2 <- age.range.correlation(this.tree, this.overlap, n = 1)$age.range.correlation)[3]
-  print(all(test1[,2] == test2[,2]))
+  newtimes[i] <- system.time(test1 <- age.overlap.correlation(this.overlap, this.tree, 100))
+  oldtimes[i] <- system.time(test2 <- age.range.correlation(this.tree, this.overlap, n = 100))
+  print(paste(newtimes[i], oldtimes[i]))
+  print(all(test1$empirical.df[,2] == test2[,2]))
 }
 
 qplot(oldtimes, newtimes) + geom_abline(slope = 1, intercept = 0)

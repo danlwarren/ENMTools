@@ -10,11 +10,11 @@
 node.overlap <- function(overlap, tree){
 
    # Get numbers for internal nodes
-   nodes <- unique(tree$edge[,1])
+   nodes <- branching.times(tree)
 
    # Return a table of node numbers and scaled overlap values
-   output <- data.frame(cbind(branching.times(tree),
-                sapply(nodes, function(x) single.node.overlap(x, overlap, tree, usebrlens, branchcomps))))
+   output <- data.frame(cbind(nodes,
+                sapply(names(nodes), function(x) single.node.overlap(as.numeric(x), overlap, tree))))
    colnames(output) <- c("age", "overlap")
    return(output)
 }
@@ -23,7 +23,7 @@ node.overlap <- function(overlap, tree){
 # This function takes an internal node number, overlap matrix, and tree
 # and calculates the scaled overlap using the FT method for all pairs of
 # daughter nodes
-single.node.overlap <- function(node, overlap, tree, usebrlens, branchcomps){
+single.node.overlap <- function(node, overlap, tree){
 
    # Initialize node overlap
    this.node.overlap <- 0
@@ -36,7 +36,7 @@ single.node.overlap <- function(node, overlap, tree, usebrlens, branchcomps){
 
    # Get overlap for each pair of daughter clades
    daughter.overlaps <- apply(daughter.comparisons, 1, function(x)
-      get.daughter.overlap(tree, overlap, x, usebrlens, branchcomps))
+      get.daughter.overlap(tree, overlap, x))
 
    # Add it up and return it
    this.node.overlap <- sum(daughter.overlaps)
@@ -45,7 +45,7 @@ single.node.overlap <- function(node, overlap, tree, usebrlens, branchcomps){
 }
 
 # Get the scaled overlap for a single pair of daughters
-get.daughter.overlap <- function(tree, overlap, nodes, usebrlens, branchcomps){
+get.daughter.overlap <- function(tree, overlap, nodes){
 
    clade1 <- descendants(tree, nodes[1])
    clade2 <- descendants(tree, nodes[2])
