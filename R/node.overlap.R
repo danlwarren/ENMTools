@@ -52,7 +52,7 @@ get.daughter.overlap <- function(tree, overlap, nodes){
 
    comparisons <- expand.grid(clade1, clade2)
 
-   raw.overlaps <- apply(comparisons, 1, function(x) overlap[tree$tip.label[x[1]], tree$tip.label[x[2]]])
+   raw.overlaps <- unlist(apply(comparisons, 1, function(x) overlap[tree$tip.label[x[1]], tree$tip.label[x[2]]]))
 
    mults <- apply(comparisons, 1, function(x) get.mult(tree, as.numeric(x)))
 

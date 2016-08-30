@@ -4,63 +4,67 @@
 #'
 #' @param clade An enmtools.clade object containing species data and a phylogeny
 #' @param nreps A number of reps to do
-#' @param source The source of the overlaps to calculate.  Choices are "bc", "dm", "gam", "glm", "mx", "range", and "point"
+#' @param overlap.source The source of the overlaps to calculate.  Choices are "bc", "dm", "gam", "glm", "mx", "range", and "point"
 #' @param model The model to be used for GLM and GAM comparisons
-#' @param overlap.matrix A matrix of overlaps to use, for option source = "matrix"
-#' @param metric The overlap metric to use. For ENM sources, this can be any combination of "D", "I", "cor", "env.D", "env.I", and "env.cor", or just "all".
+#' @param overlap.matrix A matrix of overlaps to use, for option overlap.source = "matrix"
+#' @param metric The overlap metric to use. For ENM sources, this can be any combination of "D", "I", "cor", "env.D", "env.I", and "env.cor".
 #' for range and point overlap this argument is ignored.
 #'
 #' @export age.overlap.correlation
 
-enmtools.arc <- function(clade, nreps, source, env = NULL,  model = NULL, overlap.matrix = NULL, metric = "all"){
+enmtools.arc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL, overlap.matrix = NULL, metric = "D"){
 
   description <- "Age-Overlap Correlation from Monte Carlo Test"
 
-  if(metric = "all"){
-    metric = c("D", "I", "cor", "env.D", "env.I", "env.cor")
-  }
+  clade <- check.clade(clade)
 
   # Make sure the data's okay
-  age.overlap.correlation.precheck(clade, nreps, source, env,  model, overlap.matrix, metric)
+  age.overlap.correlation.precheck(clade, nreps, overlap.source, env,  model, overlap.matrix, metric)
 
   # Generate empirical overlaps
 
   # Bioclim models
-  if(source == "bc"){
-
+  if(overlap.source == "bc"){
+    empirical.models <- lapply(clade$species, function(x) enmtools.bc(x, env = env))
+    overlap <- sapply(empirical.models, function(x) sapply(empirical.models, function(y) raster.overlap(x,y)[metric]))
   }
 
   # Domain models
-  if(source == "dm"){
-
+  if(overlap.source == "dm"){
+    empirical.models <- lapply(clade$species, function(x) enmtools.dm(x, env = env))
+    overlap <- sapply(empirical.models, function(x) sapply(empirical.models, function(y) raster.overlap(x,y)[metric]))
   }
 
   # GAM models
-  if(source == "gam"){
-
+  if(overlap.source == "gam"){
+    empirical.models <- lapply(clade$species, function(x) enmtools.gam(x, env = env, f = model))
+    overlap <- sapply(empirical.models, function(x) sapply(empirical.models, function(y) raster.overlap(x,y)[metric]))
   }
 
   # GLM models
-  if(source == "glm"){
-
+  if(overlap.source == "glm"){
+    empirical.models <- lapply(clade$species, function(x) enmtools.glm(x, env = env, f = model))
+    overlap <- sapply(empirical.models, function(x) sapply(empirical.models, function(y) raster.overlap(x,y)[metric]))
   }
 
   # Maxent models
-  if(source == "mx"){
-
+  if(overlap.source == "mx"){
+    empirical.models <- lapply(clade$species, function(x) enmtools.mx(x, env = env))
+    overlap <- sapply(empirical.models, function(x) sapply(empirical.models, function(y) raster.overlap(x,y)[metric]))
   }
 
   # Range rasters
-  if(source == "range"){
+  if(overlap.source == "range"){
 
   }
 
   # Presence points
-  if(source == "points"){
+  if(overlap.source == "points"){
 
   }
 
-
+  # sapply is renaming rows, gotta change tnem back
+  rownames(overlap) <- colnames(overlap)
 
   # Scale empirical overlaps for phylogeny
   empirical.df <- node.overlap(overlap, tree)
@@ -135,27 +139,16 @@ plot.enmtools.aoc <- function(this.aoc){
 
 }
 
-age.overlap.correlation.precheck <- function(overlap, tree, nreps){
-  # Test to make sure our data aren't crap
-  if(any(!rownames(overlap) %in% colnames(overlap))){
-    stop("Row and column names do not match!")
-  }
+age.overlap.correlation.precheck <- function(clade, nreps, overlap.source, env,  model, overlap.matrix, metric){
 
   if(!inherits(tree, "phylo")){
     stop("Tree is not a phylo object!")
-  }
-
-  if(any(!rownames(overlap) %in% tree$tip.label)){
-    stop("Overlap matrix names and tip labels do not match!")
   }
 
   if(is.null(tree$edge.length)){
     stop("Tree does not have branch lengths!")
   }
 
+  # Need to test for env
 
-
-  if(any(is.na(overlap))){
-    stop("Overlap matrix contains NAs!")
-  }
 }
