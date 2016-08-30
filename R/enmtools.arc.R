@@ -26,32 +26,37 @@ enmtools.arc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL
   # Bioclim models
   if(overlap.source == "bc"){
     empirical.models <- lapply(clade$species, function(x) enmtools.bc(x, env = env))
-    overlap <- sapply(empirical.models, function(x) sapply(empirical.models, function(y) raster.overlap(x,y)[metric]))
   }
 
   # Domain models
   if(overlap.source == "dm"){
     empirical.models <- lapply(clade$species, function(x) enmtools.dm(x, env = env))
-    overlap <- sapply(empirical.models, function(x) sapply(empirical.models, function(y) raster.overlap(x,y)[metric]))
   }
 
   # GAM models
   if(overlap.source == "gam"){
     empirical.models <- lapply(clade$species, function(x) enmtools.gam(x, env = env, f = model))
-    overlap <- sapply(empirical.models, function(x) sapply(empirical.models, function(y) raster.overlap(x,y)[metric]))
   }
 
   # GLM models
   if(overlap.source == "glm"){
     empirical.models <- lapply(clade$species, function(x) enmtools.glm(x, env = env, f = model))
-    overlap <- sapply(empirical.models, function(x) sapply(empirical.models, function(y) raster.overlap(x,y)[metric]))
   }
 
   # Maxent models
   if(overlap.source == "mx"){
     empirical.models <- lapply(clade$species, function(x) enmtools.mx(x, env = env))
-    overlap <- sapply(empirical.models, function(x) sapply(empirical.models, function(y) raster.overlap(x,y)[metric]))
   }
+
+  if(is.na(match(overlap.source, c("range", "points")))){
+    if(grepl(pattern = "^env", metric)){
+      overlap <- sapply(empirical.models, function(x) sapply(empirical.models, function(y) env.overlap(x,y, env=env)[metric]))
+    } else {
+      overlap <- sapply(empirical.models, function(x) sapply(empirical.models, function(y) raster.overlap(x,y)[metric]))
+    }
+  }
+
+
 
   # Range rasters
   if(overlap.source == "range"){
@@ -149,6 +154,19 @@ age.overlap.correlation.precheck <- function(clade, nreps, overlap.source, env, 
     stop("Tree does not have branch lengths!")
   }
 
-  # Need to test for env
+  # Check to make sure env data is good
+  if(!is.na(any(match(overlap.source, c("bc", "dm", "mx", "glm", "gam"))))){
+    if(!inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
+      stop("No environmental rasters were supplied!")
+    }
+  }
+
+  if(any(is.na(lapply(clade$species, function(x) x$range)))){
+
+    stop(paste("Overlap source set to range, but some species are missing range rasters: ",
+               paste(names(clade$species)[which(is.na(lapply(clade$species, function(x) x$range)))], collapse = ", ")))
+  }
+
+
 
 }
