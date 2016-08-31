@@ -52,7 +52,8 @@ check.clade <- function(this.clade){
   }
 
   if(any(is.na(match(this.clade$tree$tip.label, names(this.clade$species))))){
-    stop(paste("Species in tree not found in clade: ", paste(which(is.na(match(this.clade$tree$tip.label, names(this.clade$species))))), collapse = ", "))
+    missing <- which(is.na(match(this.clade$tree$tip.label, names(this.clade$species))))
+    stop(paste("Species in tree not found in clade: ", paste(this.clade$tree$tip.label[missing]), collapse = ", "))
   }
 
   # Reorder list to match tree

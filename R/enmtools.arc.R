@@ -155,18 +155,18 @@ age.overlap.correlation.precheck <- function(clade, nreps, overlap.source, env, 
   }
 
   # Check to make sure env data is good
-  if(!is.na(any(match(overlap.source, c("bc", "dm", "mx", "glm", "gam"))))){
+  if(!is.na(match(overlap.source, c("bc", "dm", "mx", "glm", "gam")))){
     if(!inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
       stop("No environmental rasters were supplied!")
     }
   }
 
-  if(any(is.na(lapply(clade$species, function(x) x$range)))){
+  if(overlap.source == "range"){
+    if(any(is.na(lapply(clade$species, function(x) x$range)))){
 
-    stop(paste("Overlap source set to range, but some species are missing range rasters: ",
-               paste(names(clade$species)[which(is.na(lapply(clade$species, function(x) x$range)))], collapse = ", ")))
+      stop(paste("Overlap source set to range, but some species are missing range rasters: ",
+                 paste(names(clade$species)[which(is.na(lapply(clade$species, function(x) x$range)))], collapse = ", ")))
+    }
   }
-
-
 
 }
