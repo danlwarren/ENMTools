@@ -35,12 +35,34 @@ check.clade <- function(this.clade){
     }
   }
 
-  # Build a summary table of data, chuck it into clade object
-  species.name <- names(this.clade$species)
+  # Make sure species names exist and match names in species list
+  # then reorder list to match tree tip labels
+  species.names <- unlist(lapply(this.clade$species, function(x) x$species.name))
+  if(!all(is.character(species.names))){
+    stop(paste("Some species in clade to not have names set.  Existing names are: ", paste(sp.names, collapse= ", ")))
+  }
 
-  in.tree <- rep(NA, length(species.name))
+  # Rename species list to match species names
+  names(this.clade$species) <- species.names
+
+  # Check names and tip labels against each other
+  if(any(is.na(match(names(this.clade$species), this.clade$tree$tip.label)))){
+    missing <- which(is.na(match(names(this.clade$species), this.clade$tree$tip.label)))
+    stop(paste("Species in clade not found in tree: ", paste(names(this.clade$species)[missing]), collapse = ", "))
+  }
+
+  if(any(is.na(match(this.clade$tree$tip.label, names(this.clade$species))))){
+    missing <- which(is.na(match(this.clade$tree$tip.label, names(this.clade$species))))
+    stop(paste("Species in tree not found in clade: ", paste(this.clade$tree$tip.label[missing]), collapse = ", "))
+  }
+
+  # Reorder list to match tree
+  this.clade$species <- this.clade$species[this.clade$tree$tip.label]
+
+  # Build a summary table of data, chuck it into clade object
+  in.tree <- rep(NA, length(species.names))
   if(!isTRUE(is.na(this.clade$tree))){
-    in.tree <- species.name %in% this.clade$tree$tip.label
+    in.tree <- species.names %in% this.clade$tree$tip.label
   }
 
   presence <- lapply(this.clade$species, function(x) nrow(x$presence.points))
@@ -52,7 +74,7 @@ check.clade <- function(this.clade){
   range[which(range == TRUE)] <- "present"
   range[which(range == FALSE)] <- "absent"
 
-  this.clade$summary <- cbind(species.name, in.tree, presence, background, range)
+  this.clade$summary <- cbind(species.names, in.tree, presence, background, range)
 
   return(this.clade)
 }
