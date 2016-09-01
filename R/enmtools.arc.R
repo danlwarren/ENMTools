@@ -10,7 +10,7 @@
 #' @param metric The overlap metric to use. For ENM sources, this can be any combination of "D", "I", "cor", "env.D", "env.I", and "env.cor".
 #' for range and point overlap this argument is ignored.
 #'
-#' @export age.overlap.correlation
+#' @export enmtools.arc
 
 enmtools.arc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL, overlap.matrix = NULL, metric = "D"){
 
@@ -61,12 +61,16 @@ enmtools.arc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL
   # Range rasters
   if(overlap.source == "range"){
 
+    # Do pairwise for all species
+    overlap <- sapply(clade$species, function(x) sapply(clade$species, function(y) range.overlap(x,y)))
   }
 
   # Presence points
   if(overlap.source == "points"){
-
+    overlap <- sapply(clade$species, function(x) sapply(clade$species, function(y) point.overlap(x,y)))
   }
+
+  tree <- clade$tree
 
   # sapply is renaming rows, gotta change tnem back
   rownames(overlap) <- colnames(overlap)
@@ -146,11 +150,11 @@ plot.enmtools.aoc <- function(this.aoc){
 
 age.overlap.correlation.precheck <- function(clade, nreps, overlap.source, env,  model, overlap.matrix, metric){
 
-  if(!inherits(tree, "phylo")){
+  if(!inherits(clade$tree, "phylo")){
     stop("Tree is not a phylo object!")
   }
 
-  if(is.null(tree$edge.length)){
+  if(is.null(clade$tree$edge.length)){
     stop("Tree does not have branch lengths!")
   }
 

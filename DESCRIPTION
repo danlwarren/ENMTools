@@ -20,4 +20,5 @@ Depends:
 	lhs,
 	mgcv,
 	ecospat,
-	phyloclim
+	phyloclim,
+	fields
