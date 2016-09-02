@@ -10,16 +10,20 @@
 #' @param metric The overlap metric to use. For ENM sources, this can be any combination of "D", "I", "cor", "env.D", "env.I", and "env.cor".
 #' for range and point overlap this argument is ignored.
 #'
-#' @export enmtools.arc
+#' @export enmtools.aoc
+#' @export summary.enmtools.aoc
+#' @export print.enmtools.aoc
+#' @export plot.enmtools.aoc
+#' @export enmtools.aoc.precheck
 
-enmtools.arc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL, overlap.matrix = NULL, metric = "D"){
+enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL, overlap.matrix = NULL, metric = "D"){
 
   description <- "Age-Overlap Correlation from Monte Carlo Test"
 
   clade <- check.clade(clade)
 
   # Make sure the data's okay
-  age.overlap.correlation.precheck(clade, nreps, overlap.source, env,  model, overlap.matrix, metric)
+  enmtools.aoc.precheck(clade, nreps, overlap.source, env,  model, overlap.matrix, metric)
 
   # Generate empirical overlaps
 
@@ -102,14 +106,15 @@ enmtools.arc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL
   rownames(reps.aoc) <- c("empirical", paste("rep", 1:nreps))
 
   p.values <- apply(reps.aoc, 2, function(x) 1 - mean(x > x[1]))
+  p.values <- sapply(p.values, function(x) min(x, 1-x)*2)
 
   intercept.plot <- qplot(reps.aoc[2:nrow(reps.aoc),"(Intercept)"], geom = "density", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.aoc[1,"(Intercept)"], linetype = "longdash") +
-    xlim(-1,1) + guides(fill = FALSE, alpha = FALSE) + xlab("Intercept") + ggtitle(description)
+    guides(fill = FALSE, alpha = FALSE) + xlab("Intercept") + ggtitle(description)
 
   slope.plot <- qplot(reps.aoc[2:nrow(reps.aoc),"age"], geom = "density", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.aoc[1,"age"], linetype = "longdash") +
-    xlim(-1,1) + guides(fill = FALSE, alpha = FALSE) + xlab("Slope") + ggtitle(description)
+    guides(fill = FALSE, alpha = FALSE) + xlab("Slope") + ggtitle(description)
 
   regressions.plot <- qplot(age, overlap, data = empirical.df) + theme_bw()
   for(i in 2:min(100, nrow(reps.aoc))){
@@ -136,8 +141,15 @@ enmtools.arc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL
 }
 
 summary.enmtools.aoc <- function(this.aoc){
+
   cat("\n\nAge-Overlap Correlation test\n\n")
-  cat(paste(length(this.aoc$reps), "replicates", "\n"))
+  cat(paste(length(this.aoc$reps), "replicates", "\n\n"))
+
+  cat("p values:\n")
+  print(this.aoc$p.values)
+
+  plot(this.aoc)
+
 }
 
 print.enmtools.aoc <- function(this.aoc){
@@ -146,9 +158,12 @@ print.enmtools.aoc <- function(this.aoc){
 
 plot.enmtools.aoc <- function(this.aoc){
 
+  grid.arrange(this.aoc$regressions.plot, this.aoc$intercept.plot,
+               this.aoc$slope.plot, ncol = 2)
+
 }
 
-age.overlap.correlation.precheck <- function(clade, nreps, overlap.source, env,  model, overlap.matrix, metric){
+enmtools.aoc.precheck <- function(clade, nreps, overlap.source, env,  model, overlap.matrix, metric){
 
   if(!inherits(clade$tree, "phylo")){
     stop("Tree is not a phylo object!")

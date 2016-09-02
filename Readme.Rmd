@@ -290,11 +290,106 @@ rbr.glm$lines.df
 The intercept denotes the intercept corresponding to the CENTER of each ribbon.  To get the lines denoting the edges of the ribbons (for example if you want to plot the ribbons on a map), you add and substract the offset.  In other words, the top edge of the ribbon is given by y = (slope * x) + intercept + offset, while the bottom edge is given by y = (slope * x) + intercept - offset.  
 
 
+### Building an enmtools.clade object
+
+Some of the tests in ENMTools, including some really neat ones that are still in development, require you to build an enmtools.clade object.  These objects are simply lists that contain a phylogeny and a set of enmtools.species objects.  It's important that the names of the species objects and their species.name attributes match the names in the phylogeny's tip.labels.  For demonstration, we're going to build an object for a clade of five anoles from Hispaniola.  We have the tree, so we're just going to grab occurrence data from GBIF using the rgbif package.
+
+```{r read_tree}
+library(rgbif)
+
+hisp.anoles <- read.nexus(file = "test/testdata/StarBEAST_MCC.species.txt")
+
+keepers <- c("brevirostris", "marron", "caudalis", "websteri", "distichus")
+
+hisp.anoles <- drop.tip(phy = hisp.anoles, tip = hisp.anoles$tip.label[!hisp.anoles$tip.label %in% keepers])
+plot(hisp.anoles)
+```
+
+So there's our tree.  Now we're going to grab some environmental data.
+
+```{r read_env}
+hisp.env <- stack(list.files("test/testdata/Hispaniola_Worldclim", full.names = TRUE))
+hisp.env <- setMinMax(hisp.env)
+```
+
+And then we'll create a function to build species from GBIF.
+```{r gbif_function}
+# Automate the process of downloading data and removing duds and dupes
+species.from.gbif <- function(genus, species, name = NA, env){
+
+  # Name it after the species epithet unless told otherwise
+  if(is.na(name)){
+    name <- species
+  }
+
+  # Get GBIF data
+  this.sp <- enmtools.species(presence.points = gbif(genus = genus, species = species)[,c("lon", "lat")],
+                              species.name = name)
+
+  # Rename columns, get rid of duds
+  colnames(this.sp$presence.points) <- c("Longitude", "Latitude")
+  this.sp$presence.points <- this.sp$presence.points[complete.cases(extract(env, this.sp$presence.points)),]
+  this.sp$presence.points <- this.sp$presence.points[!duplicated(this.sp$presence.points),]
+
+  this.sp$range <- background.raster.buffer(this.sp$presence.points, 50000, mask = hisp.env)
+
+  return(this.sp)
+}
+```
+
+
+Now we'll create five species and add them to a species.clade object that is called brev.clade.
+```{r build_clade, message = FALSE, warning = FALSE}
+brevirostris <- species.from.gbif(genus = "Anolis", species = "brevirostris", env = hisp.env)
+marron <- species.from.gbif(genus = "Anolis", species = "marron", env = hisp.env)
+caudalis <- species.from.gbif(genus = "Anolis", species = "caudalis", env = hisp.env)
+websteri <- species.from.gbif(genus = "Anolis", species = "websteri", env = hisp.env)
+distichus <- species.from.gbif(genus = "Anolis", species = "distichus", env = hisp.env)
+
+
+brev.clade <- enmtools.clade(species = list(brevirostris, marron, caudalis, websteri, distichus), tree = hisp.anoles)
+check.clade(brev.clade)
+```
+
+
+### Age-overlap correlation tests (AOC)
+
+The AOC tests allow you to examine patterns of range, point, and ENM overlap in the context of a phylogeny.  This is effectively a generalized version of several analyses: age-range correlation (e.g., Fitzpatrick and Turelli 2006), ENM overlap in the context of a phylogeny (e.g., Knouft et al. 2006, Warren et al. 2008), and point overlaps (e.g., Cardillo and Warren 2016).
+
+These tests require the creation of an enmtools.clade object, as above.  AOC tests consist of two steps: first, the average overlap at each node in the phylogeny is calcualted using a method that takes tree topology into account (see Fitzpatrick and Turelli 2006), then we perform a linear regression to measure the relationship between node age and average overlap.  Due to the fact that these overlaps violate many of the assumptions of a regular linear regression, however (e.g., errors are not iid), we can't calculate significance in the typical way.  Instead we performa  Monte Carlo test, permuting the identity of the tips of the tree and repeating the node averaging and modeling steps.  Finally we measure statistical significance by comparing the empirical slope and intercept to the distribution of slopes and intercepts from the Monte Carlo replicates.
+
+First, let's do one using range overlaps, as in Fitzpatrick and Turelli 2006.  Note that this analysis requires that each of your species have a range raster stored in their species object (we did that as part of the function used above).  
+
+```{r range_aoc}
+range.aoc <- enmtools.aoc(clade = brev.clade,  nreps = 50, overlap.source = "range")
+summary(range.aoc)
+```
+
+
+Now we can do one using point overlaps just by changing the overlap.source argument:
+
+```{r point_aoc}
+point.aoc <- enmtools.aoc(clade = brev.clade,  nreps = 50, overlap.source = "points")
+summary(point.aoc)
+```
+
+
+
+Or we can use similarity between ENMs built for each species.  Here we'll use Bioclim models:
+
+```{r enm_aoc}
+bc.aoc <- enmtools.aoc(clade = brev.clade,  env = hisp.env, nreps = 50, overlap.source = "bc")
+summary(bc.aoc)
+```
 
 
 ### Literature cited
 
 *Broennimann, O., Fitzpatrick, M. C., Pearman, P. B., Petitpierre, B., Pellissier, L., Yoccoz, N. G., Thuiller, W., Fortin, M.-J., Randin, C., Zimmermann, N. E., Graham, C. H. and Guisan, A. (2012), Measuring ecological niche overlap from occurrence and spatial environmental data. Global Ecology and Biogeography, 21: 481–497. doi:10.1111/j.1466-8238.2011.00698.x*
+
+*Fitzpatrick, B. M., & Turelli, M. (2006). The geography of mammalian speciation: mixed signals from phylogenies and range maps. Evolution, 60(3), 601-615.*
+
+*Knouft, J. H., Losos, J. B., Glor, R. E., & Kolbe, J. J. (2006). Phylogenetic analysis of the evolution of the niche in lizards of the Anolis sagrei group. Ecology, 87(sp7).*
 
 *Levins, R. 1968. Evolution In Changing Environments. Monographs in Population Biology, volume 2. Princeton University Press, Princeton, New Jersey, USA.*
 
