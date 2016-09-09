@@ -23,7 +23,7 @@
 #' @export plot.background.test
 #'
 #' @examples
-#' background.test(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, type = "asymmetric", ...)
+#' background.test(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, type = "asymmetric")
 #'
 
 background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99, test.type = "asymmetric", ...){
