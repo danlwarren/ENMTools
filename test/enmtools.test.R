@@ -78,6 +78,16 @@ ahli.mx <- enmtools.maxent(ahli, env, test.prop = 0.2)
 ahli.mx
 ahli.mx$response.plots
 
+test1.mx <- enmtools.maxent(ahli, env, args=c('pictures=TRUE', 'plots=TRUE', 'replicatetype=crossvalidate',
+                                              'applythresholdrule=minimum training presence', 'visible=TRUE',
+                                              'outputformat=logistic'))
+
+
+
+test2.maxent <- maxent(x=env, p=ahli$presence.points, a=ahli$background.points,
+                            nbg=10000, args=c('pictures=TRUE', 'plots=TRUE', 'replicatetype=crossvalidate', 'replicates=5',
+                                              'applythresholdrule=minimum training presence', 'visible=TRUE', 'outputformat=logistic' ),
+                            removeDuplicates=TRUE)
 
 allogus.mx <- enmtools.maxent(allogus, env[[c("layer.1", "layer.4")]], test.prop = 0.2)
 allogus.mx

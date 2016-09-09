@@ -66,13 +66,13 @@ format.latlon <- function(latlon){
 
   # Try to figure out which columns contain "lon" or "x"
   loncols <- c(which(grepl("^lon", colnames(latlon), ignore.case = TRUE)), match("x", tolower(colnames(latlon))))
-  if(!is.na(loncols)){
+  if(any(!is.na(loncols))){
     loncols <- loncols[which(!is.na(loncols))]
   }
 
   # Ditto for "lat" and "y"
   latcols <- c(which(grepl("^lat", colnames(latlon), ignore.case = TRUE)), match("y", tolower(colnames(latlon))))
-  if(!is.na(latcols)){
+  if(any(!is.na(latcols))){
     latcols <- latcols[which(!is.na(latcols))]
   }
 
