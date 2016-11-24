@@ -27,11 +27,8 @@ export(env.evaluate)
 export(env.overlap)
 export(identity.precheck)
 export(identity.test)
-<<<<<<< HEAD
 export(moses.list)
-=======
 export(node.overlap)
->>>>>>> master
 export(plot.background.test)
 export(plot.ecospat.bg.test)
 export(plot.ecospat.id.test)

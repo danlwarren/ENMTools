@@ -16,11 +16,7 @@
 #' @export plot.enmtools.glm
 
 
-<<<<<<< HEAD
-enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, ...){
-=======
 enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, report = NULL, overwrite = FALSE, ...){
->>>>>>> master
 
   notes <- NULL
 
@@ -161,11 +157,8 @@ summary.enmtools.glm <- function(this.glm){
 
   cat("\n\nNotes:  \n")
   this.glm$notes
-<<<<<<< HEAD
-=======
 
   plot(this.glm)
->>>>>>> master
 
 }
 
