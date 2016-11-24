@@ -8,7 +8,7 @@
 
 check.bg <- function(species, env = NA, nback = 1000){
 
-  check.species(species)
+  species <- check.species(species)
 
   if(!any(c("data.frame") %in% class(species$presence.points))){
     stop("Species presence.points do not appear to be an object of class data.frame")
