@@ -23,14 +23,14 @@
 #' rangebreak.blob(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, ...)
 #'
 
-rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 99,  ...){
+rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 99, nback = 1000, ...){
 
   # Just for visualization
   plotraster <- env[[1]]
   plotraster[!is.na(plotraster)] <- 1
 
-  species.1 <- check.bg(species.1, env, ...)
-  species.2 <- check.bg(species.2, env, ...)
+  species.1 <- check.bg(species.1, env, nback = nback, ...)
+  species.2 <- check.bg(species.2, env, nback = nback, ...)
 
   rangebreak.blob.precheck(species.1, species.2, env, type, f, nreps)
 
@@ -73,7 +73,7 @@ rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
 
   empirical.overlap <- c(unlist(raster.overlap(empirical.species.1.model, empirical.species.2.model)),
-                         unlist(env.overlap(empirical.species.1.model, empirical.species.2.model, env = env, ...)))
+                         unlist(env.overlap(empirical.species.1.model, empirical.species.2.model, env = env)))
   reps.overlap <- empirical.overlap
 
   # Not sure if I'm going to use this or not, but for the moment I'm going
@@ -133,7 +133,7 @@ rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 9
     replicate.models[[paste0(species.2$species.name, ".rep.", i)]] <- rep.species.2.model
 
     reps.overlap <- rbind(reps.overlap, c(unlist(raster.overlap(rep.species.1.model, rep.species.2.model)),
-                                          unlist(env.overlap(rep.species.1.model, rep.species.2.model, env = env, ...))))
+                                          unlist(env.overlap(rep.species.1.model, rep.species.2.model, env = env))))
 
   }
 
