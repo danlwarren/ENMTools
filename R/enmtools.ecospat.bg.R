@@ -241,11 +241,11 @@ ecospat.bg.precheck <- function(species.1, species.2, env, nreps, layers){
 summary.ecospat.bg.test <- function(id){
   cat(paste("\n\n", id$description))
 
-  print(kable(head(id$sp1.env)))
-  print(kable(head(id$sp1.bg.env)))
-  print(kable(head(id$sp2.env)))
-  print(kable(head(id$sp2.bg.env)))
-  print(kable(head(id$background.env)))
+  # print(kable(head(id$sp1.env)))
+  # print(kable(head(id$sp1.bg.env)))
+  # print(kable(head(id$sp2.env)))
+  # print(kable(head(id$sp2.bg.env)))
+  # print(kable(head(id$background.env)))
 
 
   cat("\n\necospat.bg test p-values:\n")
