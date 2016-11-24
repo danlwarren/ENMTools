@@ -25,11 +25,11 @@
 #' rangebreak.ribbon(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, ...)
 #'
 
-rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL, width = 1, nreps = 99,  ...){
+rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL, width = 1, nreps = 99,  nback = 1000, ...){
 
-  species.1 <- check.bg(species.1, env, ...)
-  species.2 <- check.bg(species.2, env, ...)
-  ribbon <- check.bg(ribbon, env, ...)
+  species.1 <- check.bg(species.1, env, nback = nback, ...)
+  species.2 <- check.bg(species.2, env, nback = nback, ...)
+  ribbon <- check.bg(ribbon, env, nback = nback, ...)
 
   rangebreak.ribbon.precheck(species.1, species.2, ribbon, env, type, f, width, nreps)
 
@@ -87,19 +87,19 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
   }
 
   empirical.overlap.sp1.vs.sp2 <- c(unlist(raster.overlap(empirical.species.1.model, empirical.species.2.model)),
-                                    unlist(env.overlap(empirical.species.1.model, empirical.species.2.model, env = env, ...)))
+                                    unlist(env.overlap(empirical.species.1.model, empirical.species.2.model, env = env)))
   reps.overlap.sp1.vs.sp2 <- empirical.overlap.sp1.vs.sp2
 
   empirical.overlap.sp1.vs.ribbon <- c(unlist(raster.overlap(empirical.species.1.model, empirical.ribbon.model)),
-                                       unlist(env.overlap(empirical.species.1.model, empirical.ribbon.model, env = env, ...)))
+                                       unlist(env.overlap(empirical.species.1.model, empirical.ribbon.model, env = env)))
   reps.overlap.sp1.vs.ribbon <- empirical.overlap.sp1.vs.ribbon
 
   empirical.overlap.sp2.vs.ribbon <- c(unlist(raster.overlap(empirical.species.2.model, empirical.ribbon.model)),
-                                       unlist(env.overlap(empirical.species.2.model, empirical.ribbon.model, env = env, ...)))
+                                       unlist(env.overlap(empirical.species.2.model, empirical.ribbon.model, env = env)))
   reps.overlap.sp2.vs.ribbon <- empirical.overlap.sp2.vs.ribbon
 
   empirical.overlap.outside.vs.ribbon <- c(unlist(raster.overlap(empirical.outside.model, empirical.ribbon.model)),
-                                           unlist(env.overlap(empirical.outside.model, empirical.ribbon.model, env = env, ...)))
+                                           unlist(env.overlap(empirical.outside.model, empirical.ribbon.model, env = env)))
   reps.overlap.outside.vs.ribbon <- empirical.overlap.outside.vs.ribbon
 
   lines.df <- data.frame(slope = rep(NA, nreps), intercept = rep(NA, nreps), offset = rep(NA, nreps))
@@ -207,13 +207,13 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
 
     # Measure overlaps
     this.overlap.sp1.vs.sp2  <- c(unlist(raster.overlap(rep.species.1.model, rep.species.2.model)),
-                                  unlist(env.overlap(rep.species.1.model, rep.species.2.model, env = env, ...)))
+                                  unlist(env.overlap(rep.species.1.model, rep.species.2.model, env = env)))
     this.overlap.sp1.vs.ribbon <- c(unlist(raster.overlap(rep.species.1.model, rep.ribbon.model)),
-                                    unlist(env.overlap(rep.species.1.model, rep.ribbon.model, env = env, ...)))
+                                    unlist(env.overlap(rep.species.1.model, rep.ribbon.model, env = env)))
     this.overlap.sp2.vs.ribbon <- c(unlist(raster.overlap(rep.species.2.model, rep.ribbon.model)),
-                                    unlist(env.overlap(rep.species.2.model, rep.ribbon.model, env = env, ...)))
+                                    unlist(env.overlap(rep.species.2.model, rep.ribbon.model, env = env)))
     this.overlap.outside.vs.ribbon <- c(unlist(raster.overlap(rep.outside.model, rep.ribbon.model)),
-                                        unlist(env.overlap(rep.outside.model, rep.ribbon.model, env = env, ...)))
+                                        unlist(env.overlap(rep.outside.model, rep.ribbon.model, env = env)))
 
 #     print(this.overlap.sp1.vs.sp2)
 #     print(this.overlap.sp1.vs.ribbon)

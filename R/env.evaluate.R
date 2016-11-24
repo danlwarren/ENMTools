@@ -27,7 +27,7 @@ env.evaluate <- function(species, model, env, bg.source = "background", ...){
     allpoints <- rbind(presence, background)
     values <- extract(env, allpoints)
     maxes <- apply(values, 2, function(x) max(x, na.rm = TRUE))
-    mins <- apply(values, 2, function(x) max(x, na.rm = TRUE))
+    mins <- apply(values, 2, function(x) min(x, na.rm = TRUE))
   }
 
   if(bg.source == "env") {
@@ -40,6 +40,7 @@ env.evaluate <- function(species, model, env, bg.source = "background", ...){
   this.lhs <- randomLHS(10000, length(names(env)))
   bg.table <- t(t(this.lhs) * (maxes  - mins) + mins)
   colnames(bg.table) <- names(env)
+
   p.table <- extract(env, presence)
 #
 #   print(mins)
@@ -50,7 +51,7 @@ env.evaluate <- function(species, model, env, bg.source = "background", ...){
   pred.p <- as.numeric(predict(model, data.frame(p.table), type = "response"))
   pred.bg <- as.numeric(predict(model, data.frame(bg.table), type = "response"))
 
-  env.evaluation <- evaluate(pred.p, pred.bg)
+  env.evaluation <-dismo::evaluate(pred.p, pred.bg)
 
   return(env.evaluation)
 }

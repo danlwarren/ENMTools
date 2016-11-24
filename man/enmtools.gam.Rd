@@ -4,7 +4,8 @@
 \alias{enmtools.gam}
 \title{Takes an emtools.species object with presence and background points, and builds a gam}
 \usage{
-enmtools.gam(species, env, f = NULL, test.prop = 0, k = 4, ...)
+enmtools.gam(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000,
+  report = NULL, overwrite = FALSE, ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
@@ -14,6 +15,12 @@ enmtools.gam(species, env, f = NULL, test.prop = 0, k = 4, ...)
 \item{test.prop}{Proportion of data to withhold for model evaluation}
 
 \item{k}{Dimension of the basis used to represent the smooth term.  See documentation for s() for details.}
+
+\item{nback}{Number of background points to draw from range or env, if background points aren't provided}
+
+\item{report}{Optional name of an html file for generating reports}
+
+\item{overwrite}{TRUE/FALSE whether to overwrite a report file if it already exists}
 
 \item{...}{Arguments to be passed to gam()}
 

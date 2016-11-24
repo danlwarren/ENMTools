@@ -3,6 +3,8 @@
 #' @param species An enmtools.species object
 #' @param env A raster or raster stack of environmental data.
 #' @param test.prop Proportion of data to withhold for model evaluation
+#' @param report Optional name of an html file for generating reports
+#' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
 #' @param ... Arguments to be passed to bioclim()
 #'
 #' @export enmtools.bc
@@ -10,7 +12,7 @@
 #' @export summary.enmtools.bc
 #' @export plot.enmtools.bc
 
-enmtools.bc <- function(species, env = NA, test.prop = 0, ...){
+enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwrite = FALSE, ...){
 
   notes <- NULL
 
@@ -50,19 +52,20 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, ...){
     names(env) <- c(oldname, "dummyvar")
   }
 
-  model.evaluation <- evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+  model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                this.bc, env)
   env.model.evaluation <- env.evaluate(species, this.bc, env)
 
   if(test.prop > 0 & test.prop < 1){
-    test.evaluation <- evaluate(test.data, species$background.points[,1:2],
+    test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
                                 this.bc, env)
     temp.sp <- species
     temp.sp$presence.points <- test.data
     env.test.evaluation <- env.evaluate(temp.sp, this.bc, env)
   }
 
-  output <- list(analysis.df = species$presence.points[,1:2],
+  output <- list(species.name = species$species.name,
+                 analysis.df = species$presence.points[,1:2],
                  test.data = test.data,
                  test.prop = test.prop,
                  model = this.bc,
@@ -84,6 +87,15 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, ...){
   }
 
   output[["response.plots"]] <- response.plots
+
+  if(!is.null(report)){
+    if(file.exists(report) & overwrite == FALSE){
+      stop("Report file exists, and overwrite is set to FALSE!")
+    } else {
+      cat("\n\nGenerating html report...\n")
+      makereport(output, outfile = report)
+    }
+  }
 
   return(output)
 
@@ -116,10 +128,13 @@ summary.enmtools.bc <- function(this.bc){
 
   cat("\n\nSuitability:  \n")
   print(this.bc$suitability)
-  plot(this.bc)
 
   cat("\n\nNotes:  \n")
   print(this.bc$notes)
+
+  #Note to self: plot command HAS to come last!
+  plot(this.bc)
+
 }
 
 #Print method for objects of class enmtools.bc

@@ -5,6 +5,9 @@
 #' @param env A raster or raster stack of environmental data.
 #' @param test.prop Proportion of data to withhold for model evaluation
 #' @param eval Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.
+#' @param nback Number of background points to draw from range or env, if background points aren't provided
+#' @param report Optional name of an html file for generating reports
+#' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
 #' @param ... Arguments to be passed to glm()
 #'
 #' @export enmtools.glm
@@ -13,7 +16,11 @@
 #' @export plot.enmtools.glm
 
 
+<<<<<<< HEAD
 enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, ...){
+=======
+enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, report = NULL, overwrite = FALSE, ...){
+>>>>>>> master
 
   notes <- NULL
 
@@ -70,12 +77,12 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
       notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
     }
 
-    model.evaluation <- evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+    model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                  this.glm, env)
     env.model.evaluation <- env.evaluate(species, this.glm, env)
 
     if(test.prop > 0 & test.prop < 1){
-      test.evaluation <- evaluate(test.data, species$background.points[,1:2],
+      test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
                                   this.glm, env)
       temp.sp <- species
       temp.sp$presence.points <- test.data
@@ -84,7 +91,8 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
 
   }
 
-  output <- list(formula = f,
+  output <- list(species.name = species$species.name,
+                 formula = f,
                  analysis.df = analysis.df,
                  test.data = test.data,
                  test.prop = test.prop,
@@ -107,6 +115,15 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
   }
 
   output[["response.plots"]] <- response.plots
+
+  if(!is.null(report)){
+    if(file.exists(report) & overwrite == FALSE){
+      stop("Report file exists, and overwrite is set to FALSE!")
+    } else {
+      cat("\n\nGenerating html report...\n")
+      makereport(output, outfile = report)
+    }
+  }
 
   return(output)
 
@@ -141,10 +158,14 @@ summary.enmtools.glm <- function(this.glm){
 
   cat("\n\nSuitability:  \n")
   print(this.glm$suitability)
-  plot(this.glm)
 
   cat("\n\nNotes:  \n")
   this.glm$notes
+<<<<<<< HEAD
+=======
+
+  plot(this.glm)
+>>>>>>> master
 
 }
 

@@ -3,6 +3,8 @@
 #' @param species An enmtools.species object
 #' @param env A raster or raster stack of environmental data.
 #' @param test.prop Proportion of data to withhold for model evaluation
+#' @param report Optional name of an html file for generating reports
+#' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
 #' @param ... Arguments to be passed to bioclim()
 #'
 #' @export enmtools.dm
@@ -10,7 +12,7 @@
 #' @export summary.enmtools.dm
 #' @export plot.enmtools.dm
 
-enmtools.dm <- function(species, env = NA, test.prop = 0, ...){
+enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, overwrite = FALSE, ...){
 
   notes <- NULL
 
@@ -49,12 +51,12 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, ...){
     names(env) <- c(oldname, "dummyvar")
   }
 
-  model.evaluation <- evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+  model.evaluation <- dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                this.dm, env)
   env.model.evaluation <- env.evaluate(species, this.dm, env)
 
   if(test.prop > 0 & test.prop < 1){
-    test.evaluation <- evaluate(test.data, species$background.points[,1:2],
+    test.evaluation <- dismo::evaluate(test.data, species$background.points[,1:2],
                                 this.dm, env)
     temp.sp <- species
     temp.sp$presence.points <- test.data
@@ -63,7 +65,8 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, ...){
 
   suitability <- predict(env, this.dm, type = "response")
 
-  output <- list(analysis.df = species$presence.points[,1:2],
+  output <- list(species.names = species$species.name,
+                 analysis.df = species$presence.points[,1:2],
                  test.data = test.data,
                  test.prop = test.prop,
                  model = this.dm,
@@ -85,6 +88,15 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, ...){
   }
 
   output[["response.plots"]] <- response.plots
+
+  if(!is.null(report)){
+    if(file.exists(report) & overwrite == FALSE){
+      stop("Report file exists, and overwrite is set to FALSE!")
+    } else {
+      cat("\n\nGenerating html report...\n")
+      makereport(output, outfile = report)
+    }
+  }
 
   return(output)
 
@@ -117,10 +129,11 @@ summary.enmtools.dm <- function(this.dm){
 
   cat("\n\nSuitability:  \n")
   print(this.dm$suitability)
-  plot(this.dm)
 
   cat("\n\nNotes:  \n")
   print(this.dm$notes)
+
+  plot(this.dm)
 
 }
 
@@ -167,7 +180,7 @@ dm.precheck <- function(species, env, f){
     stop("Species presence.points do not appear to be an object of class data.frame")
   }
 
-  if(!inherits(env, c("raster", "RasterLayer", "RasterStack"))){
+  if(!inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
     stop("No environmental rasters were supplied!")
   }
 

@@ -4,7 +4,8 @@
 \alias{enmtools.bc}
 \title{Takes an emtools.species object with presence and background points, and builds a Bioclim model}
 \usage{
-enmtools.bc(species, env = NA, test.prop = 0, ...)
+enmtools.bc(species, env = NA, test.prop = 0, report = NULL,
+  overwrite = FALSE, ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
@@ -12,6 +13,10 @@ enmtools.bc(species, env = NA, test.prop = 0, ...)
 \item{env}{A raster or raster stack of environmental data.}
 
 \item{test.prop}{Proportion of data to withhold for model evaluation}
+
+\item{report}{Optional name of an html file for generating reports}
+
+\item{overwrite}{TRUE/FALSE whether to overwrite a report file if it already exists}
 
 \item{...}{Arguments to be passed to bioclim()}
 }

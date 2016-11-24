@@ -4,6 +4,9 @@
 #' @param species An enmtools.species object
 #' @param env A raster or raster stack of environmental data.
 #' @param test.prop Proportion of data to withhold for model evaluation
+#' @param nback Number of background points to draw from range or env, if background points aren't provided
+#' @param report Optional name of an html file for generating reports
+#' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
 #' @param ... Arguments to be passed to maxent()
 #'
 #' @export enmtools.maxent
@@ -11,11 +14,11 @@
 #' @export summary.enmtools.maxent
 #' @export plot.enmtools.maxent
 
-enmtools.maxent <- function(species, env, test.prop = 0, ...){
+enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, report = NULL, overwrite = FALSE,   ...){
 
   notes <- NULL
 
-  species <- check.bg(species, env, ...)
+  species <- check.bg(species, env, nback = nback)
 
   maxent.precheck(f, species, env)
 
@@ -46,12 +49,12 @@ enmtools.maxent <- function(species, env, test.prop = 0, ...){
   this.mx <- maxent(env, p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)
 
 
-  model.evaluation <- evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+  model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                this.mx, env)
   env.model.evaluation <- env.evaluate(species, this.mx, env)
 
   if(test.prop > 0 & test.prop < 1){
-    test.evaluation <- evaluate(test.data, species$background.points[,1:2],
+    test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
                                 this.mx, env)
     temp.sp <- species
     temp.sp$presence.points <- test.data
@@ -61,7 +64,8 @@ enmtools.maxent <- function(species, env, test.prop = 0, ...){
   suitability <- predict(env, this.mx, type = "response")
 
 
-  output <- list(analysis.df = analysis.df,
+  output <- list(species.name = species$species.name,
+                 analysis.df = analysis.df,
                  test.data = test.data,
                  test.prop = test.prop,
                  model = this.mx,
@@ -83,6 +87,15 @@ enmtools.maxent <- function(species, env, test.prop = 0, ...){
   }
 
   output[["response.plots"]] <- response.plots
+
+  if(!is.null(report)){
+    if(file.exists(report) & overwrite == FALSE){
+      stop("Report file exists, and overwrite is set to FALSE!")
+    } else {
+      cat("\n\nGenerating html report...\n")
+      makereport(output, outfile = report)
+    }
+  }
 
   return(output)
 
@@ -114,10 +127,11 @@ summary.enmtools.maxent <- function(this.maxent){
 
   cat("\n\nSuitability:  \n")
   print(this.maxent$suitability)
-  plot(this.maxent)
 
   cat("\n\nNotes:  \n")
   print(this.maxent$notes)
+
+  plot(this.maxent)
 
 }
 
@@ -169,7 +183,7 @@ maxent.precheck <- function(f, species, env){
     stop("Species background.points do not appear to be an object of class data.frame")
   }
 
-  if(!inherits(env, c("raster", "RasterLayer", "RasterStack"))){
+  if(!inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
     stop("No environmental rasters were supplied!")
   }
 

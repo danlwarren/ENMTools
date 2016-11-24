@@ -19,4 +19,6 @@ Depends:
 	viridis,
 	lhs,
 	mgcv,
-	ecospat
+	ecospat,
+	phyloclim,
+	fields

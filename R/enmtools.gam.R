@@ -5,6 +5,9 @@
 #' @param env A raster or raster stack of environmental data.
 #' @param test.prop Proportion of data to withhold for model evaluation
 #' @param k Dimension of the basis used to represent the smooth term.  See documentation for s() for details.
+#' @param nback Number of background points to draw from range or env, if background points aren't provided
+#' @param report Optional name of an html file for generating reports
+#' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
 #' @param ... Arguments to be passed to gam()
 #'
 #' @export enmtools.gam
@@ -13,11 +16,11 @@
 #' @export plot.enmtools.gam
 
 
-enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, ...){
+enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000, report = NULL, overwrite = FALSE, ...){
 
   notes <- NULL
 
-  species <- check.bg(species, env, ...)
+  species <- check.bg(species, env, nback = nback)
 
   # Builds a default formula using all env
   if(is.null(f)){
@@ -63,13 +66,13 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, ...){
     notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
   }
 
-  model.evaluation <- evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+  model.evaluation <- dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                this.gam, env)
   env.model.evaluation <- env.evaluate(species, this.gam, env)
 
 
   if(test.prop > 0 & test.prop < 1){
-    test.evaluation <- evaluate(test.data, species$background.points[,1:2],
+    test.evaluation <- dismo::evaluate(test.data, species$background.points[,1:2],
                                 this.gam, env)
     temp.sp <- species
     temp.sp$presence.points <- test.data
@@ -78,7 +81,8 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, ...){
 
 
 
-  output <- list(formula = f,
+  output <- list(species.name = species$species.name,
+                 formula = f,
                  analysis.df = analysis.df,
                  test.data = test.data,
                  test.prop = test.prop,
@@ -101,6 +105,15 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, ...){
   }
 
   output[["response.plots"]] <- response.plots
+
+  if(!is.null(report)){
+    if(file.exists(report) & overwrite == FALSE){
+      stop("Report file exists, and overwrite is set to FALSE!")
+    } else {
+      cat("\n\nGenerating html report...\n")
+      makereport(output, outfile = report)
+    }
+  }
 
   return(output)
 
@@ -135,12 +148,14 @@ summary.enmtools.gam <- function(this.gam){
 
   cat("\n\nEnvironment space model fit (test data):  ")
   print(this.gam$env.test.evaluation)
+
   cat("\n\nSuitability:  \n")
   print(this.gam$suitability)
-  plot(this.gam)
 
   cat("\n\nNotes:  \n")
   print(this.gam$notes)
+
+  plot(this.gam)
 }
 
 # Print method for objects of class enmtools.gam
@@ -197,7 +212,7 @@ gam.precheck <- function(f, species, env){
     stop("Species background.points do not appear to be an object of class data.frame")
   }
 
-  if(!inherits(env, c("raster", "RasterLayer", "RasterStack"))){
+  if(!inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
     stop("No environmental rasters were supplied!")
   }
 

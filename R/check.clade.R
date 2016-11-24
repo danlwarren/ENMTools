@@ -35,12 +35,43 @@ check.clade <- function(this.clade){
     }
   }
 
+<<<<<<< HEAD
   # Build a summary table of data, chuck it into clade object
   species.name <- names(this.clade$species)
 
   in.tree <- rep(NA, length(species.name))
   if(!isTRUE(is.na(this.clade$tree))){
     in.tree <- species.name %in% this.clade$tree$tip.label
+=======
+  # Make sure species names exist and match names in species list
+  # then reorder list to match tree tip labels
+  species.names <- unlist(lapply(this.clade$species, function(x) x$species.name))
+  if(!all(is.character(species.names))){
+    stop(paste("Some species in clade to not have names set.  Existing names are: ", paste(sp.names, collapse= ", ")))
+  }
+
+  # Rename species list to match species names
+  names(this.clade$species) <- species.names
+
+  # Check names and tip labels against each other
+  if(any(is.na(match(names(this.clade$species), this.clade$tree$tip.label)))){
+    missing <- which(is.na(match(names(this.clade$species), this.clade$tree$tip.label)))
+    stop(paste("Species in clade not found in tree: ", paste(names(this.clade$species)[missing]), collapse = ", "))
+  }
+
+  if(any(is.na(match(this.clade$tree$tip.label, names(this.clade$species))))){
+    missing <- which(is.na(match(this.clade$tree$tip.label, names(this.clade$species))))
+    stop(paste("Species in tree not found in clade: ", paste(this.clade$tree$tip.label[missing]), collapse = ", "))
+  }
+
+  # Reorder list to match tree
+  this.clade$species <- this.clade$species[this.clade$tree$tip.label]
+
+  # Build a summary table of data, chuck it into clade object
+  in.tree <- rep(NA, length(species.names))
+  if(!isTRUE(is.na(this.clade$tree))){
+    in.tree <- species.names %in% this.clade$tree$tip.label
+>>>>>>> master
   }
 
   presence <- lapply(this.clade$species, function(x) nrow(x$presence.points))
@@ -48,9 +79,17 @@ check.clade <- function(this.clade){
   background <- unlist(lapply(this.clade$species, function(x) nrow(x$background.points)))
   background[which(is.null(background))] <- 0
 
+<<<<<<< HEAD
   range <- lapply(this.clade$species, function(x) !is.na(x$range))
 
   this.clade$summary <- cbind(species.name, in.tree, presence, background, range)
+=======
+  range <- unlist(lapply(this.clade$species, function(x) inherits(x$range, c("raster", "RasterLayer"))))
+  range[which(range == TRUE)] <- "present"
+  range[which(range == FALSE)] <- "absent"
+
+  this.clade$summary <- cbind(species.names, in.tree, presence, background, range)
+>>>>>>> master
 
   return(this.clade)
 }

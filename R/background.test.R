@@ -23,10 +23,10 @@
 #' @export plot.background.test
 #'
 #' @examples
-#' background.test(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, type = "asymmetric", ...)
+#' background.test(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, type = "asymmetric")
 #'
 
-background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99, test.type = "asymmetric", ...){
+background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99, test.type = "asymmetric", nback = 1000, ...){
 
   # Build a description of the analysis to use for summaries and plot titles
   if(test.type == "symmetric"){
@@ -36,8 +36,8 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
   }
   cat(paste("\n", description, "\n"))
 
-  species.1 <- check.bg(species.1, env, ...)
-  species.2 <- check.bg(species.2, env, ...)
+  species.1 <- check.bg(species.1, env, nback = nback, ...)
+  species.2 <- check.bg(species.2, env, nback = nback, ...)
 
   # Check to make sure everything's okay
   background.precheck(species.1, species.2, env, type, f, nreps, test.type)
@@ -80,7 +80,7 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
 
   empirical.overlap <- c(unlist(raster.overlap(empirical.species.1.model, empirical.species.2.model)),
-                         unlist(env.overlap(empirical.species.1.model, empirical.species.2.model, env = env, ...)))
+                         unlist(env.overlap(empirical.species.1.model, empirical.species.2.model, env = env)))
   reps.overlap <- empirical.overlap
 
   cat("\nBuilding replicate models...\n")
@@ -140,7 +140,7 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
     # Appending overlap to results
     reps.overlap <- rbind(reps.overlap, c(unlist(raster.overlap(rep.species.1.model, rep.species.2.model)),
-                                          unlist(env.overlap(rep.species.1.model, rep.species.2.model, env = env, ...))))
+                                          unlist(env.overlap(rep.species.1.model, rep.species.2.model, env = env))))
 
   }
 

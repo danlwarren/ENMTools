@@ -1,8 +1,9 @@
 setwd("~/GitHub/ENMTools/test")
+Sys.setenv(NOAWT=TRUE)
 library(ENMTools)
 
 # This code builds the readme.rmd file into a regular md file, which GitHub understands better
-knit(input="~/GitHub/ENMTools/Readme.Rmd", output = "~/GitHub/ENMTools/readme.md")
+# knit(input="~/GitHub/ENMTools/Readme.Rmd", output = "~/GitHub/ENMTools/readme.md")
 
 env.files <- list.files(path = "testdata/", pattern = "pc", full.names = TRUE)
 env <- stack(env.files)
@@ -24,15 +25,13 @@ allogus$range <- background.raster.buffer(allogus$presence.points, 50000, mask =
 ahli$background.points <- background.points.buffer(points = ahli$presence.points,radius = 40000, n = 1000, mask = env[[1]])
 allogus$background.points <- background.points.buffer(points = allogus$presence.points,radius = 40000, n = 1000, mask = env[[1]])
 
-# Should fail because presence and background have different col names
-check.species(ahli)
-
 colnames(ahli$background.points) <- colnames(ahli$presence.points)
 colnames(allogus$background.points) <- colnames(allogus$presence.points)
 
 two.anoles <- enmtools.clade(list(ahli, allogus))
+two.anoles <- check.clade(two.anoles)
 two.anoles
-check.clade(two.anoles)
+
 
 summary(ahli)
 print(ahli)
@@ -66,7 +65,6 @@ env.plots
 ahli.twovar.glm <- enmtools.glm(ahli, env, pres ~ layer.1 + layer.4)
 ahli.twovar.glm
 
-# Ought to work on methods for GAM and others that auto-parse functions like the GLM one does now
 
 
 ahli.bc <- enmtools.bc(ahli, env, test.prop = 0.2)
@@ -80,10 +78,25 @@ ahli.mx <- enmtools.maxent(ahli, env, test.prop = 0.2)
 ahli.mx
 ahli.mx$response.plots
 
+test1.mx <- enmtools.maxent(ahli, env, args=c('pictures=TRUE', 'plots=TRUE', 'replicatetype=crossvalidate',
+                                              'applythresholdrule=minimum training presence', 'visible=TRUE',
+                                              'outputformat=logistic'))
 
-allogus.mx <- enmtools.maxent(allogus, env, test.prop = 0.2)
+
+
+test2.maxent <- maxent(x=env, p=ahli$presence.points, a=ahli$background.points,
+                            nbg=10000, args=c('pictures=TRUE', 'plots=TRUE', 'replicatetype=crossvalidate', 'replicates=5',
+                                              'applythresholdrule=minimum training presence', 'visible=TRUE', 'outputformat=logistic' ),
+                            removeDuplicates=TRUE)
+
+allogus.mx <- enmtools.maxent(allogus, env[[c("layer.1", "layer.4")]], test.prop = 0.2)
 allogus.mx
 allogus.mx$response.plots
+
+args <- c("betamultiplier=0.5", "product=FALSE", "hinge=FALSE", "threshold=FALSE")
+allogus.mx.args <- enmtools.maxent(allogus, env, test.prop = 0.2, args = args)
+allogus.mx.args
+allogus.mx.args$response.plots
 
 allogus.dm <- enmtools.dm(allogus, env, test.prop = 0.2)
 allogus.dm
@@ -113,11 +126,11 @@ plot(raster.resid(ahli.glm, ahli.dm)$residuals)
 
 env.overlap(ahli.dm, ahli.glm, env)
 
-allogus.quad.glm <- enmtools.glm(allogus, env, pres ~ poly(layer.1, 2) + poly(layer.2, 2) + poly(layer.3, 2) + poly(layer.4, 2))
+allogus.quad.glm <- enmtools.glm(allogus, env, pres ~ poly(layer.1, 2) + poly(layer.2, 2) + poly(layer.3, 2) + poly(layer.4, 2), test.prop = 0.2)
 allogus.quad.glm
 visualize.enm(allogus.quad.glm, env, 100, layers = c("layer.1", "layer.4"))
 
-ahli.quad.glm <- enmtools.glm(ahli, env, pres ~ poly(layer.1, 1) + poly(layer.2, 2) + poly(layer.3, 2) + poly(layer.4, 2))
+ahli.quad.glm <- enmtools.glm(ahli, env, pres ~ poly(layer.1, 1) + poly(layer.2, 2) + poly(layer.3, 2) + poly(layer.4, 2), test.prop = 0.2)
 ahli.quad.glm
 visualize.enm(ahli.quad.glm, env, 100, layers = c("layer.1", "layer.2"))
 
@@ -216,6 +229,7 @@ rbr.dm <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "dm", width = 0.5
 
 rbr.glm <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "glm", width = 0.5, nreps = 4)
 
+
 rbr.glm <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "gam", width = 0.5, nreps = 4)
 
 esp.id <- enmtools.ecospat.id(ahli, allogus, env[[c("layer.1", "layer.2")]])
@@ -223,3 +237,6 @@ esp.id <- enmtools.ecospat.id(ahli, allogus, env[[c("layer.1", "layer.2")]])
 esp.bg.sym <- enmtools.ecospat.bg(ahli, allogus, env[[c("layer.1", "layer.3")]], test.type = "symmetric")
 
 esp.bg.asym <- enmtools.ecospat.bg(ahli, allogus, env[[c("layer.1", "layer.3")]], test.type = "asymmetric")
+
+rbr.gam <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "gam", width = 0.5, nreps = 4)
+
