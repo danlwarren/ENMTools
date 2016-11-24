@@ -74,12 +74,12 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
   sp2.niche <- ecospat.grid.clim.dyn(background.env[,4:5], sp2.bg.env[,4:5], sp2.env[,4:5], th.sp=th.sp, th.env=th.env, R=R)
 
   if(test.type == "symmetric"){
-    one.sided <- FALSE
+    rand.type = 1
   } else {
-    one.sided <- TRUE
+    rand.type = 2
   }
 
-  bg <- ecospat.niche.similarity.test(sp1.niche, sp2.niche, rep=nreps, one.sided = one.sided, ...)
+  bg <- ecospat.niche.similarity.test(sp1.niche, sp2.niche, rep=nreps, rand.type = rand.type, ...)
 
   p.values <- c(bg$p.D, bg$p.I)
   names(p.values) <- c("D", "I")
