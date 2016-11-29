@@ -22,7 +22,12 @@ check.bg <- function(species, env = NA, nback = 1000){
 
       # Drawing background points from range raster
       cat("\n\nNo background points provided, drawing background from range raster.\n\n")
-      species$background.points <- as.data.frame(randomPoints(species$range, nback, species$presence.points))
+      if(nback > sum(getValues(species$range) > 0, na.rm=TRUE)){
+        species$background.points <- as.data.frame(rasterToPoints(species$range)[,1:2])
+      } else {
+        species$background.points <- as.data.frame(randomPoints(species$range, nback, species$presence.points))  
+      }
+      
       colnames(species$background.points) <- colnames(species$presence.points)
       return(species)
 
