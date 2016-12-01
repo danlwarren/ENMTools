@@ -53,12 +53,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
   analysis.df <- rbind(species$presence.points, species$background.points)
   analysis.df$presence <- c(rep(1, nrow(species$presence.points)), rep(0, nrow(species$background.points)))
 
-  this.rf <- randomForest(f, analysis.df[,-c(1,2)], ...)
-
-
-  if(as.integer(this.rf$aic) == 2 * length(this.rf$coefficients)){
-    notes <- c(notes, "AIC is 2x number of coefficients, indicating an uninformative model.  This often indicates that you have too many predictors for your number of data points.")
-  }
+  this.rf <- randomForest(f, analysis.df[,-c(1,2)])
 
   suitability <- predict(env, this.rf, type = "response")
 
