@@ -12,11 +12,11 @@
 #' @export summary.enmtools.dm
 #' @export plot.enmtools.dm
 
-enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, overwrite = FALSE, ...){
+enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback = 1000, overwrite = FALSE, ...){
 
   notes <- NULL
 
-  species <- check.bg(species, env, ...)
+  species <- check.bg(species, env, nback)
 
   dm.precheck(species, env)
 

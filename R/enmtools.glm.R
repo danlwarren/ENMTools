@@ -20,7 +20,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
 
   notes <- NULL
 
-  species <- check.bg(species, env, nback = nback, ...)
+  species <- check.bg(species, env, nback = nback)
 
   # Builds a default formula using all env
   if(is.null(f)){

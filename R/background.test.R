@@ -78,6 +78,10 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
     empirical.species.2.model <- enmtools.dm(species.2, env, ...)
   }
 
+  if(type == "rf"){
+    empirical.species.1.model <- enmtools.rf(species.1, env, ...)
+    empirical.species.2.model <- enmtools.rf(species.2, env, ...)
+  }
 
   empirical.overlap <- c(unlist(raster.overlap(empirical.species.1.model, empirical.species.2.model)),
                          unlist(env.overlap(empirical.species.1.model, empirical.species.2.model, env = env)))
@@ -132,6 +136,11 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
     if(type == "dm"){
       rep.species.1.model <- enmtools.dm(rep.species.1, env, ...)
       rep.species.2.model <- enmtools.dm(rep.species.2, env, ...)
+    }
+
+    if(type == "rf"){
+      rep.species.1.model <- enmtools.rf(rep.species.1, env, ...)
+      rep.species.2.model <- enmtools.rf(rep.species.2, env, ...)
     }
 
     # Appending models to replicates list
@@ -226,8 +235,8 @@ background.precheck <- function(species.1, species.2, env, type, f, nreps, test.
     }
   }
 
-  if(!type %in% c("glm", "mx", "bc", "dm", "gam")){
-    stop(paste("Model type", type, "not understood! Select either bc, dm, mx, gam, or glm."))
+  if(!type %in% c("glm", "mx", "bc", "dm", "gam", "rf")){
+    stop(paste("Model type", type, "not understood! Select either bc, dm, mx, gam, rf, or glm."))
   }
 
   check.species(species.1)

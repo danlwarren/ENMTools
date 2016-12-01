@@ -12,11 +12,11 @@
 #' @export summary.enmtools.bc
 #' @export plot.enmtools.bc
 
-enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwrite = FALSE, ...){
+enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwrite = FALSE, nback = 1000, ...){
 
   notes <- NULL
 
-  species <- check.bg(species, env, ...)
+  species <- check.bg(species, env, nback)
 
   bc.precheck(species, env)
 

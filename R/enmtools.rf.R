@@ -20,7 +20,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
 
   notes <- NULL
 
-  species <- check.bg(species, env, nback = nback, ...)
+  species <- check.bg(species, env, nback = nback)
 
   # Builds a default formula using all env
   if(is.null(f)){
@@ -53,7 +53,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
   analysis.df <- rbind(species$presence.points, species$background.points)
   analysis.df$presence <- c(rep(1, nrow(species$presence.points)), rep(0, nrow(species$background.points)))
 
-  this.rf <- randomForest(f, analysis.df[,-c(1,2)])
+  this.rf <- randomForest(f, analysis.df[,-c(1,2)], ...)
 
   suitability <- predict(env, this.rf, type = "response")
 
