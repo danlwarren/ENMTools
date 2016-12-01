@@ -16,7 +16,7 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, overwri
 
   notes <- NULL
 
-  # species <- check.bg(species, env, ...)
+  species <- check.bg(species, env, ...)
 
   dm.precheck(species, env)
 

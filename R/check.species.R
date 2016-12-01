@@ -17,9 +17,19 @@ check.species <- function(this.species){
   # Checking classes of input args.  The isTRUE stuff is needed because R doesn't
   # know how to do is.na on raster data, so it was barfing and error when a raster
   # was passed in.
+  
+  # This bit replaces NULL values with NA values
+  expect <- c("presence.points", "background.points", 
+              "models", "species.name", "range")
+  nulls <- names(which(sapply(expect, function(x) is.null(this.species[[x]]))))
+  
+  # Have to do this in a loop because sapply won't assign NAs for some reason
+  for(i in nulls){
+    this.species[[i]] <- NA
+  }
 
   if(!isTRUE(is.na(this.species$range))){
-    if(!inherits(this.species$range, c("raster", "RasterLayer", "RasterBrick"))){
+    if(!inherits(this.species$range, c("raster", "RasterLayer", "RasterBrick", "RasterStack"))){
       stop("Argument range requires an object of class raster or RasterLayer")
     }
   }
