@@ -4,7 +4,8 @@
 \alias{rangebreak.blob}
 \title{rangebreak.blob Conduct a blob rangebreak test as described in Glor and Warren 2011.}
 \usage{
-rangebreak.blob(species.1, species.2, env, type, f = NULL, nreps = 99, ...)
+rangebreak.blob(species.1, species.2, env, type, f = NULL, nreps = 99,
+  nback = 1000, ...)
 }
 \arguments{
 \item{species.1}{An emtools.species object}

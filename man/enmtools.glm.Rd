@@ -5,11 +5,7 @@
 \title{Takes an emtools.species object with presence and background points, and builds a GLM}
 \usage{
 enmtools.glm(species, env, f = NULL, test.prop = 0, eval = TRUE,
-<<<<<<< HEAD
-  nback = 1000, ...)
-=======
   nback = 1000, report = NULL, overwrite = FALSE, ...)
->>>>>>> master
 }
 \arguments{
 \item{species}{An enmtools.species object}
