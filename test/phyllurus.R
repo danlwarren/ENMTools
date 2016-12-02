@@ -1,5 +1,9 @@
+<<<<<<< HEAD
+library(MuMIn)
+=======
 
 library(ENMTools)
+>>>>>>> master
 setwd("~/GitHub/ENMTools/test")
 
 
@@ -58,7 +62,11 @@ phyl.clade <- enmtools.clade(species = list(amnicola = amnicola,
 
 
 
+<<<<<<< HEAD
+test <- moses.list(phyl.clade$species, env)
+=======
 test <- moses.list(phyl.clade$species, env, test.prop = 0.2)
+>>>>>>> master
 
 # background <- background[sample(length(background[,1]), length(phyltable[,1]), replace=TRUE),3:24]
 # background <- cbind(phyltable[,1:2], background)

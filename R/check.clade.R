@@ -9,6 +9,16 @@ check.clade <- function(this.clade){
   # Checking classes of input args.  The isTRUE stuff is needed because R doesn't
   # know how to do is.na on raster data, so it was barfing and error when a raster
   # was passed in.
+  
+  # This bit replaces NULL values with NA values
+  expect <- c("species", "tree")
+  nulls <- names(which(sapply(expect, function(x) is.null(this.clade[[x]]))))
+  
+  # Have to do this in a loop because sapply won't assign NAs for some reason
+  for(i in nulls){
+    this.clade[[i]] <- NA
+  }
+  
 
   if(!isTRUE(is.na(this.clade$species))){
 
@@ -34,6 +44,7 @@ check.clade <- function(this.clade){
       stop("Argument tree requires a phylo object")
     }
   }
+
 
   # Make sure species names exist and match names in species list
   # then reorder list to match tree tip labels
@@ -69,6 +80,7 @@ check.clade <- function(this.clade){
 
   background <- unlist(lapply(this.clade$species, function(x) nrow(x$background.points)))
   background[which(is.null(background))] <- 0
+
 
   range <- unlist(lapply(this.clade$species, function(x) inherits(x$range, c("raster", "RasterLayer"))))
   range[which(range == TRUE)] <- "present"

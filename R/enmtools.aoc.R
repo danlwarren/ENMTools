@@ -49,7 +49,7 @@ enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL
 
   # Maxent models
   if(overlap.source == "mx"){
-    empirical.models <- lapply(clade$species, function(x) enmtools.mx(x, env = env))
+    empirical.models <- lapply(clade$species, function(x) enmtools.maxent(x, env = env))
   }
 
   if(is.na(match(overlap.source, c("range", "points")))){

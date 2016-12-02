@@ -22,7 +22,7 @@ enmtools.species <- function(range = NA, presence.points = NA, background.points
   # was passed in.
 
   if(!isTRUE(is.na(range))){
-    if(!any(c("raster", "SpatialPolygons") %in% class(range))){
+    if(!any(c("raster", "RasterLayer", "SpatialPolygons") %in% class(range))){
       print("Argument range requires an object of class raster or SpatialPolygons")
     }
   }

@@ -45,8 +45,16 @@ websteri <- species.from.gbif(genus = "Anolis", species = "websteri", env = hisp
 distichus <- species.from.gbif(genus = "Anolis", species = "distichus", env = hisp.env)
 
 
+<<<<<<< HEAD
+
+brev.clade <- enmtools.clade(species = list(brevirostris, marron, caudalis, websteri), tree = hisp.anoles)
+=======
 brev.clade <- enmtools.clade(species = list(brevirostris, marron, caudalis, websteri, distichus), tree = hisp.anoles)
+>>>>>>> master
 check.clade(brev.clade)
+names(brev.clade$species) <- lapply(brev.clade$species, function(x) x$species.name)
+
+moses.list(brev.clade$species, hisp.env)
 
 # brev.dm <- enmtools.dm(species = brevirostris, env = hisp.env, test.prop = 0.2)
 # brev.glm <- enmtools.glm(species = brevirostris, env = hisp.env, test.prop = 0.2)

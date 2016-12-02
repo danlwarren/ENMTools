@@ -86,6 +86,13 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
     empirical.outside.model <- enmtools.dm(outside, env, ...)
   }
 
+  if(type == "rf"){
+    empirical.species.1.model <- enmtools.rf(species.1, env, ...)
+    empirical.species.2.model <- enmtools.rf(species.2, env, ...)
+    empirical.ribbon.model <- enmtools.rf(ribbon, env, ...)
+    empirical.outside.model <- enmtools.rf(outside, env, ...)
+  }
+
   empirical.overlap.sp1.vs.sp2 <- c(unlist(raster.overlap(empirical.species.1.model, empirical.species.2.model)),
                                     unlist(env.overlap(empirical.species.1.model, empirical.species.2.model, env = env)))
   reps.overlap.sp1.vs.sp2 <- empirical.overlap.sp1.vs.sp2
@@ -197,6 +204,13 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
       rep.species.2.model <- enmtools.dm(rep.species.2, env, ...)
       rep.ribbon.model <- enmtools.dm(rep.ribbon, env, ...)
       rep.outside.model <- enmtools.dm(rep.outside, env, ...)
+    }
+
+    if(type == "rf"){
+      rep.species.1.model <- enmtools.rf(rep.species.1, env, ...)
+      rep.species.2.model <- enmtools.rf(rep.species.2, env, ...)
+      rep.ribbon.model <- enmtools.rf(rep.ribbon, env, ...)
+      rep.outside.model <- enmtools.rf(rep.outside, env, ...)
     }
 
     # Appending models to replicates list
@@ -457,8 +471,8 @@ rangebreak.ribbon.precheck <- function(species.1, species.2, ribbon, env, type, 
     }
   }
 
-  if(!type %in% c("glm", "mx", "bc", "dm", "gam")){
-    stop(paste("Model type", type, "not understood! Select either bc, dm, mx, gam, or glm."))
+  if(!type %in% c("glm", "mx", "bc", "dm", "gam", "rf")){
+    stop(paste("Model type", type, "not understood! Select either bc, dm, mx, gam, rf, or glm."))
   }
 
   check.species(species.1)

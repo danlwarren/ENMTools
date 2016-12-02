@@ -21,4 +21,6 @@ Depends:
 	mgcv,
 	ecospat,
 	phyloclim,
-	fields
+	fields,
+	gbm,
+	randomForest

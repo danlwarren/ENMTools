@@ -11,6 +11,7 @@ node.overlap <- function(overlap, tree){
 
    # Get numbers for internal nodes
    nodes <- branching.times(tree)
+   tree$node.label <- NULL
 
    # Return a table of node numbers and scaled overlap values
    output <- data.frame(cbind(nodes,
