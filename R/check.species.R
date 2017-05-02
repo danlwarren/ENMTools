@@ -1,3 +1,56 @@
+
+#' isNAsr: Checking if a species$range item is NA
+#'
+#' Running \code{is.na} on a species range object, which is a raster::RasterLayer,
+#' throws the following error:
+#'
+#' \code{> isNAsr(this.species)
+#' Error in file(fn, "rb") : cannot open the connection
+#' In addition: Warning message:
+#' In file(fn, "rb") :
+#'   cannot open file 
+#' '/private/var/folders/4m/cq3wxdkd3rng9wsfgwhc71wh0000gp/T/RtmpkF55An/raster/r_tmp_2017-05-
+#' 01_142654_53632_74654.gri': No such file or directory }
+#' 
+#' Apparently, running \code{is.na()} causes R to check for some temporary file 
+#' location, which may shift.
+#' 
+#' Anyway, one solution is to just do:
+#'
+#' is.na(this.species["range"])
+#'
+#' ...which works fine:
+#' 
+#' \code{is.na(this.species["range"])
+#' range 
+#' FALSE}
+#' 
+#' ...and also works if this.species really is NA:
+#' 
+#' \code{tmp=NA
+#' > is.na(tmp["range"])
+#' [1] TRUE  }
+#' 
+#' However, it is handy to put this in a function, in case we need to change/expand it 
+#' later to deal with other variants.
+#' 
+#' @param this.species An object of class \code{enmtools.species}; also of class \code{list}.
+#' @examples
+#' # Example speed test below (don't run)
+#' test=1
+#' 
+#' \dontrun{
+#' isNAsr(this.species)
+#' }
+#' 
+#' @export isNAsr
+#' 
+isNAsr <- function(this.species)
+	{
+	return(is.na(this.species["range"]))
+	}
+
+
 #' Checking compliance for an object of class enmtools.species.
 #'
 #' Checks for existence and proper class of:
@@ -28,7 +81,7 @@ check.species <- function(this.species){
     this.species[[i]] <- NA
   }
 
-  if(!isTRUE(is.na(this.species$range))){
+  if(!isTRUE(isNAsr(this.species))){
     if(!inherits(this.species$range, c("raster", "RasterLayer", "RasterBrick", "RasterStack"))){
       stop("Argument range requires an object of class raster or RasterLayer")
     }
