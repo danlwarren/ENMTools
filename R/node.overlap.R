@@ -29,12 +29,12 @@ single.node.overlap <- function(node, overlap, tree){
    # Initialize node overlap
    this.node.overlap <- 0
 
-   # Get immediate descendants of node
+   # Get immediate phyloclim:::descendants of node
    daughters <- tree$edge[tree$edge[, 1] == node, 2]
 
    # Get all combinations of daughters into table
    daughter.comparisons <- t(combn(daughters, 2))
-
+   
    # Get overlap for each pair of daughter clades
    daughter.overlaps <- apply(daughter.comparisons, 1, function(x)
       get.daughter.overlap(tree, overlap, x))
@@ -48,8 +48,8 @@ single.node.overlap <- function(node, overlap, tree){
 # Get the scaled overlap for a single pair of daughters
 get.daughter.overlap <- function(tree, overlap, nodes){
 
-   clade1 <- descendants(tree, nodes[1])
-   clade2 <- descendants(tree, nodes[2])
+   clade1 <- phyloclim:::descendants(tree, nodes[1])
+   clade2 <- phyloclim:::descendants(tree, nodes[2])
 
    comparisons <- expand.grid(clade1, clade2)
 
@@ -66,8 +66,8 @@ get.daughter.overlap <- function(tree, overlap, nodes){
 get.mult <- function (tree, tips){
 
    ntips <- length(tree$tip.label)
-   mrca <- getMRCA(tree, tips)
-   nds <- descendants(tree, mrca, internal = TRUE)
+   mrca <- ape::getMRCA(tree, tips)
+   nds <- phyloclim:::descendants(tree=tree, node=mrca, internal = TRUE)
 
    if (identical(sort(as.integer(nds)), sort(as.integer(tips)))){
 
@@ -89,7 +89,7 @@ get.mult <- function (tree, tips){
       daughters <- sapply(nds, function(x) length(which(tree$edge[,1] == x)))
 
       # Trim it down to the number of daughters per node that falls along path between tips
-      check <- function(x, tips) any(tips %in% descendants(tree, x))
+      check <- function(x, tips) any(tips %in% phyloclim:::descendants(tree, x))
       id <- sapply(nds, check, tips = tips)
       mult <- 1/prod(daughters[id]) * 1/(choose(length(which(tree$edge[,1] == mrca)), 2))
    }

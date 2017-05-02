@@ -66,12 +66,12 @@ enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL
   if(overlap.source == "range"){
 
     # Do pairwise for all species
-    overlap <- sapply(clade$species, function(x) sapply(clade$species, function(y) range.overlap(x,y)))
+    overlap <- sapply(clade$species, function(x) sapply(clade$species, function(y) ENMTools::range.overlap(x,y)))
   }
 
   # Presence points
   if(overlap.source == "points"){
-    overlap <- sapply(clade$species, function(x) sapply(clade$species, function(y) point.overlap(x,y)))
+    overlap <- sapply(clade$species, function(x) sapply(clade$species, function(y) ENMTools::point.overlap(x,y)))
   }
 
   tree <- clade$tree
