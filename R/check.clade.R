@@ -1,4 +1,4 @@
-#' Checking for complians of an enmtools.clade object
+#' Checking for compliance of an enmtools.clade object
 #' @param this.clade An enmtools.clade object
 #'
 #' @export check.clade
@@ -7,7 +7,7 @@
 check.clade <- function(this.clade){
 
   # Checking classes of input args.  The isTRUE stuff is needed because R doesn't
-  # know how to do is.na on raster data, so it was barfing and error when a raster
+  # know how to do is.na on raster data, so it was barfing an error when a raster
   # was passed in.
   
   # This bit replaces NULL values with NA values
@@ -41,9 +41,13 @@ check.clade <- function(this.clade){
   if(!isTRUE(is.na(this.clade$tree))){
     # Checking to see if species is a list
     if(!inherits(this.clade$tree, "phylo")){
-      stop("Argument tree requires a phylo object")
+      stop("Argument tree requires a phylo object in $tree. You have a list or something else other than of class 'phylo'.")
     }
+  } else {
+  # No phylo object, so skip the rest
+  stop("STOP ERROR in check.clade(): no object of class 'phylo' in $tree")
   }
+
 
 
   # Make sure species names exist and match names in species list
@@ -59,12 +63,12 @@ check.clade <- function(this.clade){
   # Check names and tip labels against each other
   if(any(is.na(match(names(this.clade$species), this.clade$tree$tip.label)))){
     missing <- which(is.na(match(names(this.clade$species), this.clade$tree$tip.label)))
-    stop(paste("Species in clade not found in tree: ", paste(names(this.clade$species)[missing]), collapse = ", "))
+    stop(paste("Species in clade not found in tree: ", paste(names(this.clade$species)[missing], collapse = ", "), collapse=""))
   }
 
   if(any(is.na(match(this.clade$tree$tip.label, names(this.clade$species))))){
     missing <- which(is.na(match(this.clade$tree$tip.label, names(this.clade$species))))
-    stop(paste("Species in tree not found in clade: ", paste(this.clade$tree$tip.label[missing]), collapse = ", "))
+    stop(paste("Species in tree not found in clade: ", paste(this.clade$tree$tip.label[missing], collapse = ", "), collapse=""))
   }
 
   # Reorder list to match tree
