@@ -22,7 +22,8 @@ library(phyloclim) # for e.g. phyloclim:::descendants
 library(BioGeoBEARS)
 sourceall("/GitHub/ENMTools/R/")
 
-wd = "/GitHub/ENMTools/inst/extdata/"
+#wd = "/GitHub/ENMTools/inst/extdata/"
+wd = "/GitHub/"
 setwd(wd)
 
 # Download only first time you run, then change to FALSE
@@ -30,7 +31,7 @@ download_data_files = FALSE
 # Species occurrences from a CSV file (from ENMTools GitHub page)
 remote_dir = "https://raw.githubusercontent.com/danlwarren/ENMTools/master/test/testdata/"
 # Species occurrences from a LOCAL file (on your computer)
-local_dir = "tmp"
+local_dir = "tmp_data"
 
 
 
@@ -48,6 +49,13 @@ if (file.exists(local_dir) == FALSE)
 	{
 	dir.create(local_dir)
 	}
+
+# Create a temporary directory for the PDF graphical output as well
+if (file.exists("tmp_graphics") == FALSE)
+	{
+	dir.create(local_dir)
+	}
+
 
 # Downloading the file. You may need to change the 'method' argument
 # on some operating systems
@@ -157,14 +165,14 @@ ahli.glm <- enmtools.glm(species = ahli, env = env, f = pres ~ poly(layer.1, 2) 
 allogus.glm <- enmtools.glm(species = allogus, env = env, f = pres ~ poly(layer.1, 2) + poly(layer.2, 2) + poly(layer.3, 2) + poly(layer.4, 2), test.prop = 0.2)
 
 # Estimated responses
-pdffn = "ahli.glm_response.plots.pdf"
+pdffn = "tmp_graphics/ahli.glm_response.plots.pdf"
 pdf(file=pdffn, width=6, height=6)
 ahli.glm$response.plots
 dev.off()
 cmdstr = paste0("open ", pdffn)
 system(cmdstr)
 
-pdffn = "allogus.glm_response.plots.pdf"
+pdffn = "tmp_graphics/allogus.glm_response.plots.pdf"
 pdf(file=pdffn, width=6, height=6)
 allogus.glm$response.plots
 dev.off()
@@ -175,7 +183,7 @@ system(cmdstr)
 # The colored raster of the background.plot shows you the density of 
 # background points in environment space, while the white points again 
 # represent your occurrence points in environment space.
-pdffn = "visualize_ahli.glm.pdf"
+pdffn = "tmp_graphics/visualize_ahli.glm.pdf"
 pdf(file=pdffn, width=6, height=6)
 visualize.enm(ahli.glm, env, layers = c("layer.2", "layer.4"))
 dev.off()
@@ -183,7 +191,7 @@ cmdstr = paste0("open ", pdffn)
 system(cmdstr)
 
 
-pdffn = "visualize_allogus.glm.pdf"
+pdffn = "tmp_graphics/visualize_allogus.glm.pdf"
 pdf(file=pdffn, width=6, height=6)
 visualize.enm(allogus.glm, env, layers = c("layer.2", "layer.4"))
 dev.off()
@@ -284,7 +292,7 @@ env_overlap_result
 # models for the identity test are conducted with pseudoabsence points pooled for the
 # two species being compared.
 id.glm <- identity.test(species.1=ahli, species.2=allogus, env=env, type="glm", nreps=4)
-pdffn = "id.glm.pdf"
+pdffn = "tmp_graphics/id.glm.pdf"
 pdf(file=pdffn, width=12, height=12)
 id.glm 
 dev.off()
@@ -320,7 +328,7 @@ system(cmdstr)
 # Here, for instance, is a Bioclim background test using the classical asymmetric approach:
 bg.bc.asym <- background.test(species.1=ahli, species.2=allogus, env=env, type="bc", nreps=4, test.type="asymmetric" )
 
-pdffn = "bg.bc.asym.pdf"
+pdffn = "tmp_graphics/bg.bc.asym.pdf"
 pdf(file=pdffn, width=12, height=12)
 bg.bc.asym
 dev.off()
@@ -333,7 +341,7 @@ system(cmdstr)
 # And here is a Domain background test using the symmetric approach:
 bg.dm.sym <- background.test(species.1=ahli, species.2=allogus, env=env, type="dm", nreps=4, test.type="symmetric")
 
-pdffn = "bg.dm.sym.pdf"
+pdffn = "tmp_graphics/bg.dm.sym.pdf"
 pdf(file=pdffn, width=12, height=12)
 bg.dm.sym
 dev.off()
@@ -363,7 +371,7 @@ system(cmdstr)
 # species.1=ahli; species.2=allogus; env=env[[c("layer.1", "layer.2")]]
 esp.id <- enmtools.ecospat.id(species.1=ahli, species.2=allogus, env=env[[c("layer.1", "layer.2")]])
 
-pdffn = "esp.id.pdf"
+pdffn = "tmp_graphics/esp.id.pdf"
 pdf(file=pdffn, width=12, height=12)
 esp.id
 dev.off()
@@ -379,7 +387,7 @@ system(cmdstr)
 # nreps = 99; layers = NULL; th.sp=0; th.env=0; R=100
 esp.bg.sym <- enmtools.ecospat.bg(ahli, allogus, env[[c("layer.1", "layer.3")]], test.type="symmetric")
 
-pdffn = "esp.bg.sym.pdf"
+pdffn = "tmp_graphics/esp.bg.sym.pdf"
 pdf(file=pdffn, width=12, height=12)
 esp.bg.sym
 dev.off()
@@ -402,7 +410,7 @@ system(cmdstr)
 # background tests. Here's a linear one using GLM models:
 rbl.glm <- rangebreak.linear(species.1=ahli, species.2=allogus, env=env, type="glm", nreps=4, nback=1000)
 
-pdffn = "rbl.glm.pdf"
+pdffn = "tmp_graphics/rbl.glm.pdf"
 pdf(file=pdffn, width=12, height=12)
 rbl.glm
 dev.off()
@@ -414,7 +422,7 @@ system(cmdstr)
 
 # And here's a blob test using Bioclim:
 rbb.bc <- rangebreak.blob(species.1=ahli, species.2=allogus, env=env, type="bc", nreps=4, nback=1000)
-pdffn = "rbb.bc.pdf"
+pdffn = "tmp_graphics/rbb.bc.pdf"
 pdf(file=pdffn, width=12, height=12)
 rbb.bc
 dev.off()
@@ -444,7 +452,7 @@ points(ribbon$presence.points, pch=16)
 
 ribbon$range <- background.raster.buffer(points=ribbon$presence.points, radius=20000, mask=env, cropfirst=FALSE)
 
-pdffn = "ribbon.pdf"
+pdffn = "tmp_graphics/ribbon.pdf"
 pdf(file=pdffn, width=12, height=12)
 ribbon
 dev.off()
@@ -461,7 +469,7 @@ system(cmdstr)
 # decimal degrees.
 rbr.glm <- rangebreak.ribbon(species.1=ahli, species.2=allogus, ribbon=ribbon, env=env, type="glm", f=pres ~ poly(layer.1, 2) + poly(layer.2, 2) + poly(layer.3, 2) + poly(layer.4, 2), width=0.5, nreps=4, nback=1000)
 
-pdffn = "rbr.glm.pdf"
+pdffn = "tmp_graphics/rbr.glm.pdf"
 pdf(file=pdffn, width=12, height=12)
 rbr.glm
 dev.off()
@@ -613,7 +621,7 @@ summary(point.aoc)
 # Or we can use similarity between ENMs built for each species. Here we'll use Bioclim models:
 bc.aoc <- enmtools.aoc(clade=brev.clade,  env=hisp.env, nreps=50, overlap.source="bc")
 
-pdffn = "bc.aoc.pdf"
+pdffn = "tmp_graphics/bc.aoc.pdf"
 pdf(file=pdffn, width=12, height=12)
 bc.aoc
 dev.off()
