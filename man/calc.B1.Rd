@@ -22,4 +22,3 @@ calc.B1(1, .001, .001)
 \keyword{enm}
 \keyword{niche}
 \keyword{sdm}
-

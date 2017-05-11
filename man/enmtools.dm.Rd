@@ -23,4 +23,3 @@ enmtools.dm(species, env = NA, test.prop = 0, report = NULL,
 \description{
 Takes an emtools.species object with presence and background points, and builds a Domain model
 }
-

@@ -45,4 +45,3 @@ background.test(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.
 \keyword{equivalency,}
 \keyword{hypothesis}
 \keyword{testing}
-

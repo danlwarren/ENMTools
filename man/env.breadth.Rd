@@ -18,4 +18,3 @@ env.breadth(model, env, tolerance = 0.001, max.reps = 10)
 \description{
 Calculates breadth of a model in environment space using latin hypercube sampling
 }
-

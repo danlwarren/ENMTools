@@ -27,4 +27,3 @@ enmtools.maxent(species, env, test.prop = 0, nback = 1000, report = NULL,
 \description{
 Takes an emtools.species object with presence and background points, and builds a maxent model
 }
-

@@ -38,4 +38,3 @@ rangebreak.blob(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.
 \keyword{hypothesis}
 \keyword{rangebreak,}
 \keyword{testing}
-

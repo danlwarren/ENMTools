@@ -23,4 +23,3 @@ env.overlap(model.1, model.2, env, tolerance = 0.001, max.reps = 10,
 \description{
 Calculates overlap between models in environment space using latin hypercube sampling
 }
-

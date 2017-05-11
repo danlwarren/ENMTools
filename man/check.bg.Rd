@@ -16,4 +16,3 @@ check.bg(species, env = NA, nback = 1000)
 \description{
 Takes an emtools.species object and adds background points if they're missing. Looks for range raster first, then goes for environmental layers.
 }
-

@@ -22,4 +22,3 @@ scores from an ENM.  It returns Levins' two metrics of niche breadth.
 raster.breadth("env[[1]]")
 }
 \keyword{keywords}
-

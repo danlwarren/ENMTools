@@ -12,4 +12,3 @@
 \description{
 Takes a list of enmtools.species objects and merges them into a single enmtools.species object
 }
-

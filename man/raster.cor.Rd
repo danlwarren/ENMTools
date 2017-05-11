@@ -16,4 +16,3 @@ raster.cor(x, y, method = "spearman")
 \description{
 Calculates the correlation coefficient between two rasters.
 }
-

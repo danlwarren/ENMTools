@@ -25,4 +25,3 @@ Warren et al. 2008.
 raster.overlap(ahli.raster, allogus.raster)
 }
 \keyword{keywords}
-

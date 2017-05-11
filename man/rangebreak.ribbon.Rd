@@ -42,4 +42,3 @@ rangebreak.ribbon(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + laye
 \keyword{hypothesis}
 \keyword{rangebreak,}
 \keyword{testing}
-

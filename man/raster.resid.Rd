@@ -25,4 +25,3 @@ raster.resid(ahli.raster, allogus.raster)
 \keyword{correlation,}
 \keyword{raster,}
 \keyword{residuals}
-

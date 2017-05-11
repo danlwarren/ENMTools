@@ -26,4 +26,3 @@ plot.response Plots the marginal response of a model to an environmental variabl
 \keyword{plot,}
 \keyword{response}
 \keyword{sdm,}
-

@@ -16,4 +16,3 @@ node.overlap(overlap, tree)
 Takes an overlap matrix and a tree and returns average overlap at
 nodes using Fitzpatrick & Turelli averaging method
 }
-

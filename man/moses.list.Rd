@@ -16,4 +16,3 @@ moses.list(species.list, env, f = NULL, eval = FALSE, nback = 1000, ...)
 \description{
 Takes a list of enmtools.species objects and uses model selection to ask whether they're better treated jointly or separately
 }
-

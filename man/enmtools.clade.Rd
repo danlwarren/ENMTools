@@ -14,4 +14,3 @@ enmtools.clade(species = NA, tree = NA, root.species = NA)
 \description{
 Defining a class for enmtools.clade.  Each clade gets:
 }
-
