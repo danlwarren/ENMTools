@@ -29,4 +29,3 @@ enmtools.gam(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000,
 \description{
 Takes an emtools.species object with presence and background points, and builds a gam
 }
-

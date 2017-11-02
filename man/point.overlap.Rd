@@ -14,4 +14,3 @@ point.overlap(x, y)
 \description{
 Takes two emtools.species objects with range rasters, calculates overlap between them as in Cardillo and Warren 2016
 }
-

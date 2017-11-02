@@ -22,4 +22,3 @@ before processing anything.}
 \description{
 Checks for existence and proper class of:
 }
-

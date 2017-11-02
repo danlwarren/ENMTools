@@ -19,4 +19,3 @@ standardize suitability scores so they sum to 1 over a geographic space.
 raster.standardize(env[[1]])
 }
 \keyword{keywords}
-

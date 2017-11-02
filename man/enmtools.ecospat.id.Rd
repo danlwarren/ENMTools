@@ -38,4 +38,3 @@ enmtools.ecospat.id(ahli, allogus)
 \keyword{niche}
 \keyword{plot}
 \keyword{sdm}
-

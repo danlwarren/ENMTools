@@ -23,4 +23,3 @@ enmtools.bc(species, env = NA, test.prop = 0, report = NULL,
 \description{
 Takes an emtools.species object with presence and background points, and builds a Bioclim model
 }
-

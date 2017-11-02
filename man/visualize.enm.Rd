@@ -30,4 +30,3 @@ visualize.enm(1, .001, .001)
 \keyword{niche}
 \keyword{plot}
 \keyword{sdm}
-

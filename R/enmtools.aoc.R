@@ -123,7 +123,7 @@ enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL
                                                        color="grey86")
   }
   regressions.plot <- regressions.plot + geom_abline(slope = reps.aoc[1,2], intercept = reps.aoc[1,1]) +
-    geom_point()
+    geom_point() + ylim(0, 1) + xlim(0, 1.1 * max(empirical.df$age))
 
   output <- list(coefficients = reps.aoc,
                  p.values = p.values,

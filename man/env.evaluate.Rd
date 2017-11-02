@@ -20,4 +20,3 @@ env.evaluate(species, model, env, bg.source = "background", ...)
 \description{
 Calculates evaluation metrics (AUC, etc.) using latin hypercube sampling in environment space
 }
-

@@ -16,4 +16,3 @@ raster.cor.matrix(env, method = "pearson")
 Takes a raster stack and returns a data frame containing Pearson correlation coefficients
 between the included rasters
 }
-

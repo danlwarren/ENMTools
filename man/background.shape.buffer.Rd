@@ -18,4 +18,3 @@ Takes a set of points and a buffer radius, and returns
 a polygon.
 Code modified from Elith and Hijmans SDM with R tutorial
 }
-

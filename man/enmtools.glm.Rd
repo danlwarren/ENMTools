@@ -29,4 +29,3 @@ enmtools.glm(species, env, f = NULL, test.prop = 0, eval = TRUE,
 \description{
 Takes an emtools.species object with presence and background points, and builds a GLM
 }
-

@@ -37,4 +37,3 @@ identity.test(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3,
 \keyword{hypothesis}
 \keyword{identity,}
 \keyword{testing}
-

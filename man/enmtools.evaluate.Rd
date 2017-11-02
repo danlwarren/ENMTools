@@ -18,4 +18,3 @@ enmtools.evaluate(species, model, env, ...)
 \description{
 Takes an enmtools model object and an emtools.species object with presence and background points, formats it, and calls dismo evaluate function
 }
-
