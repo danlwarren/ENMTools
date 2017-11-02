@@ -2,8 +2,8 @@
 #'
 #' Checks for existence and proper class of:
 #' @param range A raster or SpatialPolygon with the actual range they occur in
-#' @param presence.points A data frame with sampled localities
-#' @param background.points A data frame with absence/pseudoabsence/background localities
+#' @param presence.points A data frame with sampled localities.  If a matrix is passed, it will be cast to a data frame.
+#' @param background.points A data frame with absence/pseudoabsence/background localities.  If a matrix is passed, it will be cast to a data frame.
 #' @param species.name A character vector with the species name
 #' @param models A list of models that are made for the species, which will be stuffed in there as we go along
 #' to pass the check.  This is used by internal enmtools functions to make sure the necessary data is present
@@ -17,12 +17,12 @@ check.species <- function(this.species){
   # Checking classes of input args.  The isTRUE stuff is needed because R doesn't
   # know how to do is.na on raster data, so it was barfing and error when a raster
   # was passed in.
-  
+
   # This bit replaces NULL values with NA values
-  expect <- c("presence.points", "background.points", 
+  expect <- c("presence.points", "background.points",
               "models", "species.name", "range")
   nulls <- names(which(sapply(expect, function(x) is.null(this.species[[x]]))))
-  
+
   # Have to do this in a loop because sapply won't assign NAs for some reason
   for(i in nulls){
     this.species[[i]] <- NA
@@ -36,7 +36,7 @@ check.species <- function(this.species){
 
   if(!isTRUE(is.na(this.species$presence.points))){
     if(!inherits(this.species$presence.points, "data.frame")){
-      stop("Argument presence.points requires an object of class data.frame")
+      this.species$presence.points <- as.data.frame(this.species$presence.points)
     }
 
     # Presence points exist, and are a data frame
@@ -45,7 +45,7 @@ check.species <- function(this.species){
 
   if(!isTRUE(is.na(this.species$background.points))){
     if(!inherits(this.species$background.points, "data.frame")){
-      stop("Argument background.points requires an object of class data.frame")
+      this.species$background.points <- as.data.frame(this.species$background.points)
     }
 
     # Background points exist, and are a data frame
