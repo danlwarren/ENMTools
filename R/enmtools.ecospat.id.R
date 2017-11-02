@@ -110,7 +110,7 @@ enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = 
     geom_raster(aes(fill = Density)) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Density")) +
     coord_fixed() + theme_classic() +
-    ggtitle(paste(species.1$species.name, "density in environment space, scaled by availability"))
+    ggtitle(paste(species.1$species.name, "density in environment space, \nscaled by availability"))
 
   sp2.bg.points <- data.frame(rasterToPoints(sp2.niche$Z))
   colnames(sp2.bg.points) <- c("X", "Y", "Density")
@@ -134,7 +134,7 @@ enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = 
     geom_raster(aes(fill = Density)) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Density")) +
     coord_fixed() + theme_classic() +
-    ggtitle(paste(species.2$species.name, "density in environment space, scaled by availability"))
+    ggtitle(paste(species.2$species.name, "density in environment space, \nscaled by availability"))
 
 
 
@@ -240,6 +240,8 @@ summary.ecospat.id.test <- function(id){
   # print(kable(head(id$sp2.bg.env)))
   # print(kable(head(id$background.env)))
 
+  cat("\n\necospat.id test empirical overlaps:\n")
+  print(id$test.results$obs)
 
   cat("\n\necospat.id test p-values:\n")
   print(id$p.values)
