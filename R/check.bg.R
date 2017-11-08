@@ -76,17 +76,11 @@ check.bg.ppmlasso <- function(species, env = NA, nback = 1000){
 
       # Drawing background points from range raster
       cat("\n\nNo background points provided, drawing background from range raster.\n\n")
-      if(nback > sum(getValues(species$range) > 0, na.rm=TRUE)){
-        species$background.points <- as.data.frame(rasterToPoints(species$range)[,1:2])
-      } else {
-        range_extent <- extent(species$range)
-        range_area <- (range_extent[2] - range_extent[1]) * (range_extent[4] - range_extent[3])
-        sp.scale <- range_area / nback
-        bg <- rasterToPoints(env)
-        colnames(bg)[1:2] <- c("X", "Y")
-        bg <- sample.quad(sp.scale = sp.scale, coord = c("x", "y"))
-        species$background.points <- as.data.frame(randomPoints(species$range, nback, species$presence.points))
-      }
+
+      bg_rast <- species$range[[1]]
+      values(bg_rast)[!is.na(values(bg_rast))] <- 1
+      rast_poly <- rasterToPolygons(bg_rast, dissolve = TRUE)
+      species$background.points <- spsample(rast_poly, n = nback, type = "regular")@coords
 
       colnames(species$background.points) <- colnames(species$presence.points)
       return(species)
@@ -96,7 +90,11 @@ check.bg.ppmlasso <- function(species, env = NA, nback = 1000){
     if(inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
 
       cat("\nNo background points or range raster, drawing background from environmental layers.\n\n")
-      species$background.points <- as.data.frame(randomPoints(env[[1]], nback, species$presence.points))
+      bg_rast <- env[[1]]
+      values(bg_rast)[!is.na(values(bg_rast))] <- 1
+      rast_poly <- rasterToPolygons(bg_rast, dissolve = TRUE)
+      species$background.points <- spsample(rast_poly, n = nback, type = "regular")@coords
+
       colnames(species$background.points) <- colnames(species$presence.points)
       return(species)
 
