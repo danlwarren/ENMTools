@@ -25,7 +25,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
 
   # Builds a default formula using all env
   if(is.null(f)){
-    f <- as.formula(paste("presence", paste(c(names(env)), collapse = " + "), sep = " ~ "))
+    f <- as.formula(paste0("presence ~ poly(", paste(c(names(env)), collapse = ", "), ", degree = 2, raw = TRUE)"))
     notes <- c(notes, "No formula was provided, so a GLM formula was built automatically.")
   }
 
@@ -61,11 +61,11 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
   this.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = analysis.df)
   # this.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = analysis.df, ...)
 
-
-  p.fun <- function(x, data, ...) {
-    predict.ppmlasso(x, newdata = data, ...)
+  env_cell_area <- prod(res(env))
+  p.fun <- function(object, newdata, ...) {
+    predict.ppmlasso(object, newdata = newdata, type = "response", ...)#*env_cell_area
   }
-  suitability <- predict(env, this.ppmlasso, fun = p.fun, type = "response")
+  suitability <- predict(env, this.ppmlasso, fun = p.fun)
 
   if(eval == TRUE){
 
@@ -116,7 +116,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
                  suitability = suitability,
                  notes = notes)
 
-  class(output) <- c("enmtools.glm", "enmtools.model")
+  class(output) <- c("enmtools.ppmlasso", "enmtools.model")
 
   # Doing response plots for each variable.  Doing this bit after creating
   # the output object because plot.response expects an enmtools.model object
@@ -179,7 +179,7 @@ summary.enmtools.ppmlasso <- function(this.ppmlasso){
 
 }
 
-# Print method for objects of class enmtools.glm
+# Print method for objects of class enmtools.ppmlasso
 print.enmtools.ppmlasso <- function(this.ppmlasso){
 
   print(summary(this.ppmlasso))
@@ -187,7 +187,7 @@ print.enmtools.ppmlasso <- function(this.ppmlasso){
 }
 
 
-# Plot method for objects of class enmtools.glm
+# Plot method for objects of class enmtools.ppmlasso
 plot.enmtools.ppmlasso <- function(this.ppmlasso, trans = 'log'){
 
 
@@ -196,7 +196,6 @@ plot.enmtools.ppmlasso <- function(this.ppmlasso, trans = 'log'){
 
   suit.plot <- ggplot(data = suit.points, aes(y = Latitude, x = Longitude)) +
     geom_raster(aes(fill = Suitability)) +
-    scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
     geom_point(data = this.ppmlasso$analysis.df[this.ppmlasso$analysis.df$presence == 1,], aes(x = Longitude, y = Latitude),
                pch = 21, fill = "white", color = "black", size = 2)
@@ -205,8 +204,10 @@ plot.enmtools.ppmlasso <- function(this.ppmlasso, trans = 'log'){
     suit.plot <- suit.plot + geom_point(data = this.ppmlasso$test.data, aes(x = Longitude, y = Latitude),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
-  if(log_scale) {
-    suit.plot <- suit.plot + scale_fill_continuous(trans = trans)
+  if(!is.null(trans)) {
+    suit.plot <- suit.plot + scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability"), tran = trans)
+  } else {
+    suit.plot <- suit.plot + scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability"))
   }
 
   return(suit.plot)
