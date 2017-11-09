@@ -79,14 +79,22 @@ check.bg.ppmlasso <- function(species, env = NA, nback = 1000){
       ncells <- sum(getValues(species$range) > 0, na.rm=TRUE)
       if(nback > ncells){
         agg_fact <- round(sqrt(nback / ncells))
-        agg_rast <- disaggregate(species$range[[1]], fact = agg_fact,
-                              fun = max)
-        species$background.points <- as.data.frame(rasterToPoints(agg_rast)[,1:2])
+        if(agg_fact > 1) {
+          agg_rast <- disaggregate(species$range[[1]], fact = agg_fact,
+                                fun = max)
+          species$background.points <- as.data.frame(rasterToPoints(agg_rast)[,1:2])
+        } else {
+          species$background.points <- as.data.frame(rasterToPoints(species$range)[,1:2])
+        }
       } else {
         agg_fact <- round(sqrt(ncells / nback))
-        agg_rast <- aggregate(species$range[[1]], fact = agg_fact,
-                              fun = max)
-        species$background.points <- as.data.frame(rasterToPoints(agg_rast)[,1:2])
+        if(agg_fact > 1) {
+          agg_rast <- aggregate(species$range[[1]], fact = agg_fact,
+                                fun = max)
+          species$background.points <- as.data.frame(rasterToPoints(agg_rast)[,1:2])
+        } else {
+          species$background.points <- as.data.frame(rasterToPoints(species$range)[,1:2])
+        }
       }
 
       colnames(species$background.points) <- colnames(species$presence.points)

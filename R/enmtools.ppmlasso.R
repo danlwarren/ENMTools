@@ -17,7 +17,7 @@
 #' @export plot.enmtools.ppmlasso
 
 
-enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, report = NULL, overwrite = FALSE, ...){
+enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 10000, report = NULL, overwrite = FALSE, ...){
 
   notes <- NULL
 
@@ -38,14 +38,15 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
   test.evaluation <- NA
   env.test.evaluation <- NA
 
+
+  ### Add env data
+  species <- add.env(species, env)
+
   if(test.prop > 0 & test.prop < 1){
     test.inds <- sample(1:nrow(species$presence.points), ceiling(nrow(species$presence.points) * test.prop))
     test.data <- species$presence.points[test.inds,]
     species$presence.points <- species$presence.points[-test.inds,]
   }
-
-  ### Add env data
-  species <- add.env(species, env)
 
   # Recast this formula so that the response variable is blank for ppmlasso function
   # regardless of what was passed
@@ -57,14 +58,14 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
                           c("Longitude", "Latitude"))
   analysis.df <- cbind(analysis.df, wt = wts)
 
-  this.glm <- glm(f, analysis.df[,-c(1,2)], family="binomial", ...)
+  this.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = analysis.df)
+  # this.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = analysis.df, ...)
 
 
-  if(as.integer(this.glm$aic) == 2 * length(this.glm$coefficients)){
-    notes <- c(notes, "AIC is 2x number of coefficients, indicating an uninformative model.  This often indicates that you have too many predictors for your number of data points.")
+  p.fun <- function(x, data, ...) {
+    predict.ppmlasso(x, newdata = data, ...)
   }
-
-  suitability <- predict(env, this.glm, type = "response")
+  suitability <- predict(env, this.ppmlasso, fun = p.fun, type = "response")
 
   if(eval == TRUE){
 
@@ -77,26 +78,37 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
       notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
     }
 
-    model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
-                                       this.glm, env)
-    env.model.evaluation <- env.evaluate(species, this.glm, env)
+    model.evaluation <- dismo::evaluate(predict.ppmlasso(this.ppmlasso,
+                                                         newdata = species$presence.points)[ , 1, drop = TRUE],
+                                        predict.ppmlasso(this.ppmlasso,
+                                                         newdata = species$background.points)[ , 1, drop = TRUE])
+
+    env.model.evaluation <- env.evaluate(species, this.ppmlasso, env)
 
     if(test.prop > 0 & test.prop < 1){
-      test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
-                                        this.glm, env)
+
+      test.evaluation <- dismo::evaluate(predict.ppmlasso(this.ppmlasso,
+                                                          newdata = test.data)[ , 1, drop = TRUE],
+                                         predict.ppmlasso(this.ppmlasso,
+                                                          newdata = species$background.points)[ , 1, drop = TRUE])
       temp.sp <- species
       temp.sp$presence.points <- test.data
-      env.test.evaluation <- env.evaluate(temp.sp, this.glm, env)
+      env.test.evaluation <- env.evaluate(temp.sp, this.ppmlasso, env)
+
+
     }
 
   }
+
+  ## rename Pres to presence for compatability with other enmtools functions
+  colnames(analysis.df)[colnames(analysis.df) == "Pres"] <- "presence"
 
   output <- list(species.name = species$species.name,
                  formula = f,
                  analysis.df = analysis.df,
                  test.data = test.data,
                  test.prop = test.prop,
-                 model = this.glm,
+                 model = this.ppmlasso,
                  training.evaluation = model.evaluation,
                  test.evaluation = test.evaluation,
                  env.training.evaluation = env.model.evaluation,
@@ -130,67 +142,71 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
 }
 
 # Summary for objects of class enmtools.glm
-summary.enmtools.glm <- function(this.glm){
+summary.enmtools.ppmlasso <- function(this.ppmlasso){
 
   cat("\n\nFormula:  ")
-  print(this.glm$formula)
+  print(this.ppmlasso$formula)
 
   cat("\n\nData table (top ten lines): ")
-  print(kable(head(this.glm$analysis.df, 10)))
+  print(kable(head(this.ppmlasso$analysis.df, 10)))
 
   cat("\n\nModel:  ")
-  print(summary(this.glm$model))
+  print(summary(this.ppmlasso$model))
 
-  cat("\n\nModel fit (training data):  ")
-  print(this.glm$training.evaluation)
+  # ppmlasso doesn't really have a pretty summary at the moment. Might have to come up with something ourselves
+  # cat("\n\nModel fit (training data):  ")
+  # print(this.ppmlasso$training.evaluation)
 
   cat("\n\nEnvironment space model fit (training data):  ")
-  print(this.glm$env.training.evaluation)
+  print(this.ppmlasso$env.training.evaluation)
 
   cat("\n\nProportion of data wittheld for model fitting:  ")
-  cat(this.glm$test.prop)
+  cat(this.ppmlasso$test.prop)
 
   cat("\n\nModel fit (test data):  ")
-  print(this.glm$test.evaluation)
+  print(this.ppmlasso$test.evaluation)
 
   cat("\n\nEnvironment space model fit (test data):  ")
-  print(this.glm$env.test.evaluation)
+  print(this.ppmlasso$env.test.evaluation)
 
   cat("\n\nSuitability:  \n")
-  print(this.glm$suitability)
+  print(this.ppmlasso$suitability)
 
   cat("\n\nNotes:  \n")
-  this.glm$notes
+  this.ppmlasso$notes
 
-  plot(this.glm)
+  plot(this.ppmlasso)
 
 }
 
 # Print method for objects of class enmtools.glm
-print.enmtools.glm <- function(this.glm){
+print.enmtools.ppmlasso <- function(this.ppmlasso){
 
-  print(summary(this.glm))
+  print(summary(this.ppmlasso))
 
 }
 
 
 # Plot method for objects of class enmtools.glm
-plot.enmtools.glm <- function(this.glm){
+plot.enmtools.ppmlasso <- function(this.ppmlasso, trans = 'log'){
 
 
-  suit.points <- data.frame(rasterToPoints(this.glm$suitability))
+  suit.points <- data.frame(rasterToPoints(this.ppmlasso$suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
   suit.plot <- ggplot(data = suit.points, aes(y = Latitude, x = Longitude)) +
     geom_raster(aes(fill = Suitability)) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
-    geom_point(data = this.glm$analysis.df[this.glm$analysis.df$presence == 1,], aes(x = Longitude, y = Latitude),
+    geom_point(data = this.ppmlasso$analysis.df[this.ppmlasso$analysis.df$presence == 1,], aes(x = Longitude, y = Latitude),
                pch = 21, fill = "white", color = "black", size = 2)
 
-  if(!(all(is.na(this.glm$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = this.glm$test.data, aes(x = Longitude, y = Latitude),
+  if(!(all(is.na(this.ppmlasso$test.data)))){
+    suit.plot <- suit.plot + geom_point(data = this.ppmlasso$test.data, aes(x = Longitude, y = Latitude),
                                         pch = 21, fill = "green", color = "black", size = 2)
+  }
+  if(log_scale) {
+    suit.plot <- suit.plot + scale_fill_continuous(trans = trans)
   }
 
   return(suit.plot)
@@ -231,4 +247,31 @@ ppmlasso.precheck <- function(f, species, env){
   if(ncol(species$background.points) != 2){
     stop("Species background points do not contain longitude and latitude data!")
   }
+}
+
+# Helper function imported from ppmlasso (from which it was unexported) with permission of Author:
+# Ian Renner
+ppmlasso_weights <- function (sp.xy, quad.xy, coord = c("X", "Y"))
+{
+  sp.col = c(which(names(sp.xy) == coord[1]), which(names(sp.xy) ==
+                                                      coord[2]))
+  quad.col = c(which(names(quad.xy) == coord[1]), which(names(quad.xy) ==
+                                                          coord[2]))
+  X.inc = sort(unique(quad.xy[, quad.col[1]]))[2] - sort(unique(quad.xy[,
+                                                                        quad.col[1]]))[1]
+  Y.inc = sort(unique(quad.xy[, quad.col[2]]))[2] - sort(unique(quad.xy[,
+                                                                        quad.col[2]]))[1]
+  quad.0X = min(quad.xy[, quad.col[1]]) - floor(min(quad.xy[,
+                                                            quad.col[1]])/X.inc) * X.inc
+  quad.0Y = min(quad.xy[, quad.col[2]]) - floor(min(quad.xy[,
+                                                            quad.col[2]])/Y.inc) * Y.inc
+  X = c(sp.xy[, quad.col[1]], quad.xy[, quad.col[1]])
+  Y = c(sp.xy[, quad.col[2]], quad.xy[, quad.col[2]])
+  round.X = round((X - quad.0X)/X.inc) * X.inc
+  round.Y = round((Y - quad.0Y)/Y.inc) * Y.inc
+  round.id = paste(round.X, round.Y)
+  round.table = table(round.id)
+  wt = X.inc * Y.inc/as.numeric(round.table[match(round.id,
+                                                  names(round.table))])
+  wt
 }
