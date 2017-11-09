@@ -47,12 +47,15 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
   ### Add env data
   species <- add.env(species, env)
 
-  # Recast this formula so that the response variable is named "presence"
-  # regardless of what was passed.
-  f <- reformulate(attr(delete.response(terms(f)), "term.labels"), response = "presence")
+  # Recast this formula so that the response variable is blank for ppmlasso function
+  # regardless of what was passed
+  f <- reformulate(attr(delete.response(terms(f)), "term.labels"))
 
-  analysis.df <- rbind(species$presence.points, species$background.points)
-  analysis.df$presence <- c(rep(1, nrow(species$presence.points)), rep(0, nrow(species$background.points)))
+  analysis.df <- rbind(cbind(species$presence.points, Pres = 1),
+                       cbind(species$background.points, Pres = 0))
+  wts <- ppmlasso_weights(species$presence.points, species$background.points,
+                          c("Longitude", "Latitude"))
+  analysis.df <- cbind(analysis.df, wt = wts)
 
   this.glm <- glm(f, analysis.df[,-c(1,2)], family="binomial", ...)
 
