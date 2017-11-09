@@ -63,7 +63,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
 
   env_cell_area <- prod(res(env))
   p.fun <- function(object, newdata, ...) {
-    predict.ppmlasso(object, newdata = newdata, type = "response", ...)#*env_cell_area
+    predict.ppmlasso(object, newdata = newdata, ...)*env_cell_area
   }
   suitability <- predict(env, this.ppmlasso, fun = p.fun)
 
@@ -187,8 +187,11 @@ print.enmtools.ppmlasso <- function(this.ppmlasso){
 }
 
 
-# Plot method for objects of class enmtools.ppmlasso
-plot.enmtools.ppmlasso <- function(this.ppmlasso, trans = 'log'){
+#' Plot method for objects of class enmtools.ppmlasso
+#' @param this.ppmlasso An enmtools.ppmlasso object
+#' @param trans_col Transformation to apply to the colour range (Z axis). A character value corresponding to one of \code{ggplot2}'s builtin scale transformations (see argument \code{trans} in \code{\link[ggplot2]{continuous_scale}} for possible choices). \code{trans_col = 'sqrt'} will often work well for ppmlasso plots. If NULL, no transformation is applied.
+#'
+plot.enmtools.ppmlasso <- function(this.ppmlasso, trans_col = NULL){
 
 
   suit.points <- data.frame(rasterToPoints(this.ppmlasso$suitability))
@@ -204,8 +207,8 @@ plot.enmtools.ppmlasso <- function(this.ppmlasso, trans = 'log'){
     suit.plot <- suit.plot + geom_point(data = this.ppmlasso$test.data, aes(x = Longitude, y = Latitude),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
-  if(!is.null(trans)) {
-    suit.plot <- suit.plot + scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability"), tran = trans)
+  if(!is.null(trans_col)) {
+    suit.plot <- suit.plot + scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability"), trans = trans_col)
   } else {
     suit.plot <- suit.plot + scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability"))
   }
@@ -250,7 +253,7 @@ ppmlasso.precheck <- function(f, species, env){
   }
 }
 
-# Helper function imported from ppmlasso (from which it was unexported) with permission of Author:
+# Unexported helper function copied from ppmlasso (from which it was unexported) with permission of Author:
 # Ian Renner
 ppmlasso_weights <- function (sp.xy, quad.xy, coord = c("X", "Y"))
 {
