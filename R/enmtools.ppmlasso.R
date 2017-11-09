@@ -21,7 +21,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
 
   notes <- NULL
 
-  species <- check.bg(species, env, nback = nback)
+  species <- check.bg.ppmlasso(species, env, nback = nback)
 
   # Builds a default formula using all env
   if(is.null(f)){
@@ -29,7 +29,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
     notes <- c(notes, "No formula was provided, so a GLM formula was built automatically.")
   }
 
-  glm.precheck(f, species, env)
+  ppmlasso.precheck(f, species, env)
 
   # Declaring some NAs in case we skip evaluation
   test.data <- NA
@@ -194,8 +194,8 @@ plot.enmtools.glm <- function(this.glm){
 
 }
 
-# Function for checking data prior to running enmtools.glm
-glm.precheck <- function(f, species, env){
+# Function for checking data prior to running enmtools.ppmlasso
+ppmlasso.precheck <- function(f, species, env){
 
   # Check to see if the function is the right class
   if(!inherits(f, "formula")){
