@@ -44,3 +44,6 @@ plot(test7, trans = 'sqrt')
 test8 <- enmtools.ppmlasso(allogus, env, test.prop = 0.33)
 test8
 plot(test8, trans = 'sqrt')
+
+## This does not work. Looks like the problem is with calc.B1. -Inf is common. Will test a solution.
+envtest1 <- env.breadth(test1, env, max.reps = 10000)
