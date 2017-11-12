@@ -57,10 +57,11 @@ check.bg <- function(species, env = NA, nback = 1000){
 #' @param species An enmtools.species object
 #' @param env A raster or raster stack of environmental data.
 #' @param nback Approximate number of background points to generate, if any. Actual number of points generated can be fairly far off due to optimization for speed.
+#' @param back.accurate Should a more accurate method of generating background points be used, if background points aren't provided? If TRUE, this method produces a number of background points close to \code{nback}, but is much slower than the alternative method, which is fast but innaccurate.
 #'
 #' @export check.bg.ppmlasso
 
-check.bg.ppmlasso <- function(species, env = NA, nback = 1000){
+check.bg.ppmlasso <- function(species, env = NA, nback = 1000, back.accurate = FALSE){
 
   species <- check.species(species)
 
@@ -76,35 +77,37 @@ check.bg.ppmlasso <- function(species, env = NA, nback = 1000){
 
       # Drawing background points from range raster
       cat("\n\nNo background points provided, drawing background from range raster.\n\n")
-      ncells <- sum(getValues(species$range) > 0, na.rm=TRUE)
-      if(nback > ncells){
-        agg_fact <- round(sqrt(nback / ncells))
-        if(agg_fact > 1) {
-          agg_rast <- disaggregate(species$range[[1]], fact = agg_fact,
-                                fun = max)
-          species$background.points <- as.data.frame(rasterToPoints(agg_rast)[,1:2])
-        } else {
-          species$background.points <- as.data.frame(rasterToPoints(species$range)[,1:2])
-        }
+
+      if(back.accurate) {
+        # Accurate but very slow method:
+        bg_rast <- species$range[[1]]
+        values(bg_rast)[!is.na(values(bg_rast))] <- 1
+        rast_poly <- rasterToPolygons(bg_rast)
+        species$background.points <- as.data.frame(spsample(rast_poly, n = nback, type = "regular"))
+
       } else {
-        agg_fact <- round(sqrt(ncells / nback))
-        if(agg_fact > 1) {
-          agg_rast <- aggregate(species$range[[1]], fact = agg_fact,
-                                fun = max)
-          species$background.points <- as.data.frame(rasterToPoints(agg_rast)[,1:2])
+
+        ncells <- sum(getValues(species$range) > 0, na.rm=TRUE)
+        if(nback > ncells){
+          agg_fact <- round(sqrt(nback / ncells))
+          if(agg_fact > 1) {
+            agg_rast <- disaggregate(species$range[[1]], fact = agg_fact,
+                                  fun = max)
+            species$background.points <- as.data.frame(rasterToPoints(agg_rast)[,1:2])
+          } else {
+            species$background.points <- as.data.frame(rasterToPoints(species$range)[,1:2])
+          }
         } else {
-          species$background.points <- as.data.frame(rasterToPoints(species$range)[,1:2])
+          agg_fact <- round(sqrt(ncells / nback))
+          if(agg_fact > 1) {
+            agg_rast <- aggregate(species$range[[1]], fact = agg_fact,
+                                  fun = max)
+            species$background.points <- as.data.frame(rasterToPoints(agg_rast)[,1:2])
+          } else {
+            species$background.points <- as.data.frame(rasterToPoints(species$range)[,1:2])
+          }
         }
       }
-
-      colnames(species$background.points) <- colnames(species$presence.points)
-      return(species)
-
-      # Accurate but very slow method:
-      # bg_rast <- species$range[[1]]
-      # values(bg_rast)[!is.na(values(bg_rast))] <- 1
-      # rast_poly <- rasterToPolygons(bg_rast, dissolve = TRUE)
-      # species$background.points <- spsample(rast_poly, n = nback, type = "regular")@coords
 
       colnames(species$background.points) <- colnames(species$presence.points)
       return(species)
@@ -115,19 +118,36 @@ check.bg.ppmlasso <- function(species, env = NA, nback = 1000){
 
       cat("\nNo background points or range raster, drawing background from environmental layers.\n\n")
 
-      ncells <- sum(getValues(env) > 0, na.rm=TRUE)
-      if(nback > ncells){
-        agg_fact <- round(sqrt(nback / ncells))
-        agg_rast <- disaggregate(env[[1]], fact = agg_fact,
-                                 fun = max)
-        species$background.points <- as.data.frame(rasterToPoints(agg_rast)[,1:2])
-      } else {
-        agg_fact <- round(sqrt(ncells / nback))
-        agg_rast <- aggregate(env[[1]], fact = agg_fact,
-                              fun = max)
-        species$background.points <- as.data.frame(rasterToPoints(agg_rast)[,1:2])
-      }
+      if(back.accurate) {
+        # Accurate but very slow method:
+        bg_rast <- env[[1]]
+        values(bg_rast)[!is.na(values(bg_rast))] <- 1
+        rast_poly <- rasterToPolygons(bg_rast)
+        species$background.points <- as.data.frame(spsample(rast_poly, n = nback, type = "regular"))
 
+      } else {
+
+        ncells <- sum(getValues(env[[1]]) > 0, na.rm=TRUE)
+        if(nback > ncells){
+          agg_fact <- round(sqrt(nback / ncells))
+          if(agg_fact > 1) {
+            agg_rast <- disaggregate(env[[1]], fact = agg_fact,
+                                     fun = max)
+            species$background.points <- as.data.frame(rasterToPoints(agg_rast)[,1:2])
+          } else {
+            species$background.points <- as.data.frame(rasterToPoints(species$range)[,1:2])
+          }
+        } else {
+          agg_fact <- round(sqrt(ncells / nback))
+          if(agg_fact > 1) {
+            agg_rast <- aggregate(env[[1]], fact = agg_fact,
+                                  fun = max)
+            species$background.points <- as.data.frame(rasterToPoints(agg_rast)[,1:2])
+          } else {
+            species$background.points <- as.data.frame(rasterToPoints(species$range)[,1:2])
+          }
+        }
+      }
 
       colnames(species$background.points) <- colnames(species$presence.points)
       return(species)

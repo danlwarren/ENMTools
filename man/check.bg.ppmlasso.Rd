@@ -4,7 +4,7 @@
 \alias{check.bg.ppmlasso}
 \title{Takes an emtools.species object and adds background points if they're missing. Looks for range raster first, then goes for environmental layers. This version is for ppmlasso models.}
 \usage{
-check.bg.ppmlasso(species, env = NA, nback = 1000)
+check.bg.ppmlasso(species, env = NA, nback = 1000, back.accurate = FALSE)
 }
 \arguments{
 \item{species}{An enmtools.species object}
@@ -12,6 +12,8 @@ check.bg.ppmlasso(species, env = NA, nback = 1000)
 \item{env}{A raster or raster stack of environmental data.}
 
 \item{nback}{Approximate number of background points to generate, if any. Actual number of points generated can be fairly far off due to optimization for speed.}
+
+\item{back.accurate}{Should a more accurate method of generating background points be used, if background points aren't provided? If TRUE, this method produces a number of background points close to \code{nback}, but is much slower than the alternative method, which is fast but innaccurate.}
 }
 \description{
 Takes an emtools.species object and adds background points if they're missing. Looks for range raster first, then goes for environmental layers. This version is for ppmlasso models.

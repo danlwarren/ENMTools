@@ -6,9 +6,13 @@
 #' @param test.prop Proportion of data to withhold for model evaluation
 #' @param eval Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.
 #' @param nback Number of background points to draw from range or env, if background points aren't provided
+#' @param back.accurate Should a more accurate method of generating background points be used, if background points aren't provided? If TRUE, this method produces a number of background points close to \code{nback}, but is much slower than the alternative method, which is fast but innaccurate.
+#' @param normalise Should the suitability of the model be normalised? If FALSE (the default), suitability is returned as the predicted number of presence points in each grid cell (occurrence density). If TRUE, occurrence densities are divided by the total predicted density, to give a value ranging from 0 to 1, which represents the proportion of the predicted density for a species that occurs in each grid cell.
 #' @param report Optional name of an html file for generating reports
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
 #' @param ... Arguments to be passed to ppmlasso()
+#'
+#' @details This runs a \code{ppmlasso} model of a species' distribution. It is generally recommended that background points should be on a grid for this method, as the background points are considered 'quadrature' points, used to estimate an integral. If background points are not provided, the function will generate them on a grid, rather than randomly, as is more usual for other SDM methods.
 #'
 #' @importFrom ppmlasso ppmlasso
 #' @export enmtools.ppmlasso
@@ -17,11 +21,11 @@
 #' @export plot.enmtools.ppmlasso
 
 
-enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 10000, report = NULL, overwrite = FALSE, ...){
+enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 10000, back.accurate = FALSE, normalise = FALSE, report = NULL, overwrite = FALSE, ...){
 
   notes <- NULL
 
-  species <- check.bg.ppmlasso(species, env, nback = nback)
+  species <- check.bg.ppmlasso(species, env, nback = nback, back.accurate = back.accurate)
 
   # Builds a default formula using all env
   if(is.null(f)){
@@ -66,6 +70,10 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
     predict.ppmlasso(object, newdata = newdata, ...)*env_cell_area
   }
   suitability <- predict(env, this.ppmlasso, fun = p.fun)
+
+  if(normalise) {
+    values(suitability) <- values(suitability) / sum(values(suitability), na.rm = TRUE)
+  }
 
   if(eval == TRUE){
 
