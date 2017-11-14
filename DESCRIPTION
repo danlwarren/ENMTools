@@ -24,4 +24,6 @@ Depends:
 	fields,
 	gbm,
 	randomForest,
-  ppmlasso
+  ppmlasso,
+  hypervolume,
+  dynRB

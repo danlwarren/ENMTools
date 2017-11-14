@@ -1,3 +1,6 @@
+library(raster)
+library(ENMTools)
+
 setwd("test")
 env.files <- list.files(path = "testdata/", pattern = "pc", full.names = TRUE)
 env <- stack(env.files)
@@ -46,4 +49,31 @@ test8
 plot(test8, trans = 'sqrt')
 
 ## This does not work. Looks like the problem is with calc.B1. -Inf is common. Will test a solution.
-envtest1 <- env.breadth(test1, env, max.reps = 10000)
+envtest1 <- env.breadth(test1, env, max.reps = 100)
+envtest2 <- env.overlap(test1, test2, env)
+
+x <- values(test1$suitability)
+calc.B1.Dan <- function(x){
+  x <- x[!is.na(x)]
+  x <- log(x) - log(sum(x))
+
+  max.B1 <- length(x) * (1/length(x)) * log(1/length(x))
+  return(sum(exp(x) * x)/max.B1)
+}
+
+calc.B1.Orig <- function(x){
+  x <- x[!is.na(x)]
+  x <- x/sum(x)
+
+  max.B1 <- length(x) * (1/length(x)) * log(1/length(x))
+  return(sum(x * log(x))/max.B1)
+}
+
+calc.B1.Russell <- calc.B1
+
+test_Orig <- calc.B1.Orig(values(test1$suitability))
+test_Orig
+test_Dan <- calc.B1.Dan(values(test1$suitability))
+test_Dan
+test_Russell <- calc.B1.Russell(values(test1$suitability))
+test_Russell
