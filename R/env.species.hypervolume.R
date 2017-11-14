@@ -1,3 +1,12 @@
+#' Calculates an environmental hypervolume of presence points using Blonder et al.'s \code{\link[hypervolue]{hypervolume-package}}
+#'
+#' @param species An enmtools.species object containing presence points
+#' @param env A raster or raster stack of environmental data.
+#' @param method Method to use in calculating hypervolume, See \code{\link[hypervolume]{hypervolume}} for details
+#' @param standardise Should the environmental variables be standardised before calculating the hypervolume?
+#' @param reduce_dim Should environmental variables be dimension reduced. Currently only option is "auto", which does dimension reduction using principle components analysis, only if the number of environmental variables exceeds a threshold of \code{log(# of observations)}.
+#' @param ... Additional parameters to pass on to the \code{\link[hypervolume]{hypervolume}} function
+#' @export env.species.hypervolume
 env.species.hypervolume <- function(species, env, method = "gaussian", standardise = TRUE, reduce_dim = "auto", ...) {
   species <- add.env(species, env)
 
