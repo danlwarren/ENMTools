@@ -62,8 +62,8 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
                           c("Longitude", "Latitude"))
   analysis.df <- cbind(analysis.df, wt = wts)
 
-  this.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = analysis.df)
-  # this.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = analysis.df, ...)
+  #this.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = analysis.df)
+  this.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = analysis.df, ...)
 
   env_cell_area <- prod(res(env))
   p.fun <- function(object, newdata, ...) {
