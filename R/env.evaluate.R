@@ -10,7 +10,7 @@
 
 env.evaluate <- function(species, model, env, bg.source = "background", ...){
 
-  species <- check.bg(species, env, ...)
+  species <- check.bg.ppmlasso(species, env, ...)
 
   if(!inherits(species, "enmtools.species")){
     stop("Argument species must supply an enmtools.species object!")
@@ -48,8 +48,8 @@ env.evaluate <- function(species, model, env, bg.source = "background", ...){
 #   print(head(bg.table))
 #   print(head(p.table))
 
-  pred.p <- as.numeric(predict(model, data.frame(p.table), type = "response"))
-  pred.bg <- as.numeric(predict(model, data.frame(bg.table), type = "response"))
+  pred.p <- as.numeric(predict(model, newdata = data.frame(p.table), type = "response"))
+  pred.bg <- as.numeric(predict(model, newdata = data.frame(bg.table), type = "response"))
 
   env.evaluation <-dismo::evaluate(pred.p, pred.bg)
 

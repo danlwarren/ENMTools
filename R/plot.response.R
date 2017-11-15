@@ -43,7 +43,7 @@ plot.response <- function(model, env, layer){
 
   colnames(plot.df) <- names
 
-  pred <- predict(model$model, plot.df, type = "response")
+  pred <- predict(model$model, newdata = plot.df, type = "response")
 
   #print(pred)
 
