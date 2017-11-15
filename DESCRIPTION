@@ -23,4 +23,5 @@ Depends:
 	phyloclim,
 	fields,
 	gbm,
-	randomForest
+	randomForest,
+  ppmlasso

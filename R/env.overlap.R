@@ -34,8 +34,8 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
 
     # Use that sample space to get a starting overlap value
     colnames(predict.table) <- names(env)
-    pred1 <- as.numeric(predict(model.1, data.frame(predict.table), type = "response"))
-    pred2 <- as.numeric(predict(model.2, data.frame(predict.table), type = "response"))
+    pred1 <- as.numeric(predict(model.1, newdata = data.frame(predict.table), type = "response"))
+    pred2 <- as.numeric(predict(model.2, newdata = data.frame(predict.table), type = "response"))
 
     if(sd(pred1) == 0 | sd(pred2) == 0){
       output <- list(env.D = NA,
@@ -83,8 +83,8 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
       colnames(predict.table) <- names(env)
 
       # Make new predictions and recalculate metrics
-      pred1 <- predict(model.1, data.frame(predict.table), type = "response")
-      pred2 <- predict(model.2, data.frame(predict.table), type = "response")
+      pred1 <- predict(model.1, newdata = data.frame(predict.table), type = "response")
+      pred2 <- predict(model.2, newdata = data.frame(predict.table), type = "response")
 
       if(sd(pred1) == 0 | sd(pred2) == 0){
         output <- list(env.D = NA,
