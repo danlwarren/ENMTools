@@ -2,7 +2,7 @@
 % Please edit documentation in R/enmtools.species.R
 \name{enmtools.species}
 \alias{enmtools.species}
-\title{Defining a class for enmtools.species.}
+\title{enmtools.species}
 \usage{
 \method{summary}{enmtools.species}(range = NA, presence.points = NA,
   background.points = NA, species.name = NA, models = NA)
@@ -20,5 +20,8 @@
 be stuffed in there as we go along}
 }
 \description{
+Defining a class for enmtools.species.
+}
+\details{
 Each species gets:
 }

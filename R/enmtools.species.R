@@ -1,3 +1,5 @@
+#' enmtools.species
+#'
 #' Defining a class for enmtools.species.
 #'
 #' Each species gets:
@@ -12,10 +14,11 @@
 #' @method print enmtools.species
 #' @method plot enmtools.species
 #'
-#' @importFrom dismo bioclim circlesdomain evaluate maxent predict
-#' @importFrom raster raster brick calc cellStats crop getValues mask maxValue minValue names ncel ncol nlayers nrow plot predict projection rasterize rasterToPoints rasterToPolygons resample sampleRandom setMinMax setExtent setValues shapefile union unique values which.max which.min writeRaster xmax xmin ymax ymin xyFromCell
-#' @importFrom graphics abline par plot plot.new points title
 #' @importFrom stats aggregate as.formula complete.cases cor delete.response glm lm predict rbinom reformulate runif sd terms
+#' @importFrom dismo bioclim circles domain evaluate maxent
+#' @importFrom raster raster brick calc cellStats crop getValues mask maxValue minValue ncol nlayers nrow projection rasterize rasterToPoints rasterToPolygons resample sampleRandom setMinMax setExtent setValues shapefile union unique values writeRaster xmax xmin ymax ymin xyFromCell
+#' @importFrom graphics abline par  points title
+
 
 
 
