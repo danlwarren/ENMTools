@@ -31,5 +31,4 @@ Depends:
 	gbm,
 	randomForest,
   ppmlasso,
-  hypervolume,
-  dynRB
+  hypervolume
