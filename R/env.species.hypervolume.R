@@ -11,14 +11,15 @@
 env.species.hypervolume <- function(species, env, method = "gaussian", use.background = FALSE, standardise = TRUE, reduce_dim = "auto", ...) {
 
   check.species(species)
+
+  species <- add.env(species, env)
+
   if(use.background) {
     if(is.null(species$background.points)) {
       stop("Error: use.background is TRUE but input enmtools.species object contains no background points.")
     }
-    species <- add.env(species, env)
     pnts <- species$background.points[ , -c(1, 2)]
   } else {
-    species <- add.env(species, env)
     pnts <- species$presence.points[ , -c(1, 2)]
   }
   hyp_dim <- ncol(pnts)
