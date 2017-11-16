@@ -14,6 +14,10 @@
 calc.B1 <- function(x){
   x <- x[!is.na(x)]
   x <- x/sum(x)
+
+  ## replace values below machine precision
+  x[x < .Machine$double.xmin] <- .Machine$double.xmin
+
   max.B1 <- length(x) * (1/length(x)) * log(1/length(x))
   return(sum(x * log(x))/max.B1)
 }
