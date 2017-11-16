@@ -62,7 +62,7 @@ visualize.enm <- function(model, env, nbins = 100, layers, plot.points = TRUE){
 
   plot.df <- data.frame(plot.df)
 
-  pred <- predict(model$model, plot.df, type = "response")
+  pred <- predict(model$model, newdata = plot.df, type = "response")
 
   plot.df <- cbind(plot.df[,1:2], pred)
 
