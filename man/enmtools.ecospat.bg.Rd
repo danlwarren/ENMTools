@@ -4,8 +4,9 @@
 \alias{enmtools.ecospat.bg}
 \title{enmtools.ecospat.bg, Runs an ecospat background/similarity test using enmtool.species objects.}
 \usage{
-enmtools.ecospat.bg(species.1, species.2, env, nreps = 99, layers = NULL,
-  test.type = "asymmetric", th.sp = 0, th.env = 0, R = 100, ...)
+\method{summary}{ecospat.bg.test}(species.1, species.2, env, nreps = 99,
+  layers = NULL, test.type = "asymmetric", th.sp = 0, th.env = 0,
+  R = 100, ...)
 }
 \arguments{
 \item{species.1}{An enmtools.species object}

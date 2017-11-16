@@ -17,9 +17,9 @@
 #'
 #' @export rangebreak.ribbon
 #' @export rangebreak.ribbon.precheck
-#' @export print.rangebreak.ribbon
-#' @export summary.rangebreak.ribbon
-#' @export plot.rangebreak.ribbon
+#' @method print rangebreak.ribbon
+#' @method summary rangebreak.ribbon
+#' @method plot rangebreak.ribbon
 #'
 #' @examples
 #' rangebreak.ribbon(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, ...)

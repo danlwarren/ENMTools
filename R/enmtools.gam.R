@@ -11,9 +11,9 @@
 #' @param ... Arguments to be passed to gam()
 #'
 #' @export enmtools.gam
-#' @export print.enmtools.gam
-#' @export summary.enmtools.gam
-#' @export plot.enmtools.gam
+#' @method print enmtools.gam
+#' @method summary enmtools.gam
+#' @method plot enmtools.gam
 
 
 enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000, report = NULL, overwrite = FALSE, ...){
@@ -168,7 +168,6 @@ print.enmtools.gam <- function(this.gam){
 
 # Plot method for objects of class enmtools.gam
 plot.enmtools.gam <- function(this.gam){
-
 
   suit.points <- data.frame(rasterToPoints(this.gam$suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")

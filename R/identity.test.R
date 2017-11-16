@@ -6,6 +6,7 @@
 #' @param env A RasterLayer or RasterStack object containing environmental data
 #' @param type The type of model to construct, currently accepts "glm", "mx", "bc", "gam", or "dm"
 #' @param f A function to use for model fitting.  Only required for GLM models at the moment.
+#' @param nback Number of background points to sample for model construction.
 #' @param nreps Number of replicates to perform
 #' @param ... Additional arguments to be passed to model fitting functions.
 #'
@@ -15,9 +16,9 @@
 #'
 #' @export identity.test
 #' @export identity.precheck
-#' @export print.identity.test
-#' @export summary.identity.test
-#' @export plot.identity.test
+#' @method print identity.test
+#' @method summary identity.test
+#' @method plot identity.test
 #'
 #' @examples
 #' identity.test(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, ...)
