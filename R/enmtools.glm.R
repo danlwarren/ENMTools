@@ -11,9 +11,9 @@
 #' @param ... Arguments to be passed to glm()
 #'
 #' @export enmtools.glm
-#' @export print.enmtools.glm
-#' @export summary.enmtools.glm
-#' @export plot.enmtools.glm
+#' @method print enmtools.glm
+#' @method summary enmtools.glm
+#' @method plot enmtools.glm
 
 
 enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, report = NULL, overwrite = FALSE, ...){

@@ -15,9 +15,9 @@
 #'
 #' @export rangebreak.linear
 #' @export rangebreak.linear.precheck
-#' @export print.rangebreak.linear
-#' @export summary.rangebreak.linear
-#' @export plot.rangebreak.linear
+#' @method print rangebreak.linear
+#' @method summary rangebreak.linear
+#' @method plot rangebreak.linear
 #'
 #' @examples
 #' rangebreak.linear(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, ...)

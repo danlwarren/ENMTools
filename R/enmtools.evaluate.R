@@ -5,7 +5,7 @@
 #' @param env A RasterStack object containing the environmental predictors
 #' @param ... Arguments to be passed to evaluate()
 #'
-#' @export enmtools.maxent
+#' @export enmtools.evaluate
 
 enmtools.evaluate <- function(species, model, env, ...){
 

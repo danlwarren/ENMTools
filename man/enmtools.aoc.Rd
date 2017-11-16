@@ -6,8 +6,8 @@
 determine the statistical significance of the relationship between
 overlap and time}
 \usage{
-enmtools.aoc(clade, nreps, overlap.source, env = NULL, model = NULL,
-  overlap.matrix = NULL, metric = "D")
+\method{summary}{enmtools.aoc}(clade, nreps, overlap.source, env = NULL,
+  model = NULL, overlap.matrix = NULL, metric = "D")
 }
 \arguments{
 \item{clade}{An enmtools.clade object containing species data and a phylogeny}
