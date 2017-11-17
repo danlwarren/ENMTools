@@ -5,7 +5,8 @@
 \title{Calculates an environmental hypervolume of presence points using Blonder et al.'s \code{\link[hypervolume]{hypervolume-package}}}
 \usage{
 env.species.hypervolume(species, env, method = "gaussian",
-  use.background = FALSE, standardise = TRUE, reduce_dim = "auto", ...)
+  use.background = FALSE, standardise = TRUE, reduce.dim = "auto",
+  show.plot = TRUE, ...)
 }
 \arguments{
 \item{species}{An enmtools.species object containing presence points}
@@ -18,7 +19,9 @@ env.species.hypervolume(species, env, method = "gaussian",
 
 \item{standardise}{Should the environmental variables be standardised before calculating the hypervolume?}
 
-\item{reduce_dim}{Should environmental variables be dimension reduced. Currently only option is "auto", which does dimension reduction using principle components analysis, only if the number of environmental variables exceeds a threshold of \code{log(# of observations)}.}
+\item{reduce.dim}{Should environmental variables be dimension reduced. Currently only option is "auto", which does dimension reduction using principle components analysis, only if the number of environmental variables exceeds a threshold of \code{log(# of observations)}.}
+
+\item{show.plot}{Should the hypervolume be plotted after calculations?}
 
 \item{...}{Additional parameters to pass on to the \code{\link[hypervolume]{hypervolume}} function}
 }
