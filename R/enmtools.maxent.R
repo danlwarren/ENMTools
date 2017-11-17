@@ -61,7 +61,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, report = 
     env.test.evaluation <- env.evaluate(temp.sp, this.mx, env)
   }
 
-  suitability <- predict(env, this.mx, type = "response")
+  suitability <- dismo::predict(env, this.mx, type = "response")
 
 
   output <- list(species.name = species$species.name,

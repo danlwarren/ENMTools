@@ -55,7 +55,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
 
   this.rf <- randomForest(f, analysis.df[,-c(1,2)], ...)
 
-  suitability <- predict(env, this.rf, type = "response")
+  suitability <- dismo::predict(env, this.rf, type = "response")
 
   if(eval == TRUE){
 
