@@ -60,7 +60,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
     notes <- c(notes, "AIC is 2x number of coefficients, indicating an uninformative model.  This often indicates that you have too many predictors for your number of data points.")
   }
 
-  suitability <- raster::predict(env, this.glm, type = "response")
+  suitability <- predict(env, this.glm, type = "response")
 
   if(eval == TRUE){
 

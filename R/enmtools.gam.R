@@ -55,7 +55,7 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
 
   this.gam <- gam(f, analysis.df[,-c(1,2)], family="binomial", ...)
 
-  suitability <- raster::predict(env, this.gam, type = "response")
+  suitability <- predict(env, this.gam, type = "response")
 
   # This is a very weird hack that has to be done because dismo's evaluate function
   # fails if the stack only has one layer.
