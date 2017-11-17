@@ -95,7 +95,7 @@ enmtools.anw.sdm <- function(species, env, f = NULL, method = "glm", standardise
     #this.anw.sdm <- gam(f, analysis.df[,-c(1,2)], family="binomial")
   }
 
-  suitability <- predict(env, this.anw.sdm, type = "response")
+  suitability <- raster::predict(env, this.anw.sdm, type = "response")
 
   if(eval == TRUE){
 

@@ -69,7 +69,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
   p.fun <- function(object, newdata, ...) {
     predict.ppmlasso(object, newdata = newdata, ...)*env_cell_area
   }
-  suitability <- predict(env, this.ppmlasso, fun = p.fun)
+  suitability <- raster::predict(env, this.ppmlasso, fun = p.fun)
 
   if(normalise) {
     values(suitability) <- values(suitability) / sum(values(suitability), na.rm = TRUE)

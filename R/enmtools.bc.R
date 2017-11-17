@@ -42,7 +42,7 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
 
   this.bc <- bioclim(env, species$presence.points[,1:2])
 
-  suitability <- suitability <- predict(env, this.bc, type = "response")
+  suitability <- raster::predict(env, this.bc, type = "response")
 
   # This is a very weird hack that has to be done because dismo's evaluate function
   # fails if the stack only has one layer.
