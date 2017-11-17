@@ -10,9 +10,9 @@
 #' @param ... Arguments to be passed to maxent()
 #'
 #' @export enmtools.maxent
-#' @method print enmtools.maxent
-#' @method summary enmtools.maxent
-#' @method plot enmtools.maxent
+#' @export print.enmtools.maxent
+#' @export summary.enmtools.maxent
+#' @export plot.enmtools.maxent
 
 enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, report = NULL, overwrite = FALSE,   ...){
 

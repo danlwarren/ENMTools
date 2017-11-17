@@ -8,9 +8,9 @@
 #' @param ... Arguments to be passed to bioclim()
 #'
 #' @export enmtools.bc
-#' @method print enmtools.bc
-#' @method summary enmtools.bc
-#' @method plot enmtools.bc
+#' @export print.enmtools.bc
+#' @export summary.enmtools.bc
+#' @export plot.enmtools.bc
 
 enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwrite = FALSE, nback = 1000, ...){
 

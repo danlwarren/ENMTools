@@ -16,9 +16,9 @@
 #'
 #' @importFrom ppmlasso ppmlasso
 #' @export enmtools.ppmlasso
-#' @method print enmtools.ppmlasso
-#' @method summary enmtools.ppmlasso
-#' @method plot enmtools.ppmlasso
+#' @export print.enmtools.ppmlasso
+#' @export summary.enmtools.ppmlasso
+#' @export plot.enmtools.ppmlasso
 
 
 enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 10000, back.accurate = FALSE, normalise = FALSE, report = NULL, overwrite = FALSE, ...){

@@ -16,9 +16,9 @@
 #'
 #' @export identity.test
 #' @export identity.precheck
-#' @method print identity.test
-#' @method summary identity.test
-#' @method plot identity.test
+#' @export print.identity.test
+#' @export summary.identity.test
+#' @export plot.identity.test
 #'
 #' @examples
 #' identity.test(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, ...)

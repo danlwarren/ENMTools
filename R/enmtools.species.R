@@ -10,15 +10,10 @@
 #' @param models A list of models that are made for the species, which will
 #'    be stuffed in there as we go along
 #' @export enmtools.species
-#' @method summary enmtools.species
-#' @method print enmtools.species
-#' @method plot enmtools.species
+#' @export summary.enmtools.species
+#' @export print.enmtools.species
+#' @export plot.enmtools.species
 #'
-#' @importFrom stats aggregate as.formula complete.cases cor delete.response glm lm predict rbinom reformulate runif sd terms
-#' @importFrom dismo bioclim circles domain evaluate maxent
-#' @importFrom raster raster brick calc cellStats crop getValues mask maxValue minValue ncol nlayers nrow projection rasterize rasterToPoints rasterToPolygons resample sampleRandom setMinMax setExtent setValues shapefile union unique values writeRaster xmax xmin ymax ymin xyFromCell
-#' @importFrom graphics abline par  points title
-
 
 
 
