@@ -3,9 +3,9 @@
 #' @param tree A tree showing the relationships between the species
 #'
 #' @export enmtools.clade
-#' @method summary enmtools.clade
-#' @method print enmtools.clade
-#' @method plot enmtools.clade
+#' @export summary.enmtools.clade
+#' @export print.enmtools.clade
+#' @export plot.enmtools.clade
 
 
 enmtools.clade <- function(species = NA, tree = NA, root.species = NA){

@@ -4,8 +4,8 @@
 \alias{enmtools.dm}
 \title{Takes an emtools.species object with presence and background points, and builds a Domain model}
 \usage{
-\method{print}{enmtools.dm}(species, env = NA, test.prop = 0,
-  report = NULL, nback = 1000, overwrite = FALSE, ...)
+enmtools.dm(species, env = NA, test.prop = 0, report = NULL,
+  nback = 1000, overwrite = FALSE, ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}

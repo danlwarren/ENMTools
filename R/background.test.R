@@ -1,6 +1,4 @@
-#' background.test
-#'
-#' Conduct a background test (also called a similarity test), as described in Warren et al. 2008.
+#' background.test Conduct a background test (also called a similarity test), as described in Warren et al. 2008.
 #' This test can either be run as an asymmetric test (species.1 vs background of species.2) or as a symmetric test
 #' (background of species.1 vs background of species.2).  For GLM, Bioclim, and Domain models the replicates will be
 #' constructed from the background points supplied for each species.  For Maxent, the replicates will be constructed
@@ -11,7 +9,6 @@
 #' @param env A RasterLayer or RasterStack object containing environmental data
 #' @param type The type of model to construct, currently accepts "glm", "mx", "bc", "gam", or "dm"
 #' @param f A function to use for model fitting.  Only required for GLM models at the moment.
-#' @param test.type Determines whether background tests should be constructed using random background for one species at a time ("asymmetric"), or using the random background for both species ("symmetric").
 #' @param nreps Number of replicates to perform
 #' @param ... Additional arguments to be passed to model fitting functions.
 #'
@@ -21,12 +18,12 @@
 #'
 #' @export background.test
 #' @export background.precheck
-#' @method print background.test
-#' @method summary background.test
-#' @method plot background.test
+#' @export print.background.test
+#' @export summary.background.test
+#' @export plot.background.test
 #'
 #' @examples
-#' background.test(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, test.type = "asymmetric")
+#' background.test(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, type = "asymmetric")
 #'
 
 background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99, test.type = "asymmetric", nback = 1000, ...){

@@ -11,9 +11,9 @@
 #' @param ... Arguments to be passed to rf()
 #'
 #' @export enmtools.rf
-#' @method print enmtools.rf
-#' @method summary enmtools.rf
-#' @method plot enmtools.rf
+#' @export print.enmtools.rf
+#' @export summary.enmtools.rf
+#' @export plot.enmtools.rf
 
 
 enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, report = NULL, overwrite = FALSE, ...){

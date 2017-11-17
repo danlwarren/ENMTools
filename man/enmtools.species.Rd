@@ -2,10 +2,10 @@
 % Please edit documentation in R/enmtools.species.R
 \name{enmtools.species}
 \alias{enmtools.species}
-\title{enmtools.species}
+\title{Defining a class for enmtools.species.}
 \usage{
-\method{summary}{enmtools.species}(range = NA, presence.points = NA,
-  background.points = NA, species.name = NA, models = NA)
+enmtools.species(range = NA, presence.points = NA, background.points = NA,
+  species.name = NA, models = NA)
 }
 \arguments{
 \item{range}{A raster or SpatialPolygon with the actual range they occur in}
@@ -20,8 +20,5 @@
 be stuffed in there as we go along}
 }
 \description{
-Defining a class for enmtools.species.
-}
-\details{
 Each species gets:
 }

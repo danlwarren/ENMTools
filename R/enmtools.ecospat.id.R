@@ -15,9 +15,9 @@
 #' @keywords niche plot sdm enm
 #'
 #' @export enmtools.ecospat.id
-#' @method summary ecospat.id.test
-#' @method print ecospat.id.test
-#' @method plot ecospat.id.test
+#' @export summary.ecospat.id.test
+#' @export print.ecospat.id.test
+#' @export plot.ecospat.id.test
 #'
 #' @examples
 #' enmtools.ecospat.id(ahli, allogus)
