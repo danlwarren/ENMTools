@@ -7,16 +7,11 @@
 #' @param species.name A character vector with the species name
 #' @param models A list of models that are made for the species, which will
 #'    be stuffed in there as we go along
-#' @export enmtools.species
-#' @method summary enmtools.species
-#' @method print enmtools.species
-#' @method plot enmtools.species
 #'
-#' @importFrom dismo bioclim circlesdomain evaluate maxent predict
-#' @importFrom raster raster brick calc cellStats crop getValues mask maxValue minValue names ncel ncol nlayers nrow plot predict projection rasterize rasterToPoints rasterToPolygons resample sampleRandom setMinMax setExtent setValues shapefile union unique values which.max which.min writeRaster xmax xmin ymax ymin xyFromCell
-#' @importFrom graphics abline par plot plot.new points title
-#' @importFrom stats aggregate as.formula complete.cases cor delete.response glm lm predict rbinom reformulate runif sd terms
-
+#' @export enmtools.species
+#' @export summary.enmtools.species
+#' @export print.enmtools.species
+#' @export plot.enmtools.species
 
 
 enmtools.species <- function(range = NA, presence.points = NA, background.points = NA,

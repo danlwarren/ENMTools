@@ -4,8 +4,8 @@
 \alias{rangebreak.linear}
 \title{rangebreak.linear Conduct a linear rangebreak test as described in Glor and Warren 2011.}
 \usage{
-\method{print}{rangebreak.linear}(species.1, species.2, env, type, f = NULL,
-  nreps = 99, nback = 1000, ...)
+rangebreak.linear(species.1, species.2, env, type, f = NULL, nreps = 99,
+  nback = 1000, ...)
 }
 \arguments{
 \item{species.1}{An emtools.species object}

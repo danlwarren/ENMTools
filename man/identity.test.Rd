@@ -4,8 +4,8 @@
 \alias{identity.test}
 \title{identity.test Conduct a niche identity/equivalency test as described in Warren et al. 2008.}
 \usage{
-\method{print}{identity.test}(species.1, species.2, env, type, f = NULL,
-  nreps = 99, nback = 1000, ...)
+identity.test(species.1, species.2, env, type, f = NULL, nreps = 99,
+  nback = 1000, ...)
 }
 \arguments{
 \item{species.1}{An emtools.species object}
@@ -19,8 +19,6 @@
 \item{f}{A function to use for model fitting.  Only required for GLM models at the moment.}
 
 \item{nreps}{Number of replicates to perform}
-
-\item{nback}{Number of background points to sample for model construction.}
 
 \item{...}{Additional arguments to be passed to model fitting functions.}
 }

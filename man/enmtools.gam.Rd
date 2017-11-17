@@ -4,8 +4,8 @@
 \alias{enmtools.gam}
 \title{Takes an emtools.species object with presence and background points, and builds a gam}
 \usage{
-\method{print}{enmtools.gam}(species, env, f = NULL, test.prop = 0, k = 4,
-  nback = 1000, report = NULL, overwrite = FALSE, ...)
+enmtools.gam(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000,
+  report = NULL, overwrite = FALSE, ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}

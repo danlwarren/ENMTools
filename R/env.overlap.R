@@ -1,7 +1,7 @@
 #' Calculates overlap between models in environment space using latin hypercube sampling
 #'
 #' @param model.1 An enmtools.model object model object that can be projected using the predict() function
-#' @param model.2 Another enmtools.model object or other model object that can be projected using the predict() function
+#' @param model.1 Another enmtools.model object or other model object that can be projected using the predict() function
 #' @param env A raster or raster stack of environmental data.
 #' @param tolerance How close do successive overlap metrics have to be before we decide we're close enough to the final answer
 #' @param max.reps Maximum number of attempts that will be made to find suitable starting conditions

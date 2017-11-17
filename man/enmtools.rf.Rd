@@ -4,8 +4,8 @@
 \alias{enmtools.rf}
 \title{Takes an emtools.species object with presence and background points, and builds a random forest model}
 \usage{
-\method{print}{enmtools.rf}(species, env, f = NULL, test.prop = 0,
-  eval = TRUE, nback = 1000, report = NULL, overwrite = FALSE, ...)
+enmtools.rf(species, env, f = NULL, test.prop = 0, eval = TRUE,
+  nback = 1000, report = NULL, overwrite = FALSE, ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}

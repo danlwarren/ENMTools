@@ -11,9 +11,9 @@
 #' for range and point overlap this argument is ignored.
 #'
 #' @export enmtools.aoc
-#' @method summary enmtools.aoc
-#' @method print enmtools.aoc
-#' @method plot enmtools.aoc
+#' @export summary.enmtools.aoc
+#' @export print.enmtools.aoc
+#' @export plot.enmtools.aoc
 #' @export enmtools.aoc.precheck
 
 enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL, overlap.matrix = NULL, metric = "D"){

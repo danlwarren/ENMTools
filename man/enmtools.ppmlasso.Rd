@@ -4,8 +4,8 @@
 \alias{enmtools.ppmlasso}
 \title{Takes an emtools.species object with presence and background points, and builds a Point Process Model (with Lasso penalty)}
 \usage{
-\method{print}{enmtools.ppmlasso}(species, env, f = NULL, test.prop = 0,
-  eval = TRUE, nback = 10000, back.accurate = FALSE, normalise = FALSE,
+enmtools.ppmlasso(species, env, f = NULL, test.prop = 0, eval = TRUE,
+  nback = 10000, back.accurate = FALSE, normalise = FALSE,
   report = NULL, overwrite = FALSE, ...)
 }
 \arguments{
