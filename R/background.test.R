@@ -21,9 +21,9 @@
 #'
 #' @export background.test
 #' @export background.precheck
-#' @export print.background.test
-#' @export summary.background.test
-#' @export plot.background.test
+#' @method print background.test
+#' @method summary background.test
+#' @method plot background.test
 #'
 #' @examples
 #' background.test(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, test.type = "asymmetric")
