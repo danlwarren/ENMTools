@@ -102,17 +102,5 @@ export(summary.rangebreak.linear)
 export(summary.rangebreak.ribbon)
 export(visualize.enm)
 export(visualize.overlap)
-<<<<<<< HEAD
-importFrom(dismo,bioclim)
-importFrom(dismo,circles)
-importFrom(dismo,domain)
-importFrom(dismo,evaluate)
-importFrom(dismo,maxent)
-importFrom(graphics,abline)
-importFrom(graphics,par)
-importFrom(graphics,points)
-importFrom(graphics,title)
 importFrom(hypervolume,hypervolume)
-=======
->>>>>>> upstream/master
 importFrom(ppmlasso,ppmlasso)
