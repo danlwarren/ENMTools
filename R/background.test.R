@@ -1,6 +1,4 @@
-#' background.test
-#'
-#' Conduct a background test (also called a similarity test), as described in Warren et al. 2008.
+#' background.test Conduct a background test (also called a similarity test), as described in Warren et al. 2008.
 #' This test can either be run as an asymmetric test (species.1 vs background of species.2) or as a symmetric test
 #' (background of species.1 vs background of species.2).  For GLM, Bioclim, and Domain models the replicates will be
 #' constructed from the background points supplied for each species.  For Maxent, the replicates will be constructed

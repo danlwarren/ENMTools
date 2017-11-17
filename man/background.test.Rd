@@ -2,7 +2,11 @@
 % Please edit documentation in R/background.test.R
 \name{background.test}
 \alias{background.test}
-\title{background.test}
+\title{background.test Conduct a background test (also called a similarity test), as described in Warren et al. 2008.
+This test can either be run as an asymmetric test (species.1 vs background of species.2) or as a symmetric test
+(background of species.1 vs background of species.2).  For GLM, Bioclim, and Domain models the replicates will be
+constructed from the background points supplied for each species.  For Maxent, the replicates will be constructed
+from the range rasters stored in the enmtools.species objects.}
 \usage{
 \method{print}{background.test}(species.1, species.2, env, type, f = NULL,
   nreps = 99, test.type = "asymmetric", nback = 1000, ...)
@@ -28,7 +32,7 @@
 results A list containing replicates, models for the empirical data, and summary statistics and plots.
 }
 \description{
-Conduct a background test (also called a similarity test), as described in Warren et al. 2008.
+background.test Conduct a background test (also called a similarity test), as described in Warren et al. 2008.
 This test can either be run as an asymmetric test (species.1 vs background of species.2) or as a symmetric test
 (background of species.1 vs background of species.2).  For GLM, Bioclim, and Domain models the replicates will be
 constructed from the background points supplied for each species.  For Maxent, the replicates will be constructed
