@@ -14,6 +14,9 @@
 #' @param ... Arguments to be passed to \code{method} function. e.g. parameter \code{k} to be passed to
 #'
 #' @export enmtools.anw.sdm
+#' @export summary.enmtools.anw.sdm
+#' @export print.enmtools.anw.sdm
+#' @export plot.enmtools.anw.sdm
 
 
 enmtools.anw.sdm <- function(species, env, f = NULL, method = "glm", standardise = TRUE, test.prop = 0, eval = TRUE, nback = 1000, k = 4, report = NULL, overwrite = FALSE, ...){
@@ -157,5 +160,82 @@ enmtools.anw.sdm <- function(species, env, f = NULL, method = "glm", standardise
   }
 
   return(output)
+
+}
+
+
+# Summary for objects of class enmtools.glm
+summary.enmtools.anw.sdm <- function(this.anw.sdm){
+
+  cat("\n\nFormula:  ")
+  print(this.anw.sdm$formula)
+
+  cat("\n\nData table (top ten lines): ")
+  print(kable(head(this.anw.sdm$analysis.df, 10)))
+
+  cat("\n\nModel:  ")
+  print(summary(this.anw.sdm$model))
+
+  # ppmlasso doesn't really have a pretty summary at the moment. Might have to come up with something ourselves
+  # cat("\n\nModel fit (training data):  ")
+  # print(this.ppmlasso$training.evaluation)
+
+  cat("\n\nEnvironment space model fit (training data):  ")
+  print(this.anw.sdm$env.training.evaluation)
+
+  cat("\n\nProportion of data wittheld for model fitting:  ")
+  cat(this.anw.sdm$test.prop)
+
+  cat("\n\nModel fit (test data):  ")
+  print(this.anw.sdm$test.evaluation)
+
+  cat("\n\nEnvironment space model fit (test data):  ")
+  print(this.anw.sdm$env.test.evaluation)
+
+  cat("\n\nSuitability:  \n")
+  print(this.anw.sdm$suitability)
+
+  cat("\n\nNotes:  \n")
+  this.anw.sdm$notes
+
+  plot(this.anw.sdm)
+
+}
+
+# Print method for objects of class enmtools.ppmlasso
+print.enmtools.anw.sdm <- function(this.anw.sdm){
+
+  print(summary(this.anw.sdm))
+
+}
+
+
+#' Plot method for objects of class enmtools.ppmlasso
+#' @param this.ppmlasso An enmtools.ppmlasso object
+#' @param trans_col Transformation to apply to the colour range (Z axis). A character value corresponding to one of \code{ggplot2}'s builtin scale transformations (see argument \code{trans} in \code{\link[ggplot2]{continuous_scale}} for possible choices). \code{trans_col = 'sqrt'} will often work well for ppmlasso plots. If NULL, no transformation is applied.
+#'
+plot.enmtools.anw.sdm <- function(this.anw.sdm, trans_col = NULL){
+
+
+  suit.points <- data.frame(rasterToPoints(this.anw.sdm$suitability))
+  colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
+
+  suit.plot <- ggplot(data = suit.points, aes(y = Latitude, x = Longitude)) +
+    geom_raster(aes(fill = Suitability)) +
+    coord_fixed() + theme_classic() +
+    geom_point(data = this.anw.sdm$analysis.df[this.anw.sdm$analysis.df$presence == 1,], aes(x = Longitude, y = Latitude),
+               pch = 21, fill = "white", color = "black", size = 2)
+
+  if(!(all(is.na(this.anw.sdm$test.data)))){
+    suit.plot <- suit.plot + geom_point(data = this.anw.sdm$test.data, aes(x = Longitude, y = Latitude),
+                                        pch = 21, fill = "green", color = "black", size = 2)
+  }
+  if(!is.null(trans_col)) {
+    suit.plot <- suit.plot + scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability"), trans = trans_col)
+  } else {
+    suit.plot <- suit.plot + scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability"))
+  }
+
+  return(suit.plot)
 
 }
