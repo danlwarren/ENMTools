@@ -1,9 +1,0 @@
-"0","fish.table <- fish.table[complete.cases(fish.table),]"
-"0","# Fish in data table that are missing from tree:"
-"0","print(fish.table$Species[!fish.table$Species %in% fish.tree$tip.label])"
-"1","character(0)
-"
-"0","# eels <- c(""Myrichthys_breviceps"", ""Gymnothorax_moringa"", ""Gymnothorax_vicinus"", ""Gymnothorax_javanicus"")"
-"0","# fish.tree <- drop.tip(fish.tree, eels)"
-"0","fish.tree <- drop.tip(fish.tree, fish.tree$tip.label[!fish.tree$tip.label %in% fish.table$Species])"
-"0","plot(fish.tree, use.edge.length = FALSE)"

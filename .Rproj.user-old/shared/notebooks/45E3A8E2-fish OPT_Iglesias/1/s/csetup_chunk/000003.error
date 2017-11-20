@@ -1,1 +1,0 @@
-{"frames":[{"character_number":0,"end_character_number":0,"end_line_number":0,"file":"","func":"setwd(\"~/Dropbox/Fish OPT\")","line_number":0}],"message":"Error in setwd(\"~/Dropbox/Fish OPT\") : cannot change working directory\n"}
