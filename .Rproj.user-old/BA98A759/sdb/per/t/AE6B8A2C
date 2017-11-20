@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "#' plot.response Plots the marginal response of a model to an environmental variable with all other variables held at their mean in env\n#'\n#'\n#' @param model An enmtools model object\n#' @param env A RasterLayer or RasterStack object containing environmental data\n#' @param layer The name of the layer to plot\n#'\n#' @return results A plot of the marginal response of the model to the environmental variable\n#'\n#' @keywords plot, sdm, enm, response\n#'\n#' @export plot.response\n#'\n#' @examples\n#'\n\nplot.response <- function(model, env, layer){\n\n  if(!layer %in% names(env)){\n    stop(paste(\"Couldn't find layer named\", layer, \"in environmental rasters!\"))\n  }\n\n  if(inherits(model, c(\"enmtools.bc\", \"enmtools.dm\"))){\n    points <- model$analysis.df\n  } else {\n    points <- model$analysis.df[model$analysis.df$presence == 1,1:2]\n  }\n\n  # Create a vector of names in the right order for plot.df\n  names <- layer\n\n  plot.df <- seq(minValue(env[[layer]]), maxValue(env[[layer]]), length = 100)\n\n  for(i in names(env)){\n    if(i != layer){\n      layer.values <- extract(env[[i]], points)\n      plot.df <- cbind(plot.df, rep(mean(layer.values), 100))\n      names <- c(names, i)\n    }\n  }\n\n  plot.df <- data.frame(plot.df)\n\n  colnames(plot.df) <- names\n\n  pred <- predict(model$model, plot.df, type = \"response\")\n\n  #print(pred)\n\n  response.plot <- qplot(plot.df[,1], pred, geom = \"line\",\n                         xlab = layer, ylab = \"Response\") + theme_bw()\n\n  return(response.plot)\n\n}\n",
+    "created" : 1494291531813.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "492236992",
+    "id" : "AE6B8A2C",
+    "lastKnownWriteTime" : 1479998198,
+    "last_content_update" : 1479998198,
+    "path" : "~/GitHub/ENMTools/R/plot.response.R",
+    "project_path" : "R/plot.response.R",
+    "properties" : {
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

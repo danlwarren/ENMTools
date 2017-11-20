@@ -1,0 +1,1 @@
+"0","ddply(analysis.table,~activity,summarise,mean.opt3=mean(OPT3),sd.opt3=sd(OPT3))"

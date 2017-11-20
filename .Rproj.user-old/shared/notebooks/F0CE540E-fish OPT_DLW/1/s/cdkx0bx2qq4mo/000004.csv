@@ -1,0 +1,30 @@
+"0","library(ape)"
+"0","library(ggplot2)"
+"0","library(knitr)"
+"0","library(plyr)"
+"0","library(geiger)"
+"2","
+Attaching package: ‘geiger’
+
+"
+"2","The following object is masked from ‘package:raster’:
+
+    hdr
+
+"
+"0","library(nlme)"
+"0","library(AICcmodavg)"
+"2","
+Attaching package: ‘AICcmodavg’
+
+"
+"2","The following object is masked from ‘package:randomForest’:
+
+    importance
+
+"
+"2","The following object is masked from ‘package:fields’:
+
+    predictSE
+
+"

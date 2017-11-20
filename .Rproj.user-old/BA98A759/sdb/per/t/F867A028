@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "setwd(\"~/GitHub/ENMTools/test\")\nSys.setenv(NOAWT=TRUE)\nlibrary(ENMTools)\n\n# This code builds the readme.rmd file into a regular md file, which GitHub understands better\n# knit(input=\"~/GitHub/ENMTools/Readme.Rmd\", output = \"~/GitHub/ENMTools/readme.md\")\n\nenv.files <- list.files(path = \"testdata/\", pattern = \"pc\", full.names = TRUE)\nenv <- stack(env.files)\nnames(env) <- c(\"layer.1\", \"layer.2\", \"layer.3\", \"layer.4\")\nenv <- setMinMax(env)\n\nahli <- enmtools.species()\ncheck.species(ahli)\n\nallogus <- enmtools.species(species.name = \"allogus\", presence.points = read.csv(\"testdata/allogus.csv\")[,3:4])\ncheck.species(allogus)\n\nahli <- enmtools.species(species.name = \"ahli\", presence.points = read.csv(\"testdata/ahli.csv\")[,3:4])\ncheck.species(ahli)\n\nahli$range <- background.raster.buffer(ahli$presence.points, 50000, mask = env)\nallogus$range <- background.raster.buffer(allogus$presence.points, 50000, mask = env)\n\nallogus.glm <- enmtools.glm(allogus, env, pres ~ poly(layer.1, 2) + poly(layer.4, 2), test.prop = 0.3)\nallogus.glm\nenv.plots <- visualize.enm(allogus.glm, env, layers = c(\"layer.1\", \"layer.4\"))\nenv.plots\n\n# Rescaling map for visualization purposes\n# allogus.glm$suitability <- allogus.glm$suitability**.333\n# allogus.glm$suitability <- allogus.glm$suitability - minValue(allogus.glm$suitability)\n# allogus.glm$suitability <- allogus.glm$suitability/maxValue(allogus.glm$suitability)\n# allogus.glm\n\n\n\n# Overlap\nallogus.gam <- enmtools.gam(allogus, env, pres ~ s(layer.2) + s(layer.4), test.prop = 0.3)\nallogus.gam\ngam.plot <- visualize.enm(allogus.gam, env, layers = c(\"layer.2\", \"layer.4\"))\ngam.plot\n\n\nallogus.glm <- enmtools.glm(allogus, env, pres ~ layer.2 + layer.4, test.prop = 0.3)\nallogus.glm\nglm.plot <- visualize.enm(allogus.glm, env, layers = c(\"layer.2\", \"layer.4\"))\nglm.plot\n\nraster.overlap(allogus.gam, allogus.glm)\nenv.overlap(allogus.gam, allogus.glm, env, tol = .00001)\n\n\nid.glm <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = \"glm\", nreps = 100)\n\nesp.id <- enmtools.ecospat.id(ahli, allogus, env[[c(\"layer.1\", \"layer.2\")]])\n\n\n\nallogus.glm <- enmtools.glm(allogus, env, pres ~ poly(layer.1, 4) + poly(layer.2, 4) + poly(layer.3, 4) + poly(layer.4, 4),\n                            test.prop = 0.3)\ngrid.arrange(allogus.glm$response.plots$layer.1, allogus.glm$response.plots$layer.2,\n             allogus.glm$response.plots$layer.3, allogus.glm$response.plots$layer.4, ncol = 2, nrow = 2)\n",
+    "created" : 1494272786543.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1180183874",
+    "id" : "F867A028",
+    "lastKnownWriteTime" : 1494477170,
+    "last_content_update" : 1494477170697,
+    "path" : "~/Dropbox/ongoing projects/Env Space Metrics/figures.R",
+    "project_path" : null,
+    "properties" : {
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

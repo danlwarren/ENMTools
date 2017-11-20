@@ -1,0 +1,3 @@
+"0","fish.table <- read.csv(file = ""Segmentation Stats.csv"", header = TRUE)"
+"0","fish.table$Species <- as.character(fish.table$Species)"
+"0","fish.tree <- read.tree(file = ""Final_Jan5_update.tre"")"

@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1511185506968.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "852059769",
+    "id" : "7E54E423",
+    "lastKnownWriteTime" : 1511185446,
+    "last_content_update" : 1511185446,
+    "path" : "~/GitHub/ENMTools/R/env.evaluate.R",
+    "project_path" : "R/env.evaluate.R",
+    "properties" : {
+        "cursorPosition" : "46,2",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
