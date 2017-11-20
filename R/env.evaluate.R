@@ -42,14 +42,15 @@ env.evaluate <- function(species, model, env, bg.source = "background", ...){
   colnames(bg.table) <- names(env)
 
   p.table <- extract(env, presence)
-#
-#   print(mins)
-#   print(maxes)
-#   print(head(bg.table))
-#   print(head(p.table))
 
-  pred.p <- as.numeric(predict(model, newdata = data.frame(p.table), type = "response"))
-  pred.bg <- as.numeric(predict(model, newdata = data.frame(bg.table), type = "response"))
+  # Having to do this for now because the dismo models don't like "newdata"
+  if(inherits(model, what = "DistModel")){
+    pred.p <- as.numeric(predict(model, x = data.frame(p.table), type = "response"))
+    pred.bg <- as.numeric(predict(model, x = data.frame(bg.table), type = "response"))
+  } else {
+    pred.p <- as.numeric(predict(model, newdata = data.frame(p.table), type = "response"))
+    pred.bg <- as.numeric(predict(model, newdata = data.frame(bg.table), type = "response"))
+  }
 
   env.evaluation <-dismo::evaluate(pred.p, pred.bg)
 

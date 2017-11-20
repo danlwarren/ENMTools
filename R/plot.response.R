@@ -43,7 +43,12 @@ plot.response <- function(model, env, layer){
 
   colnames(plot.df) <- names
 
-  pred <- predict(model$model, newdata = plot.df, type = "response")
+  if(inherits(model$model, what = "DistModel")){
+    pred <- predict(model$model, x = plot.df, type = "response")
+  } else {
+    pred <- predict(model$model, newdata = plot.df, type = "response")
+  }
+
 
   #print(pred)
 
