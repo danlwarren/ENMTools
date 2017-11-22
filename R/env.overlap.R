@@ -34,8 +34,18 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
 
     # Use that sample space to get a starting overlap value
     colnames(predict.table) <- names(env)
-    pred1 <- as.numeric(predict(model.1, newdata = data.frame(predict.table), type = "response"))
-    pred2 <- as.numeric(predict(model.2, newdata = data.frame(predict.table), type = "response"))
+    if(inherits(model.1, "DistModel")){
+      pred1 <- as.numeric(predict(model.1, x = data.frame(predict.table), type = "response"))
+    } else {
+      pred1 <- as.numeric(predict(model.1, newdata = data.frame(predict.table), type = "response"))
+    }
+
+    if(inherits(model.2, "DistModel")){
+      pred2 <- as.numeric(predict(model.2, x = data.frame(predict.table), type = "response"))
+    } else {
+      pred2 <- as.numeric(predict(model.2, newdata = data.frame(predict.table), type = "response"))
+    }
+
 
     if(sd(pred1) == 0 | sd(pred2) == 0){
       output <- list(env.D = NA,
@@ -82,9 +92,17 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
       predict.table <- t(t(this.lhs) * (maxValue(env)  - minValue(env)) + minValue(env))
       colnames(predict.table) <- names(env)
 
-      # Make new predictions and recalculate metrics
-      pred1 <- predict(model.1, newdata = data.frame(predict.table), type = "response")
-      pred2 <- predict(model.2, newdata = data.frame(predict.table), type = "response")
+      if(inherits(model.1, "DistModel")){
+        pred1 <- as.numeric(predict(model.1, x = data.frame(predict.table), type = "response"))
+      } else {
+        pred1 <- as.numeric(predict(model.1, newdata = data.frame(predict.table), type = "response"))
+      }
+
+      if(inherits(model.2, "DistModel")){
+        pred2 <- as.numeric(predict(model.2, x = data.frame(predict.table), type = "response"))
+      } else {
+        pred2 <- as.numeric(predict(model.2, newdata = data.frame(predict.table), type = "response"))
+      }
 
       if(sd(pred1) == 0 | sd(pred2) == 0){
         output <- list(env.D = NA,
