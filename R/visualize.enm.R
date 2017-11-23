@@ -15,7 +15,7 @@
 #' @examples
 #' visualize.enm(1, .001, .001)
 
-visualize.enm <- function(model, env, nbins = 100, layers, plot.points = TRUE){
+visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plot.points = TRUE){
 
   if(!inherits(model, "enmtools.model")){
     stop("This function requires an enmtools.model object!")
