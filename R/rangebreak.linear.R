@@ -20,7 +20,7 @@
 #' @export plot.rangebreak.linear
 #'
 #' @examples
-#' rangebreak.linear(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, ...)
+#' rangebreak.linear(ahli, allogus, env, type = "glm", nreps = 10, ...)
 #'
 
 rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps = 99,  nback = 1000, ...){

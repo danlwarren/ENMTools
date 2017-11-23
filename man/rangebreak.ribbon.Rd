@@ -33,7 +33,7 @@ results A list containing a replicates, models for the empirical data, and summa
 rangebreak.ribbon Conduct a ribbon rangebreak test as described in Glor and Warren 2011.
 }
 \examples{
-rangebreak.ribbon(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, ...)
+rangebreak.ribbon(ahli, allogus, env, type = "glm", nreps = 10, ...)
 
 }
 \keyword{barrier,}

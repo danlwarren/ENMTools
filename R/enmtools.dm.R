@@ -80,11 +80,11 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
   class(output) <- c("enmtools.dm", "enmtools.model")
 
   # Doing response plots for each variable.  Doing this bit after creating
-  # the output object because plot.response expects an enmtools.model object
+  # the output object because marginal.plots expects an enmtools.model object
   response.plots <- list()
 
   for(i in names(env)){
-    response.plots[[i]] <- plot.response(output, env, i)
+    response.plots[[i]] <- marginal.plots(output, env, i)
   }
 
   output[["response.plots"]] <- response.plots

@@ -4,7 +4,7 @@
 \alias{plot.enmtools.ppmlasso}
 \title{Plot method for objects of class enmtools.ppmlasso}
 \usage{
-plot.enmtools.ppmlasso(this.ppmlasso, trans_col = NULL)
+\method{plot}{enmtools.ppmlasso}(this.ppmlasso, trans_col = NULL)
 }
 \arguments{
 \item{this.ppmlasso}{An enmtools.ppmlasso object}

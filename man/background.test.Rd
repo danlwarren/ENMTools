@@ -37,7 +37,7 @@ constructed from the background points supplied for each species.  For Maxent, t
 from the range rasters stored in the enmtools.species objects.
 }
 \examples{
-background.test(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, type = "asymmetric")
+background.test(ahli, allogus, env, type = "glm", nreps = 10, test.type = "asymmetric")
 
 }
 \keyword{background,}

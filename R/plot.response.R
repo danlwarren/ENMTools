@@ -1,4 +1,4 @@
-#' plot.response Plots the marginal response of a model to an environmental variable with all other variables held at their mean in env
+#' marginal.plots Plots the marginal response of a model to an environmental variable with all other variables held at their mean in env
 #'
 #'
 #' @param model An enmtools model object
@@ -9,12 +9,12 @@
 #'
 #' @keywords plot, sdm, enm, response
 #'
-#' @export plot.response
+#' @export marginal.plots
 #'
 #' @examples
 #'
 
-plot.response <- function(model, env, layer){
+marginal.plots <- function(model, env, layer){
 
   if(!layer %in% names(env)){
     stop(paste("Couldn't find layer named", layer, "in environmental rasters!"))

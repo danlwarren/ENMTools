@@ -22,7 +22,7 @@
 #' @export plot.rangebreak.ribbon
 #'
 #' @examples
-#' rangebreak.ribbon(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, ...)
+#' rangebreak.ribbon(ahli, allogus, env, type = "glm", nreps = 10, ...)
 #'
 
 rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL, width = 1, nreps = 99,  nback = 1000, ...){

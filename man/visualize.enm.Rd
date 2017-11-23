@@ -4,7 +4,8 @@
 \alias{visualize.enm}
 \title{visualize.enm, Makes a heatmap of suitability of habitat in environment space according to a given model}
 \usage{
-visualize.enm(model, env, nbins = 100, layers, plot.points = TRUE)
+visualize.enm(model, env, nbins = 100, layers = names(env)[1:2],
+  plot.points = TRUE)
 }
 \arguments{
 \item{model}{An enmtools.model object}
