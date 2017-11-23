@@ -11,7 +11,7 @@
 #'
 #' @export marginal.plots
 #'
-#' @examples
+#' @examples marginal.plots(ahli.mx$model, env, "bio1")
 #'
 
 marginal.plots <- function(model, env, layer){

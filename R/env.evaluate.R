@@ -10,7 +10,7 @@
 
 env.evaluate <- function(species, model, env, bg.source = "background", ...){
 
-  species <- check.bg.ppmlasso(species, env, ...)
+  species <- check.bg(species, env, ...)
 
   if(!inherits(species, "enmtools.species")){
     stop("Argument species must supply an enmtools.species object!")

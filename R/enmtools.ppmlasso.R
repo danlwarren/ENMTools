@@ -6,7 +6,6 @@
 #' @param test.prop Proportion of data to withhold for model evaluation
 #' @param eval Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.
 #' @param nback Number of background points to draw from range or env, if background points aren't provided
-#' @param back.accurate Should a more accurate method of generating background points be used, if background points aren't provided? If TRUE, this method produces a number of background points close to \code{nback}, but is much slower than the alternative method, which is fast but innaccurate.
 #' @param normalise Should the suitability of the model be normalised? If FALSE (the default), suitability is returned as the predicted number of presence points in each grid cell (occurrence density). If TRUE, occurrence densities are divided by the total predicted density, to give a value ranging from 0 to 1, which represents the proportion of the predicted density for a species that occurs in each grid cell.
 #' @param report Optional name of an html file for generating reports
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
@@ -21,11 +20,11 @@
 #' @export plot.enmtools.ppmlasso
 
 
-enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 10000, back.accurate = FALSE, normalise = FALSE, report = NULL, overwrite = FALSE, ...){
+enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 10000, normalise = FALSE, report = NULL, overwrite = FALSE, ...){
 
   notes <- NULL
 
-  species <- check.bg.ppmlasso(species, env, nback = nback, back.accurate = back.accurate)
+  species <- check.bg(species, env, nback = nback)
 
   # Builds a default formula using all env
   if(is.null(f)){
@@ -72,7 +71,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
   suitability <- predict(env, this.ppmlasso, fun = p.fun)
 
   if(normalise) {
-    values(suitability) <- values(suitability) / sum(values(suitability), na.rm = TRUE)
+    getValues(suitability) <- getValues(suitability) / sum(getValues(suitability), na.rm = TRUE)
   }
 
   if(eval == TRUE){
