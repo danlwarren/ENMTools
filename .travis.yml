@@ -1,1 +1,8 @@
 language: r
+
+sudo: required
+
+before_install:
+  - echo 'options(Ncpus = 2)' >> ~/.Rprofile
+  - echo 'options(mc.cores = 2)' >> ~/.Rprofile
+  
