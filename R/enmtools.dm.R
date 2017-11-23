@@ -11,6 +11,12 @@
 #' @export print.enmtools.dm
 #' @export summary.enmtools.dm
 #' @export plot.enmtools.dm
+#'
+#' @examples
+#' data(euro.worldclim)
+#' data(iberolacerta.clade)
+#' enmtools.dm(iberolacerta.clade$species$monticola, env = euro.worldclim)
+
 
 enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback = 1000, overwrite = FALSE, ...){
 

@@ -14,6 +14,14 @@
 #' @export print.enmtools.glm
 #' @export summary.enmtools.glm
 #' @export plot.enmtools.glm
+#'
+#' @examples
+#' \dontrun{
+#' data(euro.worldclim)
+#' data(iberolacerta.clade)
+#' enmtools.glm(iberolacerta.clade$species$monticola, env = euro.worldclim)
+#' }
+
 
 
 enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, report = NULL, overwrite = FALSE, ...){

@@ -14,6 +14,12 @@
 #' @export print.enmtools.gam
 #' @export summary.enmtools.gam
 #' @export plot.enmtools.gam
+#'
+#' @examples
+#' data(euro.worldclim)
+#' data(iberolacerta.clade)
+#' enmtools.gam(iberolacerta.clade$species$monticola, env = euro.worldclim)
+
 
 
 enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000, report = NULL, overwrite = FALSE, ...){

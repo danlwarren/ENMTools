@@ -11,6 +11,11 @@
 #' @export print.enmtools.bc
 #' @export summary.enmtools.bc
 #' @export plot.enmtools.bc
+#'
+#' @examples
+#' data(euro.worldclim)
+#' data(iberolacerta.clade)
+#' enmtools.bc(iberolacerta.clade$species$monticola, env = euro.worldclim)
 
 enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwrite = FALSE, nback = 1000, ...){
 

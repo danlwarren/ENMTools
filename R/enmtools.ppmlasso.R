@@ -18,6 +18,11 @@
 #' @export print.enmtools.ppmlasso
 #' @export summary.enmtools.ppmlasso
 #' @export plot.enmtools.ppmlasso
+#'
+#' @examples
+#' data(euro.worldclim)
+#' data(iberolacerta.clade)
+#' enmtools.ppmlasso(iberolacerta.clade$species$monticola, env = euro.worldclim[[1:3]])
 
 
 enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 10000, normalise = FALSE, report = NULL, overwrite = FALSE, ...){

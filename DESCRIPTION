@@ -15,7 +15,7 @@ Description: Tools for the ecological and historical biogeography.
 License: GPL-2
 LazyData: TRUE
 RoxygenNote: 6.0.1
-Imports:
+Depends:
 	dismo,
 	raster,
 	rgeos,
