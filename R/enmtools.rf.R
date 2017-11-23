@@ -16,12 +16,11 @@
 #' @export plot.enmtools.rf
 #'
 #' @examples
-#' \dontrun{
 #' # Not running this for now because raster doesn't like projecting this particular RF model for some reason.
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
 #' enmtools.rf(iberolacerta.clade$species$monticola, env = euro.worldclim)
-#' }
+
 
 
 enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, report = NULL, overwrite = FALSE, ...){

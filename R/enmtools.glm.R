@@ -16,11 +16,9 @@
 #' @export plot.enmtools.glm
 #'
 #' @examples
-#' \dontrun{
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
 #' enmtools.glm(iberolacerta.clade$species$monticola, env = euro.worldclim)
-#' }
 
 
 
