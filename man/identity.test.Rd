@@ -4,8 +4,8 @@
 \alias{identity.test}
 \title{identity.test Conduct a niche identity/equivalency test as described in Warren et al. 2008.}
 \usage{
-identity.test(species.1, species.2, env, type, f = NULL, nreps = 99,
-  nback = 1000, ...)
+\method{print}{identity.test}(species.1, species.2, env, type, f = NULL,
+  nreps = 99, nback = 1000, ...)
 }
 \arguments{
 \item{species.1}{An emtools.species object}

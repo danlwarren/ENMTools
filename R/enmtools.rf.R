@@ -11,17 +11,16 @@
 #' @param ... Arguments to be passed to rf()
 #'
 #' @export enmtools.rf
-#' @export print.enmtools.rf
-#' @export summary.enmtools.rf
-#' @export plot.enmtools.rf
+#' @method print enmtools.rf
+#' @method summary enmtools.rf
+#' @method plot enmtools.rf
 #'
 #' @examples
-#' # Not running this for now because raster doesn't like projecting this particular RF model for some reason.
+#' # Not running this for now because raster doesn't like projecting this
+#' # particular RF model for some reason.
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
 #' enmtools.rf(iberolacerta.clade$species$monticola, env = euro.worldclim)
-
-
 
 enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, report = NULL, overwrite = FALSE, ...){
 

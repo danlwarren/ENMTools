@@ -9,9 +9,9 @@
 #'    be stuffed in there as we go along
 #'
 #' @export enmtools.species
-#' @export summary.enmtools.species
-#' @export print.enmtools.species
-#' @export plot.enmtools.species
+#' @method summary enmtools.species
+#' @method print enmtools.species
+#' @method plot enmtools.species
 
 
 enmtools.species <- function(range = NA, presence.points = NA, background.points = NA,

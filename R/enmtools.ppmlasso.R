@@ -15,9 +15,9 @@
 #'
 #' @importFrom ppmlasso ppmlasso
 #' @export enmtools.ppmlasso
-#' @export print.enmtools.ppmlasso
-#' @export summary.enmtools.ppmlasso
-#' @export plot.enmtools.ppmlasso
+#' @method print enmtools.ppmlasso
+#' @method summary enmtools.ppmlasso
+#' @method plot enmtools.ppmlasso
 #'
 #' @examples
 #' data(euro.worldclim)
@@ -198,11 +198,7 @@ print.enmtools.ppmlasso <- function(this.ppmlasso){
 
 }
 
-
-#' Plot method for objects of class enmtools.ppmlasso
-#' @param this.ppmlasso An enmtools.ppmlasso object
-#' @param trans_col Transformation to apply to the colour range (Z axis). A character value corresponding to one of \code{ggplot2}'s builtin scale transformations (see argument \code{trans} in \code{\link[ggplot2]{continuous_scale}} for possible choices). \code{trans_col = 'sqrt'} will often work well for ppmlasso plots. If NULL, no transformation is applied.
-#'
+# Plot method for objects of class enmtools.ppmlasso
 plot.enmtools.ppmlasso <- function(this.ppmlasso, trans_col = NULL){
 
 

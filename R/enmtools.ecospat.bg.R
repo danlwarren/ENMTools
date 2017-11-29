@@ -16,9 +16,9 @@
 #' @keywords niche plot sdm enm
 #'
 #' @export enmtools.ecospat.bg
-#' @export summary.ecospat.bg.test
-#' @export print.ecospat.bg.test
-#' @export plot.ecospat.bg.test
+#' @method summary ecospat.bg.test
+#' @method print ecospat.bg.test
+#' @method plot ecospat.bg.test
 #'
 #' @examples
 #' enmtools.ecospat.bg(ahli, allogus)

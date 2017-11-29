@@ -11,9 +11,9 @@
 #' @param ... Arguments to be passed to glm()
 #'
 #' @export enmtools.glm
-#' @export print.enmtools.glm
-#' @export summary.enmtools.glm
-#' @export plot.enmtools.glm
+#' @method print enmtools.glm
+#' @method summary enmtools.glm
+#' @method plot enmtools.glm
 #'
 #' @examples
 #' data(euro.worldclim)

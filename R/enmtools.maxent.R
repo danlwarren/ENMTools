@@ -10,9 +10,9 @@
 #' @param ... Arguments to be passed to maxent()
 #'
 #' @export enmtools.maxent
-#' @export print.enmtools.maxent
-#' @export summary.enmtools.maxent
-#' @export plot.enmtools.maxent
+#' @method print enmtools.maxent
+#' @method summary enmtools.maxent
+#' @method plot enmtools.maxent
 #'
 #' @examples
 #' data(euro.worldclim)

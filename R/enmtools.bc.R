@@ -8,9 +8,9 @@
 #' @param ... Arguments to be passed to bioclim()
 #'
 #' @export enmtools.bc
-#' @export print.enmtools.bc
-#' @export summary.enmtools.bc
-#' @export plot.enmtools.bc
+#' @method print enmtools.bc
+#' @method summary enmtools.bc
+#' @method plot enmtools.bc
 #'
 #' @examples
 #' data(euro.worldclim)

@@ -33,7 +33,7 @@ raster.resid <- function(x, y){
   this.lm <- lm(x ~ y)
   resids <- this.lm$residuals/this.lm$fitted.values
 
-  values(resid.raster)[!is.na(values(resid.raster))] <- resids
+  getValues(resid.raster)[!is.na(getValues(resid.raster))] <- resids
 
   return(list(residuals = resid.raster, lm = this.lm))
 }

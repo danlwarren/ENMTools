@@ -4,8 +4,8 @@
 \alias{enmtools.maxent}
 \title{Takes an emtools.species object with presence and background points, and builds a maxent model}
 \usage{
-enmtools.maxent(species, env, test.prop = 0, nback = 1000, report = NULL,
-  overwrite = FALSE, ...)
+\method{print}{enmtools.maxent}(species, env, test.prop = 0, nback = 1000,
+  report = NULL, overwrite = FALSE, ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}

@@ -11,9 +11,9 @@
 #' @param ... Arguments to be passed to gam()
 #'
 #' @export enmtools.gam
-#' @export print.enmtools.gam
-#' @export summary.enmtools.gam
-#' @export plot.enmtools.gam
+#' @method print enmtools.gam
+#' @method summary enmtools.gam
+#' @method plot enmtools.gam
 #'
 #' @examples
 #' data(euro.worldclim)
