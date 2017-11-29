@@ -11,7 +11,13 @@ moses.list(species.list, env, f = NULL, eval = FALSE, nback = 1000, ...)
 
 \item{env}{A raster or raster stack of environmental data.}
 
+\item{f}{A GLM-style function for model fitting}
+
+\item{eval}{Boolean indicating whether or not GLMs should be evaluated using AUC/TSS/etc.}
+
 \item{nback}{Number of background points to generate, if any}
+
+\item{...}{further arguments to be passed to enmtools.glm}
 }
 \description{
 Takes a list of enmtools.species objects and uses model selection to ask whether they're better treated jointly or separately

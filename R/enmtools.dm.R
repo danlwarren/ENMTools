@@ -5,12 +5,10 @@
 #' @param test.prop Proportion of data to withhold for model evaluation
 #' @param report Optional name of an html file for generating reports
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
+#' @param nback Number of background points for models.  In the case of Domain, these are only used for evaluation.
 #' @param ... Arguments to be passed to bioclim()
 #'
 #' @export enmtools.dm
-#' @method print enmtools.dm
-#' @method summary enmtools.dm
-#' @method plot enmtools.dm
 #'
 #' @examples
 #' data(euro.worldclim)

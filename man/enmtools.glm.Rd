@@ -4,13 +4,15 @@
 \alias{enmtools.glm}
 \title{Takes an emtools.species object with presence and background points, and builds a GLM}
 \usage{
-\method{print}{enmtools.glm}(species, env, f = NULL, test.prop = 0,
-  eval = TRUE, nback = 1000, report = NULL, overwrite = FALSE, ...)
+enmtools.glm(species, env, f = NULL, test.prop = 0, eval = TRUE,
+  nback = 1000, report = NULL, overwrite = FALSE, ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
 
 \item{env}{A raster or raster stack of environmental data.}
+
+\item{f}{Standard GLM formula}
 
 \item{test.prop}{Proportion of data to withhold for model evaluation}
 
@@ -23,8 +25,6 @@
 \item{overwrite}{TRUE/FALSE whether to overwrite a report file if it already exists}
 
 \item{...}{Arguments to be passed to glm()}
-
-\item{formula}{Standard GLM formula}
 }
 \description{
 Takes an emtools.species object with presence and background points, and builds a GLM

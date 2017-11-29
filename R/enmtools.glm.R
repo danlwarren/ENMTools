@@ -1,8 +1,8 @@
 #' Takes an emtools.species object with presence and background points, and builds a GLM
 #'
-#' @param formula Standard GLM formula
 #' @param species An enmtools.species object
 #' @param env A raster or raster stack of environmental data.
+#' @param f Standard GLM formula
 #' @param test.prop Proportion of data to withhold for model evaluation
 #' @param eval Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.
 #' @param nback Number of background points to draw from range or env, if background points aren't provided

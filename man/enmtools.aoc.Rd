@@ -6,8 +6,8 @@
 determine the statistical significance of the relationship between
 overlap and time}
 \usage{
-\method{summary}{enmtools.aoc}(clade, nreps, overlap.source, env = NULL,
-  model = NULL, overlap.matrix = NULL, metric = "D")
+enmtools.aoc(clade, nreps, overlap.source, env = NULL, model = NULL,
+  overlap.matrix = NULL, metric = "D")
 }
 \arguments{
 \item{clade}{An enmtools.clade object containing species data and a phylogeny}
@@ -15,6 +15,8 @@ overlap and time}
 \item{nreps}{A number of reps to do}
 
 \item{overlap.source}{The source of the overlaps to calculate.  Choices are "bc", "dm", "gam", "glm", "mx", "range", and "point"}
+
+\item{env}{Environmental layers for use when overlap is calculated using niche models.}
 
 \item{model}{The model to be used for GLM and GAM comparisons}
 

@@ -4,8 +4,8 @@
 \alias{enmtools.maxent}
 \title{Takes an emtools.species object with presence and background points, and builds a maxent model}
 \usage{
-\method{print}{enmtools.maxent}(species, env, test.prop = 0, nback = 1000,
-  report = NULL, overwrite = FALSE, ...)
+enmtools.maxent(species, env, test.prop = 0, nback = 1000, report = NULL,
+  overwrite = FALSE, ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
@@ -21,8 +21,6 @@
 \item{overwrite}{TRUE/FALSE whether to overwrite a report file if it already exists}
 
 \item{...}{Arguments to be passed to maxent()}
-
-\item{formula}{Standard R formula}
 }
 \description{
 Takes an emtools.species object with presence and background points, and builds a maxent model

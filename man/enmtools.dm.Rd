@@ -4,8 +4,8 @@
 \alias{enmtools.dm}
 \title{Takes an emtools.species object with presence and background points, and builds a Domain model}
 \usage{
-\method{print}{enmtools.dm}(species, env = NA, test.prop = 0,
-  report = NULL, nback = 1000, overwrite = FALSE, ...)
+enmtools.dm(species, env = NA, test.prop = 0, report = NULL,
+  nback = 1000, overwrite = FALSE, ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
@@ -15,6 +15,8 @@
 \item{test.prop}{Proportion of data to withhold for model evaluation}
 
 \item{report}{Optional name of an html file for generating reports}
+
+\item{nback}{Number of background points for models.  In the case of Domain, these are only used for evaluation.}
 
 \item{overwrite}{TRUE/FALSE whether to overwrite a report file if it already exists}
 

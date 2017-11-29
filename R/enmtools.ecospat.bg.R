@@ -10,15 +10,13 @@
 #' @param th.env Quantile of environmental densities across studye sites used as threshold to exclude low
 #' environmental density values.  See documentation for ecospat.grid.clim.dyn.
 #' @param R Resolution of the grid. See documentation for ecospat.grid.clim.dyn.
+#' @param ... Further arguments to be passed to check.bg
 #'
 #' @return results Some results, once I figure out what results to return
 #'
 #' @keywords niche plot sdm enm
 #'
 #' @export enmtools.ecospat.bg
-#' @method summary ecospat.bg.test
-#' @method print ecospat.bg.test
-#' @method plot ecospat.bg.test
 #'
 #' @examples
 #' enmtools.ecospat.bg(ahli, allogus)

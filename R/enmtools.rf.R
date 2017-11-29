@@ -1,8 +1,8 @@
 #' Takes an emtools.species object with presence and background points, and builds a random forest model
 #'
-#' @param formula Standard RF formula
 #' @param species An enmtools.species object
 #' @param env A raster or raster stack of environmental data.
+#' @param f A formula for fitting the model
 #' @param test.prop Proportion of data to withhold for model evaluation
 #' @param eval Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.
 #' @param nback Number of background points to draw from range or env, if background points aren't provided
@@ -11,9 +11,6 @@
 #' @param ... Arguments to be passed to rf()
 #'
 #' @export enmtools.rf
-#' @method print enmtools.rf
-#' @method summary enmtools.rf
-#' @method plot enmtools.rf
 #'
 #' @examples
 #' # Not running this for now because raster doesn't like projecting this

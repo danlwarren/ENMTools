@@ -15,10 +15,6 @@
 #' @keywords rangebreak, biogeography, barrier, enmtools, hypothesis testing
 #'
 #' @export rangebreak.blob
-#' @export rangebreak.blob.precheck
-#' @method print enmtools.rangebreak.blob
-#' @method summary enmtools.rangebreak.blob
-#' @method plot enmtools.rangebreak.blob
 #'
 #' @examples
 #' rangebreak.blob(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, ...)

@@ -4,8 +4,8 @@
 \alias{enmtools.ecospat.id}
 \title{enmtools.ecospat.id, Runs an ecospat identity test using enmtool.species objects.}
 \usage{
-\method{summary}{ecospat.id.test}(species.1, species.2, env, nreps = 99,
-  layers = NULL, th.sp = 0, th.env = 0, R = 100, ...)
+enmtools.ecospat.id(species.1, species.2, env, nreps = 99, layers = NULL,
+  th.sp = 0, th.env = 0, R = 100)
 }
 \arguments{
 \item{species.1}{An enmtools.species object}

@@ -1,11 +1,11 @@
 #' Takes an enmtools model object and an emtools.species object with presence and background points, formats it, and calls dismo evaluate function
 #'
 #' @param species An enmtools.species object
-#' @param species An enmtools model object (enmtools.glm, enmtools.dm, etc.)
+#' @param model An enmtools model object (enmtools.glm, enmtools.dm, etc.)
 #' @param env A RasterStack object containing the environmental predictors
 #' @param ... Arguments to be passed to evaluate()
 #'
-#' @export enmtools.maxent
+#' @export enmtools.evaluate
 
 enmtools.evaluate <- function(species, model, env, ...){
 

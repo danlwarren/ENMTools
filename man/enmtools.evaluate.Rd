@@ -9,11 +9,11 @@ enmtools.evaluate(species, model, env, ...)
 \arguments{
 \item{species}{An enmtools.species object}
 
+\item{model}{An enmtools model object (enmtools.glm, enmtools.dm, etc.)}
+
 \item{env}{A RasterStack object containing the environmental predictors}
 
 \item{...}{Arguments to be passed to evaluate()}
-
-\item{species}{An enmtools model object (enmtools.glm, enmtools.dm, etc.)}
 }
 \description{
 Takes an enmtools model object and an emtools.species object with presence and background points, formats it, and calls dismo evaluate function

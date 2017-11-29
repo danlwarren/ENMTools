@@ -16,11 +16,7 @@
 #'
 #' @keywords rangebreak, biogeography, barrier, enmtools, hypothesis testing
 #'
-#' @method print enmtools.rangebreak.ribbon
-#' @method summary enmtools.rangebreak.ribbon
-#' @method plot enmtools.rangebreak.ribbon
 #' @export rangebreak.ribbon
-#' @export rangebreak.ribbon.precheck
 #'
 #' @examples
 #' rangebreak.ribbon(ahli, allogus, env, type = "glm", nreps = 10)

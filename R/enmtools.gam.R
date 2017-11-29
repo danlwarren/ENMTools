@@ -1,7 +1,7 @@
 #' Takes an emtools.species object with presence and background points, and builds a gam
 #'
-#' @param formula Standard gam formula
 #' @param species An enmtools.species object
+#' @param f Standard gam formula
 #' @param env A raster or raster stack of environmental data.
 #' @param test.prop Proportion of data to withhold for model evaluation
 #' @param k Dimension of the basis used to represent the smooth term.  See documentation for s() for details.
@@ -11,9 +11,6 @@
 #' @param ... Arguments to be passed to gam()
 #'
 #' @export enmtools.gam
-#' @method print enmtools.gam
-#' @method summary enmtools.gam
-#' @method plot enmtools.gam
 #'
 #' @examples
 #' data(euro.worldclim)

@@ -4,14 +4,16 @@
 \alias{enmtools.ppmlasso}
 \title{Takes an emtools.species object with presence and background points, and builds a Point Process Model (with Lasso penalty)}
 \usage{
-\method{print}{enmtools.ppmlasso}(species, env, f = NULL, test.prop = 0,
-  eval = TRUE, nback = 10000, normalise = FALSE, report = NULL,
-  overwrite = FALSE, ...)
+enmtools.ppmlasso(species, env, f = NULL, test.prop = 0, eval = TRUE,
+  nback = 10000, normalise = FALSE, report = NULL, overwrite = FALSE,
+  ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
 
 \item{env}{A raster or raster stack of environmental data.}
+
+\item{f}{Standard R formula}
 
 \item{test.prop}{Proportion of data to withhold for model evaluation}
 
@@ -26,8 +28,6 @@
 \item{overwrite}{TRUE/FALSE whether to overwrite a report file if it already exists}
 
 \item{...}{Arguments to be passed to ppmlasso()}
-
-\item{formula}{Standard R formula}
 }
 \description{
 Takes an emtools.species object with presence and background points, and builds a Point Process Model (with Lasso penalty)

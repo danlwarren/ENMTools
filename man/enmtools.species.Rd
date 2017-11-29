@@ -4,8 +4,8 @@
 \alias{enmtools.species}
 \title{Defining a class for enmtools.species.}
 \usage{
-\method{summary}{enmtools.species}(range = NA, presence.points = NA,
-  background.points = NA, species.name = NA, models = NA)
+enmtools.species(range = NA, presence.points = NA, background.points = NA,
+  species.name = NA, models = NA)
 }
 \arguments{
 \item{range}{A raster or SpatialPolygon with the actual range they occur in}
@@ -16,8 +16,9 @@
 
 \item{species.name}{A character vector with the species name}
 
-\item{models}{A list of models that are made for the species, which will
-be stuffed in there as we go along}
+\item{models}{A list of models that are made for the species, which will be stuffed in there as we go along
+to pass the check.  This is used by internal enmtools functions to make sure the necessary data is present
+before processing anything.}
 }
 \description{
 Each species gets:

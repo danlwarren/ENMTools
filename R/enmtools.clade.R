@@ -3,12 +3,10 @@
 #' @param tree A tree showing the relationships between the species
 #'
 #' @export enmtools.clade
-#' @method summary enmtools.clade
-#' @method print enmtools.clade
-#' @method plot enmtools.clade
 
 
-enmtools.clade <- function(species = NA, tree = NA, root.species = NA){
+
+enmtools.clade <- function(species = NA, tree = NA){
 
    # Checking classes of input args.  The isTRUE stuff is needed because R doesn't
    # know how to do is.na on raster data, so it was barfing and error when a raster

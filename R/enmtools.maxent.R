@@ -1,6 +1,5 @@
 #' Takes an emtools.species object with presence and background points, and builds a maxent model
 #'
-#' @param formula Standard R formula
 #' @param species An enmtools.species object
 #' @param env A raster or raster stack of environmental data.
 #' @param test.prop Proportion of data to withhold for model evaluation
@@ -10,9 +9,6 @@
 #' @param ... Arguments to be passed to maxent()
 #'
 #' @export enmtools.maxent
-#' @method print enmtools.maxent
-#' @method summary enmtools.maxent
-#' @method plot enmtools.maxent
 #'
 #' @examples
 #' data(euro.worldclim)

@@ -15,14 +15,11 @@
 #' @keywords niche plot sdm enm
 #'
 #' @export enmtools.ecospat.id
-#' @method summary ecospat.id.test
-#' @method print ecospat.id.test
-#' @method plot ecospat.id.test
 #'
 #' @examples
 #' enmtools.ecospat.id(ahli, allogus)
 
-enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = NULL, th.sp=0, th.env=0, R=100, ...){
+enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = NULL, th.sp=0, th.env=0, R=100){
 
   species.1 <- check.bg(species.1, env)
   species.2 <- check.bg(species.2, env)

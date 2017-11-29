@@ -7,6 +7,7 @@
 #' @param type The type of model to construct, currently accepts "glm", "mx", "bc", "gam", or "dm"
 #' @param f A function to use for model fitting.  Only required for GLM models at the moment.
 #' @param nreps Number of replicates to perform
+#' @param nback Number of background points for models
 #' @param ... Additional arguments to be passed to model fitting functions.
 #'
 #' @return results A list containing a replicates, models for the empirical data, and summary statistics and plots.
@@ -14,10 +15,6 @@
 #' @keywords identity, equivalency, enmtools, hypothesis testing
 #'
 #' @export identity.test
-#' @export identity.precheck
-#' @method print enmtools.identity.test
-#' @method summary enmtools.identity.test
-#' @method plot enmtools.identity.test
 #'
 #' @examples
 #' identity.test(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, ...)

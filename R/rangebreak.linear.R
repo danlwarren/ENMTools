@@ -14,11 +14,7 @@
 #'
 #' @keywords rangebreak, biogeography, barrier, enmtools, hypothesis testing
 #'
-#' @method print enmtools.rangebreak.linear
-#' @method summary enmtools.rangebreak.linear
-#' @method plot enmtools.rangebreak.linear
 #' @export rangebreak.linear
-#' @export rangebreak.linear.precheck
 #'
 #' @examples
 #' rangebreak.linear(ahli, allogus, env, type = "glm", nreps = 10, ...)

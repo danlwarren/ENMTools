@@ -5,13 +5,11 @@
 #' @param presence.points A data frame with sampled localities
 #' @param background.points A data frame with absence/pseudoabsence/background localities
 #' @param species.name A character vector with the species name
-#' @param models A list of models that are made for the species, which will
-#'    be stuffed in there as we go along
+#' @param models A list of models that are made for the species, which will be stuffed in there as we go along
+#' to pass the check.  This is used by internal enmtools functions to make sure the necessary data is present
+#' before processing anything.
 #'
 #' @export enmtools.species
-#' @method summary enmtools.species
-#' @method print enmtools.species
-#' @method plot enmtools.species
 
 
 enmtools.species <- function(range = NA, presence.points = NA, background.points = NA,
