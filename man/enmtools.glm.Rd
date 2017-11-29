@@ -29,3 +29,8 @@ enmtools.glm(species, env, f = NULL, test.prop = 0, eval = TRUE,
 \description{
 Takes an emtools.species object with presence and background points, and builds a GLM
 }
+\examples{
+data(euro.worldclim)
+data(iberolacerta.clade)
+enmtools.glm(iberolacerta.clade$species$monticola, env = euro.worldclim)
+}
