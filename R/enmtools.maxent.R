@@ -108,62 +108,62 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, report = 
 }
 
 # Summary for objects of class enmtools.maxent
-summary.enmtools.maxent <- function(this.maxent){
+summary.enmtools.maxent <- function(object, ...){
 
   cat("\n\nData table (top ten lines): ")
-  print(kable(head(this.maxent$analysis.df, 10)))
+  print(kable(head(object$analysis.df, 10)))
 
   cat("\n\nModel:  ")
-  print(summary(this.maxent$model))
+  print(summary(object$model))
 
   cat("\n\nModel fit (training data):  ")
-  print(this.maxent$training.evaluation)
+  print(object$training.evaluation)
 
   cat("\n\nEnvironment space model fit (training data):  ")
-  print(this.maxent$env.training.evaluation)
+  print(object$env.training.evaluation)
 
   cat("\n\nProportion of data wittheld for model fitting:  ")
-  cat(this.maxent$test.prop)
+  cat(object$test.prop)
 
   cat("\n\nModel fit (test data):  ")
-  print(this.maxent$test.evaluation)
+  print(object$test.evaluation)
 
   cat("\n\nEnvironment space model fit (test data):  ")
-  print(this.maxent$env.test.evaluation)
+  print(object$env.test.evaluation)
 
   cat("\n\nSuitability:  \n")
-  print(this.maxent$suitability)
+  print(object$suitability)
 
   cat("\n\nNotes:  \n")
-  print(this.maxent$notes)
+  print(object$notes)
 
-  plot(this.maxent)
+  plot(object)
 
 }
 
 # Print method for objects of class enmtools.maxent
-print.enmtools.maxent <- function(this.maxent){
+print.enmtools.maxent <- function(x, ...){
 
-  summary(this.maxent)
+  summary(x)
 
 }
 
 # Plot method for objects of class enmtools.maxent
-plot.enmtools.maxent <- function(this.maxent){
+plot.enmtools.maxent <- function(x, ...){
 
 
-  suit.points <- data.frame(rasterToPoints(this.maxent$suitability))
+  suit.points <- data.frame(rasterToPoints(x$suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
   suit.plot <- ggplot(data = suit.points, aes(y = Latitude, x = Longitude)) +
     geom_raster(aes(fill = Suitability)) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
-    geom_point(data = this.maxent$analysis.df[this.maxent$analysis.df$presence ==1,], aes(x = Longitude, y = Latitude),
+    geom_point(data = x$analysis.df[x$analysis.df$presence ==1,], aes(x = Longitude, y = Latitude),
                pch = 21, fill = "white", color = "black", size = 2)
 
-  if(!(all(is.na(this.maxent$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = this.maxent$test.data, aes(x = Longitude, y = Latitude),
+  if(!(all(is.na(x$test.data)))){
+    suit.plot <- suit.plot + geom_point(data = x$test.data, aes(x = Longitude, y = Latitude),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
 

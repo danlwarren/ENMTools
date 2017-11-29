@@ -9,20 +9,21 @@
 #' @param f A function to use for model fitting.  Only required for GLM models at the moment.
 #' @param width Width of the ribbon, in the same units as the occurrence points (e.g, decimal degrees)
 #' @param nreps Number of replicates to perform
+#' @param nback Number of background points for models
 #' @param ... Additional arguments to be passed to model fitting functions.
 #'
 #' @return results A list containing a replicates, models for the empirical data, and summary statistics and plots.
 #'
 #' @keywords rangebreak, biogeography, barrier, enmtools, hypothesis testing
 #'
+#' @method print enmtools.rangebreak.ribbon
+#' @method summary enmtools.rangebreak.ribbon
+#' @method plot enmtools.rangebreak.ribbon
 #' @export rangebreak.ribbon
 #' @export rangebreak.ribbon.precheck
-#' @method print rangebreak.ribbon
-#' @method summary rangebreak.ribbon
-#' @method plot rangebreak.ribbon
 #'
 #' @examples
-#' rangebreak.ribbon(ahli, allogus, env, type = "glm", nreps = 10, ...)
+#' rangebreak.ribbon(ahli, allogus, env, type = "glm", nreps = 10)
 #'
 
 rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL, width = 1, nreps = 99,  nback = 1000, ...){
@@ -431,7 +432,7 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
                  env.i.plot.outside.vs.ribbon = env.i.plot.outside.vs.ribbon,
                  env.cor.plot.outside.vs.ribbon = env.cor.plot.outside.vs.ribbon)
 
-  class(output) <- "rangebreak.ribbon"
+  class(output) <- "enmtools.rangebreak.ribbon"
 
   return(output)
 
@@ -544,63 +545,63 @@ rangebreak.ribbon.precheck <- function(species.1, species.2, ribbon, env, type, 
 }
 
 
-summary.rangebreak.ribbon <- function(rb){
+summary.enmtools.rangebreak.ribbon <- function(object, ...){
 
-  cat(paste("\n\n", rb$description))
+  cat(paste("\n\n", object$description))
 
   cat("\n\nrangebreak test p-values...\n")
   cat("\nSpecies 1 vs. Species 2:\n")
-  print(rb$p.values.sp1.vs.sp2)
+  print(object$p.values.sp1.vs.sp2)
   cat("\nSpecies 1 vs. Ribbon:\n")
-  print(rb$p.values.sp1.vs.ribbon)
+  print(object$p.values.sp1.vs.ribbon)
   cat("\nSpecies 2 vs. Ribbon:\n")
-  print(rb$p.values.sp2.vs.ribbon)
+  print(object$p.values.sp2.vs.ribbon)
   cat("\nOutside vs. Ribbon:\n")
-  print(rb$p.values.outside.vs.ribbon)
+  print(object$p.values.outside.vs.ribbon)
 
   cat("\n\nReplicates:\n")
   cat("\nSpecies 1 vs. Species 2:\n")
-  print(rb$reps.overlap.sp1.vs.sp2)
+  print(object$reps.overlap.sp1.vs.sp2)
   cat("\nSpecies 1 vs. Ribbon:\n")
-  print(rb$reps.overlap.sp1.vs.ribbon)
+  print(object$reps.overlap.sp1.vs.ribbon)
   cat("\nSpecies 2 vs. Ribbon:\n")
-  print(rb$reps.overlap.sp2.vs.ribbon)
+  print(object$reps.overlap.sp2.vs.ribbon)
   cat("\nOutside vs. Ribbon:\n")
-  print(rb$reps.overlap.outside.vs.ribbon)
+  print(object$reps.overlap.outside.vs.ribbon)
 
-  plot(rb)
-
-}
-
-print.rangebreak.ribbon <- function(rb){
-
-  summary(rb)
+  plot(object)
 
 }
 
-plot.rangebreak.ribbon <- function(rb){
+print.enmtools.rangebreak.ribbon <- function(x, ...){
 
-  #   rb.raster <- rb$empirical.species.1.model$suitability
-  #   rb.raster[!is.na(rb.raster)] <- 1
-  #   plot(rb.raster)
-  #   for(i in 1:nrow(rb$lines.df)){
-  #     abline(rb$lines.df[i,2], rb$lines.df[i,1])
+  summary(x)
+
+}
+
+plot.enmtools.rangebreak.ribbon <- function(x, ...){
+
+  #   x.raster <- x$empirical.species.1.model$suitability
+  #   x.raster[!is.na(x.raster)] <- 1
+  #   plot(x.raster)
+  #   for(i in 1:nrow(x$lines.df)){
+  #     abline(x$lines.df[i,2], x$lines.df[i,1])
   #   }
 
-  grid.arrange(rb$d.plot.sp1.vs.sp2, rb$env.d.plot.sp1.vs.sp2,
-               rb$i.plot.sp1.vs.sp2, rb$env.i.plot.sp1.vs.sp2,
-               rb$cor.plot.sp1.vs.sp2, rb$env.cor.plot.sp1.vs.sp2, ncol = 2)
+  grid.arrange(x$d.plot.sp1.vs.sp2, x$env.d.plot.sp1.vs.sp2,
+               x$i.plot.sp1.vs.sp2, x$env.i.plot.sp1.vs.sp2,
+               x$cor.plot.sp1.vs.sp2, x$env.cor.plot.sp1.vs.sp2, ncol = 2)
 
-  grid.arrange(rb$d.plot.sp1.vs.ribbon, rb$env.d.plot.sp1.vs.ribbon,
-               rb$i.plot.sp1.vs.ribbon, rb$env.i.plot.sp1.vs.ribbon,
-               rb$cor.plot.sp1.vs.ribbon, rb$env.cor.plot.sp1.vs.ribbon, ncol = 2)
+  grid.arrange(x$d.plot.sp1.vs.ribbon, x$env.d.plot.sp1.vs.ribbon,
+               x$i.plot.sp1.vs.ribbon, x$env.i.plot.sp1.vs.ribbon,
+               x$cor.plot.sp1.vs.ribbon, x$env.cor.plot.sp1.vs.ribbon, ncol = 2)
 
-  grid.arrange(rb$d.plot.sp2.vs.ribbon, rb$env.d.plot.sp2.vs.ribbon,
-               rb$i.plot.sp2.vs.ribbon, rb$env.i.plot.sp2.vs.ribbon,
-               rb$cor.plot.sp2.vs.ribbon, rb$env.cor.plot.sp2.vs.ribbon, ncol = 2)
+  grid.arrange(x$d.plot.sp2.vs.ribbon, x$env.d.plot.sp2.vs.ribbon,
+               x$i.plot.sp2.vs.ribbon, x$env.i.plot.sp2.vs.ribbon,
+               x$cor.plot.sp2.vs.ribbon, x$env.cor.plot.sp2.vs.ribbon, ncol = 2)
 
-  grid.arrange(rb$d.plot.outside.vs.ribbon, rb$env.d.plot.outside.vs.ribbon,
-               rb$i.plot.outside.vs.ribbon, rb$env.i.plot.outside.vs.ribbon,
-               rb$cor.plot.outside.vs.ribbon, rb$env.cor.plot.outside.vs.ribbon, ncol = 2)
+  grid.arrange(x$d.plot.outside.vs.ribbon, x$env.d.plot.outside.vs.ribbon,
+               x$i.plot.outside.vs.ribbon, x$env.i.plot.outside.vs.ribbon,
+               x$cor.plot.outside.vs.ribbon, x$env.cor.plot.outside.vs.ribbon, ncol = 2)
 }
 

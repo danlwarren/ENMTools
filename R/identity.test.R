@@ -15,9 +15,9 @@
 #'
 #' @export identity.test
 #' @export identity.precheck
-#' @method print identity.test
-#' @method summary identity.test
-#' @method plot identity.test
+#' @method print enmtools.identity.test
+#' @method summary enmtools.identity.test
+#' @method plot enmtools.identity.test
 #'
 #' @examples
 #' identity.test(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, ...)
@@ -176,7 +176,7 @@ identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99,
                  env.i.plot = env.i.plot,
                  env.cor.plot = env.cor.plot)
 
-  class(output) <- "identity.test"
+  class(output) <- "enmtools.identity.test"
 
   return(output)
 
@@ -255,29 +255,29 @@ identity.precheck <- function(species.1, species.2, env, type, f, nreps){
 }
 
 
-summary.identity.test <- function(id){
+summary.enmtools.identity.test <- function(object, ...){
 
-  cat(paste("\n\n", id$description))
+  cat(paste("\n\n", object$description))
 
-  cat("\n\nIdentity test p-values:\n")
-  print(id$p.values)
+  cat("\n\nobjectentity test p-values:\n")
+  print(object$p.values)
 
   cat("\n\nReplicates:\n")
-  print(kable(head(id$reps.overlap)))
+  print(kable(head(object$reps.overlap)))
 
-  plot(id)
-
-}
-
-print.identity.test <- function(id){
-
-  summary(id)
+  plot(object)
 
 }
 
-plot.identity.test <- function(id){
-  grid.arrange(id$d.plot, id$env.d.plot,
-               id$i.plot, id$env.i.plot,
-               id$cor.plot, id$env.cor.plot, ncol = 2)
+print.enmtools.identity.test <- function(x, ...){
+
+  summary(x)
+
+}
+
+plot.enmtools.identity.test <- function(x, ...){
+  grid.arrange(x$d.plot, x$env.d.plot,
+               x$i.plot, x$env.i.plot,
+               x$cor.plot, x$env.cor.plot, ncol = 2)
 }
 

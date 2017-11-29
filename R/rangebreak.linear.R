@@ -7,17 +7,18 @@
 #' @param type The type of model to construct, currently accepts "glm", "mx", "bc", "gam", or "dm"
 #' @param f A function to use for model fitting.  Only required for GLM models at the moment.
 #' @param nreps Number of replicates to perform
+#' @param nback Number of background points for models
 #' @param ... Additional arguments to be passed to model fitting functions.
 #'
 #' @return results A list containing a replicates, models for the empirical data, and summary statistics and plots.
 #'
 #' @keywords rangebreak, biogeography, barrier, enmtools, hypothesis testing
 #'
+#' @method print enmtools.rangebreak.linear
+#' @method summary enmtools.rangebreak.linear
+#' @method plot enmtools.rangebreak.linear
 #' @export rangebreak.linear
 #' @export rangebreak.linear.precheck
-#' @method print rangebreak.linear
-#' @method summary rangebreak.linear
-#' @method plot rangebreak.linear
 #'
 #' @examples
 #' rangebreak.linear(ahli, allogus, env, type = "glm", nreps = 10, ...)
@@ -206,7 +207,7 @@ rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps =
                  env.i.plot = env.i.plot,
                  env.cor.plot = env.cor.plot)
 
-  class(output) <- "rangebreak.linear"
+  class(output) <- "enmtools.rangebreak.linear"
 
   return(output)
 
@@ -286,37 +287,37 @@ rangebreak.linear.precheck <- function(species.1, species.2, env, type, f, nreps
 }
 
 
-summary.rangebreak.linear <- function(rb){
+summary.enmtools.rangebreak.linear <- function(object, ...){
 
-  cat(paste("\n\n", rb$description))
+  cat(paste("\n\n", object$description))
 
   cat("\n\nrangebreak test p-values:\n")
-  print(rb$p.values)
+  print(object$p.values)
 
   cat("\n\nReplicates:\n")
-  print(kable(head(rb$reps.overlap)))
+  print(kable(head(object$reps.overlap)))
 
-  plot(rb)
-
-}
-
-print.rangebreak.linear <- function(rb){
-
-  summary(rb)
+  plot(object)
 
 }
 
-plot.rangebreak.linear <- function(rb){
+print.enmtools.rangebreak.linear <- function(x, ...){
 
-  rb.raster <- rb$empirical.species.1.model$suitability
-  rb.raster[!is.na(rb.raster)] <- 1
-  plot(rb.raster)
-  for(i in 1:nrow(rb$lines.df)){
-    abline(rb$lines.df[i,2], rb$lines.df[i,1])
+  summary(x)
+
+}
+
+plot.enmtools.rangebreak.linear <- function(x, ...){
+
+  x.raster <- x$empirical.species.1.model$suitability
+  x.raster[!is.na(x.raster)] <- 1
+  plot(x.raster)
+  for(i in 1:nrow(x$lines.df)){
+    abline(x$lines.df[i,2], x$lines.df[i,1])
   }
 
-  grid.arrange(rb$d.plot, rb$env.d.plot,
-               rb$i.plot, rb$env.i.plot,
-               rb$cor.plot, rb$env.cor.plot, ncol = 2)
+  grid.arrange(x$d.plot, x$env.d.plot,
+               x$i.plot, x$env.i.plot,
+               x$cor.plot, x$env.cor.plot, ncol = 2)
 }
 

@@ -58,38 +58,38 @@ enmtools.species <- function(range = NA, presence.points = NA, background.points
 }
 
 
-summary.enmtools.species <- function(this.species){
-  stopifnot(inherits(this.species, "enmtools.species"))
+summary.enmtools.species <- function(object, ...){
+  stopifnot(inherits(object, "enmtools.species"))
 
-  if(class(this.species$range) == "RasterLayer"){
+  if(class(object$range) == "RasterLayer"){
     cat("\n\nRange raster: \n")
-    print(this.species$range)
+    print(object$range)
   } else {
     cat("\n\nRange raster not defined.")
   }
 
-  if(class(this.species$presence.points) %in% c("data.frame", "matrix")){
+  if(class(object$presence.points) %in% c("data.frame", "matrix")){
     cat("\n\nPresence points (first ten only): ")
-    print(kable(head(this.species$presence.points, 10)))
+    print(kable(head(object$presence.points, 10)))
   } else{
     cat("\n\nPresence points not defined.")
   }
 
-  if(class(this.species$background.points)  %in% c("data.frame", "matrix")){
+  if(class(object$background.points)  %in% c("data.frame", "matrix")){
     cat("\n\nBackground points (first ten only): ")
-    print(kable(head(this.species$background.points, 10)))
+    print(kable(head(object$background.points, 10)))
   } else{
     cat("\n\nBackground points not defined.")
   }
 
-  if(!is.na(this.species$models)){
-    for(i in 1:length(this.species$models)){
-      print(summary(this.species$models[[i]]))
+  if(!is.na(object$models)){
+    for(i in 1:length(object$models)){
+      print(summary(object$models[[i]]))
     }
   }
 
-  if(class(this.species$species.name) == "character"){
-    cat(paste("\n\nSpecies name: ", this.species$species.name))
+  if(class(object$species.name) == "character"){
+    cat(paste("\n\nSpecies name: ", object$species.name))
   } else {
     cat("\n\nSpecies name not defined.")
   }
@@ -99,30 +99,30 @@ summary.enmtools.species <- function(this.species){
 }
 
 
-plot.enmtools.species <- function(this.species){
-  stopifnot(inherits(this.species, "enmtools.species"))
+plot.enmtools.species <- function(x, ...){
+  stopifnot(inherits(x, "enmtools.species"))
 
-  if(class(this.species$range) == "RasterLayer"){
-    plot(this.species$range)
+  if(class(x$range) == "RasterLayer"){
+    plot(x$range)
   }
 
-  if(class(this.species$background.points)  %in% c("data.frame", "matrix")){
-    points(this.species$background.points[,1:2], pch = 4, col = "red")
+  if(class(x$background.points)  %in% c("data.frame", "matrix")){
+    points(x$background.points[,1:2], pch = 4, col = "red")
   }
 
-  if(class(this.species$presence.points) %in% c("data.frame", "matrix")){
-    points(this.species$presence.points[,1:2], pch = 16, col = "black")
+  if(class(x$presence.points) %in% c("data.frame", "matrix")){
+    points(x$presence.points[,1:2], pch = 16, col = "black")
   }
 
-  if(class(this.species$species.name) == "character"){
-    title(this.species$species.name)
+  if(class(x$species.name) == "character"){
+    title(x$species.name)
   }
 
 }
 
-print.enmtools.species <- function(this.species){
+print.enmtools.species <- function(x, ...){
 
-  summary(this.species)
+  summary(x)
 
 }
 

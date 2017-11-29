@@ -4,8 +4,8 @@
 \alias{rangebreak.linear}
 \title{rangebreak.linear Conduct a linear rangebreak test as described in Glor and Warren 2011.}
 \usage{
-\method{print}{rangebreak.linear}(species.1, species.2, env, type, f = NULL,
-  nreps = 99, nback = 1000, ...)
+\method{print}{enmtools.rangebreak.linear}(species.1, species.2, env, type,
+  f = NULL, nreps = 99, nback = 1000, ...)
 }
 \arguments{
 \item{species.1}{An emtools.species object}
@@ -19,6 +19,8 @@
 \item{f}{A function to use for model fitting.  Only required for GLM models at the moment.}
 
 \item{nreps}{Number of replicates to perform}
+
+\item{nback}{Number of background points for models}
 
 \item{...}{Additional arguments to be passed to model fitting functions.}
 }

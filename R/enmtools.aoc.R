@@ -66,7 +66,7 @@ enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL
   if(overlap.source == "range"){
 
     # Do pairwise for all species
-    overlap <- sapply(clade$species, function(x) sapply(clade$species, function(y) range.overlap(x,y)))
+    overlap <- sapply(clade$species, function(x) sapply(clade$species, function(y) geog.range.overlap(x,y)))
   }
 
   # Presence points
@@ -140,26 +140,26 @@ enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL
   return(output)
 }
 
-summary.enmtools.aoc <- function(this.aoc){
+summary.enmtools.aoc <- function(object, ...){
 
   cat("\n\nAge-Overlap Correlation test\n\n")
-  cat(paste(length(this.aoc$reps), "replicates", "\n\n"))
+  cat(paste(length(object$reps), "replicates", "\n\n"))
 
   cat("p values:\n")
-  print(this.aoc$p.values)
+  print(object$p.values)
 
-  plot(this.aoc)
+  plot(object)
 
 }
 
-print.enmtools.aoc <- function(this.aoc){
-  summary(this.aoc)
+print.enmtools.aoc <- function(x, ...){
+  summary(x)
 }
 
-plot.enmtools.aoc <- function(this.aoc){
+plot.enmtools.aoc <- function(x, ...){
 
-  grid.arrange(this.aoc$regressions.plot, this.aoc$intercept.plot,
-               this.aoc$slope.plot, ncol = 2)
+  grid.arrange(x$regressions.plot, x$intercept.plot,
+               x$slope.plot, ncol = 2)
 
 }
 

@@ -1,5 +1,7 @@
 #' Checking compliance for an object of class enmtools.species.
 #'
+#' @param this.species An enmtools.species object to be checked.
+#'
 #' Checks for existence and proper class of:
 #' @param range A raster or SpatialPolygon with the actual range they occur in
 #' @param presence.points A data frame with sampled localities.  If a matrix is passed, it will be cast to a data frame.

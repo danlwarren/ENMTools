@@ -7,6 +7,10 @@
 check.species(this.species)
 }
 \arguments{
+\item{this.species}{An enmtools.species object to be checked.
+
+Checks for existence and proper class of:}
+
 \item{range}{A raster or SpatialPolygon with the actual range they occur in}
 
 \item{presence.points}{A data frame with sampled localities.  If a matrix is passed, it will be cast to a data frame.}
@@ -20,5 +24,5 @@ to pass the check.  This is used by internal enmtools functions to make sure the
 before processing anything.}
 }
 \description{
-Checks for existence and proper class of:
+Checking compliance for an object of class enmtools.species.
 }

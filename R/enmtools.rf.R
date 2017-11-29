@@ -127,66 +127,66 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
 }
 
 # Summary for objects of class enmtools.rf
-summary.enmtools.rf <- function(this.rf){
+summary.enmtools.rf <- function(object, ...){
 
   cat("\n\nFormula:  ")
-  print(this.rf$formula)
+  print(object$formula)
 
   cat("\n\nData table (top ten lines): ")
-  print(kable(head(this.rf$analysis.df, 10)))
+  print(kable(head(object$analysis.df, 10)))
 
   cat("\n\nModel:  ")
-  print(summary(this.rf$model))
+  print(summary(object$model))
 
   cat("\n\nModel fit (training data):  ")
-  print(this.rf$training.evaluation)
+  print(object$training.evaluation)
 
   cat("\n\nEnvironment space model fit (training data):  ")
-  print(this.rf$env.training.evaluation)
+  print(object$env.training.evaluation)
 
   cat("\n\nProportion of data wittheld for model fitting:  ")
-  cat(this.rf$test.prop)
+  cat(object$test.prop)
 
   cat("\n\nModel fit (test data):  ")
-  print(this.rf$test.evaluation)
+  print(object$test.evaluation)
 
   cat("\n\nEnvironment space model fit (test data):  ")
-  print(this.rf$env.test.evaluation)
+  print(object$env.test.evaluation)
 
   cat("\n\nSuitability:  \n")
-  print(this.rf$suitability)
+  print(object$suitability)
 
   cat("\n\nNotes:  \n")
-  this.rf$notes
+  object$notes
 
-  plot(this.rf)
+  plot(object)
 
 }
 
 # Print method for objects of class enmtools.rf
-print.enmtools.rf <- function(this.rf){
+print.enmtools.rf <- function(x, ...){
 
-  print(summary(this.rf))
+  print(summary(x))
 
 }
 
 
 # Plot method for objects of class enmtools.rf
-plot.enmtools.rf <- function(this.rf){
+plot.enmtools.rf <- function(x, ...){
 
 
-  suit.points <- data.frame(rasterToPoints(this.rf$suitability))
+  suit.points <- data.frame(rasterToPoints(x$suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
   suit.plot <- ggplot(data = suit.points, aes(y = Latitude, x = Longitude)) +
     geom_raster(aes(fill = Suitability)) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
-    geom_point(data = this.rf$analysis.df[this.rf$analysis.df$presence == 1,], aes(x = Longitude, y = Latitude),
+    geom_point(data = x$analysis.df[x$analysis.df$presence == 1,], aes(x = Longitude, y = Latitude),
                pch = 21, fill = "white", color = "black", size = 2)
 
-  if(!(all(is.na(this.rf$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = this.rf$test.data, aes(x = Longitude, y = Latitude),
+  if(!(all(is.na(x$test.data)))){
+    suit.plot <- suit.plot + geom_point(data = x$test.data, aes(x = Longitude, y = Latitude),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
 

@@ -231,34 +231,34 @@ ecospat.id.precheck <- function(species.1, species.2, env, nreps, layers){
 }
 
 
-summary.ecospat.id.test <- function(id){
-  cat(paste("\n\n", id$description))
+summary.ecospat.id.test <- function(object, ...){
+  cat(paste("\n\n", object$description))
 
-  # print(kable(head(id$sp1.env)))
-  # print(kable(head(id$sp1.bg.env)))
-  # print(kable(head(id$sp2.env)))
-  # print(kable(head(id$sp2.bg.env)))
-  # print(kable(head(id$background.env)))
+  # print(kable(head(object$sp1.env)))
+  # print(kable(head(object$sp1.bg.env)))
+  # print(kable(head(object$sp2.env)))
+  # print(kable(head(object$sp2.bg.env)))
+  # print(kable(head(object$background.env)))
 
   cat("\n\necospat.id test empirical overlaps:\n")
-  print(id$test.results$obs)
+  print(object$test.results$obs)
 
   cat("\n\necospat.id test p-values:\n")
-  print(id$p.values)
+  print(object$p.values)
 
-  plot(id)
-
-}
-
-print.ecospat.id.test <- function(id){
-
-  print(summary(id))
+  plot(object)
 
 }
 
-plot.ecospat.id.test <- function(id){
-  grid.arrange(id$d.plot, id$i.plot, nrow = 2)
-  grid.arrange(id$sp1.bg.plot, id$sp2.bg.plot,
-               id$sp1.env.plot, id$sp2.env.plot,
-               id$sp1.env.plot.corr, id$sp2.env.plot.corr, ncol = 2)
+print.ecospat.id.test <- function(x, ...){
+
+  print(summary(x))
+
+}
+
+plot.ecospat.id.test <- function(x, ...){
+  grid.arrange(x$d.plot, x$i.plot, nrow = 2)
+  grid.arrange(x$sp1.bg.plot, x$sp2.bg.plot,
+               x$sp1.env.plot, x$sp2.env.plot,
+               x$sp1.env.plot.corr, x$sp2.env.plot.corr, ncol = 2)
 }

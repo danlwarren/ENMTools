@@ -108,63 +108,63 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
 
 
 # Summary for objects of class enmtools.bc
-summary.enmtools.bc <- function(this.bc){
+summary.enmtools.bc <- function(object, ...){
 
   cat("\n\nData table (top ten lines): ")
-  print(kable(head(this.bc$analysis.df, 10)))
+  print(kable(head(object$analysis.df, 10)))
 
   cat("\n\nModel:  ")
-  print(this.bc$model)
+  print(object$model)
 
   cat("\n\nModel fit (training data):  ")
-  print(this.bc$training.evaluation)
+  print(object$training.evaluation)
 
   cat("\n\nEnvironment space model fit (training data):  ")
-  print(this.bc$env.training.evaluation)
+  print(object$env.training.evaluation)
 
   cat("\n\nProportion of data wittheld for model fitting:  ")
-  cat(this.bc$test.prop)
+  cat(object$test.prop)
 
   cat("\n\nModel fit (test data):  ")
-  print(this.bc$test.evaluation)
+  print(object$test.evaluation)
 
   cat("\n\nEnvironment space model fit (test data):  ")
-  print(this.bc$env.test.evaluation)
+  print(object$env.test.evaluation)
 
   cat("\n\nSuitability:  \n")
-  print(this.bc$suitability)
+  print(object$suitability)
 
   cat("\n\nNotes:  \n")
-  print(this.bc$notes)
+  print(object$notes)
 
   #Note to self: plot command HAS to come last!
-  plot(this.bc)
+  plot(object)
 
 }
 
 #Print method for objects of class enmtools.bc
-print.enmtools.bc <- function(this.bc){
+print.enmtools.bc <- function(x, ...){
 
-  print(summary(this.bc))
+  print(summary(x))
 
 }
 
 # Plot method for objects of class enmtools.bc
-plot.enmtools.bc <- function(this.bc){
+plot.enmtools.bc <- function(x, ...){
 
 
-  suit.points <- data.frame(rasterToPoints(this.bc$suitability))
+  suit.points <- data.frame(rasterToPoints(x$suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
   suit.plot <- ggplot(data = suit.points, aes(y = Latitude, x = Longitude)) +
     geom_raster(aes(fill = Suitability)) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
-    geom_point(data = this.bc$analysis.df, aes(x = Longitude, y = Latitude),
+    geom_point(data = x$analysis.df, aes(x = Longitude, y = Latitude),
                pch = 21, fill = "white", color = "black", size = 2)
 
-  if(!(all(is.na(this.bc$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = this.bc$test.data, aes(x = Longitude, y = Latitude),
+  if(!(all(is.na(x$test.data)))){
+    suit.plot <- suit.plot + geom_point(data = x$test.data, aes(x = Longitude, y = Latitude),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
 

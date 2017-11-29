@@ -45,29 +45,29 @@ enmtools.clade <- function(species = NA, tree = NA, root.species = NA){
    return(output)
 }
 
-summary.enmtools.clade <- function(this.clade){
+summary.enmtools.clade <- function(object, ...){
 
-  this.clade <- check.clade(this.clade)
+  object <- check.clade(object)
 
-  cat(paste("\n\nAn enmtools.clade object with", length(this.clade$species), "species\n"))
+  cat(paste("\n\nAn enmtools.clade object with", length(object$species), "species\n"))
 
   cat("\nSpecies names: \n")
-  cat(paste("\t", lapply(this.clade$species, function(x) x$species.name)))
+  cat(paste("\t", lapply(object$species, function(object) object$species.name)))
 
   cat("\n\nTree: \n")
-  print(this.clade$tree)
+  print(object$tree)
 
   cat("\n\nData Summary: \n")
-  print(kable(this.clade$summary))
+  print(kable(object$summary))
 
   cat("\n")
 }
 
-plot.enmtools.clade <- function(this.clade){
+plot.enmtools.clade <- function(x, ...){
 
   # Figure out how many plots you need.  We'll do one for each species (up to 15)
   # and one for the tree.
-  n.plot <- min(16, length(this.clade$species))
+  n.plot <- min(16, length(x$species))
 
   # We'll use this to keep track of how many plots we've made
   plotted <- 0
@@ -80,13 +80,13 @@ plot.enmtools.clade <- function(this.clade){
   par(mfrow = c(n.rows, n.cols))
 
   for(i in 1:n.plot){
-    plot(this.clade$species[[i]])
+    plot(x$species[[i]])
   }
 
   par(mfrow = c(1,1))
 
 }
 
-print.enmtools.clade <- function(this.clade){
-  summary(this.clade)
+print.enmtools.clade <- function(x, ...){
+  summary(x)
 }

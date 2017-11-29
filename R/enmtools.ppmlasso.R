@@ -154,65 +154,65 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
 }
 
 # Summary for objects of class enmtools.glm
-summary.enmtools.ppmlasso <- function(this.ppmlasso){
+summary.enmtools.ppmlasso <- function(object, ...){
 
   cat("\n\nFormula:  ")
-  print(this.ppmlasso$formula)
+  print(object$formula)
 
   cat("\n\nData table (top ten lines): ")
-  print(kable(head(this.ppmlasso$analysis.df, 10)))
+  print(kable(head(object$analysis.df, 10)))
 
   cat("\n\nModel:  ")
-  print(summary(this.ppmlasso$model))
+  print(summary(object$model))
 
   # ppmlasso doesn't really have a pretty summary at the moment. Might have to come up with something ourselves
   # cat("\n\nModel fit (training data):  ")
-  # print(this.ppmlasso$training.evaluation)
+  # print(object$training.evaluation)
 
   cat("\n\nEnvironment space model fit (training data):  ")
-  print(this.ppmlasso$env.training.evaluation)
+  print(object$env.training.evaluation)
 
   cat("\n\nProportion of data wittheld for model fitting:  ")
-  cat(this.ppmlasso$test.prop)
+  cat(object$test.prop)
 
   cat("\n\nModel fit (test data):  ")
-  print(this.ppmlasso$test.evaluation)
+  print(object$test.evaluation)
 
   cat("\n\nEnvironment space model fit (test data):  ")
-  print(this.ppmlasso$env.test.evaluation)
+  print(object$env.test.evaluation)
 
   cat("\n\nSuitability:  \n")
-  print(this.ppmlasso$suitability)
+  print(object$suitability)
 
   cat("\n\nNotes:  \n")
-  this.ppmlasso$notes
+  object$notes
 
-  plot(this.ppmlasso)
+  plot(object)
 
 }
 
 # Print method for objects of class enmtools.ppmlasso
-print.enmtools.ppmlasso <- function(this.ppmlasso){
+print.enmtools.ppmlasso <- function(x, ...){
 
-  print(summary(this.ppmlasso))
+  print(summary(x))
 
 }
 
 # Plot method for objects of class enmtools.ppmlasso
-plot.enmtools.ppmlasso <- function(this.ppmlasso, trans_col = NULL){
+plot.enmtools.ppmlasso <- function(x, trans_col = NULL, ...){
 
 
-  suit.points <- data.frame(rasterToPoints(this.ppmlasso$suitability))
+  suit.points <- data.frame(rasterToPoints(x$suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
   suit.plot <- ggplot(data = suit.points, aes(y = Latitude, x = Longitude)) +
     geom_raster(aes(fill = Suitability)) +
     coord_fixed() + theme_classic() +
-    geom_point(data = this.ppmlasso$analysis.df[this.ppmlasso$analysis.df$presence == 1,], aes(x = Longitude, y = Latitude),
+    geom_point(data = x$analysis.df[x$analysis.df$presence == 1,], aes(x = Longitude, y = Latitude),
                pch = 21, fill = "white", color = "black", size = 2)
 
-  if(!(all(is.na(this.ppmlasso$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = this.ppmlasso$test.data, aes(x = Longitude, y = Latitude),
+  if(!(all(is.na(x$test.data)))){
+    suit.plot <- suit.plot + geom_point(data = x$test.data, aes(x = Longitude, y = Latitude),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
   if(!is.null(trans_col)) {

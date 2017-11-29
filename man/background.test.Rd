@@ -8,8 +8,8 @@ This test can either be run as an asymmetric test (species.1 vs background of sp
 constructed from the background points supplied for each species.  For Maxent, the replicates will be constructed
 from the range rasters stored in the enmtools.species objects.}
 \usage{
-\method{print}{background.test}(species.1, species.2, env, type, f = NULL,
-  nreps = 99, test.type = "asymmetric", nback = 1000, ...)
+\method{print}{enmtools.background.test}(species.1, species.2, env, type,
+  f = NULL, nreps = 99, test.type = "asymmetric", nback = 1000, ...)
 }
 \arguments{
 \item{species.1}{An emtools.species object from which presence points (asymmetric) or background (symmetric) will be sampled.}
@@ -23,6 +23,10 @@ from the range rasters stored in the enmtools.species objects.}
 \item{f}{A function to use for model fitting.  Only required for GLM models at the moment.}
 
 \item{nreps}{Number of replicates to perform}
+
+\item{test.type}{Controls whether the background test will be "symmetric" or "asymmetric"}
+
+\item{nback}{Number of background points for models}
 
 \item{...}{Additional arguments to be passed to model fitting functions.}
 }

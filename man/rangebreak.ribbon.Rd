@@ -4,8 +4,8 @@
 \alias{rangebreak.ribbon}
 \title{rangebreak.ribbon Conduct a ribbon rangebreak test as described in Glor and Warren 2011.}
 \usage{
-\method{print}{rangebreak.ribbon}(species.1, species.2, ribbon, env, type,
-  f = NULL, width = 1, nreps = 99, nback = 1000, ...)
+\method{print}{enmtools.rangebreak.ribbon}(species.1, species.2, ribbon, env,
+  type, f = NULL, width = 1, nreps = 99, nback = 1000, ...)
 }
 \arguments{
 \item{species.1}{An emtools.species object}
@@ -24,6 +24,8 @@
 
 \item{nreps}{Number of replicates to perform}
 
+\item{nback}{Number of background points for models}
+
 \item{...}{Additional arguments to be passed to model fitting functions.}
 }
 \value{
@@ -33,7 +35,7 @@ results A list containing a replicates, models for the empirical data, and summa
 rangebreak.ribbon Conduct a ribbon rangebreak test as described in Glor and Warren 2011.
 }
 \examples{
-rangebreak.ribbon(ahli, allogus, env, type = "glm", nreps = 10, ...)
+rangebreak.ribbon(ahli, allogus, env, type = "glm", nreps = 10)
 
 }
 \keyword{barrier,}

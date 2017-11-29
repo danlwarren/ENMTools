@@ -7,6 +7,7 @@
 #' @param type The type of model to construct, currently accepts "glm", "mx", "bc", "gam", or "dm"
 #' @param f A function to use for model fitting.  Only required for GLM models at the moment.
 #' @param nreps Number of replicates to perform
+#' @param nback Number of background points for models
 #' @param ... Additional arguments to be passed to model fitting functions.
 #'
 #' @return results A list containing a replicates, models for the empirical data, and summary statistics and plots.
@@ -15,9 +16,9 @@
 #'
 #' @export rangebreak.blob
 #' @export rangebreak.blob.precheck
-#' @method print rangebreak.blob
-#' @method summary rangebreak.blob
-#' @method plot rangebreak.blob
+#' @method print enmtools.rangebreak.blob
+#' @method summary enmtools.rangebreak.blob
+#' @method plot enmtools.rangebreak.blob
 #'
 #' @examples
 #' rangebreak.blob(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, ...)
@@ -195,7 +196,7 @@ rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 9
                  env.i.plot = env.i.plot,
                  env.cor.plot = env.cor.plot)
 
-  class(output) <- "rangebreak.blob"
+  class(output) <- "enmtools.rangebreak.blob"
 
   return(output)
 
@@ -274,34 +275,34 @@ rangebreak.blob.precheck <- function(species.1, species.2, env, type, f, nreps){
 }
 
 
-summary.rangebreak.blob <- function(rb){
+summary.enmtools.rangebreak.blob <- function(object, ...){
 
-  cat(paste("\n\n", rb$description))
+  cat(paste("\n\n", object$description))
 
   cat("\n\nrangebreak test p-values:\n")
-  print(rb$p.values)
+  print(object$p.values)
 
   cat("\n\nReplicates:\n")
-  print(kable(head(rb$reps.overlap)))
+  print(kable(head(object$reps.overlap)))
 
-  plot(rb)
-
-}
-
-print.rangebreak.blob <- function(rb){
-
-  summary(rb)
+  plot(object)
 
 }
 
-plot.rangebreak.blob <- function(rb){
+print.enmtools.rangebreak.blob <- function(x, ...){
 
-  #   rb.raster <- rb$empirical.species.1.model$suitability
-  #   rb.raster[!is.na(rb.raster)] <- 1
-  #   plot(rb.raster)
+  summary(x)
 
-  grid.arrange(rb$d.plot, rb$env.d.plot,
-               rb$i.plot, rb$env.i.plot,
-               rb$cor.plot, rb$env.cor.plot, ncol = 2)
+}
+
+plot.enmtools.rangebreak.blob <- function(x, ...){
+
+  #   x.raster <- x$empirical.species.1.model$suitability
+  #   x.raster[!is.na(x.raster)] <- 1
+  #   plot(x.raster)
+
+  grid.arrange(x$d.plot, x$env.d.plot,
+               x$i.plot, x$env.i.plot,
+               x$cor.plot, x$env.cor.plot, ncol = 2)
 }
 
