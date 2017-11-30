@@ -69,7 +69,7 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
 
   suitability <- predict(env, this.dm, type = "response")
 
-  output <- list(species.names = species$species.name,
+  output <- list(species.name = species$species.name,
                  analysis.df = species$presence.points[,1:2],
                  test.data = test.data,
                  test.prop = test.prop,
