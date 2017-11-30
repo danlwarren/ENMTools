@@ -94,9 +94,3 @@ export(visualize.enm)
 export(visualize.overlap)
 importFrom(ppmlasso,ppmlasso)
 importFrom(raster,extract)
-importFrom("graphics", "abline", "par", "plot", "plot.new", "points",
-             "title")
-importFrom("stats", "as.formula", "complete.cases", "cor",
-             "delete.response", "glm", "lm", "predict", "rbinom",
-             "reformulate", "runif", "sd", "terms")
-importFrom("utils", "combn", "head", "stack")

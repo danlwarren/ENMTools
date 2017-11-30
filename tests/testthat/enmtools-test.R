@@ -71,7 +71,6 @@ expect_species(bonnali)
 #'
 #'
 
-
 iberolacerta.clade <- enmtools.clade(species = list(monticola = monticola,
                                                     martinezricai = martinezricai,
                                                     cyreni = cyreni,
@@ -86,6 +85,8 @@ check.clade(iberolacerta.clade)
 #'
 #'
 
+cyreni.mx <- enmtools.maxent(cyreni, euro.worldclim, test.prop = 0.2)
+cyreni.dm <- enmtools.dm(cyreni, euro.worldclim, test.prop = 0.2)
 
 #' Env space metrics and visualization
 #'
