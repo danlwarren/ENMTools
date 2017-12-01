@@ -31,7 +31,11 @@ results A list containing a replicates, models for the empirical data, and summa
 rangebreak.blob Conduct a blob rangebreak test as described in Glor and Warren 2011.
 }
 \examples{
-rangebreak.blob(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, ...)
+data(iberolacerta.clade)
+data(euro.worldclim)
+cyreni <- iberolacerta.clade$species$cyreni
+aranica <- iberolacerta.clade$species$aranica
+rangebreak.blob(cyreni, aranica, env = euro.worldclim, type = "mx", nreps = 10)
 
 }
 \keyword{barrier,}

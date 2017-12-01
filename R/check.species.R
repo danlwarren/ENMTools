@@ -3,6 +3,8 @@
 #' @param this.species An enmtools.species object to be checked.
 #'
 #' @export check.species
+#'
+#' @examples
 #' data(iberolacerta.clade)
 #' check.species(iberolacerta.clade$species$monticola)
 

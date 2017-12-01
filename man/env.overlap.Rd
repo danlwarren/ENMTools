@@ -23,3 +23,12 @@ env.overlap(model.1, model.2, env, tolerance = 0.001, max.reps = 10,
 \description{
 Calculates overlap between models in environment space using latin hypercube sampling
 }
+\examples{
+data(iberolacerta.clade)
+data(euro.worldclim)
+cyreni <- iberolacerta.clade$species$cyreni
+monticola <- iberolacerta.clade$species$monticola
+cyreni.mx <- enmtools.maxent(cyreni, euro.worldclim, nback = 500)
+monticola.mx <- enmtools.maxent(monticola, euro.worldclim, nback = 500)
+env.overlap(cyreni.mx, monticola.mx, euro.worldclim)
+}

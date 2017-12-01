@@ -20,8 +20,10 @@ results A plot of the marginal response of the model to the environmental variab
 marginal.plots Plots the marginal response of a model to an environmental variable with all other variables held at their mean in env
 }
 \examples{
-marginal.plots(ahli.mx$model, env, "bio1")
-
+data(iberolacerta.clade)
+data(euro.worldclim)
+cyreni.mx <- enmtools.maxent(iberolacerta.clade$species$cyreni, euro.worldclim)
+marginal.plots(cyreni.mx, env, "bio3")
 }
 \keyword{enm,}
 \keyword{plot,}

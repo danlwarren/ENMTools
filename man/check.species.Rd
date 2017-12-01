@@ -12,3 +12,7 @@ check.species(this.species)
 \description{
 Checking compliance for an object of class enmtools.species.
 }
+\examples{
+data(iberolacerta.clade)
+check.species(iberolacerta.clade$species$monticola)
+}

@@ -6,6 +6,8 @@
 #' @param max.reps Maximum number of attempts that will be made to find suitable starting conditions
 #'
 #' @export env.breadth
+#'
+#' @examples
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni

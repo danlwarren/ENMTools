@@ -2,6 +2,8 @@
 #' @param this.clade An enmtools.clade object
 #'
 #' @export check.clade
+#'
+#' @examples
 #' data(iberolacerta.clade)
 #' check.clade(iberolacerta.clade)
 

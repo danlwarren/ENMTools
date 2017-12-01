@@ -30,9 +30,8 @@ enmtools.rf(species, env, f = NULL, test.prop = 0, eval = TRUE,
 Takes an emtools.species object with presence and background points, and builds a random forest model
 }
 \examples{
-# Not running this for now because raster doesn't like projecting this
-# particular RF model for some reason.
+## NOT RUN
 data(euro.worldclim)
 data(iberolacerta.clade)
-enmtools.rf(iberolacerta.clade$species$monticola, env = euro.worldclim)
+enmtools.rf(iberolacerta.clade$species$monticola, env = euro.worldclim, nback = 500)
 }
