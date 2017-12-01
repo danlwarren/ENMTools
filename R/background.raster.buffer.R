@@ -1,5 +1,5 @@
-#' Takes a set of points, a buffer radius, a sample size, and a mask and returns
-#' randomly sampled points from within that buffer radius.
+#' Takes a set of points, a buffer radius, and a mask and returns
+#' a raster based on that buffer radius.
 
 #' Code modified from Elith and Hijmans SDM with R tutorial
 #'
@@ -8,6 +8,9 @@
 #' @param mask A raster to use as a mask
 #'
 #' @export background.raster.buffer
+#'
+#' @examples
+#' background.raster.buffer(cyreni$presence.points, 100000, euro.worldclim)
 
 
 background.raster.buffer <- function(points, radius, mask){

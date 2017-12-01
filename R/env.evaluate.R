@@ -7,6 +7,12 @@
 #' @param ... Arguments to be passed to othfer functions
 #'
 #' @export env.evaluate
+#' data(iberolacerta.clade)
+#' data(euro.worldclim)
+#' cyreni <- iberolacerta.clade$species$cyreni
+#' cyreni.mx <- enmtools.maxent(cyreni, euro.worldclim, test.prop = 0.2, nback = 500)
+#' env.evaluate(cyreni, cyreni.mx,  euro.worldclim)
+
 
 env.evaluate <- function(species, model, env, bg.source = "background", ...){
 

@@ -4,6 +4,15 @@
 #' @param y An enmtools.species object containing a range raster
 #'
 #' @export geog.range.overlap
+#'
+#' @examples
+#' data(iberolacerta.clade)
+#' data(euro.worldclim)
+#' cyreni <- iberolacerta.clade$species$cyreni
+#' monticola <- iberolacerta.clade$species$monticola
+#' cyreni$range <- background.raster.buffer(cyreni$presence.points, 100000, euro.worldclim)
+#' monticola$range <- background.raster.buffer(monticola$presence.points, 100000, euro.worldclim)
+#' geog.range.overlap(cyreni, monticola)
 
 geog.range.overlap <- function(x, y){
 

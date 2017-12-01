@@ -17,8 +17,13 @@
 #' @export rangebreak.blob
 #'
 #' @examples
-#' rangebreak.blob(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, ...)
+#' data(iberolacerta.clade)
+#' data(euro.worldclim)
+#' cyreni <- iberolacerta.clade$species$cyreni
+#' aranica <- iberolacerta.clade$species$aranica
+#' rangebreak.blob(cyreni, aranica, env = euro.worldclim, type = "mx", nreps = 10)
 #'
+
 
 rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 99, nback = 1000, ...){
 

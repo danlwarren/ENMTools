@@ -6,6 +6,11 @@
 #' @param max.reps Maximum number of attempts that will be made to find suitable starting conditions
 #'
 #' @export env.breadth
+#' data(iberolacerta.clade)
+#' data(euro.worldclim)
+#' cyreni <- iberolacerta.clade$species$cyreni
+#' cyreni.mx <- enmtools.maxent(cyreni, euro.worldclim, test.prop = 0.2, nback = 500)
+#' env.breadth(cyreni.mx,  euro.worldclim)
 
 env.breadth <- function(model, env, tolerance = .001, max.reps = 10){
 

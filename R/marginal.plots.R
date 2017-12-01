@@ -11,8 +11,11 @@
 #'
 #' @export marginal.plots
 #'
-#' @examples marginal.plots(ahli.mx$model, env, "bio1")
-#'
+#' @examples
+#' data(iberolacerta.clade)
+#' data(euro.worldclim)
+#' cyreni.mx <- enmtools.maxent(iberolacerta.clade$species$cyreni, euro.worldclim)
+#' marginal.plots(cyreni.mx, env, "bio3")
 
 marginal.plots <- function(model, env, layer){
 

@@ -17,12 +17,16 @@
 #' @export enmtools.ecospat.id
 #'
 #' @examples
-#' enmtools.ecospat.id(ahli, allogus)
+#' data(iberolacerta.clade)
+#' data(euro.worldclim)
+#' monticola <- iberolacerta.clade$species$monticola
+#' cyreni <- iberolacerta.clade$species$cyreni
+#' enmtools.ecospat.id(monticola, cyreni, euro.worldclim[[1:2]], nback = 500)
 
-enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = NULL, th.sp=0, th.env=0, R=100){
+enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = NULL, th.sp=0, th.env=0, R=100, nback = 1000){
 
-  species.1 <- check.bg(species.1, env)
-  species.2 <- check.bg(species.2, env)
+  species.1 <- check.bg(species.1, env, nback)
+  species.2 <- check.bg(species.2, env, nback)
 
   if(length(names(env)) == 2){
     layers <- names(env)

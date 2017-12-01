@@ -17,8 +17,13 @@
 #' @export identity.test
 #'
 #' @examples
-#' identity.test(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, ...)
-#'
+#' data(iberolacerta.clade)
+#' data(euro.worldclim)
+#' cyreni <- iberolacerta.clade$species$cyreni
+#' monticola <- iberolacerta.clade$species$monticola
+#' cyreni$range <- background.raster.buffer(cyreni$presence.points, 100000, euro.worldclim)
+#' monticola$range <- background.raster.buffer(monticola$presence.points, 100000, euro.worldclim)
+#' identity.test(cyreni, monticola, env = euro.worldclim, type = "mx", nreps = 10)
 
 identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99, nback = 1000, ...){
 

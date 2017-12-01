@@ -15,7 +15,7 @@
 #' @examples
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
-#' enmtools.glm(iberolacerta.clade$species$monticola, env = euro.worldclim)
+#' enmtools.glm(iberolacerta.clade$species$monticola, env = euro.worldclim, f = pres ~ bio1 + bio9)
 
 
 

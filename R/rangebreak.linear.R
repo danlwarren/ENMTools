@@ -17,7 +17,11 @@
 #' @export rangebreak.linear
 #'
 #' @examples
-#' rangebreak.linear(ahli, allogus, env, type = "glm", nreps = 10, ...)
+#' data(iberolacerta.clade)
+#' data(euro.worldclim)
+#' cyreni <- iberolacerta.clade$species$cyreni
+#' aranica <- iberolacerta.clade$species$aranica
+#' rangebreak.linear(cyreni, aranica, env = euro.worldclim, type = "mx", nreps = 10)
 #'
 
 rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps = 99,  nback = 1000, ...){

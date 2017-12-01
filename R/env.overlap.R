@@ -8,6 +8,15 @@
 #' @param cor.method Which method to use for calculating correlations between models
 #'
 #' @export env.overlap
+#'
+#' @examples
+#' data(iberolacerta.clade)
+#' data(euro.worldclim)
+#' cyreni <- iberolacerta.clade$species$cyreni
+#' monticola <- iberolacerta.clade$species$monticola
+#' cyreni.mx <- enmtools.maxent(cyreni, euro.worldclim, nback = 500)
+#' monticola.mx <- enmtools.maxent(monticola, euro.worldclim, nback = 500)
+#' env.overlap(cyreni.mx, monticola.mx, euro.worldclim)
 
 env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, cor.method = "spearman"){
 
