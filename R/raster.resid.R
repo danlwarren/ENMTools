@@ -13,8 +13,9 @@
 #' @export raster.resid
 #'
 #' @examples
-#' raster.resid(ahli.raster, allogus.raster)
-#'
+#' data(euro.worldclim)
+#' raster.resid(euro.worldclim[[1]], euro.worldclim[[2]])
+
 
 raster.resid <- function(x, y){
 
@@ -33,7 +34,7 @@ raster.resid <- function(x, y){
   this.lm <- lm(x ~ y)
   resids <- this.lm$residuals/this.lm$fitted.values
 
-  getValues(resid.raster)[!is.na(getValues(resid.raster))] <- resids
+  resid.raster[!is.na(resid.raster)] <- resids
 
   return(list(residuals = resid.raster, lm = this.lm))
 }

@@ -13,7 +13,10 @@
 #' @export visualize.enm
 #'
 #' @examples
-#' visualize.enm(1, .001, .001)
+#' data(iberolacerta)
+#' data(euro.worldclim)
+#' aurelioi.mx <- enmtools.maxent(iberolacerta.clade$species$aurelioi, euro.worldclim)
+#' visualize.enm(aurelioi.mx,euro.worldclim, layers = c("bio14", "bio13"))
 
 visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plot.points = TRUE){
 

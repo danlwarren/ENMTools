@@ -35,7 +35,18 @@ results A list containing a replicates, models for the empirical data, and summa
 rangebreak.ribbon Conduct a ribbon rangebreak test as described in Glor and Warren 2011.
 }
 \examples{
-rangebreak.ribbon(ahli, allogus, env, type = "glm", nreps = 10)
+data(iberolacerta.clade)
+data(euro.worldclim)
+cyreni <- iberolacerta.clade$species$cyreni
+aranica <- iberolacerta.clade$species$aranica
+
+# We're just going to fudge together occurrence data from a ribbon here
+# from random points between the two species' ranges
+p <- data.frame(Longitude = runif(50, -4, -2), Latitude = runif(50, 40, 43))
+bg <- background.points.buffer(p, 100000, 100, euro.worldclim[[1]])
+ribbon <- enmtools.species(species.name = "ribbon", presence.points = p, background.points = bg)
+
+rangebreak.ribbon(cyreni, aranica, ribbon = ribbon, env = euro.worldclim, type = "mx", nreps = 10)
 
 }
 \keyword{barrier,}

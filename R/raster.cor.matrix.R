@@ -5,6 +5,8 @@
 #' @param method Type of correlation to measure.  Can do "pearson", "kendall", or "spearman"
 #'
 #' @export raster.cor.matrix
+#' data(euro.worldclim)
+#' raster.cor.matrix(euro.worldclim)
 
 raster.cor.matrix <- function(env, method = "pearson"){
 

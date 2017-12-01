@@ -15,7 +15,11 @@
 #' @export raster.overlap
 #'
 #' @examples
-#' raster.overlap(ahli.raster, allogus.raster)
+#' data(iberolacerta)
+#' data(euro.worldclim)
+#' aurelioi.mx <- enmtools.maxent(iberolacerta.clade$species$aurelioi, euro.worldclim)
+#' aranica.mx <- enmtools.maxent(iberolacerta.clade$species$aranica, euro.worldclim)
+#' raster.overlap(aurelioi.mx, aranica.mx)
 
 raster.overlap <- function(x, y, verbose=FALSE){
 

@@ -19,7 +19,18 @@
 #' @export rangebreak.ribbon
 #'
 #' @examples
-#' rangebreak.ribbon(ahli, allogus, env, type = "glm", nreps = 10)
+#' data(iberolacerta.clade)
+#' data(euro.worldclim)
+#' cyreni <- iberolacerta.clade$species$cyreni
+#' aranica <- iberolacerta.clade$species$aranica
+#'
+#' # We're just going to fudge together occurrence data from a ribbon here
+#' # from random points between the two species' ranges
+#' p <- data.frame(Longitude = runif(50, -4, -2), Latitude = runif(50, 40, 43))
+#' bg <- background.points.buffer(p, 100000, 100, euro.worldclim[[1]])
+#' ribbon <- enmtools.species(species.name = "ribbon", presence.points = p, background.points = bg)
+#'
+#' rangebreak.ribbon(cyreni, aranica, ribbon = ribbon, env = euro.worldclim, type = "mx", nreps = 10)
 #'
 
 rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL, width = 1, nreps = 99,  nback = 1000, ...){
@@ -27,6 +38,13 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
   species.1 <- check.bg(species.1, env, nback = nback, ...)
   species.2 <- check.bg(species.2, env, nback = nback, ...)
   ribbon <- check.bg(ribbon, env, nback = nback, ...)
+
+  # Making sure species 1 always has the most presence points
+  if(nrow(species.1$presence.points) < nrow(species.2$presence.points)){
+    temp.species <- species.1
+    species.1 <- species.2
+    species.2 <- temp.species
+  }
 
   rangebreak.ribbon.precheck(species.1, species.2, ribbon, env, type, f, width, nreps)
 
@@ -40,9 +58,10 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
 
   # For starters we need to combine species background points so that each model
   # is being built with the same background
-  species.1$background.points <- rbind(species.1$background.points, species.2$background.points, ribbon$background.points)
-  species.2$background.points <- rbind(species.1$background.points, species.2$background.points, ribbon$background.points)
-  ribbon$background.points <- rbind(species.1$background.points, species.2$background.points, ribbon$background.points)
+  combined.background <- rbind(species.1$background.points, species.2$background.points, ribbon$background.points)
+  species.1$background.points <- combined.background
+  species.2$background.points <- combined.background
+  ribbon$background.points <- combined.background
 
   combined.presence.points <- rbind(species.1$presence.points, species.2$presence.points, ribbon$presence.points)
 
@@ -130,6 +149,7 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
       intercept.modifier <- -(intercept.modifier)
     }
 
+    # How far is each point from the line if intercept is set to zero
     part.points <- cbind(combined.presence.points, combined.presence.points[,2] - slope * combined.presence.points[,1])
 
     # Flip a coin to decide whether we're going from top to bottom or other way around
@@ -141,22 +161,20 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
 
     # The intercept to split the two into the appropriate sizes should now be
     # the mean of the Nth and Nth + 1 values for column 3, where N is the sample size
-    # of one of the species
-    intercept <- mean(c(part.points[nrow(species.1$presence.points), 3],
-                        part.points[nrow(species.2$presence.points), 3]))
+    # of one of the species plus half the sample size of the ribbon
+    N <- nrow(species.1$presence.points) + floor(nrow(ribbon$presence.points)/2)
+    intercept <- mean(c(part.points[N, 3], part.points[N + 1, 3]))
 
     # Grab ribbon points, pull them out of part.points
     ribbon.points <- which(part.points[,3] > (intercept - intercept.modifier) & part.points[,3] < (intercept + intercept.modifier))
     rep.ribbon$presence.points <- part.points[ribbon.points,1:2]
-    part.points <- part.points[-ribbon.points,]
 
     # Putting all remaining points in rep.outside
-    rep.outside$presence.points <- part.points[,1:2]
+    rep.outside$presence.points <- part.points[-ribbon.points,1:2]
 
     # Splitting remaining points in proportion to the relative sample sizes of the empirical data
-    prop <- nrow(species.1$presence.points)/nrow(species.2$presence.points)
-    rep.species.1$presence.points <- part.points[1:floor(prop * nrow(part.points)), 1:2]
-    rep.species.2$presence.points <- part.points[(floor(prop * nrow(part.points)) + 1):nrow(part.points), 1:2]
+    rep.species.1$presence.points <- part.points[1:nrow(species.1$presence.points), 1:2]
+    rep.species.2$presence.points <- part.points[(nrow(part.points) - nrow(species.2$presence.points)):nrow(part.points), 1:2]
 
 
     # Make sure we actually got some ribbon points.  If not, fail this round and try again.
@@ -167,6 +185,8 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
     # Store the slope, intercept, and modifier for this round
     lines.df[keepers,] <- c(slope, intercept, intercept.modifier)
 
+    # temp.list <- list(rep.species.1, rep.species.2, rep.ribbon, rep.outside)
+    # return(temp.list)
 
     if(type == "glm"){
       rep.species.1.model <- enmtools.glm(rep.species.1, env, f, ...)
