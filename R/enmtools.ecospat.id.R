@@ -78,12 +78,12 @@ enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = 
   p.values <- c(eq$p.D, eq$p.I)
   names(p.values) <- c("D", "I")
 
-  d.plot <- qplot(eq$sim[,"D"], geom = "density", fill = "density", alpha = 0.5) +
+  d.plot <- qplot(eq$sim[,"D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = eq$obs$D, linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
     ggtitle(paste("Ecospat identity test:", species.1$species.name, "vs.", species.2$species.name))
 
-  i.plot <- qplot(eq$sim[,"I"], geom = "density", fill = "density", alpha = 0.5) +
+  i.plot <- qplot(eq$sim[,"I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = eq$obs$I, linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") +
     ggtitle(paste("Ecospat identity test:", species.1$species.name, "vs.", species.2$species.name))

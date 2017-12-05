@@ -163,32 +163,32 @@ rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps =
 
   p.values <- apply(reps.overlap, 2, function(x) 1 - mean(x > x[1]))
 
-  d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"D"], geom = "density", fill = "density", alpha = 0.5) +
+  d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"D"], linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
     ggtitle(paste("Rangebreak test:", species.1$species.name, "vs.", species.2$species.name))
 
-  i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"I"], geom = "density", fill = "density", alpha = 0.5) +
+  i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"I"], linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") +
     ggtitle(paste("Rangebreak test:", species.1$species.name, "vs.", species.2$species.name))
 
-  cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"rank.cor"], geom = "density", fill = "density", alpha = 0.5) +
+  cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"rank.cor"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"rank.cor"], linetype = "longdash") +
     xlim(-1,1) + guides(fill = FALSE, alpha = FALSE) + xlab("Rank Correlation") +
     ggtitle(paste("Rangebreak test:", species.1$species.name, "vs.", species.2$species.name))
 
-  env.d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.D"], geom = "density", fill = "density", alpha = 0.5) +
+  env.d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.D"], linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D, Environmental Space") +
     ggtitle(paste("Rangebreak test:", species.1$species.name, "vs.", species.2$species.name))
 
-  env.i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.I"], geom = "density", fill = "density", alpha = 0.5) +
+  env.i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.I"], linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I, Environmental Space") +
     ggtitle(paste("Rangebreak test:", species.1$species.name, "vs.", species.2$species.name))
 
-  env.cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.cor"], geom = "density", fill = "density", alpha = 0.5) +
+  env.cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.cor"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.cor"], linetype = "longdash") +
     xlim(-1,1) + guides(fill = FALSE, alpha = FALSE) + xlab("Rank Correlation, Environmental Space") +
     ggtitle(paste("Rangebreak test:", species.1$species.name, "vs.", species.2$species.name))
