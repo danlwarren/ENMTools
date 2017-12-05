@@ -21,9 +21,12 @@ enmtools.maxent(species, env, test.prop = 0, nback = 1000, report = NULL,
 \item{overwrite}{TRUE/FALSE whether to overwrite a report file if it already exists}
 
 \item{...}{Arguments to be passed to maxent()}
-
-\item{formula}{Standard R formula}
 }
 \description{
 Takes an emtools.species object with presence and background points, and builds a maxent model
+}
+\examples{
+data(euro.worldclim)
+data(iberolacerta.clade)
+enmtools.maxent(iberolacerta.clade$species$monticola, env = euro.worldclim)
 }

@@ -5,6 +5,10 @@
 #' @param method The method to be used for calculating correlations.  Defaults to spearman, but can take "kendall" or "pearson" as well.
 #'
 #' @export raster.cor
+#'
+#' @examples
+#' data(euro.worldclim)
+#' raster.cor(euro.worldclim[[1]], euro.worldclim[[2]])
 
 
 raster.cor <- function(x, y, method="spearman"){

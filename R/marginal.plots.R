@@ -1,4 +1,4 @@
-#' plot.response Plots the marginal response of a model to an environmental variable with all other variables held at their mean in env
+#' marginal.plots Plots the marginal response of a model to an environmental variable with all other variables held at their mean in env
 #'
 #'
 #' @param model An enmtools model object
@@ -9,12 +9,15 @@
 #'
 #' @keywords plot, sdm, enm, response
 #'
-#' @export plot.response
+#' @export marginal.plots
 #'
 #' @examples
-#'
+#' data(iberolacerta.clade)
+#' data(euro.worldclim)
+#' cyreni.mx <- enmtools.maxent(iberolacerta.clade$species$cyreni, euro.worldclim)
+#' marginal.plots(cyreni.mx, env, "bio3")
 
-plot.response <- function(model, env, layer){
+marginal.plots <- function(model, env, layer){
 
   if(!layer %in% names(env)){
     stop(paste("Couldn't find layer named", layer, "in environmental rasters!"))
@@ -53,7 +56,10 @@ plot.response <- function(model, env, layer){
   #print(pred)
 
   response.plot <- qplot(plot.df[,1], pred, geom = "line",
-                         xlab = layer, ylab = "Response") + theme_bw()
+                         xlab = layer, ylab = "Response") + theme_bw() +
+                         theme(plot.title = element_text(hjust = 0.5)) +
+                         theme(plot.title = element_text(hjust = 0.5))
+
 
   return(response.plot)
 

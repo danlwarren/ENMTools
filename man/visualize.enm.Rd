@@ -4,7 +4,8 @@
 \alias{visualize.enm}
 \title{visualize.enm, Makes a heatmap of suitability of habitat in environment space according to a given model}
 \usage{
-visualize.enm(model, env, nbins = 100, layers, plot.points = TRUE)
+visualize.enm(model, env, nbins = 100, layers = names(env)[1:2],
+  plot.points = TRUE)
 }
 \arguments{
 \item{model}{An enmtools.model object}
@@ -24,7 +25,10 @@ suit.plot A two dimensional plot of an ENM
 visualize.enm, Makes a heatmap of suitability of habitat in environment space according to a given model
 }
 \examples{
-visualize.enm(1, .001, .001)
+data(iberolacerta)
+data(euro.worldclim)
+aurelioi.mx <- enmtools.maxent(iberolacerta.clade$species$aurelioi, euro.worldclim)
+visualize.enm(aurelioi.mx,euro.worldclim, layers = c("bio14", "bio13"))
 }
 \keyword{enm}
 \keyword{niche}

@@ -5,12 +5,15 @@
 #' @param test.prop Proportion of data to withhold for model evaluation
 #' @param report Optional name of an html file for generating reports
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
+#' @param nback Number of background points for models. In the case of bioclim models these are only used for evaluation.
 #' @param ... Arguments to be passed to bioclim()
 #'
 #' @export enmtools.bc
-#' @export print.enmtools.bc
-#' @export summary.enmtools.bc
-#' @export plot.enmtools.bc
+#'
+#' @examples
+#' data(euro.worldclim)
+#' data(iberolacerta.clade)
+#' enmtools.bc(iberolacerta.clade$species$monticola, env = euro.worldclim)
 
 enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwrite = FALSE, nback = 1000, ...){
 
@@ -79,11 +82,11 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
   class(output) <- c("enmtools.bc", "enmtools.model")
 
   # Doing response plots for each variable.  Doing this bit after creating
-  # the output object because plot.response expects an enmtools.model object
+  # the output object because marginal.plots expects an enmtools.model object
   response.plots <- list()
 
   for(i in names(env)){
-    response.plots[[i]] <- plot.response(output, env, i)
+    response.plots[[i]] <- marginal.plots(output, env, i)
   }
 
   output[["response.plots"]] <- response.plots
@@ -103,63 +106,63 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
 
 
 # Summary for objects of class enmtools.bc
-summary.enmtools.bc <- function(this.bc){
+summary.enmtools.bc <- function(object, ...){
 
   cat("\n\nData table (top ten lines): ")
-  print(kable(head(this.bc$analysis.df, 10)))
+  print(kable(head(object$analysis.df, 10)))
 
   cat("\n\nModel:  ")
-  print(this.bc$model)
+  print(object$model)
 
   cat("\n\nModel fit (training data):  ")
-  print(this.bc$training.evaluation)
+  print(object$training.evaluation)
 
   cat("\n\nEnvironment space model fit (training data):  ")
-  print(this.bc$env.training.evaluation)
+  print(object$env.training.evaluation)
 
   cat("\n\nProportion of data wittheld for model fitting:  ")
-  cat(this.bc$test.prop)
+  cat(object$test.prop)
 
   cat("\n\nModel fit (test data):  ")
-  print(this.bc$test.evaluation)
+  print(object$test.evaluation)
 
   cat("\n\nEnvironment space model fit (test data):  ")
-  print(this.bc$env.test.evaluation)
+  print(object$env.test.evaluation)
 
   cat("\n\nSuitability:  \n")
-  print(this.bc$suitability)
+  print(object$suitability)
 
   cat("\n\nNotes:  \n")
-  print(this.bc$notes)
+  print(object$notes)
 
   #Note to self: plot command HAS to come last!
-  plot(this.bc)
+  plot(object)
 
 }
 
 #Print method for objects of class enmtools.bc
-print.enmtools.bc <- function(this.bc){
+print.enmtools.bc <- function(x, ...){
 
-  print(summary(this.bc))
+  print(summary(x))
 
 }
 
 # Plot method for objects of class enmtools.bc
-plot.enmtools.bc <- function(this.bc){
+plot.enmtools.bc <- function(x, ...){
 
 
-  suit.points <- data.frame(rasterToPoints(this.bc$suitability))
+  suit.points <- data.frame(rasterToPoints(x$suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
   suit.plot <- ggplot(data = suit.points, aes(y = Latitude, x = Longitude)) +
     geom_raster(aes(fill = Suitability)) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
-    geom_point(data = this.bc$analysis.df, aes(x = Longitude, y = Latitude),
+    geom_point(data = x$analysis.df, aes(x = Longitude, y = Latitude),
                pch = 21, fill = "white", color = "black", size = 2)
 
-  if(!(all(is.na(this.bc$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = this.bc$test.data, aes(x = Longitude, y = Latitude),
+  if(!(all(is.na(x$test.data)))){
+    suit.plot <- suit.plot + geom_point(data = x$test.data, aes(x = Longitude, y = Latitude),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
 

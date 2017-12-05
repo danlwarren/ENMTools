@@ -10,6 +10,8 @@ env.overlap(model.1, model.2, env, tolerance = 0.001, max.reps = 10,
 \arguments{
 \item{model.1}{An enmtools.model object model object that can be projected using the predict() function}
 
+\item{model.2}{Another enmtools.model object or other model object that can be projected using the predict() function}
+
 \item{env}{A raster or raster stack of environmental data.}
 
 \item{tolerance}{How close do successive overlap metrics have to be before we decide we're close enough to the final answer}
@@ -17,9 +19,16 @@ env.overlap(model.1, model.2, env, tolerance = 0.001, max.reps = 10,
 \item{max.reps}{Maximum number of attempts that will be made to find suitable starting conditions}
 
 \item{cor.method}{Which method to use for calculating correlations between models}
-
-\item{model.1}{Another enmtools.model object or other model object that can be projected using the predict() function}
 }
 \description{
 Calculates overlap between models in environment space using latin hypercube sampling
+}
+\examples{
+data(iberolacerta.clade)
+data(euro.worldclim)
+cyreni <- iberolacerta.clade$species$cyreni
+monticola <- iberolacerta.clade$species$monticola
+cyreni.mx <- enmtools.maxent(cyreni, euro.worldclim, nback = 500)
+monticola.mx <- enmtools.maxent(monticola, euro.worldclim, nback = 500)
+env.overlap(cyreni.mx, monticola.mx, euro.worldclim)
 }

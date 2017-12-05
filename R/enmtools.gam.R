@@ -1,7 +1,7 @@
 #' Takes an emtools.species object with presence and background points, and builds a gam
 #'
-#' @param formula Standard gam formula
 #' @param species An enmtools.species object
+#' @param f Standard gam formula
 #' @param env A raster or raster stack of environmental data.
 #' @param test.prop Proportion of data to withhold for model evaluation
 #' @param k Dimension of the basis used to represent the smooth term.  See documentation for s() for details.
@@ -11,9 +11,12 @@
 #' @param ... Arguments to be passed to gam()
 #'
 #' @export enmtools.gam
-#' @export print.enmtools.gam
-#' @export summary.enmtools.gam
-#' @export plot.enmtools.gam
+#'
+#' @examples
+#' data(euro.worldclim)
+#' data(iberolacerta.clade)
+#' enmtools.gam(iberolacerta.clade$species$monticola, env = euro.worldclim, f = pres ~ bio1 + bio9)
+
 
 
 enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000, report = NULL, overwrite = FALSE, ...){
@@ -97,11 +100,11 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
   class(output) <- c("enmtools.gam", "enmtools.model")
 
   # Doing response plots for each variable.  Doing this bit after creating
-  # the output object because plot.response expects an enmtools.model object
+  # the output object because marginal.plots expects an enmtools.model object
   response.plots <- list()
 
   for(i in names(env)){
-    response.plots[[i]] <- plot.response(output, env, i)
+    response.plots[[i]] <- marginal.plots(output, env, i)
   }
 
   output[["response.plots"]] <- response.plots
@@ -120,68 +123,68 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
 }
 
 # Summary for objects of class enmtools.gam
-summary.enmtools.gam <- function(this.gam){
+summary.enmtools.gam <- function(object, ...){
 
   cat("\n\nFormula:  ")
-  print(this.gam$formula)
+  print(object$formula)
 
   cat("\n\nData table (top ten lines): ")
-  print(kable(head(this.gam$analysis.df, 10)))
+  print(kable(head(object$analysis.df, 10)))
 
   cat("\n\nModel:  ")
-  print(summary(this.gam$model))
+  print(summary(object$model))
 
   cat("\n\ngam.check results:  ")
-  print(gam.check(this.gam$model))
+  print(gam.check(object$model))
 
   cat("\n\nModel fit (training data):  ")
-  print(this.gam$training.evaluation)
+  print(object$training.evaluation)
 
   cat("\n\nEnvironment space model fit (training data):  ")
-  print(this.gam$env.training.evaluation)
+  print(object$env.training.evaluation)
 
   cat("\n\nProportion of data wittheld for model fitting:  ")
-  cat(this.gam$test.prop)
+  cat(object$test.prop)
 
   cat("\n\nModel fit (test data):  ")
-  print(this.gam$test.evaluation)
+  print(object$test.evaluation)
 
   cat("\n\nEnvironment space model fit (test data):  ")
-  print(this.gam$env.test.evaluation)
+  print(object$env.test.evaluation)
 
   cat("\n\nSuitability:  \n")
-  print(this.gam$suitability)
+  print(object$suitability)
 
   cat("\n\nNotes:  \n")
-  print(this.gam$notes)
+  print(object$notes)
 
-  plot(this.gam)
+  plot(object)
 }
 
 # Print method for objects of class enmtools.gam
-print.enmtools.gam <- function(this.gam){
+print.enmtools.gam <- function(x, ...){
 
-  print(summary(this.gam))
+  print(summary(x))
 
 }
 
 
 # Plot method for objects of class enmtools.gam
-plot.enmtools.gam <- function(this.gam){
+plot.enmtools.gam <- function(x, ...){
 
 
-  suit.points <- data.frame(rasterToPoints(this.gam$suitability))
+  suit.points <- data.frame(rasterToPoints(x$suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
   suit.plot <- ggplot(data = suit.points, aes(y = Latitude, x = Longitude)) +
     geom_raster(aes(fill = Suitability)) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
-    geom_point(data = this.gam$analysis.df[this.gam$analysis.df$presence == 1,], aes(x = Longitude, y = Latitude),
+    geom_point(data = x$analysis.df[x$analysis.df$presence == 1,], aes(x = Longitude, y = Latitude),
                pch = 21, fill = "white", color = "black", size = 2)
 
-  if(!(all(is.na(this.gam$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = this.gam$test.data, aes(x = Longitude, y = Latitude),
+  if(!(all(is.na(x$test.data)))){
+    suit.plot <- suit.plot + geom_point(data = x$test.data, aes(x = Longitude, y = Latitude),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
 

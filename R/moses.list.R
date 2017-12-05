@@ -3,6 +3,9 @@
 #' @param species.list A list of enmtools.species objects, or an enmtools.clade object.
 #' @param env A raster or raster stack of environmental data.
 #' @param nback Number of background points to generate, if any
+#' @param f A GLM-style function for model fitting
+#' @param eval Boolean indicating whether or not GLMs should be evaluated using AUC/TSS/etc.
+#' @param ... further arguments to be passed to enmtools.glm
 #'
 #' @export moses.list
 

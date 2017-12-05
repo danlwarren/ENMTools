@@ -10,9 +10,13 @@ raster.cor.matrix(env, method = "pearson")
 \arguments{
 \item{env}{A RasterStack object containing two or more rasters}
 
-\item{type}{Type of correlation to measure.  Can do "pearson", "kendall", or "spearman"}
+\item{method}{Type of correlation to measure.  Can do "pearson", "kendall", or "spearman"}
 }
 \description{
 Takes a raster stack and returns a data frame containing Pearson correlation coefficients
 between the included rasters
+}
+\examples{
+data(euro.worldclim)
+raster.cor.matrix(euro.worldclim)
 }

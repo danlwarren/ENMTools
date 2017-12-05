@@ -5,21 +5,21 @@
 \title{Takes an emtools.species object with presence and background points, and builds a Point Process Model (with Lasso penalty)}
 \usage{
 enmtools.ppmlasso(species, env, f = NULL, test.prop = 0, eval = TRUE,
-  nback = 10000, back.accurate = FALSE, normalise = FALSE,
-  report = NULL, overwrite = FALSE, ...)
+  nback = 10000, normalise = FALSE, report = NULL, overwrite = FALSE,
+  ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
 
 \item{env}{A raster or raster stack of environmental data.}
 
+\item{f}{Standard R formula}
+
 \item{test.prop}{Proportion of data to withhold for model evaluation}
 
 \item{eval}{Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.}
 
 \item{nback}{Number of background points to draw from range or env, if background points aren't provided}
-
-\item{back.accurate}{Should a more accurate method of generating background points be used, if background points aren't provided? If TRUE, this method produces a number of background points close to \code{nback}, but is much slower than the alternative method, which is fast but innaccurate.}
 
 \item{normalise}{Should the suitability of the model be normalised? If FALSE (the default), suitability is returned as the predicted number of presence points in each grid cell (occurrence density). If TRUE, occurrence densities are divided by the total predicted density, to give a value ranging from 0 to 1, which represents the proportion of the predicted density for a species that occurs in each grid cell.}
 
@@ -28,12 +28,15 @@ enmtools.ppmlasso(species, env, f = NULL, test.prop = 0, eval = TRUE,
 \item{overwrite}{TRUE/FALSE whether to overwrite a report file if it already exists}
 
 \item{...}{Arguments to be passed to ppmlasso()}
-
-\item{formula}{Standard R formula}
 }
 \description{
 Takes an emtools.species object with presence and background points, and builds a Point Process Model (with Lasso penalty)
 }
 \details{
 This runs a \code{ppmlasso} model of a species' distribution. It is generally recommended that background points should be on a grid for this method, as the background points are considered 'quadrature' points, used to estimate an integral. If background points are not provided, the function will generate them on a grid, rather than randomly, as is more usual for other SDM methods.
+}
+\examples{
+data(euro.worldclim)
+data(iberolacerta.clade)
+enmtools.ppmlasso(iberolacerta.clade$species$monticola, env = euro.worldclim[[1:3]])
 }

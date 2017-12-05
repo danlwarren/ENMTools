@@ -22,6 +22,10 @@ from two ENMs.  It returns two metrics, I and D.  These metrics are described in
 Warren et al. 2008.
 }
 \examples{
-raster.overlap(ahli.raster, allogus.raster)
+data(iberolacerta)
+data(euro.worldclim)
+aurelioi.mx <- enmtools.maxent(iberolacerta.clade$species$aurelioi, euro.worldclim)
+aranica.mx <- enmtools.maxent(iberolacerta.clade$species$aranica, euro.worldclim)
+raster.overlap(aurelioi.mx, aranica.mx)
 }
 \keyword{keywords}

@@ -16,3 +16,7 @@ raster.cor(x, y, method = "spearman")
 \description{
 Calculates the correlation coefficient between two rasters.
 }
+\examples{
+data(euro.worldclim)
+raster.cor(euro.worldclim[[1]], euro.worldclim[[2]])
+}

@@ -5,12 +5,16 @@
 #' @param test.prop Proportion of data to withhold for model evaluation
 #' @param report Optional name of an html file for generating reports
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
+#' @param nback Number of background points for models.  In the case of Domain, these are only used for evaluation.
 #' @param ... Arguments to be passed to bioclim()
 #'
 #' @export enmtools.dm
-#' @export print.enmtools.dm
-#' @export summary.enmtools.dm
-#' @export plot.enmtools.dm
+#'
+#' @examples
+#' data(euro.worldclim)
+#' data(iberolacerta.clade)
+#' enmtools.dm(iberolacerta.clade$species$monticola, env = euro.worldclim)
+
 
 enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback = 1000, overwrite = FALSE, ...){
 
@@ -65,7 +69,7 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
 
   suitability <- predict(env, this.dm, type = "response")
 
-  output <- list(species.names = species$species.name,
+  output <- list(species.name = species$species.name,
                  analysis.df = species$presence.points[,1:2],
                  test.data = test.data,
                  test.prop = test.prop,
@@ -80,11 +84,11 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
   class(output) <- c("enmtools.dm", "enmtools.model")
 
   # Doing response plots for each variable.  Doing this bit after creating
-  # the output object because plot.response expects an enmtools.model object
+  # the output object because marginal.plots expects an enmtools.model object
   response.plots <- list()
 
   for(i in names(env)){
-    response.plots[[i]] <- plot.response(output, env, i)
+    response.plots[[i]] <- marginal.plots(output, env, i)
   }
 
   output[["response.plots"]] <- response.plots
@@ -104,62 +108,62 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
 
 
 # Summary for objects of class enmtools.dm
-summary.enmtools.dm <- function(this.dm){
+summary.enmtools.dm <- function(object, ...){
 
   cat("\n\nData table (top ten lines): ")
-  print(kable(head(this.dm$analysis.df, 10)))
+  print(kable(head(object$analysis.df, 10)))
 
   cat("\n\nModel:  ")
-  print(this.dm$model)
+  print(object$model)
 
   cat("\n\nModel fit (training data):  ")
-  print(this.dm$training.evaluation)
+  print(object$training.evaluation)
 
   cat("\n\nEnvironment space model fit (training data):  ")
-  print(this.dm$env.training.evaluation)
+  print(object$env.training.evaluation)
 
   cat("\n\nProportion of data wittheld for model fitting:  ")
-  cat(this.dm$test.prop)
+  cat(object$test.prop)
 
   cat("\n\nModel fit (test data):  ")
-  print(this.dm$test.evaluation)
+  print(object$test.evaluation)
 
   cat("\n\nEnvironment space model fit (test data):  ")
-  print(this.dm$env.test.evaluation)
+  print(object$env.test.evaluation)
 
   cat("\n\nSuitability:  \n")
-  print(this.dm$suitability)
+  print(object$suitability)
 
   cat("\n\nNotes:  \n")
-  print(this.dm$notes)
+  print(object$notes)
 
-  plot(this.dm)
+  plot(object)
 
 }
 
 
 #Print method for objects of class enmtools.dm
-print.enmtools.dm <- function(this.dm){
+print.enmtools.dm <- function(x, ...){
 
-  print(summary(this.dm))
+  print(summary(x))
 
 }
 
 # Plot method for objects of class enmtools.dm
-plot.enmtools.dm <- function(this.dm){
+plot.enmtools.dm <- function(x, ...){
 
-  suit.points <- data.frame(rasterToPoints(this.dm$suitability))
+  suit.points <- data.frame(rasterToPoints(x$suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
   suit.plot <- ggplot(data = suit.points, aes(y = Latitude, x = Longitude)) +
     geom_raster(aes(fill = Suitability)) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
-    geom_point(data = this.dm$analysis.df, aes(x = Longitude, y = Latitude),
+    geom_point(data = x$analysis.df, aes(x = Longitude, y = Latitude),
                pch = 21, fill = "white", color = "black", size = 2)
 
-  if(!(all(is.na(this.dm$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = this.dm$test.data, aes(x = Longitude, y = Latitude),
+  if(!(all(is.na(x$test.data)))){
+    suit.plot <- suit.plot + geom_point(data = x$test.data, aes(x = Longitude, y = Latitude),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
 

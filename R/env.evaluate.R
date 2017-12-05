@@ -7,10 +7,18 @@
 #' @param ... Arguments to be passed to othfer functions
 #'
 #' @export env.evaluate
+#'
+#' @examples
+#' data(iberolacerta.clade)
+#' data(euro.worldclim)
+#' cyreni <- iberolacerta.clade$species$cyreni
+#' cyreni.mx <- enmtools.maxent(cyreni, euro.worldclim, test.prop = 0.2, nback = 500)
+#' env.evaluate(cyreni, cyreni.mx,  euro.worldclim)
+
 
 env.evaluate <- function(species, model, env, bg.source = "background", ...){
 
-  species <- check.bg.ppmlasso(species, env, ...)
+  species <- check.bg(species, env, ...)
 
   if(!inherits(species, "enmtools.species")){
     stop("Argument species must supply an enmtools.species object!")
@@ -44,13 +52,10 @@ env.evaluate <- function(species, model, env, bg.source = "background", ...){
   p.table <- extract(env, presence)
 
   # Having to do this for now because the dismo models don't like "newdata"
-  if(inherits(model, what = "DistModel")){
-    pred.p <- as.numeric(predict(model, x = data.frame(p.table), type = "response"))
-    pred.bg <- as.numeric(predict(model, x = data.frame(bg.table), type = "response"))
-  } else {
-    pred.p <- as.numeric(predict(model, newdata = data.frame(p.table), type = "response"))
-    pred.bg <- as.numeric(predict(model, newdata = data.frame(bg.table), type = "response"))
-  }
+
+  pred.p <- as.numeric(predict(model, newdata = data.frame(p.table), x = data.frame(p.table), type = "response"))
+  pred.bg <- as.numeric(predict(model, newdata = data.frame(bg.table), x = data.frame(bg.table), type = "response"))
+
 
   env.evaluation <-dismo::evaluate(pred.p, pred.bg)
 

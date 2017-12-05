@@ -1802,7 +1802,7 @@ The AOC tests allow you to examine patterns of range, point, and ENM overlap in 
 
 These tests require the creation of an enmtools.clade object, as above.  AOC tests consist of two steps: first, the average overlap at each node in the phylogeny is calcualted using a method that takes tree topology into account (see Fitzpatrick and Turelli 2006), then we perform a linear regression to measure the relationship between node age and average overlap.  Due to the fact that these overlaps violate many of the assumptions of a regular linear regression, however (e.g., errors are not iid), we can't calculate significance in the typical way.  Instead we performa  Monte Carlo test, permuting the identity of the tips of the tree and repeating the node averaging and modeling steps.  Finally we measure statistical significance by comparing the empirical slope and intercept to the distribution of slopes and intercepts from the Monte Carlo replicates.
 
-First, let's do one using range overlaps, as in Fitzpatrick and Turelli 2006.  Note that this analysis requires that each of your species have a range raster stored in their species object (we did that as part of the function used above).  
+First, let's do one using geog.range.overlaps, as in Fitzpatrick and Turelli 2006.  Note that this analysis requires that each of your species have a range raster stored in their species object (we did that as part of the function used above).  
 
 
 ```r

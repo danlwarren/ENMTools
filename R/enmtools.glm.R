@@ -1,8 +1,8 @@
 #' Takes an emtools.species object with presence and background points, and builds a GLM
 #'
-#' @param formula Standard GLM formula
 #' @param species An enmtools.species object
 #' @param env A raster or raster stack of environmental data.
+#' @param f Standard GLM formula
 #' @param test.prop Proportion of data to withhold for model evaluation
 #' @param eval Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.
 #' @param nback Number of background points to draw from range or env, if background points aren't provided
@@ -11,9 +11,12 @@
 #' @param ... Arguments to be passed to glm()
 #'
 #' @export enmtools.glm
-#' @export print.enmtools.glm
-#' @export summary.enmtools.glm
-#' @export plot.enmtools.glm
+#'
+#' @examples
+#' data(euro.worldclim)
+#' data(iberolacerta.clade)
+#' enmtools.glm(iberolacerta.clade$species$monticola, env = euro.worldclim, f = pres ~ bio1 + bio9)
+
 
 
 enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, report = NULL, overwrite = FALSE, ...){
@@ -103,11 +106,11 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
   class(output) <- c("enmtools.glm", "enmtools.model")
 
   # Doing response plots for each variable.  Doing this bit after creating
-  # the output object because plot.response expects an enmtools.model object
+  # the output object because marginal.plots expects an enmtools.model object
   response.plots <- list()
 
   for(i in names(env)){
-    response.plots[[i]] <- plot.response(output, env, i)
+    response.plots[[i]] <- marginal.plots(output, env, i)
   }
 
   output[["response.plots"]] <- response.plots
@@ -126,66 +129,66 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
 }
 
 # Summary for objects of class enmtools.glm
-summary.enmtools.glm <- function(this.glm){
+summary.enmtools.glm <- function(object, ...){
 
   cat("\n\nFormula:  ")
-  print(this.glm$formula)
+  print(object$formula)
 
   cat("\n\nData table (top ten lines): ")
-  print(kable(head(this.glm$analysis.df, 10)))
+  print(kable(head(object$analysis.df, 10)))
 
   cat("\n\nModel:  ")
-  print(summary(this.glm$model))
+  print(summary(object$model))
 
   cat("\n\nModel fit (training data):  ")
-  print(this.glm$training.evaluation)
+  print(object$training.evaluation)
 
   cat("\n\nEnvironment space model fit (training data):  ")
-  print(this.glm$env.training.evaluation)
+  print(object$env.training.evaluation)
 
   cat("\n\nProportion of data wittheld for model fitting:  ")
-  cat(this.glm$test.prop)
+  cat(object$test.prop)
 
   cat("\n\nModel fit (test data):  ")
-  print(this.glm$test.evaluation)
+  print(object$test.evaluation)
 
   cat("\n\nEnvironment space model fit (test data):  ")
-  print(this.glm$env.test.evaluation)
+  print(object$env.test.evaluation)
 
   cat("\n\nSuitability:  \n")
-  print(this.glm$suitability)
+  print(object$suitability)
 
   cat("\n\nNotes:  \n")
-  this.glm$notes
+  object$notes
 
-  plot(this.glm)
+  plot(object)
 
 }
 
 # Print method for objects of class enmtools.glm
-print.enmtools.glm <- function(this.glm){
+print.enmtools.glm <- function(x, ...){
 
-  print(summary(this.glm))
+  print(summary(x))
 
 }
 
 
 # Plot method for objects of class enmtools.glm
-plot.enmtools.glm <- function(this.glm){
+plot.enmtools.glm <- function(x, ...){
 
 
-  suit.points <- data.frame(rasterToPoints(this.glm$suitability))
+  suit.points <- data.frame(rasterToPoints(x$suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
   suit.plot <- ggplot(data = suit.points, aes(y = Latitude, x = Longitude)) +
     geom_raster(aes(fill = Suitability)) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
-    geom_point(data = this.glm$analysis.df[this.glm$analysis.df$presence == 1,], aes(x = Longitude, y = Latitude),
+    geom_point(data = x$analysis.df[x$analysis.df$presence == 1,], aes(x = Longitude, y = Latitude),
                pch = 21, fill = "white", color = "black", size = 2)
 
-  if(!(all(is.na(this.glm$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = this.glm$test.data, aes(x = Longitude, y = Latitude),
+  if(!(all(is.na(x$test.data)))){
+    suit.plot <- suit.plot + geom_point(data = x$test.data, aes(x = Longitude, y = Latitude),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
 

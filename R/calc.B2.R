@@ -9,7 +9,7 @@
 #' @export calc.B2
 #'
 #' @examples
-#' calc.B2(1, .001, .001)
+#' calc.B2(c(1, .001, .001))
 
 calc.B2 <- function(x){
   x <- x[!is.na(x)]

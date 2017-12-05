@@ -12,3 +12,7 @@ check.clade(this.clade)
 \description{
 Checking for complians of an enmtools.clade object
 }
+\examples{
+data(iberolacerta.clade)
+check.clade(iberolacerta.clade)
+}

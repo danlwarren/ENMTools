@@ -2,9 +2,13 @@
 #' between the included rasters
 #'
 #' @param env A RasterStack object containing two or more rasters
-#' @param type Type of correlation to measure.  Can do "pearson", "kendall", or "spearman"
+#' @param method Type of correlation to measure.  Can do "pearson", "kendall", or "spearman"
 #'
 #' @export raster.cor.matrix
+#'
+#' @examples
+#' data(euro.worldclim)
+#' raster.cor.matrix(euro.worldclim)
 
 raster.cor.matrix <- function(env, method = "pearson"){
 

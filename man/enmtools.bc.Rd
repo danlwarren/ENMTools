@@ -18,8 +18,15 @@ enmtools.bc(species, env = NA, test.prop = 0, report = NULL,
 
 \item{overwrite}{TRUE/FALSE whether to overwrite a report file if it already exists}
 
+\item{nback}{Number of background points for models. In the case of bioclim models these are only used for evaluation.}
+
 \item{...}{Arguments to be passed to bioclim()}
 }
 \description{
 Takes an emtools.species object with presence and background points, and builds a Bioclim model
+}
+\examples{
+data(euro.worldclim)
+data(iberolacerta.clade)
+enmtools.bc(iberolacerta.clade$species$monticola, env = euro.worldclim)
 }

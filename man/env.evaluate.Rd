@@ -20,3 +20,10 @@ env.evaluate(species, model, env, bg.source = "background", ...)
 \description{
 Calculates evaluation metrics (AUC, etc.) using latin hypercube sampling in environment space
 }
+\examples{
+data(iberolacerta.clade)
+data(euro.worldclim)
+cyreni <- iberolacerta.clade$species$cyreni
+cyreni.mx <- enmtools.maxent(cyreni, euro.worldclim, test.prop = 0.2, nback = 500)
+env.evaluate(cyreni, cyreni.mx,  euro.worldclim)
+}

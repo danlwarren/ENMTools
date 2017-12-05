@@ -5,7 +5,8 @@
 \title{enmtools.ecospat.bg, Runs an ecospat background/similarity test using enmtool.species objects.}
 \usage{
 enmtools.ecospat.bg(species.1, species.2, env, nreps = 99, layers = NULL,
-  test.type = "asymmetric", th.sp = 0, th.env = 0, R = 100, ...)
+  test.type = "asymmetric", th.sp = 0, th.env = 0, R = 100,
+  nback = 1000, ...)
 }
 \arguments{
 \item{species.1}{An enmtools.species object}
@@ -26,6 +27,8 @@ enmtools.ecospat.bg(species.1, species.2, env, nreps = 99, layers = NULL,
 environmental density values.  See documentation for ecospat.grid.clim.dyn.}
 
 \item{R}{Resolution of the grid. See documentation for ecospat.grid.clim.dyn.}
+
+\item{...}{Further arguments to be passed to check.bg}
 }
 \value{
 results Some results, once I figure out what results to return
@@ -34,7 +37,11 @@ results Some results, once I figure out what results to return
 enmtools.ecospat.bg, Runs an ecospat background/similarity test using enmtool.species objects.
 }
 \examples{
-enmtools.ecospat.bg(ahli, allogus)
+data(iberolacerta.clade)
+data(euro.worldclim)
+monticola <- iberolacerta.clade$species$monticola
+cyreni <- iberolacerta.clade$species$cyreni
+enmtools.ecospat.bg(monticola, cyreni, euro.worldclim[[1:2]], nback = 500)
 }
 \keyword{enm}
 \keyword{niche}

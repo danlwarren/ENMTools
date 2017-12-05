@@ -16,10 +16,17 @@ enmtools.dm(species, env = NA, test.prop = 0, report = NULL,
 
 \item{report}{Optional name of an html file for generating reports}
 
+\item{nback}{Number of background points for models.  In the case of Domain, these are only used for evaluation.}
+
 \item{overwrite}{TRUE/FALSE whether to overwrite a report file if it already exists}
 
 \item{...}{Arguments to be passed to bioclim()}
 }
 \description{
 Takes an emtools.species object with presence and background points, and builds a Domain model
+}
+\examples{
+data(euro.worldclim)
+data(iberolacerta.clade)
+enmtools.dm(iberolacerta.clade$species$monticola, env = euro.worldclim)
 }

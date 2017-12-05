@@ -12,6 +12,8 @@ enmtools.rf(species, env, f = NULL, test.prop = 0, eval = TRUE,
 
 \item{env}{A raster or raster stack of environmental data.}
 
+\item{f}{A formula for fitting the model}
+
 \item{test.prop}{Proportion of data to withhold for model evaluation}
 
 \item{eval}{Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.}
@@ -23,9 +25,13 @@ enmtools.rf(species, env, f = NULL, test.prop = 0, eval = TRUE,
 \item{overwrite}{TRUE/FALSE whether to overwrite a report file if it already exists}
 
 \item{...}{Arguments to be passed to rf()}
-
-\item{formula}{Standard RF formula}
 }
 \description{
 Takes an emtools.species object with presence and background points, and builds a random forest model
+}
+\examples{
+## NOT RUN
+data(euro.worldclim)
+data(iberolacerta.clade)
+enmtools.rf(iberolacerta.clade$species$monticola, env = euro.worldclim, nback = 500)
 }

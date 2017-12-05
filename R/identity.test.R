@@ -7,6 +7,7 @@
 #' @param type The type of model to construct, currently accepts "glm", "mx", "bc", "gam", or "dm"
 #' @param f A function to use for model fitting.  Only required for GLM models at the moment.
 #' @param nreps Number of replicates to perform
+#' @param nback Number of background points for models
 #' @param ... Additional arguments to be passed to model fitting functions.
 #'
 #' @return results A list containing a replicates, models for the empirical data, and summary statistics and plots.
@@ -14,14 +15,15 @@
 #' @keywords identity, equivalency, enmtools, hypothesis testing
 #'
 #' @export identity.test
-#' @export identity.precheck
-#' @export print.identity.test
-#' @export summary.identity.test
-#' @export plot.identity.test
 #'
 #' @examples
-#' identity.test(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, ...)
-#'
+#' data(iberolacerta.clade)
+#' data(euro.worldclim)
+#' cyreni <- iberolacerta.clade$species$cyreni
+#' monticola <- iberolacerta.clade$species$monticola
+#' cyreni$range <- background.raster.buffer(cyreni$presence.points, 100000, euro.worldclim)
+#' monticola$range <- background.raster.buffer(monticola$presence.points, 100000, euro.worldclim)
+#' identity.test(cyreni, monticola, env = euro.worldclim, type = "mx", nreps = 10)
 
 identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99, nback = 1000, ...){
 
@@ -131,35 +133,41 @@ identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99,
 
   p.values <- apply(reps.overlap, 2, function(x) 1 - mean(x > x[1]))
 
-  d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"D"], geom = "density", fill = "density", alpha = 0.5) +
+  d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"D"], linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
-    ggtitle(paste("Identity test:", species.1$species.name, "vs.", species.2$species.name))
+    ggtitle(paste("Identity test:", species.1$species.name, "vs.", species.2$species.name)) +
+    theme(plot.title = element_text(hjust = 0.5))
 
-  i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"I"], geom = "density", fill = "density", alpha = 0.5) +
+  i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"I"], linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") +
-    ggtitle(paste("Identity test:", species.1$species.name, "vs.", species.2$species.name))
+    ggtitle(paste("Identity test:", species.1$species.name, "vs.", species.2$species.name)) +
+    theme(plot.title = element_text(hjust = 0.5))
 
-  cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"rank.cor"], geom = "density", fill = "density", alpha = 0.5) +
+  cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"rank.cor"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"rank.cor"], linetype = "longdash") +
     xlim(-1,1) + guides(fill = FALSE, alpha = FALSE) + xlab("Rank Correlation") +
-    ggtitle(paste("Identity test:", species.1$species.name, "vs.", species.2$species.name))
+    ggtitle(paste("Identity test:", species.1$species.name, "vs.", species.2$species.name)) +
+    theme(plot.title = element_text(hjust = 0.5))
 
-  env.d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.D"], geom = "density", fill = "density", alpha = 0.5) +
+  env.d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.D"], linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D, Environmental Space") +
-    ggtitle(paste("Identity test:", species.1$species.name, "vs.", species.2$species.name))
+    ggtitle(paste("Identity test:", species.1$species.name, "vs.", species.2$species.name)) +
+    theme(plot.title = element_text(hjust = 0.5))
 
-  env.i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.I"], geom = "density", fill = "density", alpha = 0.5) +
+  env.i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.I"], linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I, Environmental Space") +
-    ggtitle(paste("Identity test:", species.1$species.name, "vs.", species.2$species.name))
+    ggtitle(paste("Identity test:", species.1$species.name, "vs.", species.2$species.name)) +
+    theme(plot.title = element_text(hjust = 0.5))
 
-  env.cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.cor"], geom = "density", fill = "density", alpha = 0.5) +
+  env.cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.cor"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.cor"], linetype = "longdash") +
     xlim(-1,1) + guides(fill = FALSE, alpha = FALSE) + xlab("Rank Correlation, Environmental Space") +
-    ggtitle(paste("Identity test:", species.1$species.name, "vs.", species.2$species.name))
+    ggtitle(paste("Identity test:", species.1$species.name, "vs.", species.2$species.name)) +
+    theme(plot.title = element_text(hjust = 0.5))
 
   # mean(id.dm[,1] > id.dm[1,1])
 
@@ -176,7 +184,7 @@ identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99,
                  env.i.plot = env.i.plot,
                  env.cor.plot = env.cor.plot)
 
-  class(output) <- "identity.test"
+  class(output) <- "enmtools.identity.test"
 
   return(output)
 
@@ -255,29 +263,30 @@ identity.precheck <- function(species.1, species.2, env, type, f, nreps){
 }
 
 
-summary.identity.test <- function(id){
+summary.enmtools.identity.test <- function(object, ...){
 
-  cat(paste("\n\n", id$description))
+  cat(paste("\n\n", object$description))
 
-  cat("\n\nIdentity test p-values:\n")
-  print(id$p.values)
+  cat("\n\nobjectentity test p-values:\n")
+  print(object$p.values)
 
   cat("\n\nReplicates:\n")
-  print(kable(head(id$reps.overlap)))
+  print(kable(head(object$reps.overlap)))
 
-  plot(id)
-
-}
-
-print.identity.test <- function(id){
-
-  summary(id)
+  plot(object)
 
 }
 
-plot.identity.test <- function(id){
-  grid.arrange(id$d.plot, id$env.d.plot,
-               id$i.plot, id$env.i.plot,
-               id$cor.plot, id$env.cor.plot, ncol = 2)
+print.enmtools.identity.test <- function(x, ...){
+
+  summary(x)
+
+}
+
+plot.enmtools.identity.test <- function(x, ...){
+  grid.arrange(x$d.plot, x$env.d.plot,
+               x$i.plot, x$env.i.plot,
+               x$cor.plot, x$env.cor.plot, ncol = 2)  +
+    theme(plot.title = element_text(hjust = 0.5))
 }
 

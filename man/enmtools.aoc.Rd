@@ -16,6 +16,8 @@ enmtools.aoc(clade, nreps, overlap.source, env = NULL, model = NULL,
 
 \item{overlap.source}{The source of the overlaps to calculate.  Choices are "bc", "dm", "gam", "glm", "mx", "range", and "point"}
 
+\item{env}{Environmental layers for use when overlap is calculated using niche models.}
+
 \item{model}{The model to be used for GLM and GAM comparisons}
 
 \item{overlap.matrix}{A matrix of overlaps to use, for option overlap.source = "matrix"}

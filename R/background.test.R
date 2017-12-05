@@ -10,6 +10,8 @@
 #' @param type The type of model to construct, currently accepts "glm", "mx", "bc", "gam", or "dm"
 #' @param f A function to use for model fitting.  Only required for GLM models at the moment.
 #' @param nreps Number of replicates to perform
+#' @param nback Number of background points for models
+#' @param test.type Controls whether the background test will be "symmetric" or "asymmetric"
 #' @param ... Additional arguments to be passed to model fitting functions.
 #'
 #' @return results A list containing replicates, models for the empirical data, and summary statistics and plots.
@@ -17,13 +19,9 @@
 #' @keywords background, equivalency, enmtools, hypothesis testing
 #'
 #' @export background.test
-#' @export background.precheck
-#' @export print.background.test
-#' @export summary.background.test
-#' @export plot.background.test
 #'
 #' @examples
-#' background.test(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, type = "asymmetric")
+#' background.test(ahli, allogus, env, type = "glm", nreps = 10, test.type = "asymmetric")
 #'
 
 background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99, test.type = "asymmetric", nback = 1000, ...){
@@ -158,32 +156,38 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
   p.values <- apply(reps.overlap, 2, function(x) 1 - mean(x > x[1]))
 
 
-  d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"D"], geom = "density", fill = "density", alpha = 0.5) +
+  d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"D"], linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") + ggtitle(description)
+    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") + ggtitle(description) +
+    theme(plot.title = element_text(hjust = 0.5))
 
-  i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"I"], geom = "density", fill = "density", alpha = 0.5) +
+  i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"I"], linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") + ggtitle(description)
+    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") + ggtitle(description) +
+    theme(plot.title = element_text(hjust = 0.5))
 
-  cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"rank.cor"], geom = "density", fill = "density", alpha = 0.5) +
+  cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"rank.cor"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"rank.cor"], linetype = "longdash") +
-    xlim(-1,1) + guides(fill = FALSE, alpha = FALSE) + xlab("Rank Correlation") + ggtitle(description)
+    xlim(-1,1) + guides(fill = FALSE, alpha = FALSE) + xlab("Rank Correlation") + ggtitle(description) +
+    theme(plot.title = element_text(hjust = 0.5))
 
-  env.d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.D"], geom = "density", fill = "density", alpha = 0.5) +
+  env.d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.D"], linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D, Environmental Space") +
-    ggtitle(description)
+    ggtitle(description) +
+    theme(plot.title = element_text(hjust = 0.5))
 
-  env.i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.I"], geom = "density", fill = "density", alpha = 0.5) +
+  env.i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.I"], linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I, Environmental Space") +
-    ggtitle(description)
+    ggtitle(description) +
+    theme(plot.title = element_text(hjust = 0.5))
 
-  env.cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.cor"], geom = "density", fill = "density", alpha = 0.5) +
+  env.cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.cor"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.cor"], linetype = "longdash") +
     xlim(-1,1) + guides(fill = FALSE, alpha = FALSE) + xlab("Rank Correlation, Environmental Space") +
-    ggtitle(description)
+    ggtitle(description) +
+    theme(plot.title = element_text(hjust = 0.5))
 
 
   output <- list(description = description,
@@ -199,7 +203,7 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
                  env.i.plot = env.i.plot,
                  env.cor.plot = env.cor.plot)
 
-  class(output) <- "background.test"
+  class(output) <- "enmtools.background.test"
 
   return(output)
 
@@ -278,28 +282,29 @@ background.precheck <- function(species.1, species.2, env, type, f, nreps, test.
 }
 
 
-summary.background.test <- function(bg){
+summary.enmtools.background.test <- function(object, ...){
 
-  cat(paste("\n\n", bg$description))
+  cat(paste("\n\n", object$description))
 
   cat("\n\nbackground test p-values:\n")
-  print(bg$p.values)
+  print(object$p.values)
 
   cat("\n\nReplicates:\n")
-  print(kable(head(bg$reps.overlap)))
+  print(kable(head(object$reps.overlap)))
 
-  plot(bg)
-
-}
-
-print.background.test <- function(bg){
-
-  summary(bg)
+  plot(object)
 
 }
 
-plot.background.test <- function(bg){
-  grid.arrange(bg$d.plot, bg$env.d.plot,
-               bg$i.plot, bg$env.i.plot,
-               bg$cor.plot, bg$env.cor.plot, ncol = 2)
+print.enmtools.background.test <- function(x, ...){
+
+  summary(x)
+
+}
+
+plot.enmtools.background.test <- function(x, ...){
+  grid.arrange(x$d.plot, x$env.d.plot,
+               x$i.plot, x$env.i.plot,
+               x$cor.plot, x$env.cor.plot, ncol = 2) +
+               theme(plot.title = element_text(hjust = 0.5))
 }
