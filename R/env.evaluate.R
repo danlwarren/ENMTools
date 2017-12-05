@@ -10,6 +10,7 @@
 
 env.evaluate <- function(species, model, env, bg.source = "background", ...){
 
+
   species <- check.bg.ppmlasso(species, env, ...)
 
   if(!inherits(species, "enmtools.species")){
@@ -31,9 +32,10 @@ env.evaluate <- function(species, model, env, bg.source = "background", ...){
   }
 
   if(bg.source == "env") {
-    maxes <- maxValue(env)
     mins <- minValue(env)
+    maxes <- maxValue(env)
   }
+
 
 
 
