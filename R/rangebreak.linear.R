@@ -318,6 +318,7 @@ plot.enmtools.rangebreak.linear <- function(x, ...){
 
   grid.arrange(x$d.plot, x$env.d.plot,
                x$i.plot, x$env.i.plot,
-               x$cor.plot, x$env.cor.plot, ncol = 2)
+               x$cor.plot, x$env.cor.plot, ncol = 2) +
+    theme(plot.title = element_text(hjust = 0.5))
 }
 

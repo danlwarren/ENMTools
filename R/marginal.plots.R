@@ -56,7 +56,10 @@ marginal.plots <- function(model, env, layer){
   #print(pred)
 
   response.plot <- qplot(plot.df[,1], pred, geom = "line",
-                         xlab = layer, ylab = "Response") + theme_bw()
+                         xlab = layer, ylab = "Response") + theme_bw() +
+                         theme(plot.title = element_text(hjust = 0.5)) +
+                         theme(plot.title = element_text(hjust = 0.5))
+
 
   return(response.plot)
 
