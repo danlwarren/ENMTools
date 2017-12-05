@@ -161,9 +161,17 @@ cyreni.gam <- enmtools.gam(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.
 expect_enmtools_model(cyreni.gam)
 
 
+
+#' Geographic space metrics and visualization
+#'
+#'
+
+
+
 #' Env space metrics and visualization
 #'
 #'
+
 
 
 #' Monte Carlo tests, ENMTools-style
