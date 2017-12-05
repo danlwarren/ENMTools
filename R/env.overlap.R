@@ -44,9 +44,19 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
     
     # Use that sample space to get a starting overlap value
     colnames(predict.table) <- names(env)
-    pred1 <- as.numeric(predict(model.1, data.frame(predict.table), type = "response"))
-    pred2 <- as.numeric(predict(model.2, data.frame(predict.table), type = "response"))
-    
+
+    if(inherits(model.1, "DistModel")){
+      pred1 <- as.numeric(predict(model.1, x = data.frame(predict.table), type = "response"))
+    } else {
+      pred1 <- as.numeric(predict(model.1, newdata = data.frame(predict.table), type = "response"))
+    }
+
+    if(inherits(model.2, "DistModel")){
+      pred2 <- as.numeric(predict(model.2, x = data.frame(predict.table), type = "response"))
+    } else {
+      pred2 <- as.numeric(predict(model.2, newdata = data.frame(predict.table), type = "response"))
+    }
+
     if(sd(pred1) == 0 | sd(pred2) == 0){
       output <- list(env.D = NA,
                      env.I = NA,
@@ -91,11 +101,19 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
       this.lhs <- randomLHS(10000, length(names(env)))
       predict.table <- t(t(this.lhs) * (maxes  - mins) + mins)
       colnames(predict.table) <- names(env)
-      
-      # Make new predictions and recalculate metrics
-      pred1 <- predict(model.1, data.frame(predict.table), type = "response")
-      pred2 <- predict(model.2, data.frame(predict.table), type = "response")
-      
+
+      if(inherits(model.1, "DistModel")){
+        pred1 <- as.numeric(predict(model.1, x = data.frame(predict.table), type = "response"))
+      } else {
+        pred1 <- as.numeric(predict(model.1, newdata = data.frame(predict.table), type = "response"))
+      }
+
+      if(inherits(model.2, "DistModel")){
+        pred2 <- as.numeric(predict(model.2, x = data.frame(predict.table), type = "response"))
+      } else {
+        pred2 <- as.numeric(predict(model.2, newdata = data.frame(predict.table), type = "response"))
+      }
+
       if(sd(pred1) == 0 | sd(pred2) == 0){
         output <- list(env.D = NA,
                        env.I = NA,

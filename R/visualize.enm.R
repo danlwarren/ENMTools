@@ -15,7 +15,7 @@
 #' @examples
 #' visualize.enm(1, .001, .001)
 
-visualize.enm <- function(model, env, nbins = 100, layers, plot.points = TRUE){
+visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plot.points = TRUE){
 
   if(!inherits(model, "enmtools.model")){
     stop("This function requires an enmtools.model object!")
@@ -62,7 +62,11 @@ visualize.enm <- function(model, env, nbins = 100, layers, plot.points = TRUE){
 
   plot.df <- data.frame(plot.df)
 
-  pred <- predict(model$model, plot.df, type = "response")
+  if(inherits(model$model, "DistModel")){
+    pred <- predict(model$model, x = plot.df, type = "response")
+  } else {
+    pred <- predict(model$model, newdata = plot.df, type = "response")
+  }
 
   plot.df <- cbind(plot.df[,1:2], pred)
 

@@ -1,12 +1,17 @@
 Package: ENMTools
 Type: Package
 Title: Analysis of niche evolution using niche and distribution models
-Version: 0.1
-Date: 2016-01-11
-Author: Dan Warren <dan.l.warren@gmail.com>
-Maintainer: an Warren <dan.l.warren@gmail.com>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Version: 0.2
+Date: 2017-01-11
+Authors@R: c(person(given = "Dan", family = "Warren", role = c("aut", "cre"), email = "dan.l.warren@gmail.com"),
+              person(given = "Russell", family = "Dinnage", role = "aut", email = "r.dinnage@gmail.com"),
+              person(given = "Nick", family = "Matzke", role = "aut", email = "nick.matzke@anu.edu.au"),
+              person(given = "John", family = "Baumgartner", role = "ctb"),
+              person(given = "Linda", family = "Beaumont", role = "ctb")
+              )
+Maintainer: Dan Warren <dan.l.warren@gmail.com>
+Description: Tools for the ecological and historical biogeography.
+License: GPL-2
 LazyData: TRUE
 RoxygenNote: 6.0.1
 Depends:
@@ -23,4 +28,5 @@ Depends:
 	phyloclim,
 	fields,
 	gbm,
-	randomForest
+	randomForest,
+  ppmlasso

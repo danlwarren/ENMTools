@@ -41,7 +41,7 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
   }
 
 
-  this.dm <- domain(env, species$presence.points[,1:2])
+  this.dm <- dismo::domain(env, species$presence.points[,1:2])
 
   # This is a very weird hack that has to be done because dismo's evaluate function
   # fails if the stack only has one layer.

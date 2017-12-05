@@ -117,7 +117,7 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
     geom_raster(aes(fill = Density)) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Density")) +
     coord_fixed() + theme_classic() +
-    ggtitle(paste(species.1$species.name, "density in environment space, scaled by availability"))
+    ggtitle(paste(species.1$species.name, "density in environment space, \nscaled by availability"))
 
   sp2.bg.points <- data.frame(rasterToPoints(sp2.niche$Z))
   colnames(sp2.bg.points) <- c("X", "Y", "Density")
@@ -141,7 +141,7 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
     geom_raster(aes(fill = Density)) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Density")) +
     coord_fixed() + theme_classic() +
-    ggtitle(paste(species.2$species.name, "density in environment space, scaled by availability"))
+    ggtitle(paste(species.2$species.name, "density in environment space, \nscaled by availability"))
 
 
 
@@ -238,33 +238,35 @@ ecospat.bg.precheck <- function(species.1, species.2, env, nreps, layers){
 }
 
 
-summary.ecospat.bg.test <- function(id){
-  cat(paste("\n\n", id$description))
+summary.ecospat.bg.test <- function(bg){
+  cat(paste("\n\n", bg$description))
 
-  # print(kable(head(id$sp1.env)))
-  # print(kable(head(id$sp1.bg.env)))
-  # print(kable(head(id$sp2.env)))
-  # print(kable(head(id$sp2.bg.env)))
-  # print(kable(head(id$background.env)))
+  # print(kable(head(bg$sp1.env)))
+  # print(kable(head(bg$sp1.bg.env)))
+  # print(kable(head(bg$sp2.env)))
+  # print(kable(head(bg$sp2.bg.env)))
+  # print(kable(head(bg$background.env)))
 
+  cat("\n\necospat.bg test empirical overlaps:\n")
+  print(bg$test.results$obs)
 
   cat("\n\necospat.bg test p-values:\n")
-  print(id$p.values)
+  print(bg$p.values)
 
-  plot(id)
-
-}
-
-print.ecospat.bg.test <- function(id){
-
-  print(summary(id))
+  plot(bg)
 
 }
 
-plot.ecospat.bg.test <- function(id){
-  grid.arrange(id$d.plot, id$i.plot, nrow = 2)
-  grid.arrange(id$sp1.bg.plot, id$sp2.bg.plot,
-               id$sp1.env.plot, id$sp2.env.plot,
-               id$sp1.env.plot.corr, id$sp2.env.plot.corr, ncol = 2)
+print.ecospat.bg.test <- function(bg){
+
+  print(summary(bg))
+
+}
+
+plot.ecospat.bg.test <- function(bg){
+  grid.arrange(bg$d.plot, bg$i.plot, nrow = 2)
+  grid.arrange(bg$sp1.bg.plot, bg$sp2.bg.plot,
+               bg$sp1.env.plot, bg$sp2.env.plot,
+               bg$sp1.env.plot.corr, bg$sp2.env.plot.corr, ncol = 2)
 }
 

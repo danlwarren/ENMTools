@@ -9,9 +9,9 @@ check.species(this.species)
 \arguments{
 \item{range}{A raster or SpatialPolygon with the actual range they occur in}
 
-\item{presence.points}{A data frame with sampled localities}
+\item{presence.points}{A data frame with sampled localities.  If a matrix is passed, it will be cast to a data frame.}
 
-\item{background.points}{A data frame with absence/pseudoabsence/background localities}
+\item{background.points}{A data frame with absence/pseudoabsence/background localities.  If a matrix is passed, it will be cast to a data frame.}
 
 \item{species.name}{A character vector with the species name}
 

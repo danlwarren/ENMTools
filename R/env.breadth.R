@@ -37,8 +37,13 @@ env.breadth <- function(model, env, tolerance = .001, max.reps = 10){
     
     # Use that sample space to get a starting overlap value
     colnames(predict.table) <- names(env)
-    pred <- as.numeric(predict(model, data.frame(predict.table), type = "response"))
-    
+
+    if(inherits(model, "DistModel")){
+      pred <- as.numeric(predict(model, x = data.frame(predict.table), type = "response"))
+    } else {
+      pred <- as.numeric(predict(model, newdata = data.frame(predict.table), type = "response"))
+    }
+
     pred[which(pred == 0)] <- 1e-40
     
     # No meaningful prediction
@@ -85,8 +90,13 @@ env.breadth <- function(model, env, tolerance = .001, max.reps = 10){
       colnames(predict.table) <- names(env)
       
       # Make new predictions and recalculate metrics
-      pred <- predict(model, data.frame(predict.table), type = "response")
-      
+
+      if(inherits(model, "DistModel")){
+        pred <- as.numeric(predict(model, x = data.frame(predict.table), type = "response"))
+      } else {
+        pred <- as.numeric(predict(model, newdata = data.frame(predict.table), type = "response"))
+      }
+
       pred[which(pred == 0)] <- 1e-40
       
       # Can't make a prediction, return NAs and die
