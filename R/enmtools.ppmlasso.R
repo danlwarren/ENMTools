@@ -9,6 +9,7 @@
 #' @param normalise Should the suitability of the model be normalised? If FALSE (the default), suitability is returned as the predicted number of presence points in each grid cell (occurrence density). If TRUE, occurrence densities are divided by the total predicted density, to give a value ranging from 0 to 1, which represents the proportion of the predicted density for a species that occurs in each grid cell.
 #' @param report Optional name of an html file for generating reports
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
+#' @param rts.reps The number of replicates to do for a Raes and ter Steege-style test of significance
 #' @param ... Arguments to be passed to ppmlasso()
 #'
 #' @details This runs a \code{ppmlasso} model of a species' distribution. It is generally recommended that background points should be on a grid for this method, as the background points are considered 'quadrature' points, used to estimate an integral. If background points are not provided, the function will generate them on a grid, rather than randomly, as is more usual for other SDM methods.
@@ -22,7 +23,7 @@
 #' enmtools.ppmlasso(iberolacerta.clade$species$monticola, env = euro.worldclim[[1:3]])
 
 
-enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 10000, normalise = FALSE, report = NULL, overwrite = FALSE, ...){
+enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 10000, normalise = FALSE, report = NULL, overwrite = FALSE, rts.reps = 0, ...){
 
   notes <- NULL
 
@@ -42,6 +43,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
   env.model.evaluation <- NA
   test.evaluation <- NA
   env.test.evaluation <- NA
+  rts.test <- NA
 
 
   ### Add env data
