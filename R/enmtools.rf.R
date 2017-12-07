@@ -95,35 +95,53 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
       rts.env.test <- c()
 
       for(i in 1:rts.reps){
+        print(paste("Replicate", i, "of", rts.reps))
 
         # Repeating analysis with scrambled pa points and then evaluating models
-        rts.df <- analysis.df
-        rts.df$presence <- rts.df$presence[sample(1:nrow(rts.df))]
-        this.rf <- randomForest(f, rts.df[,-c(1,2)], family="binomial", ...)
+        rep.species <- species
 
-        suitability <- predict(env, this.rf, type = "response")
+        # Mix the points all together
+        allpoints <- rbind(test.data, species$background.points[,1:2], species$presence.points[,1:2])
+
+        # Sample presence points from pool and remove from pool
+        rep.rows <- sample(nrow(allpoints), nrow(species$presence.points))
+        rep.species$presence.points <- allpoints[rep.rows,]
+        allpoints <- allpoints[-rep.rows,]
+
+        # Do the same for test points
+        test.rows <- sample(nrow(allpoints), nrow(species$presence.points))
+        rep.test.data <- allpoints[test.rows,]
+        allpoints <- allpoints[-test.rows,]
+
+        # Everything else goes back to the background
+        rep.species$background.points <- allpoints
+
+        rep.species <- add.env(rep.species, env, verbose = FALSE)
+
+        rts.df <- rbind(rep.species$presence.points, rep.species$background.points)
+        rts.df$presence <- c(rep(1, nrow(rep.species$presence.points)), rep(0, nrow(rep.species$background.points)))
+
+        thisrep.rf <- randomForest(f, rts.df[,-c(1,2)], family="binomial", ...)
+
+        suitability <- predict(env, thisrep.rf, type = "response")
 
         thisrep.model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
-                                                   this.rf, env)
-        thisrep.env.model.evaluation <- env.evaluate(species, this.rf, env)
+                                                   thisrep.rf, env)
+        thisrep.env.model.evaluation <- env.evaluate(species, thisrep.rf, env)
 
         rts.geog.training[i] <- thisrep.model.evaluation@auc
         rts.env.training[i] <- thisrep.env.model.evaluation@auc
 
-        # I need to double check whether RTS tested models on same test data as empirical
-        # model, or whether they drew new holdouts for replicates.  Currently I'm just
-        # using the same test data for each rep.
         if(test.prop > 0 & test.prop < 1){
-          thisrep.test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
-                                                    this.rf, env)
-          temp.sp <- species
+          thisrep.test.evaluation <-dismo::evaluate(rep.test.data, species$background.points[,1:2],
+                                                    thisrep.rf, env)
           temp.sp$presence.points <- test.data
-          thisrep.env.test.evaluation <- env.evaluate(temp.sp, this.rf, env)
+          thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.rf, env)
 
           rts.geog.test[i] <- thisrep.test.evaluation@auc
           rts.env.test[i] <- thisrep.env.test.evaluation@auc
         }
-        rts.models[[paste0("rep.",i)]] <- list(model = this.rf,
+        rts.models[[paste0("rep.",i)]] <- list(model = thisrep.rf,
                                                training.evaluation = model.evaluation,
                                                env.training.evaluation = env.model.evaluation,
                                                test.evaluation = test.evaluation,
