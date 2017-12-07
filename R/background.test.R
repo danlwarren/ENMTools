@@ -27,7 +27,7 @@
 #' monticola <- iberolacerta.clade$species$monticola
 #' cyreni$range <- background.raster.buffer(cyreni$presence.points, 100000, euro.worldclim)
 #' monticola$range <- background.raster.buffer(monticola$presence.points, 100000, euro.worldclim)
-#' background.test(cyreni, monticola, env = euro.worldclim, type = "mx", nreps = 10)
+#' background.test(cyreni, monticola, env = euro.worldclim, type = "bc", nreps = 10)
 
 background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99, test.type = "asymmetric", nback = 1000, ...){
 
