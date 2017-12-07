@@ -10,23 +10,25 @@
 #' @param th.env Quantile of environmental densities across studye sites used as threshold to exclude low
 #' environmental density values.  See documentation for ecospat.grid.clim.dyn.
 #' @param R Resolution of the grid. See documentation for ecospat.grid.clim.dyn.
+#' @param ... Further arguments to be passed to check.bg
 #'
 #' @return results Some results, once I figure out what results to return
 #'
 #' @keywords niche plot sdm enm
 #'
 #' @export enmtools.ecospat.bg
-#' @export summary.ecospat.bg.test
-#' @export print.ecospat.bg.test
-#' @export plot.ecospat.bg.test
 #'
 #' @examples
-#' enmtools.ecospat.bg(ahli, allogus)
+#' data(iberolacerta.clade)
+#' data(euro.worldclim)
+#' monticola <- iberolacerta.clade$species$monticola
+#' cyreni <- iberolacerta.clade$species$cyreni
+#' enmtools.ecospat.bg(monticola, cyreni, euro.worldclim[[1:2]], nback = 500)
 
-enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = NULL, test.type = "asymmetric", th.sp=0, th.env=0, R=100, ...){
+enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = NULL, test.type = "asymmetric", th.sp=0, th.env=0, R=100, nback = 1000, ...){
 
-  species.1 <- check.bg(species.1, env, ...)
-  species.2 <- check.bg(species.2, env, ...)
+  species.1 <- check.bg(species.1, env, nback)
+  species.2 <- check.bg(species.2, env, nback)
 
   if(length(names(env)) == 2){
     layers <- names(env)
@@ -84,15 +86,17 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
   p.values <- c(bg$p.D, bg$p.I)
   names(p.values) <- c("D", "I")
 
-  d.plot <- qplot(bg$sim[,"D"], geom = "density", fill = "density", alpha = 0.5) +
+  d.plot <- qplot(bg$sim[,"D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = bg$obs$D, linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
-    ggtitle(paste("Ecospat background test:", species.1$species.name, "vs.", species.2$species.name))
+    ggtitle(paste("Ecospat background test:", species.1$species.name, "vs.", species.2$species.name)) +
+    theme(plot.title = element_text(hjust = 0.5))
 
-  i.plot <- qplot(bg$sim[,"I"], geom = "density", fill = "density", alpha = 0.5) +
+  i.plot <- qplot(bg$sim[,"I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = bg$obs$I, linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") +
-    ggtitle(paste("Ecospat background test:", species.1$species.name, "vs.", species.2$species.name))
+    ggtitle(paste("Ecospat background test:", species.1$species.name, "vs.", species.2$species.name)) +
+    theme(plot.title = element_text(hjust = 0.5))
 
 
   sp1.bg.points <- data.frame(rasterToPoints(sp1.niche$Z))
@@ -101,7 +105,8 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
     geom_raster(aes(fill = Density)) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Density")) +
     coord_fixed() + theme_classic() +
-    ggtitle(paste(species.1$species.name, "available environment"))
+    ggtitle(paste(species.1$species.name, "available environment")) +
+    theme(plot.title = element_text(hjust = 0.5))
 
   sp1.env.points <- data.frame(rasterToPoints(sp1.niche$z.uncor))
   colnames(sp1.env.points) <- c("X", "Y", "Density")
@@ -109,7 +114,8 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
     geom_raster(aes(fill = Density)) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Density")) +
     coord_fixed() + theme_classic() +
-    ggtitle(paste(species.1$species.name, "occurrence in environment space"))
+    ggtitle(paste(species.1$species.name, "occurrence in environment space")) +
+    theme(plot.title = element_text(hjust = 0.5))
 
   sp1.env.corr.points <- data.frame(rasterToPoints(sp1.niche$z.cor))
   colnames(sp1.env.corr.points) <- c("X", "Y", "Density")
@@ -117,7 +123,8 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
     geom_raster(aes(fill = Density)) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Density")) +
     coord_fixed() + theme_classic() +
-    ggtitle(paste(species.1$species.name, "density in environment space, \nscaled by availability"))
+    ggtitle(paste(species.1$species.name, "density in environment space, \nscaled by availability")) +
+    theme(plot.title = element_text(hjust = 0.5))
 
   sp2.bg.points <- data.frame(rasterToPoints(sp2.niche$Z))
   colnames(sp2.bg.points) <- c("X", "Y", "Density")
@@ -125,7 +132,8 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
     geom_raster(aes(fill = Density)) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Density")) +
     coord_fixed() + theme_classic() +
-    ggtitle(paste(species.2$species.name, "available environment"))
+    ggtitle(paste(species.2$species.name, "available environment")) +
+    theme(plot.title = element_text(hjust = 0.5))
 
   sp2.env.points <- data.frame(rasterToPoints(sp2.niche$z.uncor))
   colnames(sp2.env.points) <- c("X", "Y", "Density")
@@ -133,7 +141,8 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
     geom_raster(aes(fill = Density)) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Density")) +
     coord_fixed() + theme_classic() +
-    ggtitle(paste(species.2$species.name, "occurrence in environment space"))
+    ggtitle(paste(species.2$species.name, "occurrence in environment space")) +
+    theme(plot.title = element_text(hjust = 0.5))
 
   sp2.env.corr.points <- data.frame(rasterToPoints(sp2.niche$z.cor))
   colnames(sp2.env.corr.points) <- c("X", "Y", "Density")
@@ -141,7 +150,8 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
     geom_raster(aes(fill = Density)) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Density")) +
     coord_fixed() + theme_classic() +
-    ggtitle(paste(species.2$species.name, "density in environment space, \nscaled by availability"))
+    ggtitle(paste(species.2$species.name, "density in environment space, \nscaled by availability")) +
+    theme(plot.title = element_text(hjust = 0.5))
 
 
 
@@ -238,35 +248,36 @@ ecospat.bg.precheck <- function(species.1, species.2, env, nreps, layers){
 }
 
 
-summary.ecospat.bg.test <- function(bg){
-  cat(paste("\n\n", bg$description))
+summary.ecospat.bg.test <- function(object, ...){
+  cat(paste("\n\n", object$description))
 
-  # print(kable(head(bg$sp1.env)))
-  # print(kable(head(bg$sp1.bg.env)))
-  # print(kable(head(bg$sp2.env)))
-  # print(kable(head(bg$sp2.bg.env)))
-  # print(kable(head(bg$background.env)))
+  # print(kable(head(object$sp1.env)))
+  # print(kable(head(object$sp1.object.env)))
+  # print(kable(head(object$sp2.env)))
+  # print(kable(head(object$sp2.object.env)))
+  # print(kable(head(object$background.env)))
 
   cat("\n\necospat.bg test empirical overlaps:\n")
-  print(bg$test.results$obs)
+  print(object$test.results$obs)
 
   cat("\n\necospat.bg test p-values:\n")
-  print(bg$p.values)
+  print(object$p.values)
 
-  plot(bg)
-
-}
-
-print.ecospat.bg.test <- function(bg){
-
-  print(summary(bg))
+  plot(object)
 
 }
 
-plot.ecospat.bg.test <- function(bg){
-  grid.arrange(bg$d.plot, bg$i.plot, nrow = 2)
-  grid.arrange(bg$sp1.bg.plot, bg$sp2.bg.plot,
-               bg$sp1.env.plot, bg$sp2.env.plot,
-               bg$sp1.env.plot.corr, bg$sp2.env.plot.corr, ncol = 2)
+print.ecospat.bg.test <- function(x, ...){
+
+  print(summary(x))
+
+}
+
+plot.ecospat.bg.test <- function(x, ...){
+  grid.arrange(x$d.plot, x$i.plot, nrow = 2)
+  grid.arrange(x$sp1.bg.plot, x$sp2.bg.plot,
+               x$sp1.env.plot, x$sp2.env.plot,
+               x$sp1.env.plot.corr, x$sp2.env.plot.corr, ncol = 2) +
+               theme(plot.title = element_text(hjust = 0.5))
 }
 

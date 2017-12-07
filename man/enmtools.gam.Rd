@@ -12,6 +12,8 @@ enmtools.gam(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000,
 
 \item{env}{A raster or raster stack of environmental data.}
 
+\item{f}{Standard gam formula}
+
 \item{test.prop}{Proportion of data to withhold for model evaluation}
 
 \item{k}{Dimension of the basis used to represent the smooth term.  See documentation for s() for details.}
@@ -23,9 +25,12 @@ enmtools.gam(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000,
 \item{overwrite}{TRUE/FALSE whether to overwrite a report file if it already exists}
 
 \item{...}{Arguments to be passed to gam()}
-
-\item{formula}{Standard gam formula}
 }
 \description{
 Takes an emtools.species object with presence and background points, and builds a gam
+}
+\examples{
+data(euro.worldclim)
+data(iberolacerta.clade)
+enmtools.gam(iberolacerta.clade$species$monticola, env = euro.worldclim, f = pres ~ bio1 + bio9)
 }

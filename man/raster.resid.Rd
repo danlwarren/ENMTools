@@ -19,8 +19,8 @@ This function builds a linear model for the relationship between two rasters, an
 and a spatial raster of the residuals from that model.
 }
 \examples{
-raster.resid(ahli.raster, allogus.raster)
-
+data(euro.worldclim)
+raster.resid(euro.worldclim[[1]], euro.worldclim[[2]])
 }
 \keyword{correlation,}
 \keyword{raster,}

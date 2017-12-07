@@ -5,7 +5,7 @@
 \title{enmtools.ecospat.id, Runs an ecospat identity test using enmtool.species objects.}
 \usage{
 enmtools.ecospat.id(species.1, species.2, env, nreps = 99, layers = NULL,
-  th.sp = 0, th.env = 0, R = 100, ...)
+  th.sp = 0, th.env = 0, R = 100, nback = 1000)
 }
 \arguments{
 \item{species.1}{An enmtools.species object}
@@ -32,7 +32,11 @@ results Some results, once I figure out what results to return
 enmtools.ecospat.id, Runs an ecospat identity test using enmtool.species objects.
 }
 \examples{
-enmtools.ecospat.id(ahli, allogus)
+data(iberolacerta.clade)
+data(euro.worldclim)
+monticola <- iberolacerta.clade$species$monticola
+cyreni <- iberolacerta.clade$species$cyreni
+enmtools.ecospat.id(monticola, cyreni, euro.worldclim[[1:2]], nback = 500)
 }
 \keyword{enm}
 \keyword{niche}

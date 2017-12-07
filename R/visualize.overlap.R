@@ -14,7 +14,13 @@
 #' @export visualize.overlap
 #'
 #' @examples
-#' visualize.enm(1, .001, .001)
+#' data(iberolacerta)
+#' ar <- iberolacerta.clade$species$aranica
+#' au <- iberolacerta.clade$species$aurelioi
+#' data(euro.worldclim)
+#' aranica.bc <- enmtools.bc(ar, euro.worldclim)
+#' aurelioi.bc <- enmtools.bc(au, euro.worldclim)
+#' visualize.overlap(aranica.bc, aurelioi.bc, euro.worldclim, layers = c("bio1", "bio9"))
 
 visualize.overlap <- function(model.1, model.2, env, nbins = 100, layers, plot.points = TRUE){
 

@@ -1,31 +1,33 @@
 #' Takes an emtools.species object with presence and background points, and builds a Point Process Model (with Lasso penalty)
 #'
-#' @param formula Standard R formula
 #' @param species An enmtools.species object
 #' @param env A raster or raster stack of environmental data.
+#' @param f Standard R formula
 #' @param test.prop Proportion of data to withhold for model evaluation
 #' @param eval Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.
 #' @param nback Number of background points to draw from range or env, if background points aren't provided
-#' @param back.accurate Should a more accurate method of generating background points be used, if background points aren't provided? If TRUE, this method produces a number of background points close to \code{nback}, but is much slower than the alternative method, which is fast but innaccurate.
 #' @param normalise Should the suitability of the model be normalised? If FALSE (the default), suitability is returned as the predicted number of presence points in each grid cell (occurrence density). If TRUE, occurrence densities are divided by the total predicted density, to give a value ranging from 0 to 1, which represents the proportion of the predicted density for a species that occurs in each grid cell.
 #' @param report Optional name of an html file for generating reports
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
+#' @param rts.reps The number of replicates to do for a Raes and ter Steege-style test of significance
 #' @param ... Arguments to be passed to ppmlasso()
 #'
 #' @details This runs a \code{ppmlasso} model of a species' distribution. It is generally recommended that background points should be on a grid for this method, as the background points are considered 'quadrature' points, used to estimate an integral. If background points are not provided, the function will generate them on a grid, rather than randomly, as is more usual for other SDM methods.
 #'
 #' @importFrom ppmlasso ppmlasso
 #' @export enmtools.ppmlasso
-#' @export print.enmtools.ppmlasso
-#' @export summary.enmtools.ppmlasso
-#' @export plot.enmtools.ppmlasso
+#'
+#' @examples
+#' data(euro.worldclim)
+#' data(iberolacerta.clade)
+#' enmtools.ppmlasso(iberolacerta.clade$species$monticola, env = euro.worldclim[[1:3]])
 
 
-enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 10000, back.accurate = FALSE, normalise = FALSE, report = NULL, overwrite = FALSE, ...){
+enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 10000, normalise = FALSE, report = NULL, overwrite = FALSE, rts.reps = 0, ...){
 
   notes <- NULL
 
-  species <- check.bg.ppmlasso(species, env, nback = nback, back.accurate = back.accurate)
+  species <- check.bg(species, env, nback = nback)
 
   # Builds a default formula using all env
   if(is.null(f)){
@@ -41,6 +43,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
   env.model.evaluation <- NA
   test.evaluation <- NA
   env.test.evaluation <- NA
+  rts.test <- NA
 
 
   ### Add env data
@@ -72,7 +75,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
   suitability <- predict(env, this.ppmlasso, fun = p.fun)
 
   if(normalise) {
-    values(suitability) <- values(suitability) / sum(values(suitability), na.rm = TRUE)
+    getValues(suitability) <- getValues(suitability) / sum(getValues(suitability), na.rm = TRUE)
   }
 
   if(eval == TRUE){
@@ -127,11 +130,11 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
   class(output) <- c("enmtools.ppmlasso", "enmtools.model")
 
   # Doing response plots for each variable.  Doing this bit after creating
-  # the output object because plot.response expects an enmtools.model object
+  # the output object because marginal.plots expects an enmtools.model object
   response.plots <- list()
 
   for(i in names(env)){
-    response.plots[[i]] <- plot.response(output, env, i)
+    response.plots[[i]] <- marginal.plots(output, env, i)
   }
 
   output[["response.plots"]] <- response.plots
@@ -150,69 +153,65 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
 }
 
 # Summary for objects of class enmtools.glm
-summary.enmtools.ppmlasso <- function(this.ppmlasso){
+summary.enmtools.ppmlasso <- function(object, ...){
 
   cat("\n\nFormula:  ")
-  print(this.ppmlasso$formula)
+  print(object$formula)
 
   cat("\n\nData table (top ten lines): ")
-  print(kable(head(this.ppmlasso$analysis.df, 10)))
+  print(kable(head(object$analysis.df, 10)))
 
   cat("\n\nModel:  ")
-  print(summary(this.ppmlasso$model))
+  print(summary(object$model))
 
   # ppmlasso doesn't really have a pretty summary at the moment. Might have to come up with something ourselves
   # cat("\n\nModel fit (training data):  ")
-  # print(this.ppmlasso$training.evaluation)
+  # print(object$training.evaluation)
 
   cat("\n\nEnvironment space model fit (training data):  ")
-  print(this.ppmlasso$env.training.evaluation)
+  print(object$env.training.evaluation)
 
   cat("\n\nProportion of data wittheld for model fitting:  ")
-  cat(this.ppmlasso$test.prop)
+  cat(object$test.prop)
 
   cat("\n\nModel fit (test data):  ")
-  print(this.ppmlasso$test.evaluation)
+  print(object$test.evaluation)
 
   cat("\n\nEnvironment space model fit (test data):  ")
-  print(this.ppmlasso$env.test.evaluation)
+  print(object$env.test.evaluation)
 
   cat("\n\nSuitability:  \n")
-  print(this.ppmlasso$suitability)
+  print(object$suitability)
 
   cat("\n\nNotes:  \n")
-  this.ppmlasso$notes
+  object$notes
 
-  plot(this.ppmlasso)
+  plot(object)
 
 }
 
 # Print method for objects of class enmtools.ppmlasso
-print.enmtools.ppmlasso <- function(this.ppmlasso){
+print.enmtools.ppmlasso <- function(x, ...){
 
-  print(summary(this.ppmlasso))
+  print(summary(x))
 
 }
 
-
-#' Plot method for objects of class enmtools.ppmlasso
-#' @param this.ppmlasso An enmtools.ppmlasso object
-#' @param trans_col Transformation to apply to the colour range (Z axis). A character value corresponding to one of \code{ggplot2}'s builtin scale transformations (see argument \code{trans} in \code{\link[ggplot2]{continuous_scale}} for possible choices). \code{trans_col = 'sqrt'} will often work well for ppmlasso plots. If NULL, no transformation is applied.
-#'
-plot.enmtools.ppmlasso <- function(this.ppmlasso, trans_col = NULL){
+# Plot method for objects of class enmtools.ppmlasso
+plot.enmtools.ppmlasso <- function(x, trans_col = NULL, ...){
 
 
-  suit.points <- data.frame(rasterToPoints(this.ppmlasso$suitability))
+  suit.points <- data.frame(rasterToPoints(x$suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
   suit.plot <- ggplot(data = suit.points, aes(y = Latitude, x = Longitude)) +
     geom_raster(aes(fill = Suitability)) +
     coord_fixed() + theme_classic() +
-    geom_point(data = this.ppmlasso$analysis.df[this.ppmlasso$analysis.df$presence == 1,], aes(x = Longitude, y = Latitude),
+    geom_point(data = x$analysis.df[x$analysis.df$presence == 1,], aes(x = Longitude, y = Latitude),
                pch = 21, fill = "white", color = "black", size = 2)
 
-  if(!(all(is.na(this.ppmlasso$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = this.ppmlasso$test.data, aes(x = Longitude, y = Latitude),
+  if(!(all(is.na(x$test.data)))){
+    suit.plot <- suit.plot + geom_point(data = x$test.data, aes(x = Longitude, y = Latitude),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
   if(!is.null(trans_col)) {

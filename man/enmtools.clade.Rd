@@ -4,7 +4,7 @@
 \alias{enmtools.clade}
 \title{Defining a class for enmtools.clade.  Each clade gets:}
 \usage{
-enmtools.clade(species = NA, tree = NA, root.species = NA)
+enmtools.clade(species = NA, tree = NA)
 }
 \arguments{
 \item{species}{A list of enmtools.species objects}

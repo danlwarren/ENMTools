@@ -3,9 +3,18 @@
 #' @param x An enmtools.species object containing a range raster
 #' @param y An enmtools.species object containing a range raster
 #'
-#' @export range.overlap
+#' @export geog.range.overlap
+#'
+#' @examples
+#' data(iberolacerta.clade)
+#' data(euro.worldclim)
+#' cyreni <- iberolacerta.clade$species$cyreni
+#' monticola <- iberolacerta.clade$species$monticola
+#' cyreni$range <- background.raster.buffer(cyreni$presence.points, 100000, euro.worldclim)
+#' monticola$range <- background.raster.buffer(monticola$presence.points, 100000, euro.worldclim)
+#' geog.range.overlap(cyreni, monticola)
 
-range.overlap <- function(x, y){
+geog.range.overlap <- function(x, y){
 
   if(!inherits(x$range, c("raster", "RasterLayer"))){
     stop(paste("Species", x$species.name, "does not have a range raster!"))

@@ -7,18 +7,12 @@
 check.species(this.species)
 }
 \arguments{
-\item{range}{A raster or SpatialPolygon with the actual range they occur in}
-
-\item{presence.points}{A data frame with sampled localities.  If a matrix is passed, it will be cast to a data frame.}
-
-\item{background.points}{A data frame with absence/pseudoabsence/background localities.  If a matrix is passed, it will be cast to a data frame.}
-
-\item{species.name}{A character vector with the species name}
-
-\item{models}{A list of models that are made for the species, which will be stuffed in there as we go along
-to pass the check.  This is used by internal enmtools functions to make sure the necessary data is present
-before processing anything.}
+\item{this.species}{An enmtools.species object to be checked.}
 }
 \description{
-Checks for existence and proper class of:
+Checking compliance for an object of class enmtools.species.
+}
+\examples{
+data(iberolacerta.clade)
+check.species(iberolacerta.clade$species$monticola)
 }

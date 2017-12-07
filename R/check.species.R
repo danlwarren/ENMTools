@@ -1,15 +1,12 @@
 #' Checking compliance for an object of class enmtools.species.
 #'
-#' Checks for existence and proper class of:
-#' @param range A raster or SpatialPolygon with the actual range they occur in
-#' @param presence.points A data frame with sampled localities.  If a matrix is passed, it will be cast to a data frame.
-#' @param background.points A data frame with absence/pseudoabsence/background localities.  If a matrix is passed, it will be cast to a data frame.
-#' @param species.name A character vector with the species name
-#' @param models A list of models that are made for the species, which will be stuffed in there as we go along
-#' to pass the check.  This is used by internal enmtools functions to make sure the necessary data is present
-#' before processing anything.
+#' @param this.species An enmtools.species object to be checked.
 #'
 #' @export check.species
+#'
+#' @examples
+#' data(iberolacerta.clade)
+#' check.species(iberolacerta.clade$species$monticola)
 
 
 check.species <- function(this.species){

@@ -16,6 +16,7 @@ This function is used by a lot of the metrics calculated by ENMTools, in order t
 standardize suitability scores so they sum to 1 over a geographic space.
 }
 \examples{
-raster.standardize(env[[1]])
+data(euro.worldclim)
+raster.standardize(euro.worldclim[[1]])
 }
 \keyword{keywords}

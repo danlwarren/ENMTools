@@ -13,7 +13,8 @@
 #' @export raster.standardize
 #'
 #' @examples
-#' raster.standardize(env[[1]])
+#' data(euro.worldclim)
+#' raster.standardize(euro.worldclim[[1]])
 
 
 raster.standardize <- function(x, verbose=FALSE){

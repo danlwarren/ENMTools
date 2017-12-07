@@ -19,6 +19,9 @@ This function measures the spatial heterogeneity of the distribution of suitabil
 scores from an ENM.  It returns Levins' two metrics of niche breadth.
 }
 \examples{
-raster.breadth("env[[1]]")
+data(iberolacerta)
+data(euro.worldclim)
+aurelioi.mx <- enmtools.maxent(iberolacerta.clade$species$aurelioi, euro.worldclim)
+raster.breadth(aurelioi.mx)
 }
 \keyword{keywords}

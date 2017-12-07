@@ -3,6 +3,8 @@
 
 #' Code modified from Elith and Hijmans SDM with R tutorial
 #'
+#' @importFrom raster extract
+#'
 #' @param species An enmtools.species or enmtools.clade object
 #' @param env A raster stack of environmental variables
 #'

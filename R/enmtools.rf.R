@@ -1,22 +1,25 @@
 #' Takes an emtools.species object with presence and background points, and builds a random forest model
 #'
-#' @param formula Standard RF formula
 #' @param species An enmtools.species object
 #' @param env A raster or raster stack of environmental data.
+#' @param f A formula for fitting the model
 #' @param test.prop Proportion of data to withhold for model evaluation
 #' @param eval Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.
 #' @param nback Number of background points to draw from range or env, if background points aren't provided
 #' @param report Optional name of an html file for generating reports
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
+#' @param rts.reps The number of replicates to do for a Raes and ter Steege-style test of significance
 #' @param ... Arguments to be passed to rf()
 #'
 #' @export enmtools.rf
-#' @export print.enmtools.rf
-#' @export summary.enmtools.rf
-#' @export plot.enmtools.rf
+#'
+#' @examples
+#' ## NOT RUN
+#' data(euro.worldclim)
+#' data(iberolacerta.clade)
+#' enmtools.rf(iberolacerta.clade$species$monticola, env = euro.worldclim, nback = 500)
 
-
-enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, report = NULL, overwrite = FALSE, ...){
+enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0, ...){
 
   notes <- NULL
 
@@ -36,6 +39,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
   env.model.evaluation <- NA
   test.evaluation <- NA
   env.test.evaluation <- NA
+  rts.test <- NA
 
   if(test.prop > 0 & test.prop < 1){
     test.inds <- sample(1:nrow(species$presence.points), ceiling(nrow(species$presence.points) * test.prop))
@@ -80,6 +84,115 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
       env.test.evaluation <- env.evaluate(temp.sp, this.rf, env)
     }
 
+    # Do Raes and ter Steege test for significance.  Turned off if eval == FALSE
+    if(rts.reps > 0 && eval == TRUE){
+
+      rts.models <- list()
+
+      rts.geog.training <- c()
+      rts.geog.test <- c()
+      rts.env.training <- c()
+      rts.env.test <- c()
+
+      for(i in 1:rts.reps){
+
+        # Repeating analysis with scrambled pa points and then evaluating models
+        rts.df <- analysis.df
+        rts.df$presence <- rts.df$presence[sample(1:nrow(rts.df))]
+        this.rf <- randomForest(f, rts.df[,-c(1,2)], family="binomial", ...)
+
+        suitability <- predict(env, this.rf, type = "response")
+
+        thisrep.model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+                                                   this.rf, env)
+        thisrep.env.model.evaluation <- env.evaluate(species, this.rf, env)
+
+        rts.geog.training[i] <- thisrep.model.evaluation@auc
+        rts.env.training[i] <- thisrep.env.model.evaluation@auc
+
+        # I need to double check whether RTS tested models on same test data as empirical
+        # model, or whether they drew new holdouts for replicates.  Currently I'm just
+        # using the same test data for each rep.
+        if(test.prop > 0 & test.prop < 1){
+          thisrep.test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
+                                                    this.rf, env)
+          temp.sp <- species
+          temp.sp$presence.points <- test.data
+          thisrep.env.test.evaluation <- env.evaluate(temp.sp, this.rf, env)
+
+          rts.geog.test[i] <- thisrep.test.evaluation@auc
+          rts.env.test[i] <- thisrep.env.test.evaluation@auc
+        }
+        rts.models[[paste0("rep.",i)]] <- list(model = this.rf,
+                                               training.evaluation = model.evaluation,
+                                               env.training.evaluation = env.model.evaluation,
+                                               test.evaluation = test.evaluation,
+                                               env.test.evaluation = env.test.evaluation)
+      }
+
+      # Reps are all run now, time to package it all up
+
+      # Calculating p values
+      rts.geog.training.pvalue = mean(rts.geog.training > model.evaluation@auc)
+      rts.env.training.pvalue = mean(rts.env.training > env.model.evaluation@auc)
+      if(test.prop > 0){
+        rts.geog.test.pvalue <- mean(rts.geog.test > test.evaluation@auc)
+        rts.env.test.pvalue <- mean(rts.env.test > env.test.evaluation@auc)
+      } else {
+        rts.geog.test.pvalue <- NA
+        rts.env.test.pvalue <- NA
+      }
+
+      # Making plots
+      training.plot <- qplot(rts.geog.training, geom = "histogram", fill = "density", alpha = 0.5) +
+        geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
+        xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
+        ggtitle(paste("Model performance in geographic space on training data")) +
+        theme(plot.title = element_text(hjust = 0.5))
+
+      env.training.plot <- qplot(rts.env.training, geom = "histogram", fill = "density", alpha = 0.5) +
+        geom_vline(xintercept = env.model.evaluation@auc, linetype = "longdash") +
+        xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
+        ggtitle(paste("Model performance in environmental space on training data")) +
+        theme(plot.title = element_text(hjust = 0.5))
+
+      # Make plots for test AUC distributions
+      if(test.prop > 0){
+        test.plot <- qplot(rts.geog.test, geom = "histogram", fill = "density", alpha = 0.5) +
+          geom_vline(xintercept = test.evaluation@auc, linetype = "longdash") +
+          xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
+          ggtitle(paste("Model performance in geographic space on test data")) +
+          theme(plot.title = element_text(hjust = 0.5))
+
+        env.test.plot <- qplot(rts.env.test, geom = "histogram", fill = "density", alpha = 0.5) +
+          geom_vline(xintercept = env.test.evaluation@auc, linetype = "longdash") +
+          xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
+          ggtitle(paste("Model performance in environmental space on test data")) +
+          theme(plot.title = element_text(hjust = 0.5))
+      } else {
+        test.plot <- NA
+        env.test.plot <- NA
+      }
+
+      rts.pvalues = list(rts.geog.training.pvalue = rts.geog.training.pvalue,
+                         rts.env.training.pvalue = rts.env.training.pvalue,
+                         rts.geog.test.pvalue = rts.geog.test.pvalue,
+                         rts.env.test.pvalue = rts.env.test.pvalue)
+      rts.distributions = list(rts.geog.training = rts.geog.training,
+                               rts.env.training = rts.env.training,
+                               rts.geog.test = rts.geog.test,
+                               rts.env.test = rts.env.test)
+      rts.plots = list(geog.training.plot = training.plot,
+                       env.training.plot = env.training.plot,
+                       geog.test.plot = test.plot,
+                       env.test.plot = env.test.plot)
+
+      rts.test <- list(rts.models = rts.models,
+                       rts.pvalues = rts.pvalues,
+                       rts.distributions = rts.distributions,
+                       rts.plots = rts.plots,
+                       rts.nreps = rts.reps)
+    }
   }
 
   output <- list(species.name = species$species.name,
@@ -92,17 +205,18 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
                  test.evaluation = test.evaluation,
                  env.training.evaluation = env.model.evaluation,
                  env.test.evaluation = env.test.evaluation,
+                 rts.test = rts.test,
                  suitability = suitability,
                  notes = notes)
 
   class(output) <- c("enmtools.rf", "enmtools.model")
 
   # Doing response plots for each variable.  Doing this bit after creating
-  # the output object because plot.response expects an enmtools.model object
+  # the output object because marginal.plots expects an enmtools.model object
   response.plots <- list()
 
   for(i in names(env)){
-    response.plots[[i]] <- plot.response(output, env, i)
+    response.plots[[i]] <- marginal.plots(output, env, i)
   }
 
   output[["response.plots"]] <- response.plots
@@ -121,66 +235,66 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
 }
 
 # Summary for objects of class enmtools.rf
-summary.enmtools.rf <- function(this.rf){
+summary.enmtools.rf <- function(object, ...){
 
   cat("\n\nFormula:  ")
-  print(this.rf$formula)
+  print(object$formula)
 
   cat("\n\nData table (top ten lines): ")
-  print(kable(head(this.rf$analysis.df, 10)))
+  print(kable(head(object$analysis.df, 10)))
 
   cat("\n\nModel:  ")
-  print(summary(this.rf$model))
+  print(summary(object$model))
 
   cat("\n\nModel fit (training data):  ")
-  print(this.rf$training.evaluation)
+  print(object$training.evaluation)
 
   cat("\n\nEnvironment space model fit (training data):  ")
-  print(this.rf$env.training.evaluation)
+  print(object$env.training.evaluation)
 
   cat("\n\nProportion of data wittheld for model fitting:  ")
-  cat(this.rf$test.prop)
+  cat(object$test.prop)
 
   cat("\n\nModel fit (test data):  ")
-  print(this.rf$test.evaluation)
+  print(object$test.evaluation)
 
   cat("\n\nEnvironment space model fit (test data):  ")
-  print(this.rf$env.test.evaluation)
+  print(object$env.test.evaluation)
 
   cat("\n\nSuitability:  \n")
-  print(this.rf$suitability)
+  print(object$suitability)
 
   cat("\n\nNotes:  \n")
-  this.rf$notes
+  object$notes
 
-  plot(this.rf)
+  plot(object)
 
 }
 
 # Print method for objects of class enmtools.rf
-print.enmtools.rf <- function(this.rf){
+print.enmtools.rf <- function(x, ...){
 
-  print(summary(this.rf))
+  print(summary(x))
 
 }
 
 
 # Plot method for objects of class enmtools.rf
-plot.enmtools.rf <- function(this.rf){
+plot.enmtools.rf <- function(x, ...){
 
 
-  suit.points <- data.frame(rasterToPoints(this.rf$suitability))
+  suit.points <- data.frame(rasterToPoints(x$suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
   suit.plot <- ggplot(data = suit.points, aes(y = Latitude, x = Longitude)) +
     geom_raster(aes(fill = Suitability)) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
-    geom_point(data = this.rf$analysis.df[this.rf$analysis.df$presence == 1,], aes(x = Longitude, y = Latitude),
+    geom_point(data = x$analysis.df[x$analysis.df$presence == 1,], aes(x = Longitude, y = Latitude),
                pch = 21, fill = "white", color = "black", size = 2)
 
-  if(!(all(is.na(this.rf$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = this.rf$test.data, aes(x = Longitude, y = Latitude),
+  if(!(all(is.na(x$test.data)))){
+    suit.plot <- suit.plot + geom_point(data = x$test.data, aes(x = Longitude, y = Latitude),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
 

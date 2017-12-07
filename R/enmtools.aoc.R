@@ -9,12 +9,9 @@
 #' @param overlap.matrix A matrix of overlaps to use, for option overlap.source = "matrix"
 #' @param metric The overlap metric to use. For ENM sources, this can be any combination of "D", "I", "cor", "env.D", "env.I", and "env.cor".
 #' for range and point overlap this argument is ignored.
+#' @param env Environmental layers for use when overlap is calculated using niche models.
 #'
 #' @export enmtools.aoc
-#' @export summary.enmtools.aoc
-#' @export print.enmtools.aoc
-#' @export plot.enmtools.aoc
-#' @export enmtools.aoc.precheck
 
 enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL, overlap.matrix = NULL, metric = "D"){
 
@@ -66,7 +63,7 @@ enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL
   if(overlap.source == "range"){
 
     # Do pairwise for all species
-    overlap <- sapply(clade$species, function(x) sapply(clade$species, function(y) range.overlap(x,y)))
+    overlap <- sapply(clade$species, function(x) sapply(clade$species, function(y) geog.range.overlap(x,y)))
   }
 
   # Presence points
@@ -110,11 +107,13 @@ enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL
 
   intercept.plot <- qplot(reps.aoc[2:nrow(reps.aoc),"(Intercept)"], geom = "density", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.aoc[1,"(Intercept)"], linetype = "longdash") +
-    guides(fill = FALSE, alpha = FALSE) + xlab("Intercept") + ggtitle(description)
+    guides(fill = FALSE, alpha = FALSE) + xlab("Intercept") + ggtitle(description) +
+    theme(plot.title = element_text(hjust = 0.5))
 
   slope.plot <- qplot(reps.aoc[2:nrow(reps.aoc),"age"], geom = "density", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.aoc[1,"age"], linetype = "longdash") +
-    guides(fill = FALSE, alpha = FALSE) + xlab("Slope") + ggtitle(description)
+    guides(fill = FALSE, alpha = FALSE) + xlab("Slope") + ggtitle(description) +
+    theme(plot.title = element_text(hjust = 0.5))
 
   regressions.plot <- qplot(age, overlap, data = empirical.df) + theme_bw()
   for(i in 2:min(100, nrow(reps.aoc))){
@@ -123,7 +122,8 @@ enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL
                                                        color="grey86")
   }
   regressions.plot <- regressions.plot + geom_abline(slope = reps.aoc[1,2], intercept = reps.aoc[1,1]) +
-    geom_point() + ylim(0, 1) + xlim(0, 1.1 * max(empirical.df$age))
+    geom_point() + ylim(0, 1) + xlim(0, 1.1 * max(empirical.df$age)) +
+    theme(plot.title = element_text(hjust = 0.5))
 
   output <- list(coefficients = reps.aoc,
                  p.values = p.values,
@@ -140,26 +140,27 @@ enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL
   return(output)
 }
 
-summary.enmtools.aoc <- function(this.aoc){
+summary.enmtools.aoc <- function(object, ...){
 
   cat("\n\nAge-Overlap Correlation test\n\n")
-  cat(paste(length(this.aoc$reps), "replicates", "\n\n"))
+  cat(paste(length(object$reps), "replicates", "\n\n"))
 
   cat("p values:\n")
-  print(this.aoc$p.values)
+  print(object$p.values)
 
-  plot(this.aoc)
+  plot(object)
 
 }
 
-print.enmtools.aoc <- function(this.aoc){
-  summary(this.aoc)
+print.enmtools.aoc <- function(x, ...){
+  summary(x)
 }
 
-plot.enmtools.aoc <- function(this.aoc){
+plot.enmtools.aoc <- function(x, ...){
 
-  grid.arrange(this.aoc$regressions.plot, this.aoc$intercept.plot,
-               this.aoc$slope.plot, ncol = 2)
+  grid.arrange(x$regressions.plot, x$intercept.plot,
+               x$slope.plot, ncol = 2) +
+    theme(plot.title = element_text(hjust = 0.5))
 
 }
 

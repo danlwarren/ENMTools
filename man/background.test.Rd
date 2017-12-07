@@ -24,6 +24,10 @@ background.test(species.1, species.2, env, type, f = NULL, nreps = 99,
 
 \item{nreps}{Number of replicates to perform}
 
+\item{test.type}{Controls whether the background test will be "symmetric" or "asymmetric"}
+
+\item{nback}{Number of background points for models}
+
 \item{...}{Additional arguments to be passed to model fitting functions.}
 }
 \value{
@@ -37,7 +41,7 @@ constructed from the background points supplied for each species.  For Maxent, t
 from the range rasters stored in the enmtools.species objects.
 }
 \examples{
-background.test(ahli, allogus, env, type = "glm", f = layer.1 + layer.2 + layer.3, nreps = 10, type = "asymmetric")
+background.test(ahli, allogus, env, type = "glm", nreps = 10, test.type = "asymmetric")
 
 }
 \keyword{background,}

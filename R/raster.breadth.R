@@ -13,7 +13,10 @@
 #' @export raster.breadth
 #'
 #' @examples
-#' raster.breadth("env[[1]]")
+#' data(iberolacerta)
+#' data(euro.worldclim)
+#' aurelioi.mx <- enmtools.maxent(iberolacerta.clade$species$aurelioi, euro.worldclim)
+#' raster.breadth(aurelioi.mx)
 
 raster.breadth <- function(x, verbose=FALSE){
 

@@ -1,13 +1,22 @@
 #' Calculates overlap between models in environment space using latin hypercube sampling
 #'
 #' @param model.1 An enmtools.model object model object that can be projected using the predict() function
-#' @param model.1 Another enmtools.model object or other model object that can be projected using the predict() function
+#' @param model.2 Another enmtools.model object or other model object that can be projected using the predict() function
 #' @param env A raster or raster stack of environmental data.
 #' @param tolerance How close do successive overlap metrics have to be before we decide we're close enough to the final answer
 #' @param max.reps Maximum number of attempts that will be made to find suitable starting conditions
 #' @param cor.method Which method to use for calculating correlations between models
 #'
 #' @export env.overlap
+#'
+#' @examples
+#' data(iberolacerta.clade)
+#' data(euro.worldclim)
+#' cyreni <- iberolacerta.clade$species$cyreni
+#' monticola <- iberolacerta.clade$species$monticola
+#' cyreni.mx <- enmtools.maxent(cyreni, euro.worldclim, nback = 500)
+#' monticola.mx <- enmtools.maxent(monticola, euro.worldclim, nback = 500)
+#' env.overlap(cyreni.mx, monticola.mx, euro.worldclim)
 
 env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, cor.method = "spearman"){
 
@@ -34,8 +43,18 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
 
     # Use that sample space to get a starting overlap value
     colnames(predict.table) <- names(env)
-    pred1 <- as.numeric(predict(model.1, newdata = data.frame(predict.table), type = "response"))
-    pred2 <- as.numeric(predict(model.2, newdata = data.frame(predict.table), type = "response"))
+    if(inherits(model.1, "DistModel")){
+      pred1 <- as.numeric(predict(model.1, x = data.frame(predict.table), type = "response"))
+    } else {
+      pred1 <- as.numeric(predict(model.1, newdata = data.frame(predict.table), type = "response"))
+    }
+
+    if(inherits(model.2, "DistModel")){
+      pred2 <- as.numeric(predict(model.2, x = data.frame(predict.table), type = "response"))
+    } else {
+      pred2 <- as.numeric(predict(model.2, newdata = data.frame(predict.table), type = "response"))
+    }
+
 
     if(sd(pred1) == 0 | sd(pred2) == 0){
       output <- list(env.D = NA,
@@ -82,9 +101,17 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
       predict.table <- t(t(this.lhs) * (maxValue(env)  - minValue(env)) + minValue(env))
       colnames(predict.table) <- names(env)
 
-      # Make new predictions and recalculate metrics
-      pred1 <- predict(model.1, newdata = data.frame(predict.table), type = "response")
-      pred2 <- predict(model.2, newdata = data.frame(predict.table), type = "response")
+      if(inherits(model.1, "DistModel")){
+        pred1 <- as.numeric(predict(model.1, x = data.frame(predict.table), type = "response"))
+      } else {
+        pred1 <- as.numeric(predict(model.1, newdata = data.frame(predict.table), type = "response"))
+      }
+
+      if(inherits(model.2, "DistModel")){
+        pred2 <- as.numeric(predict(model.2, x = data.frame(predict.table), type = "response"))
+      } else {
+        pred2 <- as.numeric(predict(model.2, newdata = data.frame(predict.table), type = "response"))
+      }
 
       if(sd(pred1) == 0 | sd(pred2) == 0){
         output <- list(env.D = NA,

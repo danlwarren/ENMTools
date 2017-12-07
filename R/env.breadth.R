@@ -6,6 +6,13 @@
 #' @param max.reps Maximum number of attempts that will be made to find suitable starting conditions
 #'
 #' @export env.breadth
+#'
+#' @examples
+#' data(iberolacerta.clade)
+#' data(euro.worldclim)
+#' cyreni <- iberolacerta.clade$species$cyreni
+#' cyreni.mx <- enmtools.maxent(cyreni, euro.worldclim, test.prop = 0.2, nback = 500)
+#' env.breadth(cyreni.mx,  euro.worldclim)
 
 env.breadth <- function(model, env, tolerance = .001, max.reps = 10){
 
@@ -28,7 +35,11 @@ env.breadth <- function(model, env, tolerance = .001, max.reps = 10){
 
     # Use that sample space to get a starting overlap value
     colnames(predict.table) <- names(env)
-    pred <- as.numeric(predict(model, newdata = data.frame(predict.table), type = "response"))
+    if(inherits(model, "DistModel")){
+      pred <- as.numeric(predict(model, x = data.frame(predict.table), type = "response"))
+    } else {
+      pred <- as.numeric(predict(model, newdata = data.frame(predict.table), type = "response"))
+    }
 
     pred[which(pred == 0)] <- 1e-40
 
@@ -76,7 +87,11 @@ env.breadth <- function(model, env, tolerance = .001, max.reps = 10){
       colnames(predict.table) <- names(env)
 
       # Make new predictions and recalculate metrics
-      pred <- predict(model, newdata = data.frame(predict.table), type = "response")
+      if(inherits(model, "DistModel")){
+        pred <- as.numeric(predict(model, x = data.frame(predict.table), type = "response"))
+      } else {
+        pred <- as.numeric(predict(model, newdata = data.frame(predict.table), type = "response"))
+      }
 
       pred[which(pred == 0)] <- 1e-40
 

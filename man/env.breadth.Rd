@@ -18,3 +18,10 @@ env.breadth(model, env, tolerance = 0.001, max.reps = 10)
 \description{
 Calculates breadth of a model in environment space using latin hypercube sampling
 }
+\examples{
+data(iberolacerta.clade)
+data(euro.worldclim)
+cyreni <- iberolacerta.clade$species$cyreni
+cyreni.mx <- enmtools.maxent(cyreni, euro.worldclim, test.prop = 0.2, nback = 500)
+env.breadth(cyreni.mx,  euro.worldclim)
+}

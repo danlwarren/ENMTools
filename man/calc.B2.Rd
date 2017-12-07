@@ -16,7 +16,7 @@ B2 A calculation of Levins (1968) B2 metric
 calc.B2, Calculates standardized version of Levins (1968) B2 measure of niche breadth given a vector of suitabilities
 }
 \examples{
-calc.B2(1, .001, .001)
+calc.B2(c(1, .001, .001))
 }
 \keyword{breadth}
 \keyword{enm}
