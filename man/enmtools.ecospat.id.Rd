@@ -24,6 +24,8 @@ enmtools.ecospat.id(species.1, species.2, env, nreps = 99, layers = NULL,
 environmental density values.  See documentation for ecospat.grid.clim.dyn.}
 
 \item{R}{Resolution of the grid. See documentation for ecospat.grid.clim.dyn.}
+
+\item{nback}{Number of background points to use for density calculations.}
 }
 \value{
 results Some results, once I figure out what results to return

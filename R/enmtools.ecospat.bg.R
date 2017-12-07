@@ -9,6 +9,7 @@
 #' @param th.sp Quantile of species densities used as a threshold to exclude low species density values.  See documentation for ecospat.grid.clim.dyn.
 #' @param th.env Quantile of environmental densities across studye sites used as threshold to exclude low
 #' environmental density values.  See documentation for ecospat.grid.clim.dyn.
+#' @param nback Number of background points to use for density calculations.
 #' @param R Resolution of the grid. See documentation for ecospat.grid.clim.dyn.
 #' @param ... Further arguments to be passed to check.bg
 #'
