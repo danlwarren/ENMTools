@@ -65,8 +65,6 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
                           c("Longitude", "Latitude"))
   analysis.df <- cbind(analysis.df, wt = wts)
 
-  print(head(analysis.df))
-
   #this.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = analysis.df)
   this.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = analysis.df, ...)
 
@@ -140,9 +138,11 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
         allpoints <- allpoints[-rep.rows,]
 
         # Do the same for test points
-        test.rows <- sample(nrow(allpoints), nrow(species$presence.points))
-        rep.test.data <- allpoints[test.rows,]
-        allpoints <- allpoints[-test.rows,]
+        if(test.prop > 0){
+          test.rows <- sample(nrow(allpoints), nrow(species$presence.points))
+          rep.test.data <- allpoints[test.rows,]
+          allpoints <- allpoints[-test.rows,]
+        }
 
         # Everything else goes back to the background
         rep.species$background.points <- allpoints
@@ -154,9 +154,11 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
         wts <- ppmlasso_weights(rep.species$presence.points, rep.species$background.points,
                                 c("Longitude", "Latitude"))
 
-        print(head(rts.df))
+        rts.df$wt <- wts
+        capture.output(
+          thisrep.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = rts.df, ...)
+        )
 
-        thisrep.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = rts.df, ...)
         # capture.output(
         #   thisrep.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = rts.df, ...)
         # )
@@ -179,6 +181,11 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
         # model, or whether they drew new holdouts for replicates.  Currently I'm just
         # using the same test data for each rep.
         if(test.prop > 0 & test.prop < 1){
+          names <- c(colnames(rep.test.data), names(env))
+          rep.test.data <- cbind(rep.test.data, extract(env, rep.test.data[,1:2]))
+          colnames(rep.test.data) <- names
+          rep.test.data <- rep.test.data[complete.cases(rep.test.data),]
+
           thisrep.test.evaluation <- dismo::evaluate(predict.ppmlasso(thisrep.ppmlasso,
                                                                       newdata = rep.test.data)[ , 1, drop = TRUE],
                                                      predict.ppmlasso(thisrep.ppmlasso,
