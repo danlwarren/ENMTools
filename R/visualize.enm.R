@@ -5,6 +5,7 @@
 #' @param nbins The number of bins per layer to use for drawing environment space
 #' @param layers A vector of layer names to use for drawing environment space
 #' @param plot.points Logical determining whether presence points should be plotted on suitability plot
+#' @param plot.test.data Logical determining whether test data should be plotted, if present.  If test data is plotted, it will appear as translucent green triangles.
 #'
 #' @return suit.plot A two dimensional plot of an ENM
 #'
@@ -18,7 +19,7 @@
 #' aurelioi.mx <- enmtools.maxent(iberolacerta.clade$species$aurelioi, euro.worldclim)
 #' visualize.enm(aurelioi.mx,euro.worldclim, layers = c("bio14", "bio13"))
 
-visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plot.points = TRUE){
+visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plot.test.data = FALSE, plot.points = TRUE){
 
   if(!inherits(model, "enmtools.model")){
     stop("This function requires an enmtools.model object!")
@@ -61,6 +62,14 @@ visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plo
 
   pointdata <- as.data.frame(extract(env[[layers]], points))
 
+  # Grab test points
+  if(plot.test.data == TRUE){
+    if(!is.data.frame(model$test.data)){
+      stop("Test data is not present, but plot.test.data was set to TRUE")
+    }
+    test.points <- as.data.frame(cbind(extract(env[[layers]], model$test.data)))
+  }
+
   colnames(plot.df) <- names
 
   plot.df <- data.frame(plot.df)
@@ -82,6 +91,11 @@ visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plo
   if(plot.points == TRUE){
     suit.plot <- suit.plot  + geom_point(data = pointdata, aes_string(y = names[2], x = names[1]),
                                          pch = 21, fill = "white", color = "black", size = 3)
+  }
+
+  if(plot.test.data == TRUE){
+    suit.plot <- suit.plot + geom_point(data = test.points, aes_string(y = names[2], x = names[1]),
+                                        pch = 24, fill = "green", color = "black", size = 3, alpha = 0.6)
   }
 
   # Do density plot of presence vs. background data
