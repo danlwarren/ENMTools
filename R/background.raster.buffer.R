@@ -10,7 +10,9 @@
 #' @export background.raster.buffer
 #'
 #' @examples
-#' background.raster.buffer(cyreni$presence.points, 100000, euro.worldclim)
+#' data(iberolacerta.clade)
+#' data(euro.worldclim)
+#' background.raster.buffer(iberolacerta.clade$species$cyreni$presence.points, 100000, euro.worldclim)
 
 
 background.raster.buffer <- function(points, radius, mask){
