@@ -49,14 +49,6 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
 
   suitability <- suitability <- predict(env, this.bc, type = "response")
 
-  # This is a very weird hack that has to be done because dismo's evaluate function
-  # fails if the stack only has one layer.
-  if(length(names(env)) == 1){
-    oldname <- names(env)
-    env <- stack(env, env)
-    names(env) <- c(oldname, "dummyvar")
-  }
-
   model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                this.bc, env)
   env.model.evaluation <- env.evaluate(species, this.bc, env)
