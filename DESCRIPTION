@@ -31,7 +31,7 @@ Depends:
 	fields,
 	gbm,
 	randomForest,
-  	ppmlasso,
+	ppmlasso,
 	ape
 Suggests:
 	testthat
