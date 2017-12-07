@@ -6,7 +6,7 @@
 randomly sampled points from within that buffer radius.
 Code modified from Elith and Hijmans SDM with R tutorial}
 \usage{
-add.env(species, env)
+add.env(species, env, verbose = TRUE)
 }
 \arguments{
 \item{species}{An enmtools.species or enmtools.clade object}
