@@ -88,9 +88,11 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
       allpoints <- allpoints[-rep.rows,]
 
       # Do the same for test points
-      test.rows <- sample(nrow(allpoints), nrow(species$presence.points))
-      rep.test.data <- allpoints[test.rows,]
-      allpoints <- allpoints[-test.rows,]
+      if(test.prop > 0){
+        test.rows <- sample(nrow(allpoints), nrow(species$presence.points))
+        rep.test.data <- allpoints[test.rows,]
+        allpoints <- allpoints[-test.rows,]
+      }
 
       # Everything else goes back to the background
       rep.species$background.points <- allpoints
@@ -107,7 +109,7 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
       rts.env.training[i] <- thisrep.env.model.evaluation@auc
 
       if(test.prop > 0 & test.prop < 1){
-        thisrep.test.evaluation <-dismo::evaluate(rep.test.data, species$background.points[,1:2],
+        thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points[,1:2],
                                                   thisrep.bc, env)
         temp.sp$presence.points <- test.data
         thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.bc, env)

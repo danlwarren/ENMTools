@@ -65,6 +65,8 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
                           c("Longitude", "Latitude"))
   analysis.df <- cbind(analysis.df, wt = wts)
 
+  print(head(analysis.df))
+
   #this.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = analysis.df)
   this.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = analysis.df, ...)
 
@@ -122,25 +124,53 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
       for(i in 1:rts.reps){
 
         # Repeating analysis with scrambled pa points and then evaluating models
-        rts.df <- analysis.df
-        rts.df$Pres <- rts.df$Pres[sample(1:nrow(rts.df))]
-        capture.output(
-          this.ppmlasso.rts <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = rts.df)
-        )
+
+
+        print(paste("Replicate", i, "of", rts.reps))
+
+        # Repeating analysis with scrambled pa points and then evaluating models
+        rep.species <- species
+
+        # Mix the points all together
+        allpoints <- rbind(test.data[,1:2], species$background.points[,1:2], species$presence.points[,1:2])
+
+        # Sample presence points from pool and remove from pool
+        rep.rows <- sample(nrow(allpoints), nrow(species$presence.points))
+        rep.species$presence.points <- allpoints[rep.rows,]
+        allpoints <- allpoints[-rep.rows,]
+
+        # Do the same for test points
+        test.rows <- sample(nrow(allpoints), nrow(species$presence.points))
+        rep.test.data <- allpoints[test.rows,]
+        allpoints <- allpoints[-test.rows,]
+
+        # Everything else goes back to the background
+        rep.species$background.points <- allpoints
+
+        rep.species <- add.env(rep.species, env, verbose = FALSE)
+
+        rts.df <- rbind(cbind(rep.species$presence.points, Pres = 1),
+                             cbind(rep.species$background.points, Pres = 0))
+        wts <- ppmlasso_weights(rep.species$presence.points, rep.species$background.points,
+                                c("Longitude", "Latitude"))
+
+        print(head(rts.df))
+
+        thisrep.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = rts.df, ...)
         # capture.output(
-        #   this.ppmlasso.rts <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = rts.df, ...)
+        #   thisrep.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = rts.df, ...)
         # )
 
         p.fun <- function(object, newdata, ...) {
           predict.ppmlasso(object, newdata = newdata, ...)*env_cell_area
         }
-        suitability <- predict(env, this.ppmlasso.rts, fun = p.fun)
+        suitability <- predict(env, thisrep.ppmlasso, fun = p.fun)
 
-        thisrep.model.evaluation <- dismo::evaluate(predict.ppmlasso(this.ppmlasso.rts,
-                                                                    newdata = species$presence.points)[ , 1, drop = TRUE],
-                                                   predict.ppmlasso(this.ppmlasso.rts,
-                                                                    newdata = species$background.points)[ , 1, drop = TRUE])
-        thisrep.env.model.evaluation <- env.evaluate(species, this.ppmlasso.rts, env)
+        thisrep.model.evaluation <- dismo::evaluate(predict.ppmlasso(thisrep.ppmlasso,
+                                                                    newdata = rep.species$presence.points)[ , 1, drop = TRUE],
+                                                   predict.ppmlasso(thisrep.ppmlasso,
+                                                                    newdata = rep.species$background.points)[ , 1, drop = TRUE])
+        thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.ppmlasso, env)
 
         rts.geog.training[i] <- thisrep.model.evaluation@auc
         rts.env.training[i] <- thisrep.env.model.evaluation@auc
@@ -149,18 +179,18 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
         # model, or whether they drew new holdouts for replicates.  Currently I'm just
         # using the same test data for each rep.
         if(test.prop > 0 & test.prop < 1){
-          thisrep.test.evaluation <- dismo::evaluate(predict.ppmlasso(this.ppmlasso.rts,
-                                                                      newdata = test.data)[ , 1, drop = TRUE],
-                                                     predict.ppmlasso(this.ppmlasso.rts,
-                                                                      newdata = species$background.points)[ , 1, drop = TRUE])
-          temp.sp <- species
+          thisrep.test.evaluation <- dismo::evaluate(predict.ppmlasso(thisrep.ppmlasso,
+                                                                      newdata = rep.test.data)[ , 1, drop = TRUE],
+                                                     predict.ppmlasso(thisrep.ppmlasso,
+                                                                      newdata = rep.species$background.points)[ , 1, drop = TRUE])
+          temp.sp <- rep.species
           temp.sp$presence.points <- test.data
-          thisrep.env.test.evaluation <- env.evaluate(temp.sp, this.ppmlasso.rts, env)
+          thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.ppmlasso, env)
 
           rts.geog.test[i] <- thisrep.test.evaluation@auc
           rts.env.test[i] <- thisrep.env.test.evaluation@auc
         }
-        rts.models[[paste0("rep.",i)]] <- list(model = this.ppmlasso.rts,
+        rts.models[[paste0("rep.",i)]] <- list(model = thisrep.ppmlasso,
                                                training.evaluation = thisrep.model.evaluation,
                                                env.training.evaluation = thisrep.env.model.evaluation,
                                                test.evaluation = thisrep.test.evaluation,
