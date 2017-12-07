@@ -105,8 +105,6 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, report = 
 
       thisrep.mx <- maxent(env, p = rts.df[rts.df$presence == 1,1:2], a = rts.df[rts.df$presence == 0,1:2], ...)
 
-      suitability <- predict(env, thisrep.mx, type = "response")
-
       thisrep.model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                                  thisrep.mx, env)
       thisrep.env.model.evaluation <- env.evaluate(species, thisrep.mx, env)

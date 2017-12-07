@@ -125,8 +125,6 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
 
         thisrep.rf <- randomForest(f, rts.df[,-c(1,2)], family="binomial", ...)
 
-        suitability <- predict(env, thisrep.rf, type = "response")
-
         thisrep.model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                                    thisrep.rf, env)
         thisrep.env.model.evaluation <- env.evaluate(species, thisrep.rf, env)

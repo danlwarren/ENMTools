@@ -100,8 +100,6 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
 
       thisrep.dm <- dismo::domain(env, rep.species$presence.points[,1:2])
 
-      suitability <- predict(env, thisrep.dm, type = "response")
-
       thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points[,1:2], rep.species$background.points[,1:2],
                                                  thisrep.dm, env)
       thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.dm, env)

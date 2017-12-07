@@ -99,8 +99,6 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
 
       thisrep.bc <- dismo::bioclim(env, rep.species$presence.points[,1:2])
 
-      suitability <- predict(env, thisrep.bc, type = "response")
-
       thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points[,1:2], rep.species$background.points[,1:2],
                                                  thisrep.bc, env)
       thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.bc, env)

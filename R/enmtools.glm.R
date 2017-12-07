@@ -131,8 +131,6 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
         rts.df$presence <- c(rep(1, nrow(rep.species$presence.points)), rep(0, nrow(rep.species$background.points)))
         thisrep.glm <- glm(f, rts.df[,-c(1,2)], family="binomial", ...)
 
-        suitability <- predict(env, thisrep.glm, type = "response")
-
         thisrep.model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                                    thisrep.glm, env)
         thisrep.env.model.evaluation <- env.evaluate(species, thisrep.glm, env)

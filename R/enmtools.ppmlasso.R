@@ -166,7 +166,6 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
         p.fun <- function(object, newdata, ...) {
           predict.ppmlasso(object, newdata = newdata, ...)*env_cell_area
         }
-        suitability <- predict(env, thisrep.ppmlasso, fun = p.fun)
 
         thisrep.model.evaluation <- dismo::evaluate(predict.ppmlasso(thisrep.ppmlasso,
                                                                     newdata = rep.species$presence.points)[ , 1, drop = TRUE],

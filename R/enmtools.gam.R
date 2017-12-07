@@ -127,8 +127,6 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
 
       thisrep.gam <- gam(f, rts.df[,-c(1,2)], family="binomial", ...)
 
-      suitability <- predict(env, thisrep.gam, type = "response")
-
       thisrep.model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                                  thisrep.gam, env)
       thisrep.env.model.evaluation <- env.evaluate(species, thisrep.gam, env)
