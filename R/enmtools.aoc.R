@@ -72,6 +72,7 @@ enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL
   }
 
   tree <- clade$tree
+  tree$node.label <- NULL
 
   # sapply is renaming rows, gotta change tnem back
   rownames(overlap) <- colnames(overlap)
