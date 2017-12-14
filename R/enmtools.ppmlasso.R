@@ -364,7 +364,6 @@ print.enmtools.ppmlasso <- function(x, ...){
 # Plot method for objects of class enmtools.ppmlasso
 plot.enmtools.ppmlasso <- function(x, trans_col = NULL, ...){
 
-
   suit.points <- data.frame(rasterToPoints(x$suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
@@ -389,9 +388,7 @@ plot.enmtools.ppmlasso <- function(x, trans_col = NULL, ...){
     suit.plot <- suit.plot + ggtitle(title) + theme(plot.title = element_text(hjust = 0.5))
   }
 
-
   return(suit.plot)
-
 }
 
 # Function for checking data prior to running enmtools.ppmlasso
@@ -430,7 +427,7 @@ ppmlasso.precheck <- function(f, species, env){
   }
 }
 
-# Unexported helper function copied from ppmlasso (from which it was unexported) with permission of Author:
+# Helper function copied from ppmlasso (from which it was unexported) with permission of Author:
 # Ian Renner
 ppmlasso_weights <- function (sp.xy, quad.xy, coord = c("X", "Y"))
 {
