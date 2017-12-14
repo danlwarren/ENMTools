@@ -206,7 +206,7 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
   # the output object because marginal.plots expects an enmtools.model object
   response.plots <- list()
 
-  for(i in names(env)){
+  for(i in colnames(this.bc@presence)){
     response.plots[[i]] <- marginal.plots(output, env, i)
   }
 

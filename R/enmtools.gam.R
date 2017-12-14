@@ -238,8 +238,13 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
   # the output object because marginal.plots expects an enmtools.model object
   response.plots <- list()
 
-  for(i in names(env)){
-    response.plots[[i]] <- marginal.plots(output, env, i)
+  plot.vars <- all.vars(formula(this.gam))
+
+  for(i in 2:length(plot.vars)){
+    this.var <-plot.vars[i]
+    if(this.var %in% names(env)){
+      response.plots[[this.var]] <- marginal.plots(output, env, this.var)
+    }
   }
 
   output[["response.plots"]] <- response.plots
