@@ -379,6 +379,12 @@ plot.enmtools.ppmlasso <- function(x, trans_col = NULL, ...){
     suit.plot <- suit.plot + scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability"))
   }
 
+  if(!is.na(x$species.name)){
+    title <- paste("PPM lasso model for", x$species.name)
+    suit.plot <- suit.plot + ggtitle(title) + theme(plot.title = element_text(hjust = 0.5))
+  }
+
+
   return(suit.plot)
 
 }

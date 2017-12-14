@@ -295,6 +295,12 @@ plot.enmtools.maxent <- function(x, ...){
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
 
+  if(!is.na(x$species.name)){
+    title <- paste("Maxent model for", x$species.name)
+    suit.plot <- suit.plot + ggtitle(title) + theme(plot.title = element_text(hjust = 0.5))
+  }
+
+
   return(suit.plot)
 
 }
