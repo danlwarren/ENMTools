@@ -4,6 +4,7 @@
 #' @param env A raster or raster stack of environmental data.
 #' @param tolerance How close do successive overlap metrics have to be before we decide we're close enough to the final answer
 #' @param max.reps Maximum number of attempts that will be made to find suitable starting conditions
+#' @param chunk.size How many combinations of environmental variables to try at a time.  If your niche breadth in environment space is small, increasing this value may help you get a result.
 #'
 #' @export env.breadth
 #'
@@ -14,7 +15,7 @@
 #' cyreni.mx <- enmtools.maxent(cyreni, euro.worldclim, test.prop = 0.2, nback = 500)
 #' env.breadth(cyreni.mx,  euro.worldclim)
 
-env.breadth <- function(model, env, tolerance = .001, max.reps = 10){
+env.breadth <- function(model, env, tolerance = .0001, max.reps = 10, chunk.size = 100000){
 
   if(inherits(model, "enmtools.model")){
     model <- model$model
@@ -38,8 +39,10 @@ env.breadth <- function(model, env, tolerance = .001, max.reps = 10){
   # so I've put this bit in here to make it try a few times.
   while(continue == FALSE & n.reps < max.reps){
 
+    gens <- chunk.size
+
     # Draw a starting latin hypercube scheme
-    this.lhs <- randomLHS(10000, length(names(env)))
+    this.lhs <- randomLHS(chunk.size, length(names(env)))
     predict.table <- t(t(this.lhs) * (maxes  - mins) + mins)
 
     # Use that sample space to get a starting overlap value
@@ -50,21 +53,14 @@ env.breadth <- function(model, env, tolerance = .001, max.reps = 10){
       pred <- as.numeric(predict(model, newdata = data.frame(predict.table), type = "response"))
     }
 
-    pred[which(pred == 0)] <- 1e-40
-
-    # No meaningful prediction
-    if(sd(pred) == 0){
-      output <- list(env.B1 = NA,
-                     env.B2 = NA)
-
-      return(output)
+    if(max(pred) == 0){
+      this.B2 <- NA
+    } else {
+      this.B2 <- calc.B2(pred)
     }
 
-    this.B1 <- calc.B1(pred)
-    this.B2 <- calc.B2(pred)
-
     # Check to see if the value is usable, roll again if not
-    if(!is.nan(this.B1) & !is.nan(this.B2)){
+    if(!is.na(this.B2)){
       continue <- TRUE
     } else {
       n.reps <- n.reps + 1
@@ -73,8 +69,7 @@ env.breadth <- function(model, env, tolerance = .001, max.reps = 10){
 
   # If we fail to find useful starting conditions we'll just barf an NA and give up
   if(n.reps == max.reps){
-    cat("\n\nCould not find suitable starting conditions for environmental overlap, returning NA\n\n")
-    this.B1 <- NA
+    cat("\n\nCould not find suitable starting conditions for environmental breadth, returning NA\n\n")
     this.B2 <- NA
   } else {
 
@@ -90,43 +85,35 @@ env.breadth <- function(model, env, tolerance = .001, max.reps = 10){
       # Keep track of our last value
       # old.diff <- this.diff
 
-      # Add 1000 rows to the LHS and build a new predict table
-      this.lhs <- randomLHS(10000, length(names(env)))
+      # Add chunk.size rows to the LHS and build a new predict table
+      this.lhs <- randomLHS(chunk.size, length(names(env)))
       predict.table <- t(t(this.lhs) * (maxes  - mins) + mins)
       colnames(predict.table) <- names(env)
 
       # Make new predictions and recalculate metrics
       if(inherits(model, "DistModel")){
-        pred <- as.numeric(predict(model, x = data.frame(predict.table), type = "response"))
+        pred <- c(pred, as.numeric(predict(model, x = data.frame(predict.table), type = "response")))
       } else {
-        pred <- as.numeric(predict(model, newdata = data.frame(predict.table), type = "response"))
+        pred <- c(pred, as.numeric(predict(model, newdata = data.frame(predict.table), type = "response")))
       }
 
-      pred[which(pred == 0)] <- 1e-40
+      # Can't make a prediction, keep trying
 
-      # Can't make a prediction, return NAs and die
-      if(sd(pred) == 0){
-        output <- list(env.D = NA,
-                       env.I = NA,
-                       env.cor = NA)
-
-        return(output)
+      if(max(pred) == 0){
+        next
+      } else {
+        this.B2 <- c(this.B2, calc.B2(pred))
+        gens <- c(gens, max(gens) + chunk.size)
       }
-
-      this.B1 <- c(this.B1, calc.B1(pred))
-      this.B2 <- c(this.B2, calc.B2(pred))
-
-
 
       # Calculate delta for this iteration
-      delta <- max(c(abs(mean(this.B1) - mean(this.B1[-length(this.B1)])),
-                     abs(mean(this.B2) - mean(this.B2[-length(this.B2)]))), na.rm=TRUE)
+      delta <- abs(mean(this.B2) - mean(this.B2[-length(this.B2)]))
 
     }
   }
 
-  output <- list(output <- list(env.B1 = mean(this.B1),
-                                env.B2 = mean(this.B2)))
+  output <- list(env.B2 = mean(this.B2),
+                 B2.plot = qplot(gens, this.B2, ylab = "B2", xlab = "Samples"))
 
   return(output)
 }

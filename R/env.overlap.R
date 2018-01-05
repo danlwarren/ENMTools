@@ -6,7 +6,7 @@
 #' @param tolerance How close do successive overlap metrics have to be before we decide we're close enough to the final answer
 #' @param max.reps Maximum number of attempts that will be made to find suitable starting conditions
 #' @param cor.method Which method to use for calculating correlations between models
-#'
+#' @param chunk.size How many combinations of environmental variables to try at a time.  If your niche breadth in environment space is small, increasing this value may help you get a result.
 #' @export env.overlap
 #'
 #' @examples
@@ -18,7 +18,7 @@
 #' monticola.mx <- enmtools.maxent(monticola, euro.worldclim, nback = 500)
 #' env.overlap(cyreni.mx, monticola.mx, euro.worldclim)
 
-env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, cor.method = "spearman"){
+env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, cor.method = "spearman", chunk.size = 100000){
 
   if(inherits(model.1, "enmtools.model")){
     model.1 <- model.1$model
@@ -31,14 +31,16 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
   # These two are tracking whether we have good enough starting conditions
   # and how many times we've tried
   continue <- FALSE
-  n.reps <- 0
+  n.reps <- 1
 
   # Some of the DM and BC models were barfing on certain starting conditions
   # so I've put this bit in here to make it try a few times.
   while(continue == FALSE & n.reps < max.reps){
 
+    gens <- chunk.size
+
     # Draw a starting latin hypercube scheme
-    this.lhs <- randomLHS(10000, length(names(env)))
+    this.lhs <- randomLHS(chunk.size, length(names(env)))
 
     # Setting it up so we can handle either a set of rasters or a list of minima and maxima
     if(inherits(env, c("raster", "RasterStack", "RasterBrick", "RasterLayer"))){
@@ -66,12 +68,11 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
     }
 
 
-    if(sd(pred1) == 0 | sd(pred2) == 0){
-      output <- list(env.D = NA,
-                     env.I = NA,
-                     env.cor = NA)
+    print(paste("Trying to find starting conditions, attempt", n.reps))
 
-      return(output)
+    if(sd(pred1) == 0 | sd(pred2) == 0){
+      n.reps <- n.reps + 1
+      next
     }
 
     this.d <- 1 - sum(abs(pred1/sum(pred1) - pred2/(sum(pred2))))/2
@@ -97,17 +98,21 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
     # So here we've got good starting conditions and we're going to keep going
     # with the LHS design until we get a minimum difference between subsequent
     # samples (delta < tolerance)
+
+    print("Building replicates...")
+
     delta <- 1
 
     # print(paste(this.diff, delta))
 
     while(delta > tolerance){
 
-      # Keep track of our last value
-      # old.diff <- this.diff
+       # print(max(gens))
 
-      # Add 1000 rows to the LHS and build a new predict table
-      this.lhs <- randomLHS(10000, length(names(env)))
+
+
+      # Add chunk.size rows to the LHS and build a new predict table
+      this.lhs <- randomLHS(chunk.size, length(names(env)))
       predict.table <- t(t(this.lhs) * (maxes  - mins) + mins)
       colnames(predict.table) <- names(env)
 
@@ -124,19 +129,29 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
       }
 
       if(sd(pred1) == 0 | sd(pred2) == 0){
-        output <- list(env.D = NA,
-                       env.I = NA,
-                       env.cor = NA)
-
-        return(output)
+        next
+      } else {
+        gens <- c(gens, max(gens) + chunk.size)
       }
 
-      this.d <- c(this.d, 1 - sum(abs(pred1/sum(pred1) - pred2/(sum(pred2))))/2)
-      this.i <- c(this.i, 1 - sum((sqrt(pred1/sum(pred1)) - sqrt(pred2/sum(pred2)))**2)/2)
+      # We're going to use this n so we can just do a weighted average of our D/I/cor
+      # instead of concatenating pred1 and pred2
+      n <- length(this.d)
+
+      old.d <- this.d[n]
+      new.d <- 1 - sum(abs(pred1/sum(pred1) - pred2/(sum(pred2))))/2
+      old.i <- this.i[n]
+      new.i <- 1 - sum((sqrt(pred1/sum(pred1)) - sqrt(pred2/sum(pred2)))**2)/2
+
+      this.d <- c(this.d, old.d * (n/(n+1)) + new.d * 1/(n+1))
+      this.i <- c(this.i, old.i * (n/(n+1)) + new.i * 1/(n+1))
       if(sd(pred1) == 0 | sd(pred2) == 0){
-        this.cor <- c(this.cor, 0)
+        this.cor <- c(this.cor, NA)
       } else {
-        this.cor <- c(this.cor, cor(pred1, pred2, method = cor.method))
+        old.cor <- this.cor[n]
+        n <- n - length(which(is.na(this.cor)))
+        new.cor <- cor(pred1, pred2, method = cor.method)
+        this.cor <- c(this.cor, old.cor * (n/(n+1)) + new.cor * 1/(n+1))
       }
 
 
@@ -150,7 +165,10 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
 
   output <- list(env.D = mean(this.d),
                  env.I = mean(this.i),
-                 env.cor = mean(this.cor))
+                 env.cor = mean(this.cor),
+                 env.D.plot = qplot(gens, this.d, ylab = "D", xlab = "Samples", ylim = c(0,1)),
+                 env.I.plot = qplot(gens, this.i, ylab = "I", xlab = "Samples", ylim = c(0,1)),
+                 env.cor.plot = qplot(gens, this.cor, ylab = "Correlation", xlab = "Samples", ylim = c(-1,1)))
 
   return(output)
 }
