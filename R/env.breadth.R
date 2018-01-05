@@ -20,6 +20,15 @@ env.breadth <- function(model, env, tolerance = .001, max.reps = 10){
     model <- model$model
   }
 
+  # Setting it up so we can handle either a set of rasters or a list of minima and maxima
+  if(inherits(env, c("raster", "RasterStack", "RasterBrick", "RasterLayer"))){
+    mins <- minValue(env)
+    maxes <- maxValue(env)
+  } else if (inherits(env, "list")){
+    mins <- unlist(lapply(env, min))
+    maxes <- unlist(lapply(env, max))
+  }
+
   # These two are tracking whether we have good enough starting conditions
   # and how many times we've tried
   continue <- FALSE
@@ -31,7 +40,7 @@ env.breadth <- function(model, env, tolerance = .001, max.reps = 10){
 
     # Draw a starting latin hypercube scheme
     this.lhs <- randomLHS(10000, length(names(env)))
-    predict.table <- t(t(this.lhs) * (maxValue(env)  - minValue(env)) + minValue(env))
+    predict.table <- t(t(this.lhs) * (maxes  - mins) + mins)
 
     # Use that sample space to get a starting overlap value
     colnames(predict.table) <- names(env)
@@ -83,7 +92,7 @@ env.breadth <- function(model, env, tolerance = .001, max.reps = 10){
 
       # Add 1000 rows to the LHS and build a new predict table
       this.lhs <- randomLHS(10000, length(names(env)))
-      predict.table <- t(t(this.lhs) * (maxValue(env)  - minValue(env)) + minValue(env))
+      predict.table <- t(t(this.lhs) * (maxes  - mins) + mins)
       colnames(predict.table) <- names(env)
 
       # Make new predictions and recalculate metrics
