@@ -20,7 +20,7 @@
 
 
 
-enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0, ...){
+enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", ...){
 
   notes <- NULL
 
@@ -58,7 +58,15 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
   analysis.df <- rbind(species$presence.points, species$background.points)
   analysis.df$presence <- c(rep(1, nrow(species$presence.points)), rep(0, nrow(species$background.points)))
 
-  this.glm <- glm(f, analysis.df[,-c(1,2)], family="binomial", ...)
+  if(weights == "equal"){
+    weights <- c(rep(1, nrow(species$presence.points)),
+                 rep(nrow(species$presence.points)/nrow(species$background.points),
+                     nrow(species$background.points)))
+  } else {
+    weights <- rep(1, nrow(species$presence.points) + nrow(species$background.points))
+  }
+
+  this.glm <- glm(f, analysis.df[,-c(1,2)], family="binomial", weights = weights, ...)
 
 
   if(as.integer(this.glm$aic) == 2 * length(this.glm$coefficients)){
