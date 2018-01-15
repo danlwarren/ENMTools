@@ -20,7 +20,7 @@
 
 
 
-enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0, ...){
+enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", ...){
 
   notes <- NULL
 
@@ -58,7 +58,15 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
   analysis.df <- rbind(species$presence.points, species$background.points)
   analysis.df$presence <- c(rep(1, nrow(species$presence.points)), rep(0, nrow(species$background.points)))
 
-  this.gam <- gam(f, analysis.df[,-c(1,2)], family="binomial", ...)
+  if(weights == "equal"){
+    weights <- c(rep(1, nrow(species$presence.points)),
+                 rep(nrow(species$presence.points)/nrow(species$background.points),
+                     nrow(species$background.points)))
+  } else {
+    weights <- rep(1, nrow(species$presence.points) + nrow(species$background.points))
+  }
+
+  this.gam <- gam(f, analysis.df[,-c(1,2)], family="binomial", weights = weights, ...)
 
   suitability <- predict(env, this.gam, type = "response")
 
