@@ -97,8 +97,6 @@ env.breadth <- function(model, env, tolerance = .0001, max.reps = 10, chunk.size
         pred <- c(pred, as.numeric(predict(model, newdata = data.frame(predict.table), type = "response")))
       }
 
-      # Can't make a prediction, keep trying
-
       if(max(pred) == 0){
         next
       } else {
