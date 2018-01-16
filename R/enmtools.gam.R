@@ -20,7 +20,7 @@
 
 
 
-enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0, ...){
+enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", ...){
 
   notes <- NULL
 
@@ -58,7 +58,15 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
   analysis.df <- rbind(species$presence.points, species$background.points)
   analysis.df$presence <- c(rep(1, nrow(species$presence.points)), rep(0, nrow(species$background.points)))
 
-  this.gam <- gam(f, analysis.df[,-c(1,2)], family="binomial", ...)
+  if(weights == "equal"){
+    weights <- c(rep(1, nrow(species$presence.points)),
+                 rep(nrow(species$presence.points)/nrow(species$background.points),
+                     nrow(species$background.points)))
+  } else {
+    weights <- rep(1, nrow(species$presence.points) + nrow(species$background.points))
+  }
+
+  this.gam <- gam(f, analysis.df[,-c(1,2)], family="binomial", weights = weights, ...)
 
   suitability <- predict(env, this.gam, type = "response")
 
@@ -111,9 +119,11 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
       allpoints <- allpoints[-rep.rows,]
 
       # Do the same for test points
-      test.rows <- sample(nrow(allpoints), nrow(species$presence.points))
-      rep.test.data <- allpoints[test.rows,]
-      allpoints <- allpoints[-test.rows,]
+      if(test.prop > 0){
+        test.rows <- sample(nrow(allpoints), nrow(species$presence.points))
+        rep.test.data <- allpoints[test.rows,]
+        allpoints <- allpoints[-test.rows,]
+      }
 
       # Everything else goes back to the background
       rep.species$background.points <- allpoints
@@ -125,8 +135,6 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
 
       thisrep.gam <- gam(f, rts.df[,-c(1,2)], family="binomial", ...)
 
-      suitability <- predict(env, thisrep.gam, type = "response")
-
       thisrep.model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                                  thisrep.gam, env)
       thisrep.env.model.evaluation <- env.evaluate(species, thisrep.gam, env)
@@ -135,8 +143,9 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
       rts.env.training[i] <- thisrep.env.model.evaluation@auc
 
       if(test.prop > 0 & test.prop < 1){
-        thisrep.test.evaluation <-dismo::evaluate(rep.test.data, species$background.points[,1:2],
+        thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points[,1:2],
                                                   thisrep.gam, env)
+        temp.sp <- rep.species
         temp.sp$presence.points <- test.data
         thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.gam, env)
 
@@ -237,8 +246,13 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
   # the output object because marginal.plots expects an enmtools.model object
   response.plots <- list()
 
-  for(i in names(env)){
-    response.plots[[i]] <- marginal.plots(output, env, i)
+  plot.vars <- all.vars(formula(this.gam))
+
+  for(i in 2:length(plot.vars)){
+    this.var <-plot.vars[i]
+    if(this.var %in% names(env)){
+      response.plots[[this.var]] <- marginal.plots(output, env, this.var)
+    }
   }
 
   output[["response.plots"]] <- response.plots
@@ -320,6 +334,11 @@ plot.enmtools.gam <- function(x, ...){
   if(!(all(is.na(x$test.data)))){
     suit.plot <- suit.plot + geom_point(data = x$test.data, aes(x = Longitude, y = Latitude),
                                         pch = 21, fill = "green", color = "black", size = 2)
+  }
+
+  if(!is.na(x$species.name)){
+    title <- paste("GAM model for", x$species.name)
+    suit.plot <- suit.plot + ggtitle(title) + theme(plot.title = element_text(hjust = 0.5))
   }
 
   return(suit.plot)

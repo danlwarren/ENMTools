@@ -5,6 +5,8 @@
 #' @param nbins The number of bins per layer to use for drawing environment space
 #' @param layers A vector of layer names to use for drawing environment space
 #' @param plot.points Logical determining whether presence points should be plotted on suitability plot
+#' @param plot.test.data Logical determining whether test data should be plotted, if present.  If test data is plotted, it will appear as translucent green triangles.
+#' @param minmax A named list of minima and maxima for each axis, in case the user wants to constrain or expand the space over which models are plotted.
 #'
 #' @return suit.plot A two dimensional plot of an ENM
 #'
@@ -18,7 +20,7 @@
 #' aurelioi.mx <- enmtools.maxent(iberolacerta.clade$species$aurelioi, euro.worldclim)
 #' visualize.enm(aurelioi.mx,euro.worldclim, layers = c("bio14", "bio13"))
 
-visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plot.points = TRUE){
+visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plot.test.data = FALSE, plot.points = TRUE, minmax = NA){
 
   if(!inherits(model, "enmtools.model")){
     stop("This function requires an enmtools.model object!")
@@ -39,10 +41,20 @@ visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plo
     points <- model$analysis.df[model$analysis.df$presence == 1,1:2]
   }
 
+  # Setting it up so we can handle either a set of rasters or a list of minima and maxima
+
   layer1.min <- min(getValues(env[[layers[1]]]), na.rm=TRUE)
   layer2.min <- min(getValues(env[[layers[2]]]), na.rm=TRUE)
   layer1.max <- max(getValues(env[[layers[1]]]), na.rm=TRUE)
   layer2.max <- max(getValues(env[[layers[2]]]), na.rm=TRUE)
+
+  # Allow a different set of minima and maxima from those set by env layers
+  if(!all(is.na(minmax))){
+    layer1.min <- min(minmax[[layers[1]]])
+    layer2.min <- min(minmax[[layers[2]]])
+    layer1.max <- max(minmax[[layers[1]]])
+    layer2.max <- max(minmax[[layers[2]]])
+  }
 
   # Build plot df
   plot.df <- cbind(rep(seq(layer1.min, layer1.max, length = nbins), nbins),
@@ -59,7 +71,18 @@ visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plo
     }
   }
 
-  pointdata <- as.data.frame(extract(env[[layers]], points))
+  # Get data for plotting training points
+  if(plot.points == TRUE){
+    pointdata <- as.data.frame(extract(env[[layers]], points))
+  }
+
+  # Grab test points
+  if(plot.test.data == TRUE){
+    if(!is.data.frame(model$test.data)){
+      stop("Test data is not present, but plot.test.data was set to TRUE")
+    }
+    test.points <- as.data.frame(cbind(extract(env[[layers]], model$test.data)))
+  }
 
   colnames(plot.df) <- names
 
@@ -77,11 +100,17 @@ visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plo
     geom_raster(aes(fill = pred)) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
     theme_classic() +
-    ggtitle(label = "Predicted suitability in environment space")
+    ggtitle(label = "Predicted suitability in environment space") +
+    theme(plot.title = element_text(hjust = 0.5))
 
   if(plot.points == TRUE){
     suit.plot <- suit.plot  + geom_point(data = pointdata, aes_string(y = names[2], x = names[1]),
                                          pch = 21, fill = "white", color = "black", size = 3)
+  }
+
+  if(plot.test.data == TRUE){
+    suit.plot <- suit.plot + geom_point(data = test.points, aes_string(y = names[2], x = names[1]),
+                                        pch = 24, fill = "green", color = "black", size = 3, alpha = 0.6)
   }
 
   # Do density plot of presence vs. background data
@@ -94,7 +123,8 @@ visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plo
       stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE) +
       xlim(layer1.min, layer1.max) + ylim(layer2.min, layer2.max) +
       scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Density")) + theme_classic() +
-      ggtitle(label = "Presence points and background density in environment space")
+      ggtitle(label = "Presence points and background density in environment space") +
+      theme(plot.title = element_text(hjust = 0.5))
 
     if(plot.points == TRUE){
       background.plot <- background.plot + geom_point(data = pointdata, aes_string(y = names[2], x = names[1]),

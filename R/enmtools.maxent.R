@@ -49,7 +49,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, report = 
     notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
   }
 
-  this.mx <- maxent(env, p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)
+  this.mx <- dismo::maxent(env, p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)
 
 
   model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
@@ -89,9 +89,11 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, report = 
       allpoints <- allpoints[-rep.rows,]
 
       # Do the same for test points
-      test.rows <- sample(nrow(allpoints), nrow(species$presence.points))
-      rep.test.data <- allpoints[test.rows,]
-      allpoints <- allpoints[-test.rows,]
+      if(test.prop > 0){
+        test.rows <- sample(nrow(allpoints), nrow(species$presence.points))
+        rep.test.data <- allpoints[test.rows,]
+        allpoints <- allpoints[-test.rows,]
+      }
 
       # Everything else goes back to the background
       rep.species$background.points <- allpoints
@@ -101,9 +103,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, report = 
       rts.df <- rbind(rep.species$presence.points, rep.species$background.points)
       rts.df$presence <- c(rep(1, nrow(rep.species$presence.points)), rep(0, nrow(rep.species$background.points)))
 
-      thisrep.mx <- maxent(env, p = rts.df[rts.df$presence == 1,1:2], a = rts.df[rts.df$presence == 0,1:2], ...)
-
-      suitability <- predict(env, thisrep.mx, type = "response")
+      thisrep.mx <- dismo::maxent(env, p = rts.df[rts.df$presence == 1,1:2], a = rts.df[rts.df$presence == 0,1:2], ...)
 
       thisrep.model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                                  thisrep.mx, env)
@@ -113,8 +113,9 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, report = 
       rts.env.training[i] <- thisrep.env.model.evaluation@auc
 
       if(test.prop > 0 & test.prop < 1){
-        thisrep.test.evaluation <-dismo::evaluate(rep.test.data, species$background.points[,1:2],
+        thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points[,1:2],
                                                   thisrep.mx, env)
+        temp.sp <- rep.species
         temp.sp$presence.points <- test.data
         thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.mx, env)
 
@@ -293,6 +294,12 @@ plot.enmtools.maxent <- function(x, ...){
     suit.plot <- suit.plot + geom_point(data = x$test.data, aes(x = Longitude, y = Latitude),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
+
+  if(!is.na(x$species.name)){
+    title <- paste("Maxent model for", x$species.name)
+    suit.plot <- suit.plot + ggtitle(title) + theme(plot.title = element_text(hjust = 0.5))
+  }
+
 
   return(suit.plot)
 

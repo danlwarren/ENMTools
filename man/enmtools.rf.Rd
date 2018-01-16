@@ -5,7 +5,7 @@
 \title{Takes an emtools.species object with presence and background points, and builds a random forest model}
 \usage{
 enmtools.rf(species, env, f = NULL, test.prop = 0, eval = TRUE,
-  nback = 1000, report = NULL, overwrite = FALSE, ...)
+  nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0, ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
@@ -23,6 +23,8 @@ enmtools.rf(species, env, f = NULL, test.prop = 0, eval = TRUE,
 \item{report}{Optional name of an html file for generating reports}
 
 \item{overwrite}{TRUE/FALSE whether to overwrite a report file if it already exists}
+
+\item{rts.reps}{The number of replicates to do for a Raes and ter Steege-style test of significance}
 
 \item{...}{Arguments to be passed to rf()}
 }

@@ -7,6 +7,7 @@
 #'
 #' @param species An enmtools.species or enmtools.clade object
 #' @param env A raster stack of environmental variables
+#' @param verbose Controls printing of progress messages
 #'
 #' @export add.env
 

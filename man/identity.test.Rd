@@ -37,7 +37,7 @@ cyreni <- iberolacerta.clade$species$cyreni
 monticola <- iberolacerta.clade$species$monticola
 cyreni$range <- background.raster.buffer(cyreni$presence.points, 100000, euro.worldclim)
 monticola$range <- background.raster.buffer(monticola$presence.points, 100000, euro.worldclim)
-identity.test(cyreni, monticola, env = euro.worldclim, type = "mx", nreps = 10)
+identity.test(cyreni, monticola, env = euro.worldclim, type = "bc", nreps = 10)
 }
 \keyword{enmtools,}
 \keyword{equivalency,}

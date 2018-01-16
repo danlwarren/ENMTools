@@ -5,7 +5,7 @@
 \title{Takes an emtools.species object with presence and background points, and builds a maxent model}
 \usage{
 enmtools.maxent(species, env, test.prop = 0, nback = 1000, report = NULL,
-  overwrite = FALSE, ...)
+  overwrite = FALSE, rts.reps = 0, ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
@@ -19,6 +19,8 @@ enmtools.maxent(species, env, test.prop = 0, nback = 1000, report = NULL,
 \item{report}{Optional name of an html file for generating reports}
 
 \item{overwrite}{TRUE/FALSE whether to overwrite a report file if it already exists}
+
+\item{rts.reps}{The number of replicates to do for a Raes and ter Steege-style test of significance}
 
 \item{...}{Arguments to be passed to maxent()}
 }

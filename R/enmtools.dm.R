@@ -89,16 +89,16 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
       allpoints <- allpoints[-rep.rows,]
 
       # Do the same for test points
-      test.rows <- sample(nrow(allpoints), nrow(species$presence.points))
-      rep.test.data <- allpoints[test.rows,]
-      allpoints <- allpoints[-test.rows,]
+      if(test.prop > 0){
+        test.rows <- sample(nrow(allpoints), nrow(species$presence.points))
+        rep.test.data <- allpoints[test.rows,]
+        allpoints <- allpoints[-test.rows,]
+      }
 
       # Everything else goes back to the background
       rep.species$background.points <- allpoints
 
       thisrep.dm <- dismo::domain(env, rep.species$presence.points[,1:2])
-
-      suitability <- predict(env, thisrep.dm, type = "response")
 
       thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points[,1:2], rep.species$background.points[,1:2],
                                                  thisrep.dm, env)
@@ -108,8 +108,9 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
       rts.env.training[i] <- thisrep.env.model.evaluation@auc
 
       if(test.prop > 0 & test.prop < 1){
-        thisrep.test.evaluation <-dismo::evaluate(rep.test.data, species$background.points[,1:2],
+        thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points[,1:2],
                                                   thisrep.dm, env)
+        temp.sp <- rep.species
         temp.sp$presence.points <- test.data
         thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.dm, env)
 
@@ -206,7 +207,7 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
   # the output object because marginal.plots expects an enmtools.model object
   response.plots <- list()
 
-  for(i in names(env)){
+  for(i in colnames(this.dm@presence)){
     response.plots[[i]] <- marginal.plots(output, env, i)
   }
 
@@ -285,6 +286,12 @@ plot.enmtools.dm <- function(x, ...){
     suit.plot <- suit.plot + geom_point(data = x$test.data, aes(x = Longitude, y = Latitude),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
+
+  if(!is.na(x$species.name)){
+    title <- paste("Domain model for", x$species.name)
+    suit.plot <- suit.plot + ggtitle(title) + theme(plot.title = element_text(hjust = 0.5))
+  }
+
 
   return(suit.plot)
 }

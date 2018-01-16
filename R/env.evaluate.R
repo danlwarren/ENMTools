@@ -4,6 +4,7 @@
 #' @param model An enmtools.model object or a model that can be projected using the predict() function of dismo
 #' @param env A raster or raster stack of environmental data.
 #' @param bg.source Determines whether minima and maxima of the environment space should be picked using the environment layers or the background points.
+#' @param n.background The number of background points to sample from the environment space.
 #' @param ... Arguments to be passed to othfer functions
 #'
 #' @export env.evaluate
@@ -16,7 +17,7 @@
 #' env.evaluate(cyreni, cyreni.mx,  euro.worldclim)
 
 
-env.evaluate <- function(species, model, env, bg.source = "background", ...){
+env.evaluate <- function(species, model, env, bg.source = "background", n.background = 10000, ...){
 
   species <- check.bg(species, env, ...)
 
@@ -45,7 +46,7 @@ env.evaluate <- function(species, model, env, bg.source = "background", ...){
 
 
 
-  this.lhs <- randomLHS(10000, length(names(env)))
+  this.lhs <- randomLHS(n.background, length(names(env)))
   bg.table <- t(t(this.lhs) * (maxes  - mins) + mins)
   colnames(bg.table) <- names(env)
 

@@ -72,6 +72,7 @@ enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL
   }
 
   tree <- clade$tree
+  tree$node.label <- NULL
 
   # sapply is renaming rows, gotta change tnem back
   rownames(overlap) <- colnames(overlap)
@@ -105,12 +106,12 @@ enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL
   p.values <- apply(reps.aoc, 2, function(x) 1 - mean(x > x[1]))
   p.values <- sapply(p.values, function(x) min(x, 1-x)*2)
 
-  intercept.plot <- qplot(reps.aoc[2:nrow(reps.aoc),"(Intercept)"], geom = "density", fill = "density", alpha = 0.5) +
+  intercept.plot <- qplot(reps.aoc[2:nrow(reps.aoc),"(Intercept)"], geom = "histogram", fill = "histogram", alpha = 0.5) +
     geom_vline(xintercept = reps.aoc[1,"(Intercept)"], linetype = "longdash") +
     guides(fill = FALSE, alpha = FALSE) + xlab("Intercept") + ggtitle(description) +
     theme(plot.title = element_text(hjust = 0.5))
 
-  slope.plot <- qplot(reps.aoc[2:nrow(reps.aoc),"age"], geom = "density", fill = "density", alpha = 0.5) +
+  slope.plot <- qplot(reps.aoc[2:nrow(reps.aoc),"age"], geom = "histogram", fill = "histogram", alpha = 0.5) +
     geom_vline(xintercept = reps.aoc[1,"age"], linetype = "longdash") +
     guides(fill = FALSE, alpha = FALSE) + xlab("Slope") + ggtitle(description) +
     theme(plot.title = element_text(hjust = 0.5))

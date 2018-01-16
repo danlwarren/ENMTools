@@ -28,6 +28,8 @@ environmental density values.  See documentation for ecospat.grid.clim.dyn.}
 
 \item{R}{Resolution of the grid. See documentation for ecospat.grid.clim.dyn.}
 
+\item{nback}{Number of background points to use for density calculations.}
+
 \item{...}{Further arguments to be passed to check.bg}
 }
 \value{
