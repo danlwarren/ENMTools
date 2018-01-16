@@ -9,6 +9,7 @@
 #' @param report Optional name of an html file for generating reports
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
 #' @param rts.reps The number of replicates to do for a Raes and ter Steege-style test of significance
+#' @param weights If this is set to "equal", presences and background data will be assigned weights so that the sum of all presence points weights equals the sum of all background point weights.  Otherwise, weights are not provided to the model.
 #' @param ... Arguments to be passed to glm()
 #'
 #' @export enmtools.glm
