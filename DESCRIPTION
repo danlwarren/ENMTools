@@ -33,7 +33,7 @@ Imports:
 	randomForest,
 	ppmlasso,
 	ape,
-	reshape
+	reshape2
 Depends:
 Suggests:
 	testthat
