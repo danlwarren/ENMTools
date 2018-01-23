@@ -120,4 +120,5 @@ importFrom(stats,rbinom)
 importFrom(ggplot2,geom_tile)
 importFrom(utils,combn)
 importFrom(graphics,par)
-
+importFrom(dismo,circles)
+importFrom(reshape2,melt)
