@@ -93,4 +93,7 @@ S3method(summary, enmtools.rangebreak.ribbon)
 export(visualize.enm)
 export(visualize.overlap)
 importFrom(ppmlasso,ppmlasso)
-importFrom(raster,extract)
+importFrom(utils,head)
+importFrom(ggplot2,theme)
+importFrom(ggplot2,element_text)
+
