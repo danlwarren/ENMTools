@@ -29,7 +29,7 @@ raster.cor.plot <- function(env, method = "pearson"){
   melted.cor.mat <- reshape2::melt(as.matrix(cor.mat))
 
   colnames(melted.cor.mat) <- c("Var1", "Var2", "value")
-  output <- ggplot(data = melted.cor.mat, aes(x=Var1, y=Var2, fill=value)) +
+  output <- ggplot(data = melted.cor.mat, aes_string(x="Var1", y="Var2", fill="value")) +
     geom_tile() + scale_fill_viridis()
 
   return(output)

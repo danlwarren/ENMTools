@@ -119,3 +119,5 @@ importFrom(stats,runif)
 importFrom(stats,rbinom)
 importFrom(ggplot2,geom_tile)
 importFrom(utils,combn)
+importFrom(graphics,par)
+
