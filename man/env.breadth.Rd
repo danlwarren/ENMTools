@@ -4,7 +4,8 @@
 \alias{env.breadth}
 \title{Calculates breadth of a model in environment space using latin hypercube sampling}
 \usage{
-env.breadth(model, env, tolerance = 0.001, max.reps = 10)
+env.breadth(model, env, tolerance = 1e-04, max.reps = 10,
+  chunk.size = 1e+05)
 }
 \arguments{
 \item{model}{An enmtools.model object or a model object that can be projected using the predict() function}
@@ -14,6 +15,8 @@ env.breadth(model, env, tolerance = 0.001, max.reps = 10)
 \item{tolerance}{How close do successive overlap metrics have to be before we decide we're close enough to the final answer}
 
 \item{max.reps}{Maximum number of attempts that will be made to find suitable starting conditions}
+
+\item{chunk.size}{How many combinations of environmental variables to try at a time.  If your niche breadth in environment space is small, increasing this value may help you get a result.}
 }
 \description{
 Calculates breadth of a model in environment space using latin hypercube sampling

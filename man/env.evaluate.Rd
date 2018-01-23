@@ -4,7 +4,8 @@
 \alias{env.evaluate}
 \title{Calculates evaluation metrics (AUC, etc.) using latin hypercube sampling in environment space}
 \usage{
-env.evaluate(species, model, env, bg.source = "background", ...)
+env.evaluate(species, model, env, bg.source = "background",
+  n.background = 10000, ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
@@ -14,6 +15,8 @@ env.evaluate(species, model, env, bg.source = "background", ...)
 \item{env}{A raster or raster stack of environmental data.}
 
 \item{bg.source}{Determines whether minima and maxima of the environment space should be picked using the environment layers or the background points.}
+
+\item{n.background}{The number of background points to sample from the environment space.}
 
 \item{...}{Arguments to be passed to othfer functions}
 }

@@ -5,7 +5,8 @@
 \title{Takes an emtools.species object with presence and background points, and builds a gam}
 \usage{
 enmtools.gam(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000,
-  report = NULL, overwrite = FALSE, rts.reps = 0, ...)
+  report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal",
+  ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
@@ -25,6 +26,8 @@ enmtools.gam(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000,
 \item{overwrite}{TRUE/FALSE whether to overwrite a report file if it already exists}
 
 \item{rts.reps}{The number of replicates to do for a Raes and ter Steege-style test of significance}
+
+\item{weights}{If this is set to "equal", presences and background data will be assigned weights so that the sum of all presence points weights equals the sum of all background point weights.  Otherwise, weights are not provided to the model.}
 
 \item{...}{Arguments to be passed to gam()}
 }

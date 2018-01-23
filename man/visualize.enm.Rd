@@ -5,7 +5,7 @@
 \title{visualize.enm, Makes a heatmap of suitability of habitat in environment space according to a given model}
 \usage{
 visualize.enm(model, env, nbins = 100, layers = names(env)[1:2],
-  plot.test.data = FALSE, plot.points = TRUE)
+  plot.test.data = FALSE, plot.points = TRUE, minmax = NA)
 }
 \arguments{
 \item{model}{An enmtools.model object}
@@ -19,6 +19,8 @@ visualize.enm(model, env, nbins = 100, layers = names(env)[1:2],
 \item{plot.test.data}{Logical determining whether test data should be plotted, if present.  If test data is plotted, it will appear as translucent green triangles.}
 
 \item{plot.points}{Logical determining whether presence points should be plotted on suitability plot}
+
+\item{minmax}{A named list of minima and maxima for each axis, in case the user wants to constrain or expand the space over which models are plotted.}
 }
 \value{
 suit.plot A two dimensional plot of an ENM

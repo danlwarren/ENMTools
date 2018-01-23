@@ -5,7 +5,7 @@
 \title{Calculates overlap between models in environment space using latin hypercube sampling}
 \usage{
 env.overlap(model.1, model.2, env, tolerance = 0.001, max.reps = 10,
-  cor.method = "spearman")
+  cor.method = "spearman", chunk.size = 1e+05)
 }
 \arguments{
 \item{model.1}{An enmtools.model object model object that can be projected using the predict() function}
@@ -19,6 +19,8 @@ env.overlap(model.1, model.2, env, tolerance = 0.001, max.reps = 10,
 \item{max.reps}{Maximum number of attempts that will be made to find suitable starting conditions}
 
 \item{cor.method}{Which method to use for calculating correlations between models}
+
+\item{chunk.size}{How many combinations of environmental variables to try at a time.  If your niche breadth in environment space is small, increasing this value may help you get a result.}
 }
 \description{
 Calculates overlap between models in environment space using latin hypercube sampling
