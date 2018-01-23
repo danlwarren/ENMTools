@@ -15,7 +15,7 @@ Description: Tools for the ecological and historical biogeography.
 License: GPL-2
 LazyData: TRUE
 RoxygenNote: 6.0.1
-Depends:
+Imports:
 	dismo,
 	raster,
 	rgeos,
@@ -33,5 +33,6 @@ Depends:
 	randomForest,
 	ppmlasso,
 	ape
+Depends:
 Suggests:
 	testthat
