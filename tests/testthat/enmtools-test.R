@@ -3,6 +3,8 @@ rm(list=ls(all = TRUE))
 library(testthat)
 library(ENMTools)
 
+print(getwd())
+
 #' Load data
 #'
 #'
