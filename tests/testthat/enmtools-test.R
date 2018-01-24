@@ -7,9 +7,9 @@ library(ENMTools)
 #'
 #'
 
-iberolacerta <- read.csv("iberolacerta.points.csv")
-ib.tree <- read.tree(file = "iberolacerta.brlens.tree")
-euro.worldclim <- stack("euro.worldclim.grd")
+iberolacerta <- read.csv("./iberolacerta.points.csv")
+ib.tree <- read.tree(file = "./iberolacerta.brlens.tree")
+euro.worldclim <- stack("./euro.worldclim.grd")
 
 expect_equal(class(ib.tree), "phylo")
 expect_equal(length(names(euro.worldclim)), 19)
