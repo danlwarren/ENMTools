@@ -116,7 +116,7 @@ enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL
     guides(fill = FALSE, alpha = FALSE) + xlab("Slope") + ggtitle(description) +
     theme(plot.title = element_text(hjust = 0.5))
 
-  regressions.plot <- qplot(age, overlap, data = empirical.df) + theme_bw()
+  regressions.plot <- qplot(empirical.df$age, empirical.df$overlap) + theme_bw()
   for(i in 2:min(100, nrow(reps.aoc))){
     regressions.plot <- regressions.plot + geom_abline(slope=reps.aoc[i,2],
                                                        intercept=reps.aoc[i,1],
