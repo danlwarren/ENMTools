@@ -217,8 +217,9 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
     if(file.exists(report) & overwrite == FALSE){
       stop("Report file exists, and overwrite is set to FALSE!")
     } else {
-      cat("\n\nGenerating html report...\n")
-      makereport(output, outfile = report)
+      # cat("\n\nGenerating html report...\n")
+print("This function not enabled yet.  Check back soon!")
+      # makereport(output, outfile = report)
     }
   }
 
@@ -275,15 +276,15 @@ plot.enmtools.dm <- function(x, ...){
   suit.points <- data.frame(rasterToPoints(x$suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
-  suit.plot <- ggplot(data = suit.points, aes(y = Latitude, x = Longitude)) +
-    geom_raster(aes(fill = Suitability)) +
+  suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
+    geom_raster(aes_string(fill = "Suitability")) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
-    geom_point(data = x$analysis.df, aes(x = Longitude, y = Latitude),
+    geom_point(data = x$analysis.df, aes_string(y = "Latitude", x = "Longitude"),
                pch = 21, fill = "white", color = "black", size = 2)
 
   if(!(all(is.na(x$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = x$test.data, aes(x = Longitude, y = Latitude),
+    suit.plot <- suit.plot + geom_point(data = x$test.data,  aes_string(y = "Latitude", x = "Longitude"),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
 

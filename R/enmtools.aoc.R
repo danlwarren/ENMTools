@@ -81,14 +81,14 @@ enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL
   empirical.df <- node.overlap(overlap, tree)
 
   # Build an empirical lm
-  empirical.model <- lm(overlap ~ age, data = empirical.df)
+  empirical.model <- lm(empirical.df$overlap ~ empirical.df$age)
 
   # Define a function for each rep so we can try to apply it
   do.rep <- function(inds) {
     tree$tip.label <- tree$tip.label[inds]
     rep.df <- node.overlap(overlap, tree)
     return(list(rep.df = rep.df,
-                rep.lm = lm(overlap ~ age, data = rep.df)))
+                rep.lm = lm(rep.df$overlap ~ rep.df$age)))
   }
 
   reps <- list()

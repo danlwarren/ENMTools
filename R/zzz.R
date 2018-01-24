@@ -1,5 +1,4 @@
-globalVariables(c("..density..", "Density", "Latitude", "Longitude", "Suitability", "X", "Y",
-"age","f", "makereport", "predict", "sp.names"))
+globalVariables(c("f", "predict"))
 
 #' Package setup options
 #'
