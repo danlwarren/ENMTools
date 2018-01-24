@@ -13,13 +13,13 @@ bonnali <- iberolacerta.clade$species$bonnali
 
 ib.tree <- iberolacerta.clade$tree
 
-expect_species(monticola)
-expect_species(martinezricai)
-expect_species(cyreni)
-expect_species(horvathi)
-expect_species(aurelioi)
-expect_species(aranica)
-expect_species(bonnali)
+expect_species(iberolacerta.clade$species$monticola)
+expect_species(iberolacerta.clade$species$martinezricai)
+expect_species(iberolacerta.clade$species$cyreni)
+expect_species(iberolacerta.clade$species$horvathi)
+expect_species(iberolacerta.clade$species$aurelioi)
+expect_species(iberolacerta.clade$species$aranica)
+expect_species(iberolacerta.clade$species$bonnali)
 
 #' Make an enmtools.clade object
 #'
