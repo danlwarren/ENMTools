@@ -31,9 +31,11 @@ Imports:
 	fields,
 	gbm,
 	randomForest,
-	ppmlasso,
 	ape,
 	reshape2
 Depends:
+	raster,
+	dismo,
+	ppmlasso
 Suggests:
 	testthat
