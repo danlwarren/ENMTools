@@ -3,6 +3,9 @@ rm(list=ls(all = TRUE))
 library(testthat)
 library(ENMTools)
 
+data(iberolacerta.clade)
+data(euro.worldclim)
+
 monticola <- iberolacerta.clade$species$monticola
 martinezricai <- iberolacerta.clade$species$martinezricai
 cyreni <- iberolacerta.clade$species$cyreni
@@ -13,13 +16,13 @@ bonnali <- iberolacerta.clade$species$bonnali
 
 ib.tree <- iberolacerta.clade$tree
 
-expect_species(iberolacerta.clade$species$monticola)
-expect_species(iberolacerta.clade$species$martinezricai)
-expect_species(iberolacerta.clade$species$cyreni)
-expect_species(iberolacerta.clade$species$horvathi)
-expect_species(iberolacerta.clade$species$aurelioi)
-expect_species(iberolacerta.clade$species$aranica)
-expect_species(iberolacerta.clade$species$bonnali)
+expect_species(monticola)
+expect_species(martinezricai)
+expect_species(cyreni)
+expect_species(horvathi)
+expect_species(aurelioi)
+expect_species(aranica)
+expect_species(bonnali)
 
 #' Make an enmtools.clade object
 #'
