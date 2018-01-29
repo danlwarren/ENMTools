@@ -27,15 +27,15 @@
 #' monticola <- iberolacerta.clade$species$monticola
 #' cyreni$range <- background.raster.buffer(cyreni$presence.points, 100000, euro.worldclim)
 #' monticola$range <- background.raster.buffer(monticola$presence.points, 100000, euro.worldclim)
-#' background.test(cyreni, monticola, env = euro.worldclim, type = "glm", formula = pres ~ bio1 + bio12, nreps = 10)
+#' background.test(cyreni, monticola, env = euro.worldclim, type = "glm", f = pres ~ bio1 + bio12, nreps = 10)
 
 background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99, test.type = "asymmetric", nback = 1000, ...){
 
   # Build a description of the analysis to use for summaries and plot titles
   if(test.type == "symmetric"){
-    description <- paste("\n\nSymmetric background test", species.1$species.name, "background vs.", species.2$species.name, "background")
+    description <- paste("\n\nSymmetric background test\n", species.1$species.name, "background vs.", species.2$species.name, "background")
   } else {
-    description <- paste("\n\nAsymmetric background test", species.1$species.name, "vs.", species.2$species.name, "background")
+    description <- paste("\n\nAsymmetric background test\n", species.1$species.name, "vs.", species.2$species.name, "background")
   }
   cat(paste("\n", description, "\n"))
 
@@ -87,7 +87,7 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
   }
 
   empirical.overlap <- c(unlist(raster.overlap(empirical.species.1.model, empirical.species.2.model)),
-                         unlist(env.overlap(empirical.species.1.model, empirical.species.2.model, env = env)))
+                         unlist(env.overlap(empirical.species.1.model, empirical.species.2.model, env = env)[1:3]))
   reps.overlap <- empirical.overlap
 
   cat("\nBuilding replicate models...\n")
@@ -152,12 +152,12 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
     # Appending overlap to results
     reps.overlap <- rbind(reps.overlap, c(unlist(raster.overlap(rep.species.1.model, rep.species.2.model)),
-                                          unlist(env.overlap(rep.species.1.model, rep.species.2.model, env = env))))
+                                          unlist(env.overlap(rep.species.1.model, rep.species.2.model, env = env)[1:3])))
 
   }
 
   rownames(reps.overlap) <- c("empirical", paste("rep", 1:nreps))
-
+  print(reps.overlap)
   p.values <- apply(reps.overlap, 2, function(x) 1 - mean(x > x[1]))
 
 
