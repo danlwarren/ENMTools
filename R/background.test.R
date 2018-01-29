@@ -39,8 +39,8 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
   }
   cat(paste("\n", description, "\n"))
 
-  species.1 <- check.bg(species.1, env, nback = nback, ...)
-  species.2 <- check.bg(species.2, env, nback = nback, ...)
+  species.1 <- check.bg(species.1, env, nback = nback)
+  species.2 <- check.bg(species.2, env, nback = nback)
 
   # Check to make sure everything's okay
   background.precheck(species.1, species.2, env, type, f, nreps, test.type)

@@ -35,9 +35,9 @@
 
 rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL, width = 1, nreps = 99,  nback = 1000, ...){
 
-  species.1 <- check.bg(species.1, env, nback = nback, ...)
-  species.2 <- check.bg(species.2, env, nback = nback, ...)
-  ribbon <- check.bg(ribbon, env, nback = nback, ...)
+  species.1 <- check.bg(species.1, env, nback = nback)
+  species.2 <- check.bg(species.2, env, nback = nback)
+  ribbon <- check.bg(ribbon, env, nback = nback)
 
   # Making sure species 1 always has the most presence points
   if(nrow(species.1$presence.points) < nrow(species.2$presence.points)){

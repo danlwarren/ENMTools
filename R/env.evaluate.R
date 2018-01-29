@@ -19,7 +19,7 @@
 
 env.evaluate <- function(species, model, env, bg.source = "background", n.background = 10000, ...){
 
-  species <- check.bg(species, env, ...)
+  species <- check.bg(species, env)
 
   if(!inherits(species, "enmtools.species")){
     stop("Argument species must supply an enmtools.species object!")
