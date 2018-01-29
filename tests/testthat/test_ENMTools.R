@@ -3,6 +3,9 @@ library(ENMTools)
 
 data(iberolacerta.clade)
 data(euro.worldclim)
+source("helper_expect_species.R")
+source("helper_make_species.R")
+source("helper_expect_enmtools_model.R")
 
 monticola <- iberolacerta.clade$species$monticola
 martinezricai <- iberolacerta.clade$species$martinezricai
