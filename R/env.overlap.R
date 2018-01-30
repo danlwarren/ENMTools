@@ -14,9 +14,9 @@
 #' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni
 #' monticola <- iberolacerta.clade$species$monticola
-#' cyreni.mx <- enmtools.maxent(cyreni, euro.worldclim, nback = 500)
-#' monticola.mx <- enmtools.maxent(monticola, euro.worldclim, nback = 500)
-#' env.overlap(cyreni.mx, monticola.mx, euro.worldclim)
+#' cyreni.glm <- enmtools.glm(cyreni, euro.worldclim, f = pres ~ bio1 + bio12, nback = 500)
+#' monticola.glm <- enmtools.glm(monticola, euro.worldclim, f = pres ~ bio1 + bio12, nback = 500)
+#' env.overlap(cyreni.glm, monticola.glm, euro.worldclim)
 
 env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, cor.method = "spearman", chunk.size = 100000){
 

@@ -67,7 +67,7 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
     weights <- rep(1, nrow(species$presence.points) + nrow(species$background.points))
   }
 
-  this.gam <- gam(f, analysis.df[,-c(1,2)], family="binomial", weights = weights, ...)
+  this.gam <- mgcv::gam(f, analysis.df[,-c(1,2)], family="binomial", weights = weights, ...)
 
   suitability <- predict(env, this.gam, type = "response")
 
@@ -283,9 +283,6 @@ summary.enmtools.gam <- function(object, ...){
 
   cat("\n\nModel:  ")
   print(summary(object$model))
-
-  cat("\n\ngam.check results:  ")
-  print(gam.check(object$model))
 
   cat("\n\nModel fit (training data):  ")
   print(object$training.evaluation)

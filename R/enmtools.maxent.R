@@ -12,9 +12,11 @@
 #' @export enmtools.maxent
 #'
 #' @examples
+#' \dontrun{
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
 #' enmtools.maxent(iberolacerta.clade$species$monticola, env = euro.worldclim)
+#' }
 
 
 enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0,  ...){
