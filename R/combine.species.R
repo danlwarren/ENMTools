@@ -25,8 +25,12 @@ combine.species <- function(species.list){
 
     if(inherits(combined$range, "RasterLayer") & inherits(species.list[[i]]$range, "RasterLayer")){
       combined$range <-  merge(combined$range, species.list[[i]][["range"]])
-    } else if(!inherits(combined$range, "RasterLayer") & inherits(species.list[[i]]$range, "RasterLayer")){
+    } else if(is.data.frame(combined$range) & is.data.frame(species.list[[i]]$range)){
       combined$range <- species.list[[i]]$range
+    } else {
+      stop(paste("Inconsistent data types for species ranges:\n",
+                 class(combined$range), "\n",
+                 class(species.list[[i]]$range)))
     }
     combined$species.name <- paste(combined$species.name, species.list[[i]][["species.name"]], sep = " + ")
   }
