@@ -17,12 +17,14 @@
 #' @export rangebreak.linear
 #'
 #' @examples
+#' \dontrun{
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni
 #' aranica <- iberolacerta.clade$species$aranica
-#' rangebreak.linear(cyreni, aranica, env = euro.worldclim, type = "mx", nreps = 10)
-#'
+#' rangebreak.linear(cyreni, aranica, env = euro.worldclim, type = "glm",
+#' f= pres ~ bio1 + bio12, nreps = 10)
+#' }
 
 rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps = 99,  nback = 1000, ...){
 
@@ -311,7 +313,8 @@ plot.enmtools.rangebreak.linear <- function(x, ...){
 
   x.raster <- x$empirical.species.1.model$suitability
   x.raster[!is.na(x.raster)] <- 1
-  plot(x.raster)
+  #print(x.raster)
+  raster::plot(x.raster)
   for(i in 1:nrow(x$lines.df)){
     abline(x$lines.df[i,2], x$lines.df[i,1])
   }

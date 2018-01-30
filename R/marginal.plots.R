@@ -14,7 +14,8 @@
 #' @examples
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
-#' cyreni.glm <- enmtools.glm(iberolacerta.clade$species$cyreni, f = pres ~ bio1 + bio12, euro.worldclim)
+#' cyreni.glm <- enmtools.glm(iberolacerta.clade$species$cyreni,
+#' f = pres ~ bio1 + bio12, euro.worldclim)
 #' marginal.plots(cyreni.glm, euro.worldclim, "bio1")
 
 marginal.plots <- function(model, env, layer){

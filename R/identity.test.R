@@ -17,13 +17,16 @@
 #' @export identity.test
 #'
 #' @examples
+#' \dontrun{
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni
 #' monticola <- iberolacerta.clade$species$monticola
 #' cyreni$range <- background.raster.buffer(cyreni$presence.points, 100000, euro.worldclim)
 #' monticola$range <- background.raster.buffer(monticola$presence.points, 100000, euro.worldclim)
-#' identity.test(cyreni, monticola, env = euro.worldclim, type = "bc", nreps = 10)
+#' identity.test(cyreni, monticola, env = euro.worldclim, type = "glm",
+#' f = pres ~ bio1 + bio12, nreps = 10)
+#' }
 
 identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99, nback = 1000, ...){
 

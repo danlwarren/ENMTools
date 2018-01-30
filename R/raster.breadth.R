@@ -15,7 +15,8 @@
 #' @examples
 #' data(iberolacerta)
 #' data(euro.worldclim)
-#' aurelioi.glm <- enmtools.glm(iberolacerta.clade$species$aurelioi, euro.worldclim, f = pres ~ bio1 + bio12)
+#' aurelioi.glm <- enmtools.glm(iberolacerta.clade$species$aurelioi, euro.worldclim,
+#' f = pres ~ bio1 + bio12)
 #' raster.breadth(aurelioi.glm)
 
 raster.breadth <- function(x, verbose=FALSE){

@@ -21,7 +21,8 @@ scores from an ENM.  It returns Levins' two metrics of niche breadth.
 \examples{
 data(iberolacerta)
 data(euro.worldclim)
-aurelioi.glm <- enmtools.glm(iberolacerta.clade$species$aurelioi, euro.worldclim, f = pres ~ bio1 + bio12)
+aurelioi.glm <- enmtools.glm(iberolacerta.clade$species$aurelioi, euro.worldclim,
+f = pres ~ bio1 + bio12)
 raster.breadth(aurelioi.glm)
 }
 \keyword{keywords}

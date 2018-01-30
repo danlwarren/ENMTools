@@ -17,12 +17,14 @@
 #' @export rangebreak.blob
 #'
 #' @examples
+#' \dontrun{
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni
 #' aranica <- iberolacerta.clade$species$aranica
-#' rangebreak.blob(cyreni, aranica, env = euro.worldclim, type = "mx", nreps = 10)
-#'
+#' rangebreak.blob(cyreni, aranica, env = euro.worldclim, type = "glm",
+#' f= pres ~ bio1 + bio12, nreps = 10)
+#' }
 
 
 rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 99, nback = 1000, ...){

@@ -17,7 +17,8 @@
 #' @examples
 #' data(iberolacerta)
 #' data(euro.worldclim)
-#' aurelioi.glm <- enmtools.glm(iberolacerta.clade$species$aurelioi, euro.worldclim, f = pres ~ poly(bio1, 4) + poly(bio12, 4))
+#' aurelioi.glm <- enmtools.glm(iberolacerta.clade$species$aurelioi, euro.worldclim,
+#' f = pres ~ poly(bio1, 4) + poly(bio12, 4))
 #' visualize.enm(aurelioi.glm, euro.worldclim, layers = c("bio1", "bio12"))
 
 visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plot.test.data = FALSE, plot.points = TRUE, minmax = NA){

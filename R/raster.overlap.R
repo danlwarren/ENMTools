@@ -17,8 +17,10 @@
 #' @examples
 #' data(iberolacerta)
 #' data(euro.worldclim)
-#' aurelioi.glm <- enmtools.glm(iberolacerta.clade$species$aurelioi, euro.worldclim, f = pres ~ bio1 + bio12)
-#' aranica.glm <- enmtools.glm(iberolacerta.clade$species$aranica, euro.worldclim, f = pres ~ bio1 + bio12)
+#' aurelioi.glm <- enmtools.glm(iberolacerta.clade$species$aurelioi,
+#' euro.worldclim, f = pres ~ bio1 + bio12)
+#' aranica.glm <- enmtools.glm(iberolacerta.clade$species$aranica,
+#' euro.worldclim, f = pres ~ bio1 + bio12)
 #' raster.overlap(aurelioi.glm, aranica.glm)
 
 raster.overlap <- function(x, y, verbose=FALSE){

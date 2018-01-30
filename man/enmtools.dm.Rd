@@ -28,7 +28,9 @@ enmtools.dm(species, env = NA, test.prop = 0, report = NULL,
 Takes an emtools.species object with presence and background points, and builds a Domain model
 }
 \examples{
+\dontrun{
 data(euro.worldclim)
 data(iberolacerta.clade)
 enmtools.dm(iberolacerta.clade$species$monticola, env = euro.worldclim)
+}
 }

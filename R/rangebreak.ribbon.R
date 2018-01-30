@@ -19,6 +19,7 @@
 #' @export rangebreak.ribbon
 #'
 #' @examples
+#' \dontrun{
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni
@@ -30,8 +31,9 @@
 #' bg <- background.points.buffer(p, 100000, 100, euro.worldclim[[1]])
 #' ribbon <- enmtools.species(species.name = "ribbon", presence.points = p, background.points = bg)
 #'
-#' rangebreak.ribbon(cyreni, aranica, ribbon = ribbon, env = euro.worldclim, type = "mx", nreps = 10)
-#'
+#' rangebreak.ribbon(cyreni, aranica, ribbon = ribbon, env = euro.worldclim,
+#' type = "glm", f= pres ~ bio1 + bio12, nreps = 10)
+#' }
 
 rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL, width = 1, nreps = 99,  nback = 1000, ...){
 

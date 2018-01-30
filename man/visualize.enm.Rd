@@ -31,7 +31,8 @@ visualize.enm, Makes a heatmap of suitability of habitat in environment space ac
 \examples{
 data(iberolacerta)
 data(euro.worldclim)
-aurelioi.glm <- enmtools.glm(iberolacerta.clade$species$aurelioi, euro.worldclim, f = pres ~ poly(bio1, 4) + poly(bio12, 4))
+aurelioi.glm <- enmtools.glm(iberolacerta.clade$species$aurelioi, euro.worldclim,
+f = pres ~ poly(bio1, 4) + poly(bio12, 4))
 visualize.enm(aurelioi.glm, euro.worldclim, layers = c("bio1", "bio12"))
 }
 \keyword{enm}
