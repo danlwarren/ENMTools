@@ -26,12 +26,25 @@ raster.cor.plot <- function(env, method = "pearson"){
   }
   colnames(cor.mat) <- names(env)
   row.names(cor.mat) <- names(env)
-  melted.cor.mat <- reshape2::melt(as.matrix(cor.mat))
 
+  # Plot variables in MDS space of correlation
+  d <- as.dist(1 - cor.mat)
+  mds.cor <- as.data.frame(cmdscale(d))
+  colnames(mds.cor) <- c("X", "Y")
+
+  cor.mds.plot <- ggplot(mds.cor, aes_string(x = "X", y = "Y"))  +
+    geom_text(aes(label = rownames(mds.cor))) + theme_bw()
+
+  # Make heatmap
+  melted.cor.mat <- reshape2::melt(as.matrix(cor.mat))
   colnames(melted.cor.mat) <- c("Var1", "Var2", "value")
-  output <- ggplot(data = melted.cor.mat, aes_string(x="Var1", y="Var2", fill="value")) +
-    geom_tile() + scale_fill_viridis() + theme(plot.title = element_text(hjust = 0.5)) +
-    ggtitle("Absolute value of correlation\nbetween predictor variables")
+
+  cor.heatmap <- ggplot(data = melted.cor.mat, aes_string(x="Var1", y="Var2", fill="value")) +
+    geom_tile() + scale_fill_viridis() +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+  output <- list(cor.mds.plot = cor.mds.plot,
+                 cor.heatmap = cor.heatmap)
 
   return(output)
 
