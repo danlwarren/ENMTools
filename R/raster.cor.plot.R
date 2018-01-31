@@ -20,8 +20,8 @@ raster.cor.plot <- function(env, method = "pearson"){
 
   for(i in 1:n.layers){
     for(j in i:n.layers){
-      cor.mat[i,j] <- raster.cor(env[[i]], env[[j]], method = method)
-      cor.mat[j,i] <- raster.cor(env[[i]], env[[j]], method = method)
+      cor.mat[i,j] <- abs(raster.cor(env[[i]], env[[j]], method = method))
+      cor.mat[j,i] <- cor.mat[i,j]
     }
   }
   colnames(cor.mat) <- names(env)
@@ -30,7 +30,8 @@ raster.cor.plot <- function(env, method = "pearson"){
 
   colnames(melted.cor.mat) <- c("Var1", "Var2", "value")
   output <- ggplot(data = melted.cor.mat, aes_string(x="Var1", y="Var2", fill="value")) +
-    geom_tile() + scale_fill_viridis()
+    geom_tile() + scale_fill_viridis() + theme(plot.title = element_text(hjust = 0.5)) +
+    ggtitle("Absolute value of correlation\nbetween predictor variables")
 
   return(output)
 
