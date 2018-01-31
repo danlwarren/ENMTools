@@ -39,7 +39,8 @@ raster.cor.plot <- function(env, method = "pearson"){
   melted.cor.mat <- reshape2::melt(as.matrix(cor.mat))
   colnames(melted.cor.mat) <- c("Var1", "Var2", "value")
   cor.heatmap <- ggplot(data = melted.cor.mat, aes_string(x="Var1", y="Var2", fill="value")) +
-    geom_tile() + scale_fill_viridis()
+    geom_tile() + scale_fill_viridis() +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
   output <- list(cor.mds.plot = cor.mds.plot,
                  cor.heatmap = cor.heatmap)
