@@ -17,8 +17,9 @@
 #' @examples
 #' data(iberolacerta)
 #' data(euro.worldclim)
-#' aurelioi.mx <- enmtools.maxent(iberolacerta.clade$species$aurelioi, euro.worldclim)
-#' visualize.enm(aurelioi.mx,euro.worldclim, layers = c("bio14", "bio13"))
+#' aurelioi.glm <- enmtools.glm(iberolacerta.clade$species$aurelioi, euro.worldclim,
+#' f = pres ~ poly(bio1, 4) + poly(bio12, 4))
+#' visualize.enm(aurelioi.glm, euro.worldclim, layers = c("bio1", "bio12"))
 
 visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plot.test.data = FALSE, plot.points = TRUE, minmax = NA){
 
@@ -120,7 +121,7 @@ visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plo
     bgpoints <- model$analysis.df[model$analysis.df$presence == 0,1:2]
     bgdata <- as.data.frame(extract(env[[layers]], bgpoints))
     background.plot <- ggplot(bgdata, aes_string(y = names[2], x = names[1])) +
-      stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE) +
+      stat_density_2d(aes_string(fill = "..density.."), geom = "raster", contour = FALSE) +
       xlim(layer1.min, layer1.max) + ylim(layer2.min, layer2.max) +
       scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Density")) + theme_classic() +
       ggtitle(label = "Presence points and background density in environment space") +

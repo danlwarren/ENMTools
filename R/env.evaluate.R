@@ -13,13 +13,14 @@
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni
-#' cyreni.mx <- enmtools.maxent(cyreni, euro.worldclim, test.prop = 0.2, nback = 500)
-#' env.evaluate(cyreni, cyreni.mx,  euro.worldclim)
+#' cyreni.glm <- enmtools.glm(cyreni, euro.worldclim, test.prop = 0.2,
+#' f = pres ~ bio1 + bio12, nback = 500)
+#' env.evaluate(cyreni, cyreni.glm,  euro.worldclim)
 
 
 env.evaluate <- function(species, model, env, bg.source = "background", n.background = 10000, ...){
 
-  species <- check.bg(species, env, ...)
+  species <- check.bg(species, env)
 
   if(!inherits(species, "enmtools.species")){
     stop("Argument species must supply an enmtools.species object!")

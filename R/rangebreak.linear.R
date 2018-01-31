@@ -17,12 +17,14 @@
 #' @export rangebreak.linear
 #'
 #' @examples
+#' \dontrun{
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni
 #' aranica <- iberolacerta.clade$species$aranica
-#' rangebreak.linear(cyreni, aranica, env = euro.worldclim, type = "mx", nreps = 10)
-#'
+#' rangebreak.linear(cyreni, aranica, env = euro.worldclim, type = "glm",
+#' f= pres ~ bio1 + bio12, nreps = 10)
+#' }
 
 rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps = 99,  nback = 1000, ...){
 
@@ -30,8 +32,8 @@ rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps =
   #   plotraster <- env[[1]]
   #   plotraster[!is.na(plotraster)] <- 1
 
-  species.1 <- check.bg(species.1, env, nback = nback, ...)
-  species.2 <- check.bg(species.2, env, nback = nback, ...)
+  species.1 <- check.bg(species.1, env, nback = nback)
+  species.2 <- check.bg(species.2, env, nback = nback)
 
   rangebreak.linear.precheck(species.1, species.2, env, type, f, nreps)
 
@@ -79,7 +81,7 @@ rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps =
 
 
   empirical.overlap <- c(unlist(raster.overlap(empirical.species.1.model, empirical.species.2.model)),
-                          unlist(env.overlap(empirical.species.1.model, empirical.species.2.model, env = env)))
+                          unlist(env.overlap(empirical.species.1.model, empirical.species.2.model, env = env)[1:3]))
   reps.overlap <- empirical.overlap
 
   lines.df <- data.frame(slope = rep(NA, nreps), intercept = rep(NA, nreps))
@@ -154,7 +156,7 @@ rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps =
     replicate.models[[paste0(species.2$species.name, ".rep.", i)]] <- rep.species.2.model
 
     reps.overlap <- rbind(reps.overlap, c(unlist(raster.overlap(rep.species.1.model, rep.species.2.model)),
-                                          unlist(env.overlap(rep.species.1.model, rep.species.2.model, env = env))))
+                                          unlist(env.overlap(rep.species.1.model, rep.species.2.model, env = env)[1:3])))
 
   }
 
@@ -166,32 +168,32 @@ rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps =
   d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"D"], linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
-    ggtitle(paste("Rangebreak test:", species.1$species.name, "vs.", species.2$species.name))
+    ggtitle(paste("Rangebreak test:\n", species.1$species.name, "vs.", species.2$species.name))
 
   i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"I"], linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") +
-    ggtitle(paste("Rangebreak test:", species.1$species.name, "vs.", species.2$species.name))
+    ggtitle(paste("Rangebreak test:\n", species.1$species.name, "vs.", species.2$species.name))
 
   cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"rank.cor"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"rank.cor"], linetype = "longdash") +
     xlim(-1,1) + guides(fill = FALSE, alpha = FALSE) + xlab("Rank Correlation") +
-    ggtitle(paste("Rangebreak test:", species.1$species.name, "vs.", species.2$species.name))
+    ggtitle(paste("Rangebreak test:\n", species.1$species.name, "vs.", species.2$species.name))
 
   env.d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.D"], linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D, Environmental Space") +
-    ggtitle(paste("Rangebreak test:", species.1$species.name, "vs.", species.2$species.name))
+    ggtitle(paste("Rangebreak test:\n", species.1$species.name, "vs.", species.2$species.name))
 
   env.i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.I"], linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I, Environmental Space") +
-    ggtitle(paste("Rangebreak test:", species.1$species.name, "vs.", species.2$species.name))
+    ggtitle(paste("Rangebreak test:\n", species.1$species.name, "vs.", species.2$species.name))
 
   env.cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.cor"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.cor"], linetype = "longdash") +
     xlim(-1,1) + guides(fill = FALSE, alpha = FALSE) + xlab("Rank Correlation, Environmental Space") +
-    ggtitle(paste("Rangebreak test:", species.1$species.name, "vs.", species.2$species.name))
+    ggtitle(paste("Rangebreak test:\n", species.1$species.name, "vs.", species.2$species.name))
 
   output <- list(description = paste("\n\nLinear rangebreak test", species.1$species.name, "vs.", species.2$species.name),
                  reps.overlap = reps.overlap,
@@ -311,7 +313,8 @@ plot.enmtools.rangebreak.linear <- function(x, ...){
 
   x.raster <- x$empirical.species.1.model$suitability
   x.raster[!is.na(x.raster)] <- 1
-  plot(x.raster)
+  #print(x.raster)
+  raster::plot(x.raster)
   for(i in 1:nrow(x$lines.df)){
     abline(x$lines.df[i,2], x$lines.df[i,1])
   }

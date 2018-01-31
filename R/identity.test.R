@@ -17,18 +17,21 @@
 #' @export identity.test
 #'
 #' @examples
+#' \dontrun{
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni
 #' monticola <- iberolacerta.clade$species$monticola
 #' cyreni$range <- background.raster.buffer(cyreni$presence.points, 100000, euro.worldclim)
 #' monticola$range <- background.raster.buffer(monticola$presence.points, 100000, euro.worldclim)
-#' identity.test(cyreni, monticola, env = euro.worldclim, type = "bc", nreps = 10)
+#' identity.test(cyreni, monticola, env = euro.worldclim, type = "glm",
+#' f = pres ~ bio1 + bio12, nreps = 10)
+#' }
 
 identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99, nback = 1000, ...){
 
-  species.1 <- check.bg(species.1, env, nback = nback, ...)
-  species.2 <- check.bg(species.2, env, nback = nback, ...)
+  species.1 <- check.bg(species.1, env, nback = nback)
+  species.2 <- check.bg(species.2, env, nback = nback)
 
   identity.precheck(species.1, species.2, env, type, f, nreps)
 
@@ -76,7 +79,7 @@ identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99,
 
 
   empirical.overlap <- c(unlist(raster.overlap(empirical.species.1.model, empirical.species.2.model)),
-                         unlist(env.overlap(empirical.species.1.model, empirical.species.2.model, env = env)))
+                         unlist(env.overlap(empirical.species.1.model, empirical.species.2.model, env = env)[1:3]))
   reps.overlap <- empirical.overlap
 
   cat("\nBuilding replicate models...\n")
@@ -124,7 +127,7 @@ identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99,
     replicate.models[[paste0(species.2$species.name, ".rep.", i)]] <- rep.species.2.model
 
     reps.overlap <- rbind(reps.overlap, c(unlist(raster.overlap(rep.species.1.model, rep.species.2.model)),
-                                          unlist(env.overlap(rep.species.1.model, rep.species.2.model, env = env))))
+                                          unlist(env.overlap(rep.species.1.model, rep.species.2.model, env = env)[1:3])))
 
   }
 
@@ -136,37 +139,37 @@ identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99,
   d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"D"], linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
-    ggtitle(paste("Identity test:", species.1$species.name, "vs.", species.2$species.name)) +
+    ggtitle(paste("Identity test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
   i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"I"], linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") +
-    ggtitle(paste("Identity test:", species.1$species.name, "vs.", species.2$species.name)) +
+    ggtitle(paste("Identity test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
   cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"rank.cor"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"rank.cor"], linetype = "longdash") +
     xlim(-1,1) + guides(fill = FALSE, alpha = FALSE) + xlab("Rank Correlation") +
-    ggtitle(paste("Identity test:", species.1$species.name, "vs.", species.2$species.name)) +
+    ggtitle(paste("Identity test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
   env.d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.D"], linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D, Environmental Space") +
-    ggtitle(paste("Identity test:", species.1$species.name, "vs.", species.2$species.name)) +
+    ggtitle(paste("Identity test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
   env.i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.I"], linetype = "longdash") +
     xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I, Environmental Space") +
-    ggtitle(paste("Identity test:", species.1$species.name, "vs.", species.2$species.name)) +
+    ggtitle(paste("Identity test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
   env.cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.cor"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.cor"], linetype = "longdash") +
     xlim(-1,1) + guides(fill = FALSE, alpha = FALSE) + xlab("Rank Correlation, Environmental Space") +
-    ggtitle(paste("Identity test:", species.1$species.name, "vs.", species.2$species.name)) +
+    ggtitle(paste("Identity test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
   # mean(id.dm[,1] > id.dm[1,1])

@@ -54,7 +54,7 @@ check.clade <- function(this.clade){
   # then reorder list to match tree tip labels
   species.names <- unlist(lapply(this.clade$species, function(x) x$species.name))
   if(!all(is.character(species.names))){
-    stop(paste("Some species in clade to not have names set.  Existing names are: ", paste(sp.names, collapse= ", ")))
+    stop(paste("Some species in clade to not have names set.  Existing names are: ", paste(species.names, collapse= ", ")))
   }
 
   # Rename species list to match species names

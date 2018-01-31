@@ -14,12 +14,23 @@ combine.species <- function(species.list){
 
   # Add data from other species
   for(i in 2:length(species.list)){
-    combined$presence.points <- rbind(combined$presence.points, species.list[[i]][["presence.points"]])
-    combined$background.points <- rbind(combined$background.points, species.list[[i]][["background.points"]])
-    if(inherits(combined$range, "RasterLayer") && inherits(species.list[[i]]$range, "RasterLayer")){
-      combined$range <-  merge(combined$range, species.list[[i]][["range"]])
-    } else if(!inherits(combined$range, "RasterLayer") && inherits(species.list[[i]]$range, "RasterLayer")){
+
+    if(is.data.frame(combined$presence.points) & is.data.frame(species.list[[i]]$presence.points)){
+      combined$presence.points <- rbind(combined$presence.points, species.list[[i]][["presence.points"]])
+    }
+
+    if(is.data.frame(combined$background.points) & is.data.frame(species.list[[i]]$background.points)){
+      combined$background.points <- rbind(combined$background.points, species.list[[i]][["background.points"]])
+    }
+
+    if(inherits(combined$range, "RasterLayer") & inherits(species.list[[i]]$range, "RasterLayer")){
+      combined$range <-  raster::merge(combined$range, species.list[[i]][["range"]])
+    } else if(is.data.frame(combined$range) & is.data.frame(species.list[[i]]$range)){
       combined$range <- species.list[[i]]$range
+    } else {
+      stop(paste("Inconsistent data types for species ranges:\n",
+                 class(combined$range), "\n",
+                 class(species.list[[i]]$range)))
     }
     combined$species.name <- paste(combined$species.name, species.list[[i]][["species.name"]], sep = " + ")
   }
