@@ -20,8 +20,8 @@ raster.cor.plot <- function(env, method = "pearson"){
 
   for(i in 1:n.layers){
     for(j in i:n.layers){
-      cor.mat[i,j] <- raster.cor(env[[i]], env[[j]], method = method)
-      cor.mat[j,i] <- raster.cor(env[[i]], env[[j]], method = method)
+      cor.mat[i,j] <- abs(raster.cor(env[[i]], env[[j]], method = method))
+      cor.mat[j,i] <- cor.mat[i,j]
     }
   }
   colnames(cor.mat) <- names(env)
@@ -38,6 +38,7 @@ raster.cor.plot <- function(env, method = "pearson"){
   # Make heatmap
   melted.cor.mat <- reshape2::melt(as.matrix(cor.mat))
   colnames(melted.cor.mat) <- c("Var1", "Var2", "value")
+
   cor.heatmap <- ggplot(data = melted.cor.mat, aes_string(x="Var1", y="Var2", fill="value")) +
     geom_tile() + scale_fill_viridis() +
     theme(axis.text.x = element_text(angle = 90, hjust = 1))
