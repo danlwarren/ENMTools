@@ -5,7 +5,7 @@
 #' @param clade An enmtools.clade object containing species data and a phylogeny
 #' @param nreps A number of reps to do
 #' @param overlap.source The source of the overlaps to calculate.  Choices are "bc", "dm", "gam", "glm", "mx", "range", and "point"
-#' @param model The model to be used for GLM and GAM comparisons
+#' @param f The model to be used for GLM and GAM comparisons
 #' @param overlap.matrix A matrix of overlaps to use, for option overlap.source = "matrix"
 #' @param metric The overlap metric to use. For ENM sources, this can be any combination of "D", "I", "cor", "env.D", "env.I", and "env.cor".
 #' for range and point overlap this argument is ignored.
@@ -13,14 +13,14 @@
 #'
 #' @export enmtools.aoc
 
-enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL, overlap.matrix = NULL, metric = "D"){
+enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  f = NULL, overlap.matrix = NULL, metric = "D"){
 
   description <- "Age-Overlap Correlation from Monte Carlo Test"
 
   clade <- check.clade(clade)
 
   # Make sure the data's okay
-  enmtools.aoc.precheck(clade, nreps, overlap.source, env,  model, overlap.matrix, metric)
+  enmtools.aoc.precheck(clade, nreps, overlap.source, env,  f, overlap.matrix, metric)
 
   # Generate empirical overlaps
 
@@ -36,12 +36,12 @@ enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL
 
   # GAM models
   if(overlap.source == "gam"){
-    empirical.models <- lapply(clade$species, function(x) enmtools.gam(x, env = env, f = model))
+    empirical.models <- lapply(clade$species, function(x) enmtools.gam(x, env = env, f = f))
   }
 
   # GLM models
   if(overlap.source == "glm"){
-    empirical.models <- lapply(clade$species, function(x) enmtools.glm(x, env = env, f = model))
+    empirical.models <- lapply(clade$species, function(x) enmtools.glm(x, env = env, f = f))
   }
 
   # Maxent models
@@ -106,17 +106,17 @@ enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  model = NULL
   p.values <- apply(reps.aoc, 2, function(x) 1 - mean(x > x[1]))
   p.values <- sapply(p.values, function(x) min(x, 1-x)*2)
 
-  intercept.plot <- qplot(reps.aoc[2:nrow(reps.aoc),"(Intercept)"], geom = "histogram", fill = "histogram", alpha = 0.5) +
+  intercept.plot <- ggplot2::qplot(reps.aoc[2:nrow(reps.aoc),"(Intercept)"], geom = "histogram", fill = "histogram", alpha = 0.5) +
     geom_vline(xintercept = reps.aoc[1,"(Intercept)"], linetype = "longdash") +
     guides(fill = FALSE, alpha = FALSE) + xlab("Intercept") + ggtitle(description) +
     theme(plot.title = element_text(hjust = 0.5))
 
-  slope.plot <- qplot(reps.aoc[2:nrow(reps.aoc),"age"], geom = "histogram", fill = "histogram", alpha = 0.5) +
-    geom_vline(xintercept = reps.aoc[1,"age"], linetype = "longdash") +
+  slope.plot <- ggplot2::qplot(reps.aoc[2:nrow(reps.aoc),"empirical.df$age"], geom = "histogram", fill = "histogram", alpha = 0.5) +
+    geom_vline(xintercept = reps.aoc[1,"empirical.df$age"], linetype = "longdash") +
     guides(fill = FALSE, alpha = FALSE) + xlab("Slope") + ggtitle(description) +
     theme(plot.title = element_text(hjust = 0.5))
 
-  regressions.plot <- qplot(empirical.df$age, empirical.df$overlap) + theme_bw()
+  regressions.plot <- ggplot2::qplot(empirical.df$age, empirical.df$overlap) + theme_bw()
   for(i in 2:min(100, nrow(reps.aoc))){
     regressions.plot <- regressions.plot + geom_abline(slope=reps.aoc[i,2],
                                                        intercept=reps.aoc[i,1],

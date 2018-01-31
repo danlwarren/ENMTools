@@ -6,7 +6,7 @@
 determine the statistical significance of the relationship between
 overlap and time}
 \usage{
-enmtools.aoc(clade, nreps, overlap.source, env = NULL, model = NULL,
+enmtools.aoc(clade, nreps, overlap.source, env = NULL, f = NULL,
   overlap.matrix = NULL, metric = "D")
 }
 \arguments{
@@ -18,7 +18,7 @@ enmtools.aoc(clade, nreps, overlap.source, env = NULL, model = NULL,
 
 \item{env}{Environmental layers for use when overlap is calculated using niche models.}
 
-\item{model}{The model to be used for GLM and GAM comparisons}
+\item{f}{The model to be used for GLM and GAM comparisons}
 
 \item{overlap.matrix}{A matrix of overlaps to use, for option overlap.source = "matrix"}
 
