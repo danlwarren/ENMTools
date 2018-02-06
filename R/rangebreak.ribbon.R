@@ -275,10 +275,12 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
   rownames(reps.overlap.sp2.vs.ribbon) <- c("empirical", paste("rep", 1:nreps))
   rownames(reps.overlap.outside.vs.ribbon) <- c("empirical", paste("rep", 1:nreps))
 
-  p.values.sp1.vs.sp2 <- apply(reps.overlap.sp1.vs.sp2, 2, function(x) 1 - mean(x > x[1], na.rm=FALSE))
-  p.values.sp1.vs.ribbon <- apply(reps.overlap.sp1.vs.ribbon, 2, function(x) 1 - mean(x > x[1], na.rm=FALSE))
-  p.values.sp2.vs.ribbon <- apply(reps.overlap.sp2.vs.ribbon, 2, function(x) 1 - mean(x > x[1], na.rm=FALSE))
-  p.values.outside.vs.ribbon <- apply(reps.overlap.outside.vs.ribbon, 2, function(x) 1 - mean(x > x[1], na.rm=FALSE))
+  p.values <- apply(reps.aoc, 2, function(x) 2 * (1 - max(mean(x > x[1]), mean(x < x[1]))))
+
+  p.values.sp1.vs.sp2 <- apply(reps.overlap.sp1.vs.sp2, 2, function(x) 2 * (1 - max(mean(x > x[1]), mean(x < x[1]))))
+  p.values.sp1.vs.ribbon <- apply(reps.overlap.sp1.vs.ribbon, 2, function(x) 2 * (1 - max(mean(x > x[1]), mean(x < x[1]))))
+  p.values.sp2.vs.ribbon <- apply(reps.overlap.sp2.vs.ribbon, 2, function(x) 2 * (1 - max(mean(x > x[1]), mean(x < x[1]))))
+  p.values.outside.vs.ribbon <- apply(reps.overlap.outside.vs.ribbon, 2, function(x) 2 * (1 - max(mean(x > x[1]), mean(x < x[1]))))
 
 
   ### Plots for sp1 vs sp2

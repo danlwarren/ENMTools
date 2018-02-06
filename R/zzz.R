@@ -1,4 +1,4 @@
-globalVariables(c("f", "predict"))
+globalVariables(c("f", "predict", "value"))
 
 #' Package setup options
 #'
