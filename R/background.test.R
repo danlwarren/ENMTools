@@ -161,7 +161,7 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
   rownames(reps.overlap) <- c("empirical", paste("rep", 1:nreps))
   print(reps.overlap)
-  p.values <- apply(reps.overlap, 2, function(x) 1 - mean(x > x[1]))
+  p.values <- apply(reps.overlap, 2, function(x) 2 * (1 - max(mean(x > x[1]), mean(x < x[1]))))
 
 
   d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"D"], geom = "histogram", fill = "density", alpha = 0.5) +
