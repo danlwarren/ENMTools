@@ -54,17 +54,17 @@ marginal.plots <- function(model, env, layer){
   # have that info, but sampling random bg for those that don't
   if(inherits(model, c("enmtools.bc", "enmtools.dm"))){
     pres.env <- extract(env[[layer]], model$analysis.df)
-    pres.dens <- density(pres.env, from = minValue(env[[layer]]), to = maxValue(env[[layer]]), n = 100)$y
+    pres.dens <- density(pres.env, from = minValue(env[[layer]]), to = maxValue(env[[layer]]), n = 100, na.rm = TRUE)$y
     pres.dens <- pres.dens/max(pres.dens)
     bg.env <- extract(env[[layer]], randomPoints(mask = env[[layer]], n = 1000))
-    bg.dens <- density(bg.env, from = minValue(env[[layer]]), to = maxValue(env[[layer]]), n = 100)$y
+    bg.dens <- density(bg.env, from = minValue(env[[layer]]), to = maxValue(env[[layer]]), n = 100, na.rm = TRUE)$y
     bg.dens <- bg.dens/max(bg.dens)
   } else {
     pres.env <- extract(env[[layer]], model$analysis.df[model$analysis.df$presence == 1,c(1,2)])
-    pres.dens <- density(pres.env, from = minValue(env[[layer]]), to = maxValue(env[[layer]]), n = 100)$y
+    pres.dens <- density(pres.env, from = minValue(env[[layer]]), to = maxValue(env[[layer]]), n = 100, na.rm = TRUE)$y
     pres.dens <- pres.dens/max(pres.dens)
     bg.env <- extract(env[[layer]], model$analysis.df[model$analysis.df$presence == 0,c(1,2)])
-    bg.dens <- density(bg.env, from = minValue(env[[layer]]), to = maxValue(env[[layer]]), n = 100)$y
+    bg.dens <- density(bg.env, from = minValue(env[[layer]]), to = maxValue(env[[layer]]), n = 100, na.rm = TRUE)$y
     bg.dens <- bg.dens/max(bg.dens)
   }
 
