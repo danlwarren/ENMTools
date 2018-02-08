@@ -1,4 +1,4 @@
-plot_interactive <- function(x, ...) {
+plot_interactive <- function(x, map_provider = "Esri.WorldPhysical") {
   dat_df <- NULL
   if(class(x$background.points)  %in% c("data.frame", "matrix")){
     bg_df <- as.data.frame(x$background.points[,1:2])
@@ -12,8 +12,16 @@ plot_interactive <- function(x, ...) {
   }
 
   m <- leaflet(dat_df) %>%
-    addProviderTiles("OpenTopoMap") %>%
+    addProviderTiles(map_provider) %>%
     addCircleMarkers(~Longitude, ~Latitude, color = "red")
+
+  if(class(x$range) == "RasterLayer"){
+    m <- m %>%
+      addRasterImage(x$range, function(y) ifelse(is.na(y), "#00000000", "#228B2273")) %>%
+      addLegend("bottomright", colors = "#228B22", labels = "Species Range", opacity = 0.45)
+  }
+
+
   m
 
 }
