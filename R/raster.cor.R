@@ -22,13 +22,9 @@ raster.cor <- function(x, y, method="spearman"){
   }
 
 
-  x <- getValues(x)
+  df <- cbind(getValues(x), getValues(y))
 
-  y <- getValues(y)
+  df <- df[complete.cases(df),]
 
-  x <- x[!is.na(x)]
-
-  y <- y[!is.na(y)]
-
-  return(cor(x, y, method=method))
+  return(cor(df[,1], df[,2], method=method))
 }

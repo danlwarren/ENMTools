@@ -24,8 +24,10 @@ Warren et al. 2008.
 \examples{
 data(iberolacerta)
 data(euro.worldclim)
-aurelioi.mx <- enmtools.maxent(iberolacerta.clade$species$aurelioi, euro.worldclim)
-aranica.mx <- enmtools.maxent(iberolacerta.clade$species$aranica, euro.worldclim)
-raster.overlap(aurelioi.mx, aranica.mx)
+aurelioi.glm <- enmtools.glm(iberolacerta.clade$species$aurelioi,
+euro.worldclim, f = pres ~ bio1 + bio12)
+aranica.glm <- enmtools.glm(iberolacerta.clade$species$aranica,
+euro.worldclim, f = pres ~ bio1 + bio12)
+raster.overlap(aurelioi.glm, aranica.glm)
 }
 \keyword{keywords}

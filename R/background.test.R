@@ -21,21 +21,29 @@
 #' @export background.test
 #'
 #' @examples
-#' background.test(ahli, allogus, env, type = "glm", nreps = 10, test.type = "asymmetric")
-#'
+#' \dontrun{
+#' data(iberolacerta.clade)
+#' data(euro.worldclim)
+#' cyreni <- iberolacerta.clade$species$cyreni
+#' monticola <- iberolacerta.clade$species$monticola
+#' cyreni$range <- background.raster.buffer(cyreni$presence.points, 100000, euro.worldclim)
+#' monticola$range <- background.raster.buffer(monticola$presence.points, 100000, euro.worldclim)
+#' background.test(cyreni, monticola, env = euro.worldclim, type = "glm",
+#' f = pres ~ bio1 + bio12, nreps = 10)
+#' }
 
 background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99, test.type = "asymmetric", nback = 1000, ...){
 
   # Build a description of the analysis to use for summaries and plot titles
   if(test.type == "symmetric"){
-    description <- paste("\n\nSymmetric background test", species.1$species.name, "background vs.", species.2$species.name, "background")
+    description <- paste("\n\nSymmetric background test\n", species.1$species.name, "background vs.", species.2$species.name, "background")
   } else {
-    description <- paste("\n\nAsymmetric background test", species.1$species.name, "vs.", species.2$species.name, "background")
+    description <- paste("\n\nAsymmetric background test\n", species.1$species.name, "vs.", species.2$species.name, "background")
   }
   cat(paste("\n", description, "\n"))
 
-  species.1 <- check.bg(species.1, env, nback = nback, ...)
-  species.2 <- check.bg(species.2, env, nback = nback, ...)
+  species.1 <- check.bg(species.1, env, nback = nback)
+  species.2 <- check.bg(species.2, env, nback = nback)
 
   # Check to make sure everything's okay
   background.precheck(species.1, species.2, env, type, f, nreps, test.type)
@@ -82,7 +90,7 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
   }
 
   empirical.overlap <- c(unlist(raster.overlap(empirical.species.1.model, empirical.species.2.model)),
-                         unlist(env.overlap(empirical.species.1.model, empirical.species.2.model, env = env)))
+                         unlist(env.overlap(empirical.species.1.model, empirical.species.2.model, env = env)[1:3]))
   reps.overlap <- empirical.overlap
 
   cat("\nBuilding replicate models...\n")
@@ -147,13 +155,13 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
     # Appending overlap to results
     reps.overlap <- rbind(reps.overlap, c(unlist(raster.overlap(rep.species.1.model, rep.species.2.model)),
-                                          unlist(env.overlap(rep.species.1.model, rep.species.2.model, env = env))))
+                                          unlist(env.overlap(rep.species.1.model, rep.species.2.model, env = env)[1:3])))
 
   }
 
   rownames(reps.overlap) <- c("empirical", paste("rep", 1:nreps))
-
-  p.values <- apply(reps.overlap, 2, function(x) 1 - mean(x > x[1]))
+  print(reps.overlap)
+  p.values <- apply(reps.overlap, 2, function(x) 2 * (1 - max(mean(x > x[1]), mean(x < x[1]))))
 
 
   d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"D"], geom = "histogram", fill = "density", alpha = 0.5) +

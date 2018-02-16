@@ -7,11 +7,12 @@
 #'
 #' @param species An enmtools.species or enmtools.clade object
 #' @param env A raster stack of environmental variables
+#' @param verbose Controls printing of progress messages
 #'
 #' @export add.env
 
 
-add.env <- function(species, env){
+add.env <- function(species, env, verbose = TRUE){
 
   if(!any(c("RasterLayer", "RasterStack", "raster", "RasterBrick") %in% class(env))){
     stop("Argument env must be a raster, RasterLayer, or RasterStack object!")
@@ -20,9 +21,14 @@ add.env <- function(species, env){
   if("enmtools.species" %in% class(species)){
 
     # Adding env data to a single species
-    cat(paste("Adding environmental data to species", species$species.name, "\n"))
+    if(verbose == TRUE){
+      cat(paste("Adding environmental data to species", species$species.name, "\n"))
+    }
+
     if(class(species$presence.points) %in% c("data.frame", "matrix")){
-      cat("\tProcessing presence points...\n")
+      if(verbose == TRUE){
+        cat("\tProcessing presence points...\n")
+      }
 
       # Have to assign names manually because otherwise it fails when there's only one env layer
       names <- c(colnames(species$presence.points), names(env))
@@ -34,7 +40,9 @@ add.env <- function(species, env){
     }
 
     if(class(species$background.points) %in% c("data.frame", "matrix")){
-      cat("\tProcessing background points...\n")
+      if(verbose == TRUE){
+        cat("\tProcessing background points...\n")
+      }
 
       names <- c(colnames(species$background.points), names(env))
       species$background.points <- cbind(species$background.points, extract(env, species$background.points[,1:2]))

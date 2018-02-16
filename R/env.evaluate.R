@@ -4,6 +4,7 @@
 #' @param model An enmtools.model object or a model that can be projected using the predict() function of dismo
 #' @param env A raster or raster stack of environmental data.
 #' @param bg.source Determines whether minima and maxima of the environment space should be picked using the environment layers or the background points.
+#' @param n.background The number of background points to sample from the environment space.
 #' @param ... Arguments to be passed to othfer functions
 #'
 #' @export env.evaluate
@@ -12,13 +13,14 @@
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni
-#' cyreni.mx <- enmtools.maxent(cyreni, euro.worldclim, test.prop = 0.2, nback = 500)
-#' env.evaluate(cyreni, cyreni.mx,  euro.worldclim)
+#' cyreni.glm <- enmtools.glm(cyreni, euro.worldclim, test.prop = 0.2,
+#' f = pres ~ bio1 + bio12, nback = 500)
+#' env.evaluate(cyreni, cyreni.glm,  euro.worldclim)
 
 
-env.evaluate <- function(species, model, env, bg.source = "background", ...){
+env.evaluate <- function(species, model, env, bg.source = "background", n.background = 10000, ...){
 
-  species <- check.bg(species, env, ...)
+  species <- check.bg(species, env)
 
   if(!inherits(species, "enmtools.species")){
     stop("Argument species must supply an enmtools.species object!")
@@ -45,7 +47,7 @@ env.evaluate <- function(species, model, env, bg.source = "background", ...){
 
 
 
-  this.lhs <- randomLHS(10000, length(names(env)))
+  this.lhs <- randomLHS(n.background, length(names(env)))
   bg.table <- t(t(this.lhs) * (maxes  - mins) + mins)
   colnames(bg.table) <- names(env)
 

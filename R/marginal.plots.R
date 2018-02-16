@@ -14,8 +14,9 @@
 #' @examples
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
-#' cyreni.mx <- enmtools.maxent(iberolacerta.clade$species$cyreni, euro.worldclim)
-#' marginal.plots(cyreni.mx, env, "bio3")
+#' cyreni.glm <- enmtools.glm(iberolacerta.clade$species$cyreni,
+#' f = pres ~ bio1 + bio12, euro.worldclim)
+#' marginal.plots(cyreni.glm, euro.worldclim, "bio1")
 
 marginal.plots <- function(model, env, layer){
 
@@ -46,19 +47,49 @@ marginal.plots <- function(model, env, layer){
 
   colnames(plot.df) <- names
 
+
+  # Hacked together to handle different ways different models keep
+  # their presence data.
+  # Also grabbing background directly from analysis df for models that
+  # have that info, but sampling random bg for those that don't
+  if(inherits(model, c("enmtools.bc", "enmtools.dm"))){
+    pres.env <- extract(env[[layer]], model$analysis.df)
+    pres.dens <- density(pres.env, from = minValue(env[[layer]]), to = maxValue(env[[layer]]), n = 100, na.rm = TRUE)$y
+    pres.dens <- pres.dens/max(pres.dens)
+    bg.env <- extract(env[[layer]], randomPoints(mask = env[[layer]], n = 1000))
+    bg.dens <- density(bg.env, from = minValue(env[[layer]]), to = maxValue(env[[layer]]), n = 100, na.rm = TRUE)$y
+    bg.dens <- bg.dens/max(bg.dens)
+  } else {
+    pres.env <- extract(env[[layer]], model$analysis.df[model$analysis.df$presence == 1,c(1,2)])
+    pres.dens <- density(pres.env, from = minValue(env[[layer]]), to = maxValue(env[[layer]]), n = 100, na.rm = TRUE)$y
+    pres.dens <- pres.dens/max(pres.dens)
+    bg.env <- extract(env[[layer]], model$analysis.df[model$analysis.df$presence == 0,c(1,2)])
+    bg.dens <- density(bg.env, from = minValue(env[[layer]]), to = maxValue(env[[layer]]), n = 100, na.rm = TRUE)$y
+    bg.dens <- bg.dens/max(bg.dens)
+  }
+
+
+
+
   if(inherits(model$model, what = "DistModel")){
     pred <- predict(model$model, x = plot.df, type = "response")
   } else {
     pred <- predict(model$model, newdata = plot.df, type = "response")
   }
 
+  plot.df.long <- data.frame(layer = c(plot.df[,layer], plot.df[,layer], plot.df[,layer]),
+                             value = c(pred, pres.dens, bg.dens),
+                             source = c(rep("Suitability", 100),
+                                        rep("Presence", 100),
+                                        rep("Background", 100)))
 
-  #print(pred)
-
-  response.plot <- qplot(plot.df[,1], pred, geom = "line",
-                         xlab = layer, ylab = "Response") + theme_bw() +
-                         theme(plot.title = element_text(hjust = 0.5)) +
-                         theme(plot.title = element_text(hjust = 0.5))
+  response.plot <- qplot(layer, value, geom = "line", data = plot.df.long,
+                         xlab = layer, ylab = "Value", colour = source, linetype = source) +
+                          theme_bw() + scale_color_manual(values = c("green4", "red", "blue")) +
+                          scale_linetype_manual(values = c( "dashed", "twodash", "solid")) +
+                          theme(plot.title = element_text(hjust = 0.5)) +
+                          theme(plot.title = element_text(hjust = 0.5)) +
+                          theme(legend.title=element_blank())
 
 
   return(response.plot)

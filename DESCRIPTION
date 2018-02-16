@@ -15,10 +15,8 @@ Description: Tools for the ecological and historical biogeography.
 License: GPL-2
 LazyData: TRUE
 RoxygenNote: 6.0.1
-Imports: leaflet
-Depends:
-	dismo,
-	raster,
+Imports:
+  leaflet,
 	rgeos,
 	knitr,
 	ggplot2,
@@ -32,7 +30,11 @@ Depends:
 	fields,
 	gbm,
 	randomForest,
+	ape,
 	ppmlasso,
-	ape
+	reshape2
+Depends:
+	raster,
+	dismo
 Suggests:
 	testthat

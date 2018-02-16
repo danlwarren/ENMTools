@@ -9,6 +9,7 @@
 #' @param th.sp Quantile of species densities used as a threshold to exclude low species density values.  See documentation for ecospat.grid.clim.dyn.
 #' @param th.env Quantile of environmental densities across studye sites used as threshold to exclude low
 #' environmental density values.  See documentation for ecospat.grid.clim.dyn.
+#' @param nback Number of background points to use for density calculations.
 #' @param R Resolution of the grid. See documentation for ecospat.grid.clim.dyn.
 #' @param ... Further arguments to be passed to check.bg
 #'
@@ -101,8 +102,8 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
 
   sp1.bg.points <- data.frame(rasterToPoints(sp1.niche$Z))
   colnames(sp1.bg.points) <- c("X", "Y", "Density")
-  sp1.bg.plot <-  ggplot(data = sp1.bg.points, aes(y = Y, x = X)) +
-    geom_raster(aes(fill = Density)) +
+  sp1.bg.plot <-  ggplot(data = sp1.bg.points, aes_string(y = "Y", x = "X")) +
+    geom_raster(aes_string(fill = "Density")) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Density")) +
     coord_fixed() + theme_classic() +
     ggtitle(paste(species.1$species.name, "available environment")) +
@@ -110,8 +111,8 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
 
   sp1.env.points <- data.frame(rasterToPoints(sp1.niche$z.uncor))
   colnames(sp1.env.points) <- c("X", "Y", "Density")
-  sp1.env.plot <-  ggplot(data = sp1.env.points, aes(y = Y, x = X)) +
-    geom_raster(aes(fill = Density)) +
+  sp1.env.plot <-  ggplot(data = sp1.env.points, aes_string(y = "Y", x = "X")) +
+    geom_raster(aes_string(fill = "Density")) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Density")) +
     coord_fixed() + theme_classic() +
     ggtitle(paste(species.1$species.name, "occurrence in environment space")) +
@@ -119,8 +120,8 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
 
   sp1.env.corr.points <- data.frame(rasterToPoints(sp1.niche$z.cor))
   colnames(sp1.env.corr.points) <- c("X", "Y", "Density")
-  sp1.env.plot.corr <-  ggplot(data = sp1.env.corr.points, aes(y = Y, x = X)) +
-    geom_raster(aes(fill = Density)) +
+  sp1.env.plot.corr <-  ggplot(data = sp1.env.corr.points, aes_string(y = "Y", x = "X")) +
+    geom_raster(aes_string(fill = "Density")) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Density")) +
     coord_fixed() + theme_classic() +
     ggtitle(paste(species.1$species.name, "density in environment space, \nscaled by availability")) +
@@ -128,8 +129,8 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
 
   sp2.bg.points <- data.frame(rasterToPoints(sp2.niche$Z))
   colnames(sp2.bg.points) <- c("X", "Y", "Density")
-  sp2.bg.plot <-  ggplot(data = sp2.bg.points, aes(y = Y, x = X)) +
-    geom_raster(aes(fill = Density)) +
+  sp2.bg.plot <-  ggplot(data = sp2.bg.points, aes_string(y = "Y", x = "X")) +
+    geom_raster(aes_string(fill = "Density")) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Density")) +
     coord_fixed() + theme_classic() +
     ggtitle(paste(species.2$species.name, "available environment")) +
@@ -137,8 +138,8 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
 
   sp2.env.points <- data.frame(rasterToPoints(sp2.niche$z.uncor))
   colnames(sp2.env.points) <- c("X", "Y", "Density")
-  sp2.env.plot <-  ggplot(data = sp2.env.points, aes(y = Y, x = X)) +
-    geom_raster(aes(fill = Density)) +
+  sp2.env.plot <-  ggplot(data = sp2.env.points, aes_string(y = "Y", x = "X")) +
+    geom_raster(aes_string(fill = "Density")) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Density")) +
     coord_fixed() + theme_classic() +
     ggtitle(paste(species.2$species.name, "occurrence in environment space")) +
@@ -146,8 +147,8 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
 
   sp2.env.corr.points <- data.frame(rasterToPoints(sp2.niche$z.cor))
   colnames(sp2.env.corr.points) <- c("X", "Y", "Density")
-  sp2.env.plot.corr <-  ggplot(data = sp2.env.corr.points, aes(y = Y, x = X)) +
-    geom_raster(aes(fill = Density)) +
+  sp2.env.plot.corr <-  ggplot(data = sp2.env.corr.points, aes_string(y = "Y", x = "X")) +
+    geom_raster(aes_string(fill = "Density")) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Density")) +
     coord_fixed() + theme_classic() +
     ggtitle(paste(species.2$species.name, "density in environment space, \nscaled by availability")) +

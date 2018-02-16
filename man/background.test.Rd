@@ -41,8 +41,16 @@ constructed from the background points supplied for each species.  For Maxent, t
 from the range rasters stored in the enmtools.species objects.
 }
 \examples{
-background.test(ahli, allogus, env, type = "glm", nreps = 10, test.type = "asymmetric")
-
+\dontrun{
+data(iberolacerta.clade)
+data(euro.worldclim)
+cyreni <- iberolacerta.clade$species$cyreni
+monticola <- iberolacerta.clade$species$monticola
+cyreni$range <- background.raster.buffer(cyreni$presence.points, 100000, euro.worldclim)
+monticola$range <- background.raster.buffer(monticola$presence.points, 100000, euro.worldclim)
+background.test(cyreni, monticola, env = euro.worldclim, type = "glm",
+f = pres ~ bio1 + bio12, nreps = 10)
+}
 }
 \keyword{background,}
 \keyword{enmtools,}

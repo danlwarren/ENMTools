@@ -6,12 +6,14 @@
 randomly sampled points from within that buffer radius.
 Code modified from Elith and Hijmans SDM with R tutorial}
 \usage{
-add.env(species, env)
+add.env(species, env, verbose = TRUE)
 }
 \arguments{
 \item{species}{An enmtools.species or enmtools.clade object}
 
 \item{env}{A raster stack of environmental variables}
+
+\item{verbose}{Controls printing of progress messages}
 }
 \description{
 Takes a set of points, a buffer radius, a sample size, and a mask and returns

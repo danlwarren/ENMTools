@@ -1,32 +1,8 @@
-rm(list=ls(all = TRUE))
-
 library(testthat)
 library(ENMTools)
 
-#' Load data
-#'
-#'
-
-iberolacerta <- read.csv("iberolacerta.points.csv")
-ib.tree <- read.tree(file = "iberolacerta.brlens.tree")
-euro.worldclim <- stack("euro.worldclim.grd")
-
-expect_equal(class(ib.tree), "phylo")
-expect_equal(length(names(euro.worldclim)), 19)
-expect_true(inherits(euro.worldclim, "RasterStack"))
-
-#' Make enmtools.species objects
-#'
-#'
-
-
-make.species <- function(points, env, name){
-  this.species <- enmtools.species(presence.points = points,
-                                   species.name = name)
-  this.species <- check.species(this.species)
-  this.species$range <- background.raster.buffer(this.species$presence.points, 50000, mask = env)
-  return(this.species)
-}
+data(iberolacerta.clade)
+data(euro.worldclim)
 
 expect_species <- function(species){
   expect_true(inherits(monticola, c("list", "enmtools.species")))
@@ -38,61 +14,14 @@ expect_species <- function(species){
 }
 
 
-monticola <- make.species(iberolacerta[iberolacerta$species == "Iberolacerta monticola",2:3],
-                          euro.worldclim, "monticola")
-
-martinezricai <- make.species(iberolacerta[iberolacerta$species == "Iberolacerta martinezricai",2:3],
-                              euro.worldclim, "martinezricai")
-
-cyreni <- make.species(iberolacerta[iberolacerta$species == "Iberolacerta cyreni",2:3],
-                       euro.worldclim, "cyreni")
-
-horvathi <- make.species(iberolacerta[iberolacerta$species == "Iberolacerta horvathi",2:3],
-                         euro.worldclim, "horvathi")
-
-aurelioi <- make.species(iberolacerta[iberolacerta$species == "Iberolacerta aurelioi",2:3],
-                         euro.worldclim, "aurelioi")
-
-aranica <- make.species(iberolacerta[iberolacerta$species == "Iberolacerta aranica",2:3],
-                        euro.worldclim, "aranica")
-
-bonnali <- make.species(iberolacerta[iberolacerta$species == "Iberolacerta bonnali",2:3],
-                        euro.worldclim, "bonnali")
-
-expect_species(monticola)
-expect_species(martinezricai)
-expect_species(cyreni)
-expect_species(horvathi)
-expect_species(aurelioi)
-expect_species(aranica)
-expect_species(bonnali)
-
-#' Make an enmtools.clade object
-#'
-#'
-
-iberolacerta.clade <- enmtools.clade(species = list(monticola = monticola,
-                                                    martinezricai = martinezricai,
-                                                    cyreni = cyreni,
-                                                    horvathi = horvathi,
-                                                    aurelioi = aurelioi,
-                                                    aranica = aranica,
-                                                    bonnali = bonnali), tree = ib.tree)
-
-check.clade(iberolacerta.clade)
-
-#' Build ENMs using various methods and test outputs
-#'
-#'
-
 expect_enmtools_model <- function(model){
   expect_true(inherits(model, "enmtools.model"),
               info = "Not an enmtools.model object")
 
   expect_true(all(names(model) %in% c("species.name", "analysis.df", "test.data", "test.prop", "model",
-                               "training.evaluation", "test.evaluation", "env.training.evaluation",
-                               "env.test.evaluation", "suitability", "notes", "response.plots",
-                               "formula")), info = "Unexpected items in enmtools.model object!")
+                                      "training.evaluation", "test.evaluation", "env.training.evaluation",
+                                      "env.test.evaluation", "rts.test",  "suitability", "notes", "response.plots",
+                                      "formula")), info = "Unexpected items in enmtools.model object!")
 
   expect_true(inherits(model$species.name, "character"),
               info = "species.name is not a character")
@@ -104,8 +33,8 @@ expect_enmtools_model <- function(model){
               info = "test.prop is not numeric")
 
   expect_true(all(class(model$model) %in% c("MaxEnt", "Domain", "Bioclim",
-                                        "randomForest.formula", "randomForest",
-                                        "ppmlasso", "list", "glm", "lm", "gam")),
+                                            "randomForest.formula", "randomForest",
+                                            "ppmlasso", "list", "glm", "lm", "gam")),
               info = "Class of model is not recognized")
 
   # Evaluation on training data happens unless it's bypassed (GLM only I think)
@@ -136,8 +65,45 @@ expect_enmtools_model <- function(model){
 }
 
 
-cyreni.mx <- enmtools.maxent(cyreni, euro.worldclim, test.prop = 0.2)
-expect_enmtools_model(cyreni.mx)
+monticola <- iberolacerta.clade$species$monticola
+martinezricai <- iberolacerta.clade$species$martinezricai
+cyreni <- iberolacerta.clade$species$cyreni
+horvathi <- iberolacerta.clade$species$horvathi
+aurelioi <- iberolacerta.clade$species$aurelioi
+aranica <- iberolacerta.clade$species$aranica
+bonnali <- iberolacerta.clade$species$bonnali
+
+ib.tree <- iberolacerta.clade$tree
+
+expect_species(monticola)
+expect_species(martinezricai)
+expect_species(cyreni)
+expect_species(horvathi)
+expect_species(aurelioi)
+expect_species(aranica)
+expect_species(bonnali)
+
+#' Make an enmtools.clade object
+#'
+#'
+
+iberolacerta.clade <- enmtools.clade(species = list(monticola = monticola,
+                                                    martinezricai = martinezricai,
+                                                    cyreni = cyreni,
+                                                    horvathi = horvathi,
+                                                    aurelioi = aurelioi,
+                                                    aranica = aranica,
+                                                    bonnali = bonnali), tree = ib.tree)
+
+check.clade(iberolacerta.clade)
+
+#' Build ENMs using various methods and test outputs
+#'
+#'
+
+# Maxent model testing is skipped, because rJava doesn't play well with Travis CI
+# cyreni.mx <- enmtools.maxent(cyreni, euro.worldclim, test.prop = 0.2)
+# expect_enmtools_model(cyreni.mx)
 
 cyreni.dm <- enmtools.dm(cyreni, euro.worldclim, test.prop = 0.2)
 expect_enmtools_model(cyreni.dm)

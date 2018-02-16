@@ -9,6 +9,7 @@
 #' @param report Optional name of an html file for generating reports
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
 #' @param rts.reps The number of replicates to do for a Raes and ter Steege-style test of significance
+#' @param weights If this is set to "equal", presences and background data will be assigned weights so that the sum of all presence points weights equals the sum of all background point weights.  Otherwise, weights are not provided to the model.
 #' @param ... Arguments to be passed to glm()
 #'
 #' @export enmtools.glm
@@ -20,7 +21,7 @@
 
 
 
-enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0, ...){
+enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", ...){
 
   notes <- NULL
 
@@ -58,7 +59,15 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
   analysis.df <- rbind(species$presence.points, species$background.points)
   analysis.df$presence <- c(rep(1, nrow(species$presence.points)), rep(0, nrow(species$background.points)))
 
-  this.glm <- glm(f, analysis.df[,-c(1,2)], family="binomial", ...)
+  if(weights == "equal"){
+    weights <- c(rep(1, nrow(species$presence.points)),
+                 rep(nrow(species$presence.points)/nrow(species$background.points),
+                     nrow(species$background.points)))
+  } else {
+    weights <- rep(1, nrow(species$presence.points) + nrow(species$background.points))
+  }
+
+  this.glm <- glm(f, analysis.df[,-c(1,2)], family="binomial", weights = weights, ...)
 
 
   if(as.integer(this.glm$aic) == 2 * length(this.glm$coefficients)){
@@ -102,34 +111,53 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
 
       for(i in 1:rts.reps){
 
-        # Repeating analysis with scrambled pa points and then evaluating models
-        rts.df <- analysis.df
-        rts.df$presence <- rts.df$presence[sample(1:nrow(rts.df))]
-        this.glm <- glm(f, rts.df[,-c(1,2)], family="binomial", ...)
+        print(paste("Replicate", i, "of", rts.reps))
 
-        suitability <- predict(env, this.glm, type = "response")
+        # Repeating analysis with scrambled pa points and then evaluating models
+        rep.species <- species
+
+        # Mix the points all together
+        allpoints <- rbind(test.data, species$background.points[,1:2], species$presence.points[,1:2])
+
+        # Sample presence points from pool and remove from pool
+        rep.rows <- sample(nrow(allpoints), nrow(species$presence.points))
+        rep.species$presence.points <- allpoints[rep.rows,]
+        allpoints <- allpoints[-rep.rows,]
+
+        # Do the same for test points
+        if(test.prop > 0){
+          test.rows <- sample(nrow(allpoints), nrow(species$presence.points))
+          rep.test.data <- allpoints[test.rows,]
+          allpoints <- allpoints[-test.rows,]
+        }
+
+        # Everything else goes back to the background
+        rep.species$background.points <- allpoints
+
+        rep.species <- add.env(rep.species, env, verbose = FALSE)
+
+        rts.df <- rbind(rep.species$presence.points, rep.species$background.points)
+        rts.df$presence <- c(rep(1, nrow(rep.species$presence.points)), rep(0, nrow(rep.species$background.points)))
+        thisrep.glm <- glm(f, rts.df[,-c(1,2)], family="binomial", ...)
 
         thisrep.model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
-                                                   this.glm, env)
-        thisrep.env.model.evaluation <- env.evaluate(species, this.glm, env)
+                                                   thisrep.glm, env)
+        thisrep.env.model.evaluation <- env.evaluate(species, thisrep.glm, env)
 
         rts.geog.training[i] <- thisrep.model.evaluation@auc
         rts.env.training[i] <- thisrep.env.model.evaluation@auc
 
-        # I need to double check whether RTS tested models on same test data as empirical
-        # model, or whether they drew new holdouts for replicates.  Currently I'm just
-        # using the same test data for each rep.
         if(test.prop > 0 & test.prop < 1){
-          thisrep.test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
-                                                    this.glm, env)
-          temp.sp <- species
+          thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points[,1:2],
+                                                    thisrep.glm, env)
+          temp.sp <- rep.species
           temp.sp$presence.points <- test.data
-          thisrep.env.test.evaluation <- env.evaluate(temp.sp, this.glm, env)
+          thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.glm, env)
 
           rts.geog.test[i] <- thisrep.test.evaluation@auc
           rts.env.test[i] <- thisrep.env.test.evaluation@auc
         }
-        rts.models[[paste0("rep.",i)]] <- list(model = this.glm,
+        rts.models[[paste0("rep.",i)]] <- list(model = thisrep.glm,
                                                training.evaluation = model.evaluation,
                                                env.training.evaluation = env.model.evaluation,
                                                test.evaluation = test.evaluation,
@@ -222,8 +250,13 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
   # the output object because marginal.plots expects an enmtools.model object
   response.plots <- list()
 
-  for(i in names(env)){
-    response.plots[[i]] <- marginal.plots(output, env, i)
+  plot.vars <- all.vars(formula(this.glm))
+
+  for(i in 2:length(plot.vars)){
+    this.var <-plot.vars[i]
+    if(this.var %in% names(env)){
+      response.plots[[this.var]] <- marginal.plots(output, env, this.var)
+    }
   }
 
   output[["response.plots"]] <- response.plots
@@ -232,8 +265,9 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
     if(file.exists(report) & overwrite == FALSE){
       stop("Report file exists, and overwrite is set to FALSE!")
     } else {
-      cat("\n\nGenerating html report...\n")
-      makereport(output, outfile = report)
+      # cat("\n\nGenerating html report...\n")
+print("This function not enabled yet.  Check back soon!")
+      # makereport(output, outfile = report)
     }
   }
 
@@ -293,17 +327,23 @@ plot.enmtools.glm <- function(x, ...){
   suit.points <- data.frame(rasterToPoints(x$suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
-  suit.plot <- ggplot(data = suit.points, aes(y = Latitude, x = Longitude)) +
-    geom_raster(aes(fill = Suitability)) +
+  suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
+    geom_raster(aes_string(fill = "Suitability")) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
-    geom_point(data = x$analysis.df[x$analysis.df$presence == 1,], aes(x = Longitude, y = Latitude),
+    geom_point(data = x$analysis.df[x$analysis.df$presence == 1,],  aes_string(y = "Latitude", x = "Longitude"),
                pch = 21, fill = "white", color = "black", size = 2)
 
   if(!(all(is.na(x$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = x$test.data, aes(x = Longitude, y = Latitude),
+    suit.plot <- suit.plot + geom_point(data = x$test.data,  aes_string(y = "Latitude", x = "Longitude"),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
+
+  if(!is.na(x$species.name)){
+    title <- paste("GLM model for", x$species.name)
+    suit.plot <- suit.plot + ggtitle(title) + theme(plot.title = element_text(hjust = 0.5))
+  }
+
 
   return(suit.plot)
 

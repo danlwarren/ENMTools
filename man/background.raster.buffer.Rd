@@ -21,5 +21,7 @@ a raster based on that buffer radius.
 Code modified from Elith and Hijmans SDM with R tutorial
 }
 \examples{
-background.raster.buffer(cyreni$presence.points, 100000, euro.worldclim)
+data(iberolacerta.clade)
+data(euro.worldclim)
+background.raster.buffer(iberolacerta.clade$species$cyreni$presence.points, 100000, euro.worldclim)
 }

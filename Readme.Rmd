@@ -375,11 +375,11 @@ summary(point.aoc)
 
 
 
-Or we can use similarity between ENMs built for each species.  Here we'll use Bioclim models:
+Or we can use similarity between ENMs built for each species.  Here we'll use GLM models:
 
 ```{r enm_aoc}
-bc.aoc <- enmtools.aoc(clade = brev.clade,  env = hisp.env, nreps = 50, overlap.source = "bc")
-summary(bc.aoc)
+glm.aoc <- enmtools.aoc(clade = brev.clade,  env = hisp.env, nreps = 50, overlap.source = "glm", f = pres ~ snv_1 + snv_12)
+summary(glm.aoc)
 ```
 
 

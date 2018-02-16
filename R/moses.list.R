@@ -23,7 +23,7 @@ moses.list <- function(species.list, env, f = NULL, eval = FALSE, nback = 1000, 
   check.moses(species.list, env, f)
 
   for(i in 1:length(species.list)){
-    species.list[[i]] <- check.bg(species.list[[i]], env, nback = nback, ...)
+    species.list[[i]] <- check.bg(species.list[[i]], env, nback = nback)
   }
 
   # We're just going to do all separate vs. all together.  Work on a separate function for phylo tests.

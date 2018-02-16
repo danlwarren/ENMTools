@@ -4,7 +4,8 @@
 \alias{env.evaluate}
 \title{Calculates evaluation metrics (AUC, etc.) using latin hypercube sampling in environment space}
 \usage{
-env.evaluate(species, model, env, bg.source = "background", ...)
+env.evaluate(species, model, env, bg.source = "background",
+  n.background = 10000, ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
@@ -15,6 +16,8 @@ env.evaluate(species, model, env, bg.source = "background", ...)
 
 \item{bg.source}{Determines whether minima and maxima of the environment space should be picked using the environment layers or the background points.}
 
+\item{n.background}{The number of background points to sample from the environment space.}
+
 \item{...}{Arguments to be passed to othfer functions}
 }
 \description{
@@ -24,6 +27,7 @@ Calculates evaluation metrics (AUC, etc.) using latin hypercube sampling in envi
 data(iberolacerta.clade)
 data(euro.worldclim)
 cyreni <- iberolacerta.clade$species$cyreni
-cyreni.mx <- enmtools.maxent(cyreni, euro.worldclim, test.prop = 0.2, nback = 500)
-env.evaluate(cyreni, cyreni.mx,  euro.worldclim)
+cyreni.glm <- enmtools.glm(cyreni, euro.worldclim, test.prop = 0.2,
+f = pres ~ bio1 + bio12, nback = 500)
+env.evaluate(cyreni, cyreni.glm,  euro.worldclim)
 }

@@ -5,7 +5,7 @@
 \title{Takes an emtools.species object with presence and background points, and builds a Domain model}
 \usage{
 enmtools.dm(species, env = NA, test.prop = 0, report = NULL,
-  nback = 1000, overwrite = FALSE, ...)
+  nback = 1000, overwrite = FALSE, rts.reps = 0, ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
@@ -20,13 +20,17 @@ enmtools.dm(species, env = NA, test.prop = 0, report = NULL,
 
 \item{overwrite}{TRUE/FALSE whether to overwrite a report file if it already exists}
 
+\item{rts.reps}{The number of replicates to do for a Raes and ter Steege-style test of significance}
+
 \item{...}{Arguments to be passed to bioclim()}
 }
 \description{
 Takes an emtools.species object with presence and background points, and builds a Domain model
 }
 \examples{
+\dontrun{
 data(euro.worldclim)
 data(iberolacerta.clade)
 enmtools.dm(iberolacerta.clade$species$monticola, env = euro.worldclim)
+}
 }

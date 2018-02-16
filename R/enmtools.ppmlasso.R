@@ -75,7 +75,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
   suitability <- predict(env, this.ppmlasso, fun = p.fun)
 
   if(normalise) {
-    getValues(suitability) <- getValues(suitability) / sum(getValues(suitability), na.rm = TRUE)
+     suitability <- raster.standardize(suitability)
   }
 
   if(eval == TRUE){
@@ -109,6 +109,164 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
 
     }
 
+    # Do Raes and ter Steege test for significance.  Turned off if eval == FALSE
+    if(rts.reps > 0){
+
+      rts.models <- list()
+
+      rts.geog.training <- c()
+      rts.geog.test <- c()
+      rts.env.training <- c()
+      rts.env.test <- c()
+
+      for(i in 1:rts.reps){
+
+        # Repeating analysis with scrambled pa points and then evaluating models
+
+
+        print(paste("Replicate", i, "of", rts.reps))
+
+        # Repeating analysis with scrambled pa points and then evaluating models
+        rep.species <- species
+
+        # Mix the points all together
+        allpoints <- rbind(test.data[,1:2], species$background.points[,1:2], species$presence.points[,1:2])
+
+        # Sample presence points from pool and remove from pool
+        rep.rows <- sample(nrow(allpoints), nrow(species$presence.points))
+        rep.species$presence.points <- allpoints[rep.rows,]
+        allpoints <- allpoints[-rep.rows,]
+
+        # Do the same for test points
+        if(test.prop > 0){
+          test.rows <- sample(nrow(allpoints), nrow(species$presence.points))
+          rep.test.data <- allpoints[test.rows,]
+          allpoints <- allpoints[-test.rows,]
+        }
+
+        # Everything else goes back to the background
+        rep.species$background.points <- allpoints
+
+        rep.species <- add.env(rep.species, env, verbose = FALSE)
+
+        rts.df <- rbind(cbind(rep.species$presence.points, Pres = 1),
+                             cbind(rep.species$background.points, Pres = 0))
+        wts <- ppmlasso_weights(rep.species$presence.points, rep.species$background.points,
+                                c("Longitude", "Latitude"))
+
+        rts.df$wt <- wts
+        capture.output(
+          thisrep.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = rts.df, ...)
+        )
+
+        # capture.output(
+        #   thisrep.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = rts.df, ...)
+        # )
+
+        p.fun <- function(object, newdata, ...) {
+          predict.ppmlasso(object, newdata = newdata, ...)*env_cell_area
+        }
+
+        thisrep.model.evaluation <- dismo::evaluate(predict.ppmlasso(thisrep.ppmlasso,
+                                                                    newdata = rep.species$presence.points)[ , 1, drop = TRUE],
+                                                   predict.ppmlasso(thisrep.ppmlasso,
+                                                                    newdata = rep.species$background.points)[ , 1, drop = TRUE])
+        thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.ppmlasso, env)
+
+        rts.geog.training[i] <- thisrep.model.evaluation@auc
+        rts.env.training[i] <- thisrep.env.model.evaluation@auc
+
+        # I need to double check whether RTS tested models on same test data as empirical
+        # model, or whether they drew new holdouts for replicates.  Currently I'm just
+        # using the same test data for each rep.
+        if(test.prop > 0 & test.prop < 1){
+          names <- c(colnames(rep.test.data), names(env))
+          rep.test.data <- cbind(rep.test.data, extract(env, rep.test.data[,1:2]))
+          colnames(rep.test.data) <- names
+          rep.test.data <- rep.test.data[complete.cases(rep.test.data),]
+
+          thisrep.test.evaluation <- dismo::evaluate(predict.ppmlasso(thisrep.ppmlasso,
+                                                                      newdata = rep.test.data)[ , 1, drop = TRUE],
+                                                     predict.ppmlasso(thisrep.ppmlasso,
+                                                                      newdata = rep.species$background.points)[ , 1, drop = TRUE])
+          temp.sp <- rep.species
+          temp.sp$presence.points <- test.data
+          thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.ppmlasso, env)
+
+          rts.geog.test[i] <- thisrep.test.evaluation@auc
+          rts.env.test[i] <- thisrep.env.test.evaluation@auc
+        }
+        rts.models[[paste0("rep.",i)]] <- list(model = thisrep.ppmlasso,
+                                               training.evaluation = thisrep.model.evaluation,
+                                               env.training.evaluation = thisrep.env.model.evaluation,
+                                               test.evaluation = thisrep.test.evaluation,
+                                               env.test.evaluation = thisrep.env.test.evaluation)
+      }
+
+      # Reps are all run now, time to package it all up
+
+      # Calculating p values
+      rts.geog.training.pvalue = mean(rts.geog.training > model.evaluation@auc)
+      rts.env.training.pvalue = mean(rts.env.training > env.model.evaluation@auc)
+      if(test.prop > 0){
+        rts.geog.test.pvalue <- mean(rts.geog.test > test.evaluation@auc)
+        rts.env.test.pvalue <- mean(rts.env.test > env.test.evaluation@auc)
+      } else {
+        rts.geog.test.pvalue <- NA
+        rts.env.test.pvalue <- NA
+      }
+
+      # Making plots
+      training.plot <- qplot(rts.geog.training, geom = "histogram", fill = "density", alpha = 0.5) +
+        geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
+        xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
+        ggtitle(paste("Model performance in geographic space on training data")) +
+        theme(plot.title = element_text(hjust = 0.5))
+
+      env.training.plot <- qplot(rts.env.training, geom = "histogram", fill = "density", alpha = 0.5) +
+        geom_vline(xintercept = env.model.evaluation@auc, linetype = "longdash") +
+        xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
+        ggtitle(paste("Model performance in environmental space on training data")) +
+        theme(plot.title = element_text(hjust = 0.5))
+
+      # Make plots for test AUC distributions
+      if(test.prop > 0){
+        test.plot <- qplot(rts.geog.test, geom = "histogram", fill = "density", alpha = 0.5) +
+          geom_vline(xintercept = test.evaluation@auc, linetype = "longdash") +
+          xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
+          ggtitle(paste("Model performance in geographic space on test data")) +
+          theme(plot.title = element_text(hjust = 0.5))
+
+        env.test.plot <- qplot(rts.env.test, geom = "histogram", fill = "density", alpha = 0.5) +
+          geom_vline(xintercept = env.test.evaluation@auc, linetype = "longdash") +
+          xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
+          ggtitle(paste("Model performance in environmental space on test data")) +
+          theme(plot.title = element_text(hjust = 0.5))
+      } else {
+        test.plot <- NA
+        env.test.plot <- NA
+      }
+
+      rts.pvalues = list(rts.geog.training.pvalue = rts.geog.training.pvalue,
+                         rts.env.training.pvalue = rts.env.training.pvalue,
+                         rts.geog.test.pvalue = rts.geog.test.pvalue,
+                         rts.env.test.pvalue = rts.env.test.pvalue)
+      rts.distributions = list(rts.geog.training = rts.geog.training,
+                               rts.env.training = rts.env.training,
+                               rts.geog.test = rts.geog.test,
+                               rts.env.test = rts.env.test)
+      rts.plots = list(geog.training.plot = training.plot,
+                       env.training.plot = env.training.plot,
+                       geog.test.plot = test.plot,
+                       env.test.plot = env.test.plot)
+
+      rts.test <- list(rts.models = rts.models,
+                       rts.pvalues = rts.pvalues,
+                       rts.distributions = rts.distributions,
+                       rts.plots = rts.plots,
+                       rts.nreps = rts.reps)
+    }
+
   }
 
   ## rename Pres to presence for compatability with other enmtools functions
@@ -124,6 +282,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
                  test.evaluation = test.evaluation,
                  env.training.evaluation = env.model.evaluation,
                  env.test.evaluation = env.test.evaluation,
+                 rts.test = rts.test,
                  suitability = suitability,
                  notes = notes)
 
@@ -133,8 +292,13 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
   # the output object because marginal.plots expects an enmtools.model object
   response.plots <- list()
 
-  for(i in names(env)){
-    response.plots[[i]] <- marginal.plots(output, env, i)
+  plot.vars <- all.vars(formula(this.ppmlasso))
+
+  for(i in 1:length(plot.vars)){
+    this.var <-plot.vars[i]
+    if(this.var %in% names(env)){
+      response.plots[[this.var]] <- marginal.plots(output, env, this.var)
+    }
   }
 
   output[["response.plots"]] <- response.plots
@@ -143,8 +307,9 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
     if(file.exists(report) & overwrite == FALSE){
       stop("Report file exists, and overwrite is set to FALSE!")
     } else {
-      cat("\n\nGenerating html report...\n")
-      makereport(output, outfile = report)
+      # cat("\n\nGenerating html report...\n")
+print("This function not enabled yet.  Check back soon!")
+      # makereport(output, outfile = report)
     }
   }
 
@@ -200,18 +365,17 @@ print.enmtools.ppmlasso <- function(x, ...){
 # Plot method for objects of class enmtools.ppmlasso
 plot.enmtools.ppmlasso <- function(x, trans_col = NULL, ...){
 
-
   suit.points <- data.frame(rasterToPoints(x$suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
-  suit.plot <- ggplot(data = suit.points, aes(y = Latitude, x = Longitude)) +
-    geom_raster(aes(fill = Suitability)) +
+  suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
+    geom_raster(aes_string(fill = "Suitability")) +
     coord_fixed() + theme_classic() +
-    geom_point(data = x$analysis.df[x$analysis.df$presence == 1,], aes(x = Longitude, y = Latitude),
+    geom_point(data = x$analysis.df[x$analysis.df$presence == 1,],  aes_string(y = "Latitude", x = "Longitude"),
                pch = 21, fill = "white", color = "black", size = 2)
 
   if(!(all(is.na(x$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = x$test.data, aes(x = Longitude, y = Latitude),
+    suit.plot <- suit.plot + geom_point(data = x$test.data,  aes_string(y = "Latitude", x = "Longitude"),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
   if(!is.null(trans_col)) {
@@ -220,8 +384,12 @@ plot.enmtools.ppmlasso <- function(x, trans_col = NULL, ...){
     suit.plot <- suit.plot + scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability"))
   }
 
-  return(suit.plot)
+  if(!is.na(x$species.name)){
+    title <- paste("PPM lasso model for", x$species.name)
+    suit.plot <- suit.plot + ggtitle(title) + theme(plot.title = element_text(hjust = 0.5))
+  }
 
+  return(suit.plot)
 }
 
 # Function for checking data prior to running enmtools.ppmlasso
@@ -260,7 +428,7 @@ ppmlasso.precheck <- function(f, species, env){
   }
 }
 
-# Unexported helper function copied from ppmlasso (from which it was unexported) with permission of Author:
+# Helper function copied from ppmlasso (from which it was unexported) with permission of Author:
 # Ian Renner
 ppmlasso_weights <- function (sp.xy, quad.xy, coord = c("X", "Y"))
 {

@@ -49,14 +49,6 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
 
   suitability <- suitability <- predict(env, this.bc, type = "response")
 
-  # This is a very weird hack that has to be done because dismo's evaluate function
-  # fails if the stack only has one layer.
-  if(length(names(env)) == 1){
-    oldname <- names(env)
-    env <- stack(env, env)
-    names(env) <- c(oldname, "dummyvar")
-  }
-
   model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                this.bc, env)
   env.model.evaluation <- env.evaluate(species, this.bc, env)
@@ -82,37 +74,48 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
 
     for(i in 1:rts.reps){
 
+      print(paste("Replicate", i, "of", rts.reps))
+
       # Repeating analysis with scrambled pa points and then evaluating models
       rep.species <- species
-      rep.rows <- sample(nrow(species$background.points), nrow(species$presence.points))
-      rep.species$presence.points <- species$background.points[rep.rows,]
-      rep.species$background.points <- rbind(species$background.points[-rep.rows,], species$presence.points)
 
-      this.bc <- dismo::bioclim(env, rep.species$presence.points[,1:2])
+      # Mix the points all together
+      allpoints <- rbind(test.data, species$background.points, species$presence.points)
 
-      suitability <- predict(env, this.bc, type = "response")
+      # Sample presence points from pool and remove from pool
+      rep.rows <- sample(nrow(allpoints), nrow(species$presence.points))
+      rep.species$presence.points <- allpoints[rep.rows,]
+      allpoints <- allpoints[-rep.rows,]
+
+      # Do the same for test points
+      if(test.prop > 0){
+        test.rows <- sample(nrow(allpoints), nrow(species$presence.points))
+        rep.test.data <- allpoints[test.rows,]
+        allpoints <- allpoints[-test.rows,]
+      }
+
+      # Everything else goes back to the background
+      rep.species$background.points <- allpoints
+
+      thisrep.bc <- dismo::bioclim(env, rep.species$presence.points[,1:2])
 
       thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points[,1:2], rep.species$background.points[,1:2],
-                                                 this.bc, env)
-      thisrep.env.model.evaluation <- env.evaluate(rep.species, this.bc, env)
+                                                 thisrep.bc, env)
+      thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.bc, env)
 
       rts.geog.training[i] <- thisrep.model.evaluation@auc
       rts.env.training[i] <- thisrep.env.model.evaluation@auc
 
-      # I need to double check whether RTS tested models on same test data as empirical
-      # model, or whether they drew new holdouts for replicates.  Currently I'm just
-      # using the same test data for each rep.
       if(test.prop > 0 & test.prop < 1){
-        thisrep.test.evaluation <-dismo::evaluate(test.data, rep.species$background.points[,1:2],
-                                                  this.bc, env)
-        temp.sp <- rep.species
+        thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points[,1:2],
+                                                  thisrep.bc, env)
         temp.sp$presence.points <- test.data
-        thisrep.env.test.evaluation <- env.evaluate(temp.sp, this.bc, env)
+        thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.bc, env)
 
         rts.geog.test[i] <- thisrep.test.evaluation@auc
         rts.env.test[i] <- thisrep.env.test.evaluation@auc
       }
-      rts.models[[paste0("rep.",i)]] <- list(model = this.bc,
+      rts.models[[paste0("rep.",i)]] <- list(model = thisrep.bc,
                                              training.evaluation = model.evaluation,
                                              env.training.evaluation = env.model.evaluation,
                                              test.evaluation = test.evaluation,
@@ -203,7 +206,7 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
   # the output object because marginal.plots expects an enmtools.model object
   response.plots <- list()
 
-  for(i in names(env)){
+  for(i in colnames(this.bc@presence)){
     response.plots[[i]] <- marginal.plots(output, env, i)
   }
 
@@ -213,8 +216,9 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
     if(file.exists(report) & overwrite == FALSE){
       stop("Report file exists, and overwrite is set to FALSE!")
     } else {
-      cat("\n\nGenerating html report...\n")
-      makereport(output, outfile = report)
+      # cat("\n\nGenerating html report...\n")
+print("This function not enabled yet.  Check back soon!")
+      # makereport(output, outfile = report)
     }
   }
 
@@ -272,16 +276,21 @@ plot.enmtools.bc <- function(x, ...){
   suit.points <- data.frame(rasterToPoints(x$suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
-  suit.plot <- ggplot(data = suit.points, aes(y = Latitude, x = Longitude)) +
-    geom_raster(aes(fill = Suitability)) +
+  suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
+    geom_raster(aes_string(fill = "Suitability")) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
-    geom_point(data = x$analysis.df, aes(x = Longitude, y = Latitude),
+    geom_point(data = x$analysis.df,  aes_string(y = "Latitude", x = "Longitude"),
                pch = 21, fill = "white", color = "black", size = 2)
 
   if(!(all(is.na(x$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = x$test.data, aes(x = Longitude, y = Latitude),
+    suit.plot <- suit.plot + geom_point(data = x$test.data,  aes_string(y = "Latitude", x = "Longitude"),
                                         pch = 21, fill = "green", color = "black", size = 2)
+  }
+
+  if(!is.na(x$species.name)){
+    title <- paste("Bioclim model for", x$species.name)
+    suit.plot <- suit.plot + ggtitle(title) + theme(plot.title = element_text(hjust = 0.5))
   }
 
   return(suit.plot)
