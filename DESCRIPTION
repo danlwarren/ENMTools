@@ -16,7 +16,6 @@ License: GPL-2
 LazyData: TRUE
 RoxygenNote: 6.0.1
 Imports:
-  leaflet,
 	rgeos,
 	knitr,
 	ggplot2,
