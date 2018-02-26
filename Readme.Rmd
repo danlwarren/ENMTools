@@ -296,6 +296,7 @@ Some of the tests in ENMTools, including some really neat ones that are still in
 
 ```{r read_tree}
 library(rgbif)
+library(ape)
 
 hisp.anoles <- read.nexus(file = "test/testdata/StarBEAST_MCC.species.txt")
 
