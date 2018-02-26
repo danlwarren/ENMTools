@@ -126,7 +126,27 @@ expect_enmtools_model(cyreni.glm)
 cyreni.gam <- enmtools.gam(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
 expect_enmtools_model(cyreni.gam)
 
-
+m_dm <- plot.interactive.enmtools.model(cyreni.dm)
+m_dm_cluster <- plot.interactive.enmtools.model(cyreni.dm, cluster.points = TRUE)
+m_dm_bg <- plot.interactive.enmtools.model(cyreni.dm, plot.bg = TRUE)
+m_gam <- plot.interactive.enmtools.model(cyreni.gam)
+m_gam_cluster <- plot.interactive.enmtools.model(cyreni.gam, cluster.points = TRUE)
+m_gam_bg <- plot.interactive.enmtools.model(cyreni.gam, plot.bg = TRUE)
+#' Simple plot.interactive tests
+test_that("plot.interactive produces correct object", {
+  expect_is(m_dm, "leaflet")
+  expect_is(m_dm_cluster, "leaflet")
+  expect_is(m_dm_bg, "leaflet")
+  expect_is(m_gam, "leaflet")
+  expect_is(m_gam_cluster, "leaflet")
+  expect_is(m_gam_bg, "leaflet")
+  expect_match(sapply(m_dm_cluster$x$calls, function(x) x$method), "addRasterImage", all = FALSE)
+  expect_match(sapply(m_dm$x$calls, function(x) x$method), "addRasterImage", all = FALSE)
+  expect_match(sapply(m_dm_bg$x$calls, function(x) x$method), "addRasterImage", all = FALSE)
+  expect_match(sapply(m_gam_cluster$x$calls, function(x) x$method), "addRasterImage", all = FALSE)
+  expect_match(sapply(m_gam$x$calls, function(x) x$method), "addRasterImage", all = FALSE)
+  expect_match(sapply(m_gam_bg$x$calls, function(x) x$method), "addRasterImage", all = FALSE)
+})
 
 #' Geographic space metrics and visualization
 #'
