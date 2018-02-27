@@ -68,14 +68,14 @@ summary.enmtools.species <- function(object, ...){
 
   if(class(object$presence.points) %in% c("data.frame", "matrix")){
     cat("\n\nPresence points (first ten only): ")
-    print(kable(head(object$presence.points, 10)))
+    print(knitr::kable(head(object$presence.points, 10)))
   } else{
     cat("\n\nPresence points not defined.")
   }
 
   if(class(object$background.points)  %in% c("data.frame", "matrix")){
     cat("\n\nBackground points (first ten only): ")
-    print(kable(head(object$background.points, 10)))
+    print(knitr::kable(head(object$background.points, 10)))
   } else{
     cat("\n\nBackground points not defined.")
   }
@@ -101,7 +101,7 @@ plot.enmtools.species <- function(x, ...){
   stopifnot(inherits(x, "enmtools.species"))
 
   if(class(x$range) == "RasterLayer"){
-    plot(x$range)
+    raster::plot(x$range)
   }
 
   if(class(x$background.points)  %in% c("data.frame", "matrix")){
