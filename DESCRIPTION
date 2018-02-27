@@ -31,7 +31,8 @@ Imports:
 	randomForest,
 	ape,
 	ppmlasso,
-	reshape2
+	reshape2,
+	leaflet
 Depends:
 	raster,
 	dismo
