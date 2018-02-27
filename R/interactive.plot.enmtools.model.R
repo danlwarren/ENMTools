@@ -57,7 +57,7 @@ interactive.plot.enmtools.model <- function(x, map.provider = "Esri.WorldPhysica
     }
   }
 
-  m <- m %>% addLegend(pal = colorNumeric("viridis", c(min(values(x$suitability), na.rm = TRUE),
+  m <- m %>% addLegend(pal = colorNumeric("inferno", c(min(values(x$suitability), na.rm = TRUE),
                                                        max(values(x$suitability), na.rm = TRUE))), values = c(min(values(x$suitability), na.rm = TRUE),
                                                                                                               max(values(x$suitability), na.rm = TRUE)))
 
