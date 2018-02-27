@@ -32,7 +32,8 @@ Imports:
 	ape,
 	ppmlasso,
 	reshape2,
-	leaflet
+	leaflet,
+	magrittr
 Depends:
 	raster,
 	dismo

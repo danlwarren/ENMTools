@@ -31,7 +31,7 @@ interactive.plot.enmtools.model <- function(x, map.provider = "Esri.WorldPhysica
 
   m <- leaflet(pnts) %>%
     addProviderTiles(map.provider) %>%
-    addRasterImage(x$suitability, colors = "viridis", opacity = 0.65)
+    addRasterImage(x$suitability, colors = "inferno", opacity = 0.65)
 
   if(!is.null(x$analysis.df$presence)) {
     if(cluster.points) {
