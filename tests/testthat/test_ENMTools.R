@@ -126,14 +126,14 @@ expect_enmtools_model(cyreni.glm)
 cyreni.gam <- enmtools.gam(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
 expect_enmtools_model(cyreni.gam)
 
-m_dm <- plot.interactive.enmtools.model(cyreni.dm)
-m_dm_cluster <- plot.interactive.enmtools.model(cyreni.dm, cluster.points = TRUE)
-m_dm_bg <- plot.interactive.enmtools.model(cyreni.dm, plot.bg = TRUE)
-m_gam <- plot.interactive.enmtools.model(cyreni.gam)
-m_gam_cluster <- plot.interactive.enmtools.model(cyreni.gam, cluster.points = TRUE)
-m_gam_bg <- plot.interactive.enmtools.model(cyreni.gam, plot.bg = TRUE)
-#' Simple plot.interactive tests
-test_that("plot.interactive produces correct object", {
+m_dm <- interactive.plot.enmtools.model(cyreni.dm)
+m_dm_cluster <- interactive.plot.enmtools.model(cyreni.dm, cluster.points = TRUE)
+m_dm_bg <- interactive.plot.enmtools.model(cyreni.dm, plot.bg = TRUE)
+m_gam <- interactive.plot.enmtools.model(cyreni.gam)
+m_gam_cluster <- interactive.plot.enmtools.model(cyreni.gam, cluster.points = TRUE)
+m_gam_bg <- interactive.plot.enmtools.model(cyreni.gam, plot.bg = TRUE)
+#' Simple interactive.plot tests
+test_that("interactive.plot produces correct object", {
   expect_is(m_dm, "leaflet")
   expect_is(m_dm_cluster, "leaflet")
   expect_is(m_dm_bg, "leaflet")
