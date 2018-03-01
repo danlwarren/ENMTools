@@ -58,13 +58,21 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
     if(inherits(model.1, "DistModel")){
       pred1 <- as.numeric(predict(model.1, x = data.frame(predict.table), type = "response"))
     } else {
-      pred1 <- as.numeric(predict(model.1, newdata = data.frame(predict.table), type = "response"))
+      if(inherits(model.1, "ranger")) {
+        pred1 <- as.numeric(predict(model.1, data = data.frame(predict.table), type = "response")$predictions[ , 2, drop = TRUE])
+      } else {
+        pred1 <- as.numeric(predict(model.1, newdata = data.frame(predict.table), type = "response"))
+      }
     }
 
     if(inherits(model.2, "DistModel")){
       pred2 <- as.numeric(predict(model.2, x = data.frame(predict.table), type = "response"))
     } else {
-      pred2 <- as.numeric(predict(model.2, newdata = data.frame(predict.table), type = "response"))
+      if(inherits(model.2, "ranger")) {
+        pred2 <- as.numeric(predict(model.2, data = data.frame(predict.table), type = "response")$predictions[ , 2, drop = TRUE])
+      } else {
+        pred2 <- as.numeric(predict(model.2, newdata = data.frame(predict.table), type = "response"))
+      }
     }
 
 
@@ -119,13 +127,21 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
       if(inherits(model.1, "DistModel")){
         pred1 <- as.numeric(predict(model.1, x = data.frame(predict.table), type = "response"))
       } else {
-        pred1 <- as.numeric(predict(model.1, newdata = data.frame(predict.table), type = "response"))
+        if(inherits(model.1, "ranger")) {
+          pred1 <- as.numeric(predict(model.1, data = data.frame(predict.table), type = "response")$predictions[ , 2, drop = TRUE])
+        } else {
+          pred1 <- as.numeric(predict(model.1, newdata = data.frame(predict.table), type = "response"))
+        }
       }
 
       if(inherits(model.2, "DistModel")){
         pred2 <- as.numeric(predict(model.2, x = data.frame(predict.table), type = "response"))
       } else {
-        pred2 <- as.numeric(predict(model.2, newdata = data.frame(predict.table), type = "response"))
+        if(inherits(model.2, "ranger")) {
+          pred2 <- as.numeric(predict(model.2, data = data.frame(predict.table), type = "response")$predictions[ , 2, drop = TRUE])
+        } else {
+          pred2 <- as.numeric(predict(model.2, newdata = data.frame(predict.table), type = "response"))
+        }
       }
 
       if(sd(pred1) == 0 | sd(pred2) == 0){

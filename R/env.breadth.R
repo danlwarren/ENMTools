@@ -51,7 +51,11 @@ env.breadth <- function(model, env, tolerance = .0001, max.reps = 10, chunk.size
     if(inherits(model, "DistModel")){
       pred <- as.numeric(predict(model, x = data.frame(predict.table), type = "response"))
     } else {
-      pred <- as.numeric(predict(model, newdata = data.frame(predict.table), type = "response"))
+      if(inherits(model, "ranger")) {
+        pred <- as.numeric(predict(model, data = data.frame(predict.table), type = "response")$predictions[ , 2, drop = TRUE])
+      } else {
+        pred <- as.numeric(predict(model, newdata = data.frame(predict.table), type = "response"))
+      }
     }
 
     if(max(pred) == 0){
@@ -95,7 +99,11 @@ env.breadth <- function(model, env, tolerance = .0001, max.reps = 10, chunk.size
       if(inherits(model, "DistModel")){
         pred <- c(pred, as.numeric(predict(model, x = data.frame(predict.table), type = "response")))
       } else {
-        pred <- c(pred, as.numeric(predict(model, newdata = data.frame(predict.table), type = "response")))
+        if(inherits(model, "ranger")) {
+          pred <- as.numeric(predict(model, data = data.frame(predict.table), type = "response")$predictions[ , 2, drop = TRUE])
+        } else {
+          pred <- as.numeric(predict(model, newdata = data.frame(predict.table), type = "response"))
+        }
       }
 
       if(max(pred) == 0){
