@@ -54,9 +54,16 @@ env.evaluate <- function(species, model, env, bg.source = "background", n.backgr
   p.table <- extract(env, presence)
 
   # Having to do this for now because the dismo models don't like "newdata"
+  # Unfortunately I think we finally have to use an if statement because ranger predict is really different
+  if(inherits(model, "ranger")) {
+    pred.p <- as.numeric(predict(model, data = data.frame(p.table), type = "response")$predictions[ , 2, drop = TRUE])
+    pred.bg <- as.numeric(predict(model, data = data.frame(bg.table), type = "response")$predictions[ , 2, drop = TRUE])
+  } else {
+    pred.p <- as.numeric(predict(model, newdata = data.frame(p.table), x = data.frame(p.table), type = "response"))
+    pred.bg <- as.numeric(predict(model, newdata = data.frame(bg.table), x = data.frame(bg.table), type = "response"))
+  }
 
-  pred.p <- as.numeric(predict(model, newdata = data.frame(p.table), x = data.frame(p.table), type = "response"))
-  pred.bg <- as.numeric(predict(model, newdata = data.frame(bg.table), x = data.frame(bg.table), type = "response"))
+
 
 
   env.evaluation <-dismo::evaluate(pred.p, pred.bg)

@@ -74,7 +74,11 @@ marginal.plots <- function(model, env, layer){
   if(inherits(model$model, what = "DistModel")){
     pred <- predict(model$model, x = plot.df, type = "response")
   } else {
-    pred <- predict(model$model, newdata = plot.df, type = "response")
+    if(inherits(model$model, "ranger")) {
+      pred <- predict(model$model, data = plot.df, type = "response")$predictions[ , 2, drop = TRUE]
+    } else {
+      pred <- predict(model$model, newdata = plot.df, type = "response")
+    }
   }
 
   plot.df.long <- data.frame(layer = c(plot.df[,layer], plot.df[,layer], plot.df[,layer]),
