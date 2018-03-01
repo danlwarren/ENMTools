@@ -1,4 +1,4 @@
-#' Takes an emtools.species object with presence and background points, and builds a random forest model
+#' Takes an emtools.species object with presence and background points, and builds a random forest model using the 'probability mode' in package `ranger`
 #'
 #' @param species An enmtools.species object
 #' @param env A raster or raster stack of environmental data.
@@ -9,9 +9,9 @@
 #' @param report Optional name of an html file for generating reports
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
 #' @param rts.reps The number of replicates to do for a Raes and ter Steege-style test of significance
-#' @param ... Arguments to be passed to rf()
+#' @param ... Arguments to be passed to ranger()
 #'
-#' @export enmtools.rf
+#' @export enmtools.rf.ranger
 #'
 #' @examples
 #' ## NOT RUN
@@ -19,7 +19,7 @@
 #' data(iberolacerta.clade)
 #' enmtools.rf(iberolacerta.clade$species$monticola, env = euro.worldclim, nback = 500)
 
-enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0, ...){
+enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0, ...){
 
   notes <- NULL
 
@@ -31,7 +31,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
     notes <- c(notes, "No formula was provided, so a formula was built automatically.")
   }
 
-  rf.precheck(f, species, env)
+  rf.ranger.precheck(f, species, env)
 
   # Declaring some NAs in case we skip evaluation
   test.data <- NA
@@ -56,10 +56,15 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
 
   analysis.df <- rbind(species$presence.points, species$background.points)
   analysis.df$presence <- c(rep(1, nrow(species$presence.points)), rep(0, nrow(species$background.points)))
+  analysis.df$presence <- as.factor(analysis.df$presence)
 
-  this.rf <- randomForest(f, analysis.df[,-c(1,2)], ...)
+  this.rf <- ranger(f, analysis.df[,-c(1,2)], probability = TRUE, ...)
+  this.rf <- ranger(f, analysis.df[,-c(1,2)], probability = TRUE)
 
-  suitability <- predict(env, this.rf, type = "response")
+  pfun <- function(model, data, ...) {
+    predict(model, data, ...)$predictions[ , 2]
+  }
+  suitability <- raster::predict(env, this.rf, fun = pfun, type = "response")
 
   if(eval == TRUE){
 
@@ -72,13 +77,14 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
       notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
     }
 
-    model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
-                                 this.rf, env)
+    model.evaluation <- dismo::evaluate(predict(this.rf, data = species$presence.points)$predictions[ , 2, drop = TRUE],
+                                        predict(this.rf, data = species$background.points)$predictions[ , 2, drop = TRUE])
     env.model.evaluation <- env.evaluate(species, this.rf, env)
 
     if(test.prop > 0 & test.prop < 1){
-      test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
-                                  this.rf, env)
+      test.evaluation <- dismo::evaluate(predict(this.rf, data = extract(env, test.data))$predictions[ , 2, drop = TRUE],
+                                         predict(this.rf, data = species$background.points)$predictions[ , 2, drop = TRUE])
+
       temp.sp <- species
       temp.sp$presence.points <- test.data
       env.test.evaluation <- env.evaluate(temp.sp, this.rf, env)
@@ -122,19 +128,21 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
 
         rts.df <- rbind(rep.species$presence.points, rep.species$background.points)
         rts.df$presence <- c(rep(1, nrow(rep.species$presence.points)), rep(0, nrow(rep.species$background.points)))
+        rts.df$presence <- as.factor(rts.df$presence)
 
-        thisrep.rf <- randomForest(f, rts.df[,-c(1,2)], ...)
+        thisrep.rf <- ranger(f, rts.df[,-c(1,2)], probability = TRUE, ...)
+        thisrep.rf <- ranger(f, rts.df[,-c(1,2)], probability = TRUE)
 
-        thisrep.model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
-                                                   thisrep.rf, env)
+        thisrep.model.evaluation <- dismo::evaluate(predict(thisrep.rf, data = species$presence.points)$predictions[ , 2, drop = TRUE],
+                                                   predict(thisrep.rf, data = species$background.points)$predictions[ , 2, drop = TRUE])
         thisrep.env.model.evaluation <- env.evaluate(species, thisrep.rf, env)
 
         rts.geog.training[i] <- thisrep.model.evaluation@auc
         rts.env.training[i] <- thisrep.env.model.evaluation@auc
 
         if(test.prop > 0 & test.prop < 1){
-          thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points[,1:2],
-                                                    thisrep.rf, env)
+          thisrep.test.evaluation <-dismo::evaluate(predict(thisrep.rf, data = extract(env, rep.test.data))$predictions[ , 2, drop = TRUE],
+                                                    predict(thisrep.rf, data = species$background.points)$predictions[ , 2, drop = TRUE])
           temp.sp <- rep.species
           temp.sp$presence.points <- test.data
           thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.rf, env)
@@ -228,13 +236,13 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
                  suitability = suitability,
                  notes = notes)
 
-  class(output) <- c("enmtools.rf", "enmtools.model")
+  class(output) <- c("enmtools.rf.ranger", "enmtools.model")
 
   # Doing response plots for each variable.  Doing this bit after creating
   # the output object because marginal.plots expects an enmtools.model object
   response.plots <- list()
 
-  plot.vars <- all.vars(formula(this.rf))
+  plot.vars <- all.vars(f)
 
   for(i in 2:length(plot.vars)){
     this.var <-plot.vars[i]
@@ -259,7 +267,7 @@ print("This function not enabled yet.  Check back soon!")
 }
 
 # Summary for objects of class enmtools.rf
-summary.enmtools.rf <- function(object, ...){
+summary.enmtools.rf.ranger <- function(object, ...){
 
   cat("\n\nFormula:  ")
   print(object$formula)
@@ -296,7 +304,7 @@ summary.enmtools.rf <- function(object, ...){
 }
 
 # Print method for objects of class enmtools.rf
-print.enmtools.rf <- function(x, ...){
+print.enmtools.rf.ranger <- function(x, ...){
 
   print(summary(x))
 
@@ -304,7 +312,7 @@ print.enmtools.rf <- function(x, ...){
 
 
 # Plot method for objects of class enmtools.rf
-plot.enmtools.rf <- function(x, ...){
+plot.enmtools.rf.ranger <- function(x, ...){
 
 
   suit.points <- data.frame(rasterToPoints(x$suitability))
@@ -333,7 +341,7 @@ plot.enmtools.rf <- function(x, ...){
 }
 
 # Function for checking data prior to running enmtools.rf
-rf.precheck <- function(f, species, env){
+rf.ranger.precheck <- function(f, species, env){
 
   # Check to see if the function is the right class
   if(!inherits(f, "formula")){
