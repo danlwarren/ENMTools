@@ -26,7 +26,7 @@ enmtools.rf.ranger(species, env, f = NULL, test.prop = 0, eval = TRUE,
 
 \item{rts.reps}{The number of replicates to do for a Raes and ter Steege-style test of significance}
 
-\item{...}{Arguments to be passed to rf()}
+\item{...}{Arguments to be passed to ranger()}
 }
 \description{
 Takes an emtools.species object with presence and background points, and builds a random forest model using the 'probability mode' in package `ranger`
