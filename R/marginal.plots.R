@@ -4,6 +4,7 @@
 #' @param model An enmtools model object
 #' @param env A RasterLayer or RasterStack object containing environmental data
 #' @param layer The name of the layer to plot
+#' @param standardize Whether to set the maximum of the response function to 1, or to instead use the raw values.
 #'
 #' @return results A plot of the marginal response of the model to the environmental variable
 #'
@@ -18,7 +19,7 @@
 #' f = pres ~ bio1 + bio12, euro.worldclim)
 #' marginal.plots(cyreni.glm, euro.worldclim, "bio1")
 
-marginal.plots <- function(model, env, layer){
+marginal.plots <- function(model, env, layer, standardize = TRUE){
 
   if(!layer %in% names(env)){
     stop(paste("Couldn't find layer named", layer, "in environmental rasters!"))
@@ -43,7 +44,10 @@ marginal.plots <- function(model, env, layer){
     }
   }
 
-  plot.df <- data.frame(plot.df)
+  if(standardize == TRUE){
+    plot.df <- data.frame(plot.df)
+  }
+
 
   colnames(plot.df) <- names
 
@@ -80,6 +84,8 @@ marginal.plots <- function(model, env, layer){
       pred <- predict(model$model, newdata = plot.df, type = "response")
     }
   }
+
+  pred <- pred/max(pred)
 
   plot.df.long <- data.frame(layer = c(plot.df[,layer], plot.df[,layer], plot.df[,layer]),
                              value = c(pred, pres.dens, bg.dens),
