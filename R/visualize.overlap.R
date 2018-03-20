@@ -81,14 +81,31 @@ visualize.overlap <- function(model.1, model.2, env, nbins = 100, layers, plot.p
 
   plot.df <- data.frame(plot.df)
 
-  pred.1 <- predict(model.1$model, plot.df, type = "response")
-  pred.2 <- predict(model.2$model, plot.df, type = "response")
+  if(inherits(model.1$model, "DistModel")){
+    pred1 <- as.numeric(predict(model.1$model, x = data.frame(plot.df), type = "response"))
+  } else {
+    if(inherits(model.1$model, "ranger")) {
+      pred1 <- as.numeric(predict(model.1$model, data = data.frame(plot.df), type = "response")$predictions[ , 2, drop = TRUE])
+    } else {
+      pred1 <- as.numeric(predict(model.1$model, newdata = data.frame(plot.df), type = "response"))
+    }
+  }
+  
+  if(inherits(model.2$model, "DistModel")){
+    pred2 <- as.numeric(predict(model.2$model, x = data.frame(plot.df), type = "response"))
+  } else {
+    if(inherits(model.2$model, "ranger")) {
+      pred2 <- as.numeric(predict(model.2$model, data = data.frame(plot.df), type = "response")$predictions[ , 2, drop = TRUE])
+    } else {
+      pred2 <- as.numeric(predict(model.2$model, newdata = data.frame(plot.df), type = "response"))
+    }
+  }
 
-  plot.df <- cbind(plot.df[,1:2], pred.1, pred.2)
+  plot.df <- cbind(plot.df[,1:2], pred1, pred2)
 
   #This is where I'm going to need to look up how to overlap two contours!
   overlap.plot <- ggplot(data = plot.df, aes_string(y = names[2], x = names[1])) +
-    geom_contour(aes(z = pred.1)) + geom_contour(aes(z = pred.2)) +
+    geom_contour(aes(z = pred1), colour = "red") + geom_contour(aes(z = pred2)) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
     theme_classic() +
     ggtitle(label = "Predicted suitability in environment space")

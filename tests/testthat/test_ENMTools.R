@@ -34,7 +34,7 @@ expect_enmtools_model <- function(model){
 
   expect_true(all(class(model$model) %in% c("MaxEnt", "Domain", "Bioclim",
                                             "randomForest.formula", "randomForest",
-                                            "ppmlasso", "list", "glm", "lm", "gam")),
+                                            "ppmlasso", "list", "glm", "lm", "gam", "ranger")),
               info = "Class of model is not recognized")
 
   # Evaluation on training data happens unless it's bypassed (GLM only I think)
@@ -116,6 +116,9 @@ expect_enmtools_model(cyreni.bc)
 
 cyreni.rf <- enmtools.rf(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
 expect_enmtools_model(cyreni.rf)
+
+cyreni.rf.ranger <- enmtools.rf.ranger(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
+expect_enmtools_model(cyreni.rf.ranger)
 
 cyreni.ppm <- enmtools.ppmlasso(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
 expect_enmtools_model(cyreni.ppm)

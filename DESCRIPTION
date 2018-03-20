@@ -6,6 +6,7 @@ Date: 2017-01-11
 Authors@R: c(person(given = "Dan", family = "Warren", role = c("aut", "cre"), email = "dan.l.warren@gmail.com"),
               person(given = "Russell", family = "Dinnage", role = "aut", email = "r.dinnage@gmail.com"),
               person(given = "Nick", family = "Matzke", role = "aut", email = "nick.matzke@anu.edu.au"),
+	person(given = "Marcel", family = "Cardillo", role = "aut", email = "marcel.cardillo@anu.edu.au"),
               person(given = "John", family = "Baumgartner", role = "ctb"),
               person(given = "Linda", family = "Beaumont", role = "ctb"),
 	      person(given = "Nicholas", family = "Huron", role = "ctb")
@@ -33,7 +34,8 @@ Imports:
 	ppmlasso,
 	reshape2,
 	leaflet,
-	magrittr
+	magrittr,
+	ranger
 Depends:
 	raster,
 	dismo
