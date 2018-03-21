@@ -12,7 +12,7 @@ env.overlap(model.1, model.2, env, tolerance = 0.001, max.reps = 10,
 
 \item{model.2}{Another enmtools.model object or other model object that can be projected using the predict() function}
 
-\item{env}{A raster or raster stack of environmental data.}
+\item{env}{A raster, raster stack of environmental data, or a list of minima and maxima for the environmental space to evaluate models over}
 
 \item{tolerance}{How close do successive overlap metrics have to be before we decide we're close enough to the final answer}
 

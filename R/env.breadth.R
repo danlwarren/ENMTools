@@ -1,7 +1,7 @@
 #' Calculates breadth of a model in environment space using latin hypercube sampling
 #'
 #' @param model An enmtools.model object or a model object that can be projected using the predict() function
-#' @param env A raster or raster stack of environmental data.
+#' @param env A raster, raster stack of environmental data, or a list of minima and maxima for the environmental space to evaluate models over.
 #' @param tolerance How close do successive overlap metrics have to be before we decide we're close enough to the final answer
 #' @param max.reps Maximum number of attempts that will be made to find suitable starting conditions
 #' @param chunk.size How many combinations of environmental variables to try at a time.  If your niche breadth in environment space is small, increasing this value may help you get a result.
