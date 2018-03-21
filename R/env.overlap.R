@@ -2,7 +2,7 @@
 #'
 #' @param model.1 An enmtools.model object model object that can be projected using the predict() function
 #' @param model.2 Another enmtools.model object or other model object that can be projected using the predict() function
-#' @param env A raster or raster stack of environmental data.
+#' @param env A raster, raster stack of environmental data, or a list of minima and maxima for the environmental space to evaluate models over
 #' @param tolerance How close do successive overlap metrics have to be before we decide we're close enough to the final answer
 #' @param max.reps Maximum number of attempts that will be made to find suitable starting conditions
 #' @param cor.method Which method to use for calculating correlations between models
