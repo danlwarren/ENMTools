@@ -85,9 +85,14 @@ format.latlon <- function(latlon){
 
 
   # Check whether we've got one column for each, and make sure they're not the same column
-  if(is.na(latcols) | is.na(loncols)){
+  if(is.na(latcols)){
     stop("Unable to auotmatically determine Longitude and Latitude columns.  Please rename to Longitude and Latitude.")
   }
+
+  if(is.na(loncols)){
+    stop("Unable to auotmatically determine Longitude and Latitude columns.  Please rename to Longitude and Latitude.")
+  }
+
   if(length(latcols == 1) & length(loncols == 1) & latcols != loncols){
     output <- data.frame(cbind(latlon[,loncols], latlon[,latcols]))
     colnames(output) <- c("Longitude", "Latitude")
