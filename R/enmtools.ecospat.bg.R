@@ -68,29 +68,33 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
   sp1.env <- extract(env, species.1$presence.points)
   sp1.env <- cbind(rep(species.1$species.name, nrow(species.1$presence.points)),
                    species.1$presence.points,
-                   sp1.env[complete.cases(sp1.env),])
+                   sp1.env)
+  sp1.env <- sp1.env[complete.cases(sp1.env),]
   colnames(sp1.env) <- c("Species", colnames(species.1$presence.points), layers)
 
   #Grabbing environmental data for species 1 background points
   sp1.bg.env <- extract(env, species.1$background.points)
   sp1.bg.env <- cbind(rep(paste0(species.1$species.name, ".bg"), nrow(species.1$background.points)),
                       species.1$background.points,
-                      sp1.bg.env[complete.cases(sp1.bg.env),])
+                      sp1.bg.env)
+  sp1.bg.env <- sp1.bg.env[complete.cases(sp1.bg.env),]
   colnames(sp1.bg.env) <- c("Species", colnames(species.1$background.points), layers)
 
-  #Grabbing environmental data for species 2 points
+  #Grabbing environmental data for species 2 background points
   sp2.bg.env <- extract(env, species.2$background.points)
   sp2.bg.env <- cbind(rep(species.2$species.name, nrow(species.2$background.points)),
                       species.2$background.points,
-                      sp2.bg.env[complete.cases(sp2.bg.env),])
+                      sp2.bg.env)
+  sp2.bg.env <- sp2.bg.env[complete.cases(sp2.bg.env),]
   colnames(sp2.bg.env) <- c("Species", colnames(species.2$background.points), layers)
 
 
-  #Grabbing environmental data for species 2 background points
+  #Grabbing environmental data for species 2 points
   sp2.env <- extract(env, species.2$presence.points)
   sp2.env <- cbind(rep(paste0(species.2$species.name, ".bg"), nrow(species.2$presence.points)),
                    species.2$presence.points,
-                   sp2.env[complete.cases(sp2.env),])
+                   sp2.env)
+  sp2.env <- sp2.env[complete.cases(sp2.env),]
   colnames(sp2.env) <- c("Species", colnames(species.2$presence.points), layers)
 
 
@@ -111,8 +115,10 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
 
   bg <- ecospat.niche.similarity.test(sp1.niche, sp2.niche, rep=nreps, rand.type = rand.type, ...)
 
-  p.values <- c(bg$p.D, bg$p.I)
-  names(p.values) <- c("D", "I")
+  empline <- c(bg$obs$D, bg$obs$I)
+  names(empline) <- c("D", "I")
+  reps.overlap <- rbind(empline, bg$sim)
+  p.values <- apply(reps.overlap, 2, function(x) 2 * (1 - max(mean(x > x[1]), mean(x < x[1]))))
 
   d.plot <- qplot(bg$sim[,"D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = bg$obs$D, linetype = "longdash") +
@@ -151,7 +157,7 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
     geom_raster(aes_string(fill = "Density")) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Density")) +
     coord_fixed() + theme_classic() +
-    ggtitle(paste(species.1$species.name, "density in environment space, \nscaled by availability")) +
+    ggtitle(paste(species.1$species.name, "occurrence scaled by availability")) +
     theme(plot.title = element_text(hjust = 0.5))
 
   sp2.bg.points <- data.frame(rasterToPoints(sp2.niche$Z))
@@ -178,7 +184,7 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
     geom_raster(aes_string(fill = "Density")) +
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Density")) +
     coord_fixed() + theme_classic() +
-    ggtitle(paste(species.2$species.name, "density in environment space, \nscaled by availability")) +
+    ggtitle(paste(species.2$species.name, "occurrence scaled by availability")) +
     theme(plot.title = element_text(hjust = 0.5))
 
 
