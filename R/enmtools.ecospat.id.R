@@ -4,7 +4,7 @@
 #' @param species.2 An enmtools.species object
 #' @param env A set of environmental layers
 #' @param nreps The number of pseudoreplicates to perform
-#' @param layers A vector of length 2 containing the names of the layers to be used.
+#' @param layers A vector of length 2 containing the names of the layers to be used.  If no layer names are provided and there are more than two layers in env, enmtools will perform a pca and use the top two layers from that.
 #' @param th.sp Quantile of species densities used as a threshold to exclude low species density values.  See documentation for ecospat.grid.clim.dyn.
 #' @param th.env Quantile of environmental densities across studye sites used as threshold to exclude low
 #' environmental density values.  See documentation for ecospat.grid.clim.dyn.
@@ -33,6 +33,32 @@ enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = 
 
   if(length(names(env)) == 2){
     layers <- names(env)
+  } else if (is.null(layers)) {
+
+    print("More than two layers in environment stack and no layers argument passed, performing PCA...")
+
+    # Get all values
+    env.val <- getValues(env)
+
+    # Figure out which cells have complete cases and which have at least one NA
+    keepers <- which(complete.cases(env.val))
+    nas <- which(!complete.cases(env.val))
+
+    # Do PCA
+    pca <- princomp(env.val[keepers,], cor=T)
+
+    # Build dummy layers
+    env.pca <- env[[1:2]]
+
+    # Add scores and NAs where appropriate
+    env.pca[nas] <- NA
+    env.pca[[1]][keepers] <- pca$scores[,1]
+    env.pca[[2]][keepers] <- pca$scores[,2]
+
+    # Rename layers and ship it out
+    names(env.pca) <- c("PC1", "PC2")
+    layers <- names(env.pca)
+    env <- env.pca
   }
 
   ecospat.id.precheck(species.1, species.2, env, nreps, layers)

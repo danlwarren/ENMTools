@@ -17,7 +17,7 @@ enmtools.ecospat.bg(species.1, species.2, env, nreps = 99, layers = NULL,
 
 \item{nreps}{The number of pseudoreplicates to perform}
 
-\item{layers}{A vector of length 2 containing the names of the layers to be used.}
+\item{layers}{A vector of length 2 containing the names of the layers to be used.  If no layer names are provided and there are more than two layers in env, enmtools will perform a pca and use the top two layers from that.}
 
 \item{test.type}{Symmetric or asymmetric test.  An asymmetric test is bguivalent to the "one.sided" option in the ecospat documentation, while a symmetric one would be two-sided.}
 
