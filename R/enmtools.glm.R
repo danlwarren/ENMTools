@@ -49,6 +49,15 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
     species$presence.points <- species$presence.points[-test.inds,]
   }
 
+  # Sample code for ENMeval
+
+  # Block
+  # test.inds <- get.block(analysis.df[analysis.df$presence == 1,], analysis.df[analysis.df$presence == 0,])
+
+  # Checkerboard 1
+  # test.inds <- get.checkerboard1(analysis.df[analysis.df$presence == 1,], env,
+  #                          analysis.df[analysis.df$presence == 0,], 2)
+
   ### Add env data
   species <- add.env(species, env)
 
