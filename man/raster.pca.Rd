@@ -18,7 +18,7 @@ env.pca A stack of raster representing the top n pca axes of the initial environ
 raster.pca, PCA on a set of environmental rasters
 }
 \examples{
-env.pca <- raster.pca(euro.worldclim)
+env.pca <- raster.pca(euro.worldclim, 2)
 }
 \keyword{environment}
 \keyword{pca}
