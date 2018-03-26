@@ -3,7 +3,7 @@
 #' @param species An enmtools.species object
 #' @param env A raster or raster stack of environmental data.
 #' @param f Standard GLM formula
-#' @param test.prop Proportion of data to withhold for model evaluation
+#' @param test.prop Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.
 #' @param eval Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.
 #' @param nback Number of background points to draw from range or env, if background points aren't provided
 #' @param report Optional name of an html file for generating reports
@@ -43,17 +43,30 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
   env.test.evaluation <- NA
   rts.test <- NA
 
-  if(test.prop > 0 & test.prop < 1){
-    test.inds <- sample(1:nrow(species$presence.points), ceiling(nrow(species$presence.points) * test.prop))
-    test.data <- species$presence.points[test.inds,]
-    species$presence.points <- species$presence.points[-test.inds,]
+  # Code for randomly withheld test data
+  if(is.numeric(test.prop)){
+    if(test.prop > 0 & test.prop < 1){
+      test.inds <- sample(1:nrow(species$presence.points), ceiling(nrow(species$presence.points) * test.prop))
+      test.data <- species$presence.points[test.inds,]
+      species$presence.points <- species$presence.points[-test.inds,]
+    }
   }
 
+  # Code for spatially structured test data
+  if(is.character(test.prop)){
+    if(test.prop == "block"){
+      test.inds <- get.block(species$presence.points, species$background.points)
+      test.bg.inds <- which(test.inds$bg.grp == 1)
+      test.inds <- which(test.inds$occ.grp == 1)
+      test.data <- species$presence.points[test.inds,]
+      test.bg <- species$background.points[test.bg.inds,]
+      species$presence.points <- species$presence.points[-test.inds,]
+      species$background.points <- species$presence.points[-test.bg.inds,]
+    }
+  }
+
+
   # Sample code for ENMeval
-
-  # Block
-  # test.inds <- get.block(analysis.df[analysis.df$presence == 1,], analysis.df[analysis.df$presence == 0,])
-
   # Checkerboard 1
   # test.inds <- get.checkerboard1(analysis.df[analysis.df$presence == 1,], env,
   #                          analysis.df[analysis.df$presence == 0,], 2)
@@ -100,13 +113,29 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
                                        this.glm, env)
     env.model.evaluation <- env.evaluate(species, this.glm, env)
 
-    if(test.prop > 0 & test.prop < 1){
-      test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
-                                        this.glm, env)
-      temp.sp <- species
-      temp.sp$presence.points <- test.data
-      env.test.evaluation <- env.evaluate(temp.sp, this.glm, env)
+    # Test eval for randomly withheld data
+    if(is.numeric(test.prop)){
+      if(test.prop > 0 & test.prop < 1){
+        test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
+                                          this.glm, env)
+        temp.sp <- species
+        temp.sp$presence.points <- test.data
+        env.test.evaluation <- env.evaluate(temp.sp, this.glm, env)
+      }
     }
+
+    # Test eval for spatially structured data
+    if(is.character(test.prop)){
+      if(test.prop == "block"){
+        test.evaluation <-dismo::evaluate(test.data, test.bg,
+                                          this.glm, env)
+        temp.sp <- species
+        temp.sp$presence.points <- test.data
+        temp.sp$background.points <- test.bg
+        env.test.evaluation <- env.evaluate(temp.sp, this.glm, env)
+      }
+    }
+
 
     # Do Raes and ter Steege test for significance.  Turned off if eval == FALSE
     if(rts.reps > 0 && eval == TRUE){
