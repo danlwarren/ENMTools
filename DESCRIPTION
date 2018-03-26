@@ -35,7 +35,8 @@ Imports:
 	reshape2,
 	leaflet,
 	magrittr,
-	ranger
+	ranger,
+	ENMeval
 Depends:
 	raster,
 	dismo
