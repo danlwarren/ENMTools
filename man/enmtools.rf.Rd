@@ -14,7 +14,7 @@ enmtools.rf(species, env, f = NULL, test.prop = 0, eval = TRUE,
 
 \item{f}{A formula for fitting the model}
 
-\item{test.prop}{Proportion of data to withhold for model evaluation}
+\item{test.prop}{Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.}
 
 \item{eval}{Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.}
 

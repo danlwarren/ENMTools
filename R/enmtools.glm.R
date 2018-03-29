@@ -55,9 +55,10 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
   # Code for spatially structured test data
   if(is.character(test.prop)){
     if(test.prop == "block"){
+      corner <- ceiling(runif(1, 0, 4))
       test.inds <- get.block(species$presence.points, species$background.points)
-      test.bg.inds <- which(test.inds$bg.grp == 1)
-      test.inds <- which(test.inds$occ.grp == 1)
+      test.bg.inds <- which(test.inds$bg.grp == corner)
+      test.inds <- which(test.inds$occ.grp == corner)
       test.data <- species$presence.points[test.inds,]
       test.bg <- species$background.points[test.bg.inds,]
       species$presence.points <- species$presence.points[-test.inds,]
@@ -138,7 +139,12 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
 
 
     # Do Raes and ter Steege test for significance.  Turned off if eval == FALSE
-    if(rts.reps > 0 && eval == TRUE){
+    if(rts.reps > 0 & eval == TRUE){
+
+      # Die if we're not doing randomly withheld test data and RTS reps > 0
+      if(!is.numeric(test.prop)){
+        stop(paste("RTS test can only be conducted with randomly withheld data, and test.prop is set to", test.prop))
+      }
 
       rts.models <- list()
 
