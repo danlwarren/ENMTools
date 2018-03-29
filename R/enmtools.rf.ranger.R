@@ -101,8 +101,9 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
     # Test eval for randomly withheld data
     if(is.numeric(test.prop)){
       if(test.prop > 0 & test.prop < 1){
-        test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
-                                          this.rf, env)
+
+        test.evaluation <- dismo::evaluate(predict(this.rf, data = extract(env, test.data))$predictions[ , 2, drop = TRUE],
+                                           predict(this.rf, data = extract(env, species$background.points[,1:2]))$predictions[ , 2, drop = TRUE])
         temp.sp <- species
         temp.sp$presence.points <- test.data
         env.test.evaluation <- env.evaluate(temp.sp, this.rf, env)
@@ -112,8 +113,8 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
     # Test eval for spatially structured data
     if(is.character(test.prop)){
       if(test.prop == "block"){
-        test.evaluation <-dismo::evaluate(test.data, test.bg,
-                                          this.rf, env)
+        test.evaluation <- dismo::evaluate(predict(this.rf, data = extract(env, test.data))$predictions[ , 2, drop = TRUE],
+                                           predict(this.rf, data = extract(env, test.bg))$predictions[ , 2, drop = TRUE])
         temp.sp <- species
         temp.sp$presence.points <- test.data
         temp.sp$background.points <- test.bg
