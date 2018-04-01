@@ -67,7 +67,7 @@ ahli$background.points <- background.points.buffer(points = ahli$presence.points
 
 ahli
 ```
-
+ 
 
 Or you can add bits of it when the object is created:
 ```{r build_allogus}
