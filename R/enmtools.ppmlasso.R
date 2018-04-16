@@ -62,7 +62,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
   if(is.character(test.prop)){
     if(test.prop == "block"){
       corner <- ceiling(runif(1, 0, 4))
-      test.inds <- get.block(species$presence.points, species$background.points)
+      test.inds <- ENMeval::get.block(species$presence.points, species$background.points)
       test.bg.inds <- which(test.inds$bg.grp == corner)
       test.inds <- which(test.inds$occ.grp == corner)
       test.data <- species$presence.points[test.inds,]
@@ -83,7 +83,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
   analysis.df <- cbind(analysis.df, wt = wts)
 
   #this.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = analysis.df)
-  this.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = analysis.df, ...)
+  this.ppmlasso <- ppmlasso::ppmlasso(f, coord = c("Longitude", "Latitude"), data = analysis.df, ...)
 
   env_cell_area <- prod(res(env))
   p.fun <- function(object, newdata, ...) {
