@@ -382,7 +382,7 @@ plot.enmtools.gam <- function(x, ...){
 
 
 # Predict method for models of class enmtools.gam
-predict.enmtools.gam <- function(model, env, maxpts = 2000, do.nmds = TRUE){
+predict.enmtools.gam <- function(model, env, maxpts = 500, do.nmds = TRUE){
 
   # Make a plot of habitat suitability in the new region
   suitability <- raster::predict(env, model$model)
@@ -424,7 +424,7 @@ predict.enmtools.gam <- function(model, env, maxpts = 2000, do.nmds = TRUE){
 
     nmds.df$source <- c(rep("train", nrow(train.env)), rep("pred", nrow(pred.env)))
 
-    nmds.plot <- qplot(MDS1, MDS2, data = nmds.df, color = source)
+    nmds.plot <- qplot(nmds.df$MDS1, nmds.df$MDS2, color = nmds.df$source)
   }
 
   print(head(nmds.df))

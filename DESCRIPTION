@@ -36,7 +36,8 @@ Imports:
 	leaflet,
 	magrittr,
 	ranger,
-	ENMeval
+	ENMeval,
+	vegan
 Depends:
 	raster,
 	dismo
