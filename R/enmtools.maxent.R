@@ -2,7 +2,7 @@
 #'
 #' @param species An enmtools.species object
 #' @param env A raster or raster stack of environmental data.
-#' @param test.prop Proportion of data to withhold for model evaluation
+#' @param test.prop Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.
 #' @param nback Number of background points to draw from range or env, if background points aren't provided
 #' @param report Optional name of an html file for generating reports
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
@@ -32,10 +32,27 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, report = 
   env.test.evaluation <- NA
   rts.test <- NA
 
-  if(test.prop > 0 & test.prop < 1){
-    test.inds <- sample(1:nrow(species$presence.points), ceiling(nrow(species$presence.points) * test.prop))
-    test.data <- species$presence.points[test.inds,]
-    species$presence.points <- species$presence.points[-test.inds,]
+  # Code for randomly withheld test data
+  if(is.numeric(test.prop)){
+    if(test.prop > 0 & test.prop < 1){
+      test.inds <- sample(1:nrow(species$presence.points), ceiling(nrow(species$presence.points) * test.prop))
+      test.data <- species$presence.points[test.inds,]
+      species$presence.points <- species$presence.points[-test.inds,]
+    }
+  }
+
+  # Code for spatially structured test data
+  if(is.character(test.prop)){
+    if(test.prop == "block"){
+      corner <- ceiling(runif(1, 0, 4))
+      test.inds <- get.block(species$presence.points, species$background.points)
+      test.bg.inds <- which(test.inds$bg.grp == corner)
+      test.inds <- which(test.inds$occ.grp == corner)
+      test.data <- species$presence.points[test.inds,]
+      test.bg <- species$background.points[test.bg.inds,]
+      species$presence.points <- species$presence.points[-test.inds,]
+      species$background.points <- species$presence.points[-test.bg.inds,]
+    }
   }
 
   analysis.df <- rbind(species$presence.points, species$background.points)
@@ -58,16 +75,36 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, report = 
                                this.mx, env)
   env.model.evaluation <- env.evaluate(species, this.mx, env)
 
-  if(test.prop > 0 & test.prop < 1){
-    test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
-                                this.mx, env)
-    temp.sp <- species
-    temp.sp$presence.points <- test.data
-    env.test.evaluation <- env.evaluate(temp.sp, this.mx, env)
+  # Test eval for randomly withheld data
+  if(is.numeric(test.prop)){
+    if(test.prop > 0 & test.prop < 1){
+      test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
+                                        this.mx, env)
+      temp.sp <- species
+      temp.sp$presence.points <- test.data
+      env.test.evaluation <- env.evaluate(temp.sp, this.mx, env)
+    }
+  }
+
+  # Test eval for spatially structured data
+  if(is.character(test.prop)){
+    if(test.prop == "block"){
+      test.evaluation <-dismo::evaluate(test.data, test.bg,
+                                        this.mx, env)
+      temp.sp <- species
+      temp.sp$presence.points <- test.data
+      temp.sp$background.points <- test.bg
+      env.test.evaluation <- env.evaluate(temp.sp, this.mx, env)
+    }
   }
 
   # Do Raes and ter Steege test for significance.  Turned off if eval == FALSE
   if(rts.reps > 0){
+
+    # Die if we're not doing randomly withheld test data and RTS reps > 0
+    if(!is.numeric(test.prop)){
+      stop(paste("RTS test can only be conducted with randomly withheld data, and test.prop is set to", test.prop))
+    }
 
     rts.models <- list()
 
@@ -147,13 +184,13 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, report = 
     # Making plots
     training.plot <- qplot(rts.geog.training, geom = "histogram", fill = "density", alpha = 0.5) +
       geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
-      xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
+      xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("AUC") +
       ggtitle(paste("Model performance in geographic space on training data")) +
       theme(plot.title = element_text(hjust = 0.5))
 
     env.training.plot <- qplot(rts.env.training, geom = "histogram", fill = "density", alpha = 0.5) +
       geom_vline(xintercept = env.model.evaluation@auc, linetype = "longdash") +
-      xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
+      xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("AUC") +
       ggtitle(paste("Model performance in environmental space on training data")) +
       theme(plot.title = element_text(hjust = 0.5))
 
@@ -161,13 +198,13 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, report = 
     if(test.prop > 0){
       test.plot <- qplot(rts.geog.test, geom = "histogram", fill = "density", alpha = 0.5) +
         geom_vline(xintercept = test.evaluation@auc, linetype = "longdash") +
-        xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
+        xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("AUC") +
         ggtitle(paste("Model performance in geographic space on test data")) +
         theme(plot.title = element_text(hjust = 0.5))
 
       env.test.plot <- qplot(rts.env.test, geom = "histogram", fill = "density", alpha = 0.5) +
         geom_vline(xintercept = env.test.evaluation@auc, linetype = "longdash") +
-        xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
+        xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("AUC") +
         ggtitle(paste("Model performance in environmental space on test data")) +
         theme(plot.title = element_text(hjust = 0.5))
     } else {

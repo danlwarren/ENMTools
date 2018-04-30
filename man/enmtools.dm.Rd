@@ -12,7 +12,7 @@ enmtools.dm(species, env = NA, test.prop = 0, report = NULL,
 
 \item{env}{A raster or raster stack of environmental data.}
 
-\item{test.prop}{Proportion of data to withhold for model evaluation}
+\item{test.prop}{Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.}
 
 \item{report}{Optional name of an html file for generating reports}
 

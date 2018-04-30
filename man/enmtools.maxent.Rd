@@ -12,7 +12,7 @@ enmtools.maxent(species, env, test.prop = 0, nback = 1000, report = NULL,
 
 \item{env}{A raster or raster stack of environmental data.}
 
-\item{test.prop}{Proportion of data to withhold for model evaluation}
+\item{test.prop}{Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.}
 
 \item{nback}{Number of background points to draw from range or env, if background points aren't provided}
 

@@ -15,7 +15,7 @@ enmtools.gam(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000,
 
 \item{f}{Standard gam formula}
 
-\item{test.prop}{Proportion of data to withhold for model evaluation}
+\item{test.prop}{Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.}
 
 \item{k}{Dimension of the basis used to represent the smooth term.  See documentation for s() for details.}
 

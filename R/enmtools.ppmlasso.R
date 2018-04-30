@@ -3,7 +3,7 @@
 #' @param species An enmtools.species object
 #' @param env A raster or raster stack of environmental data.
 #' @param f Standard R formula
-#' @param test.prop Proportion of data to withhold for model evaluation
+#' @param test.prop Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.
 #' @param eval Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.
 #' @param nback Number of background points to draw from range or env, if background points aren't provided
 #' @param normalise Should the suitability of the model be normalised? If FALSE (the default), suitability is returned as the predicted number of presence points in each grid cell (occurrence density). If TRUE, occurrence densities are divided by the total predicted density, to give a value ranging from 0 to 1, which represents the proportion of the predicted density for a species that occurs in each grid cell.
@@ -49,10 +49,27 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
   ### Add env data
   species <- add.env(species, env)
 
-  if(test.prop > 0 & test.prop < 1){
-    test.inds <- sample(1:nrow(species$presence.points), ceiling(nrow(species$presence.points) * test.prop))
-    test.data <- species$presence.points[test.inds,]
-    species$presence.points <- species$presence.points[-test.inds,]
+  # Code for randomly withheld test data
+  if(is.numeric(test.prop)){
+    if(test.prop > 0 & test.prop < 1){
+      test.inds <- sample(1:nrow(species$presence.points), ceiling(nrow(species$presence.points) * test.prop))
+      test.data <- species$presence.points[test.inds,]
+      species$presence.points <- species$presence.points[-test.inds,]
+    }
+  }
+
+  # Code for spatially structured test data
+  if(is.character(test.prop)){
+    if(test.prop == "block"){
+      corner <- ceiling(runif(1, 0, 4))
+      test.inds <- ENMeval::get.block(species$presence.points, species$background.points)
+      test.bg.inds <- which(test.inds$bg.grp == corner)
+      test.inds <- which(test.inds$occ.grp == corner)
+      test.data <- species$presence.points[test.inds,]
+      test.bg <- species$background.points[test.bg.inds,]
+      species$presence.points <- species$presence.points[-test.inds,]
+      species$background.points <- species$presence.points[-test.bg.inds,]
+    }
   }
 
   # Recast this formula so that the response variable is blank for ppmlasso function
@@ -66,7 +83,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
   analysis.df <- cbind(analysis.df, wt = wts)
 
   #this.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = analysis.df)
-  this.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = analysis.df, ...)
+  this.ppmlasso <- ppmlasso::ppmlasso(f, coord = c("Longitude", "Latitude"), data = analysis.df, ...)
 
   env_cell_area <- prod(res(env))
   p.fun <- function(object, newdata, ...) {
@@ -96,21 +113,41 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
 
     env.model.evaluation <- env.evaluate(species, this.ppmlasso, env)
 
-    if(test.prop > 0 & test.prop < 1){
+    # Test eval for randomly withheld data
+    if(is.numeric(test.prop)){
+      if(test.prop > 0 & test.prop < 1){
+        test.evaluation <- dismo::evaluate(predict.ppmlasso(this.ppmlasso,
+                                                            newdata = test.data)[ , 1, drop = TRUE],
+                                           predict.ppmlasso(this.ppmlasso,
+                                                            newdata = species$background.points)[ , 1, drop = TRUE])
+        temp.sp <- species
+        temp.sp$presence.points <- test.data
+        env.test.evaluation <- env.evaluate(temp.sp, this.ppmlasso, env)
+      }
+    }
 
-      test.evaluation <- dismo::evaluate(predict.ppmlasso(this.ppmlasso,
-                                                          newdata = test.data)[ , 1, drop = TRUE],
-                                         predict.ppmlasso(this.ppmlasso,
-                                                          newdata = species$background.points)[ , 1, drop = TRUE])
-      temp.sp <- species
-      temp.sp$presence.points <- test.data
-      env.test.evaluation <- env.evaluate(temp.sp, this.ppmlasso, env)
+    # Test eval for spatially structured data
+    if(is.character(test.prop)){
+      if(test.prop == "block"){
 
-
+        test.evaluation <- dismo::evaluate(predict.ppmlasso(this.ppmlasso,
+                                                            newdata = test.data)[ , 1, drop = TRUE],
+                                           predict.ppmlasso(this.ppmlasso,
+                                                            newdata = test.bg)[ , 1, drop = TRUE])
+        temp.sp <- species
+        temp.sp$presence.points <- test.data
+        temp.sp$background.points <- test.bg
+        env.test.evaluation <- env.evaluate(temp.sp, this.ppmlasso, env)
+      }
     }
 
     # Do Raes and ter Steege test for significance.  Turned off if eval == FALSE
     if(rts.reps > 0){
+
+      # Die if we're not doing randomly withheld test data and RTS reps > 0
+      if(!is.numeric(test.prop)){
+        stop(paste("RTS test can only be conducted with randomly withheld data, and test.prop is set to", test.prop))
+      }
 
       rts.models <- list()
 
@@ -219,13 +256,13 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
       # Making plots
       training.plot <- qplot(rts.geog.training, geom = "histogram", fill = "density", alpha = 0.5) +
         geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
-        xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
+        xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("AUC") +
         ggtitle(paste("Model performance in geographic space on training data")) +
         theme(plot.title = element_text(hjust = 0.5))
 
       env.training.plot <- qplot(rts.env.training, geom = "histogram", fill = "density", alpha = 0.5) +
         geom_vline(xintercept = env.model.evaluation@auc, linetype = "longdash") +
-        xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
+        xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("AUC") +
         ggtitle(paste("Model performance in environmental space on training data")) +
         theme(plot.title = element_text(hjust = 0.5))
 
@@ -233,13 +270,13 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
       if(test.prop > 0){
         test.plot <- qplot(rts.geog.test, geom = "histogram", fill = "density", alpha = 0.5) +
           geom_vline(xintercept = test.evaluation@auc, linetype = "longdash") +
-          xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
+          xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("AUC") +
           ggtitle(paste("Model performance in geographic space on test data")) +
           theme(plot.title = element_text(hjust = 0.5))
 
         env.test.plot <- qplot(rts.env.test, geom = "histogram", fill = "density", alpha = 0.5) +
           geom_vline(xintercept = env.test.evaluation@auc, linetype = "longdash") +
-          xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
+          xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("AUC") +
           ggtitle(paste("Model performance in environmental space on test data")) +
           theme(plot.title = element_text(hjust = 0.5))
       } else {
