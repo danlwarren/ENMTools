@@ -12,7 +12,7 @@
 #' Novelty: percentage of points outside first climate envelope,
 #' MIV: most influential variable, variable increasing d2.org most significantly and summary statistics and plots.
 #'
-#' @keywords niche similarity sdm enm mahalanobis
+#' @keywords niche similarity sdm enmtools mahalanobis
 #'
 #' @export enmtools.mahalanobis.id
 #'
@@ -20,24 +20,13 @@
 #' \dontrun{
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
+#' env <- euro.worldclim
 #' monticola <- iberolacerta.clade$species$monticola
 #' cyreni <- iberolacerta.clade$species$cyreni
 #' enmtools.mahalanobis.id(monticola, cyreni, euro.worldclim)
 #' }
 
-
-#TODO: variable check, remove all non needed from header
-#TODO: PCA
 #TODO: rarefy/thin species records
-#TODO: mahalanobis.id.precheck
-#TODO: take env. layers
-#TODO: def mahalanobis.id.precheck
-#TODO: def d2.test
-#TODO: permutation in main function
-#TODO: check export
-#TODO: check header
-#TODO: add summary print S3
-#TODO: ref: identity test
 #TODO: explain metric
 
 enmtools.mahalanobis.id <- function(species.1, species.2, env, nreps = 99, pca = FALSE, pca.var = 2){
@@ -52,7 +41,7 @@ enmtools.mahalanobis.id <- function(species.1, species.2, env, nreps = 99, pca =
     layers <- names(env)
   }
 
-  # pre.check function
+  # precheck function
   mahalanobis.id.precheck(species.1, species.2, env, nreps, layers)
   #TODO: add option for occurence thinning based on env raster resolution
 

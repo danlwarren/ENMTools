@@ -14,9 +14,10 @@
 #' @examples
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
+#' env <- euro.worldclim
 #' cyreni <- iberolacerta.clade$species$cyreni
 #' monticola <- iberolacerta.clade$species$monticola
-#' point.overlap(cyreni, monticola)
+#' d2.overlap(cyreni, monticola)
 
 d2.overlap <- function(species.1, species.2, env, layers){
 
@@ -96,6 +97,7 @@ d2.overlap <- function(species.1, species.2, env, layers){
   }
 
   # Extraction of clim vars
+  layers<-names(env)
   # Grabbing environmental data for species 1 points
   print("Two valid enm.tool species objects found along with environmental data. Extracting matrics.")
   sp1.env <- extract(env, species.1$presence.points)
