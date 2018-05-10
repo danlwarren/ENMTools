@@ -6,19 +6,15 @@
 #' @param layers A vector of length <1 containing the names of the layers to be used.  If no layer names are provided and there are more than two layers in env, enmtools will perform a pca and use the top two layers from that.
 #' @param pca A logical determining if a pca is to be performed
 #' @param pca.var Number of variables to result from pca
-#' @param th.sp Quantile of species densities used as a threshold to exclude low species density values. See documentation for ecospat.grid.clim.dyn.
-#' @param th.env Quantile of environmental densities across study sites used as threshold to exclude low environmental density values. See documentation for ecospat.grid.clim.dyn.
-#' @param nback Number of background points to use for density calculations.
-#' @param R Resolution of the grid. See documentation for ecospat.grid.clim.dyn.
-#' @return results d2.org: Mahalanobis distance between sp1 and sp2 climate envelope,
-#' 95 percentile: based on nreps permuations of both climatic envelops, significant if 95 percentile < orginal distance,
+#'
+#' @return results d2.org: Mahalanobis distance between centroids of sp1 and sp2 climate envelopes,
+#' 95 percentile: based on nreps permuations of both climate envelops, significant if 95 percentile < orginal distance,
 #' Novelty: percentage of points outside first climate envelope,
-#' MIV: most influential variable, variable increasing te d2.org most significantly
+#' MIV: most influential variable, variable increasing d2.org most significantly and summary statistics and plots.
 #'
 #' @keywords niche similarity sdm enm mahalanobis
 #'
-#' @export enmtools.d2
-#' @export d2.test
+#' @export enmtools.mahalanobis.id
 #'
 #' @examples
 #' \dontrun{
@@ -28,6 +24,21 @@
 #' cyreni <- iberolacerta.clade$species$cyreni
 #' enmtools.mahalanobis.id(monticola, cyreni, euro.worldclim)
 #' }
+
+
+#TODO: variable check, remove all non needed from header
+#TODO: PCA
+#TODO: rarefy/thin species records
+#TODO: mahalanobis.id.precheck
+#TODO: take env. layers
+#TODO: def mahalanobis.id.precheck
+#TODO: def d2.test
+#TODO: permutation in main function
+#TODO: check export
+#TODO: check header
+#TODO: add summary print S3
+#TODO: ref: identity test
+#TODO: explain metric
 
 enmtools.mahalanobis.id <- function(species.1, species.2, env, nreps = 99, pca = FALSE, pca.var = 2){
   options(warn=-1)
@@ -41,10 +52,13 @@ enmtools.mahalanobis.id <- function(species.1, species.2, env, nreps = 99, pca =
     layers <- names(env)
   }
 
+  # pre.check function
   mahalanobis.id.precheck(species.1, species.2, env, nreps, layers)
   #TODO: add option for occurence thinning based on env raster resolution
 
-  #Grabbing environmental data for species 1 points
+  # Extraction of clim vars
+  # Grabbing environmental data for species 1 points
+  print("Two valid enm.tool species objects found along with environmental data. Extracting matrics.")
   sp1.env <- extract(env, species.1$presence.points)
   sp1.env <- cbind(rep(species.1$species.name, nrow(species.1$presence.points)),
                    species.1$presence.points,
@@ -59,17 +73,140 @@ enmtools.mahalanobis.id <- function(species.1, species.2, env, nreps = 99, pca =
                    sp2.env)
   sp2.env <- sp2.env[complete.cases(sp2.env),]
   colnames(sp2.env) <- c("Species", colnames(species.2$presence.points), layers)
-  eq <- d2.test(sp1.env = sp1.env, sp2.env = sp2.env, rep = nreps)
 
-  output <- list(description = paste("\n\nMahalanobis niche similarity test:", species.1$species.name, "vs.", species.2$species.name),
-                 test.results = eq
-                 )
-  class(output) <- "enmtools.d2.test"
+  sp1.env <- sp1.env[,4:ncol(sp1.env)]
+  sp2.env <- sp2.env[,4:ncol(sp2.env)]
 
-  return(output)
+  sp1 <- species.1$species.name
+  sp2 <- species.2$species.name
 
+
+  # run the test
+  ## d2.org
+  d2.org <- d2.overlap(sp1.env, sp2.env, env, layers)
+
+  ## permutation
+  d2.perm <- rep(NA, nreps)
+  sp.all.env <- rbind(sp1.env, sp2.env)
+
+  for (i in 1:nreps)
+  {
+    ### Permutation: taking a random sample of the size of species1
+    sp1.rand <-
+      sp.all.env[sample(nrow(sp.all.env), nrow(sp1.env), replace = F),]
+    sp2.rand <-
+      sp.all.env[!(rownames(sp.all.env) %in% rownames(sp1.rand)),]
+    d2.perm[i] <- d2.overlap(sp1.rand, sp2.rand, env, layers)
+  }
+
+  ## significantluy differing climate space when d2.org > 95percentile of permutated distribution
+  sig <- d2.org > quantile(d2.perm, 0.95, na.rm = T)
+
+  ## novelty: percentage species2 occurences outside species1 envelope
+  sp1.mean <- colMeans(sp1.env)
+  sp1.cov <- cov(sp1.env)
+  #sp1.diff <- sp1.env - sp1.mean
+  d2.sp1 <-
+    mahalanobis(
+      x = sp1.env,
+      sp1.mean,
+      cov = sp1.cov,
+      inverted = F,
+      tol = 1e-40
+    )
+  d2.sp2 <-
+    mahalanobis(
+      x = sp2.env,
+      sp1.mean,
+      cov = sp1.cov,
+      inverted = F,
+      tol = 1e-40
+    )
+
+  novelty <- 100 * sum(d2.sp2 > max(d2.sp1)) / nrow(sp2.env)
+
+  ## homogenety test: identifying the most infuential variable by removing individual vars
+  d2.subset <- rep(NA, ncol(sp1.env))
+  names(d2.subset)<- colnames(sp1.env)
+
+  for (j in colnames(sp1.env)) {
+
+    sp1.env.subset <- sp1.env[,!(names(sp1.env) %in% j)]
+    sp2.env.subset <- sp2.env[,!(names(sp2.env) %in% j)]
+
+    ### cov matrix
+    sp1.mat.subset <- cov(sp1.env.subset)
+    sp2.mat.subset <- cov(sp2.env.subset)
+
+    n1 <- nrow(sp1.mat.subset)
+    n2 <- nrow(sp2.mat.subset)
+
+    n3 <- n1 + n2
+
+    #pooled matrix
+    mat3 <- ((n1 / n3) * sp1.mat.subset) + ((n2 / n3) * sp2.mat.subset)
+
+    #inverse pooled matrix
+    mat4 <- solve(mat3, tol = 1e-40)
+
+    #mean diff
+    mat5 <- as.matrix(colMeans(sp1.env.subset) - colMeans(sp2.env.subset))
+
+    #multiply
+    mat6 <- t(mat5) %*% mat4
+
+    #multiply
+    d2.subset[j] <- sqrt(mat6 %*% mat5)
+  }
+
+  d2.subset <- as.data.frame(d2.subset)
+  miv <- rownames(d2.subset)[which.min(d2.subset[,1])]
+
+
+  # Permutated distribution plot
+  d2.perm.plot <-
+    qplot(d2.perm, geom = "histogram", bins = nreps) +
+    geom_vline(xintercept=d2.org, linetype = "longdash", color = "red") +
+    annotate("text", label = paste("d2.org\n",round(d2.org,2)), x =round(d2.org,2), y=max(hist(d2.perm,breaks=nreps)$counts), color = "red") +
+    geom_vline(xintercept=quantile(d2.perm, 0.95, na.rm=T), linetype = "longdash", color = "blue") +
+    annotate("text", label = paste("d2.perm\n95percentile\n",round(quantile(d2.perm, 0.95, na.rm=T),2)), x =round(quantile(d2.perm, 0.95, na.rm=T),2), y=max(hist(d2.perm,breaks=nreps)$counts), color = "blue") +
+    ggtitle(
+      paste(
+        "Permutated distribution")
+    ) +
+    xlab(label = paste("Mahalanois distance"))
+
+
+  # Novelty plot
+  d2.novelty.plot <-
+    qplot(d2.sp2, geom = "histogram", bins = length(d2.sp2)) +
+    geom_vline(xintercept = max(d2.sp1),color = "red", linetype = "longdash") +
+    annotate("text", label = paste("max. distance\n of sp1 records to sp1.mean\n",round(max(d2.sp1),2)), x =max(d2.sp1),y=max(hist(d2.sp2,breaks=length(d2.sp2))$counts), color = "red") +
+    ggtitle(
+      paste(
+        "Novelty test")
+    ) +
+    theme(plot.title = element_text(hjust = 0.5)) +
+    xlab(label = paste("Distance between sp2 records and centroid of sp1"))
+
+
+
+
+  # output
+  output <- list(description = paste("\n\nMahalanobis identity test ", sp1, "vs.", sp2),
+               reps = nreps,
+               d2.org = as.numeric(d2.org),
+               d2.perm.summary = summary(d2.perm),
+               d2.perm95 = as.numeric(quantile(d2.perm, 0.95, na.rm=T)),
+               significant = as.logical(sig),
+               novelty = as.numeric(novelty),
+               d2.perm.plot = d2.perm.plot,
+               d2.novelty.plot = d2.novelty.plot
+               )
+class(output)<-"Mahalanobis identity test"
+
+return(output)
 }
-
 
 mahalanobis.id.precheck <- function(species.1, species.2, env, nreps, layers){
 
@@ -116,135 +253,11 @@ mahalanobis.id.precheck <- function(species.1, species.2, env, nreps, layers){
   if(length(layers) <= 2){
     print("You must specify more than 2 layers to use for overlaps!")
   }
+  if(is.null(nreps)){
+    warning("Number of replications missing. Continuing with 9 reps.")
+  }
 
 }
 
-# mahalanobis distance tests
-d2.test <- function(sp1.env, sp2.env, rep) {
-  sp1.env <- sp1.env[,4:ncol(sp1.env)]
-  sp2.env <- sp2.env[,4:ncol(sp2.env)]
-
-  ## mahalanobis distance orginal
-  sp1.mat <- cov(sp1.env)
-  sp2.mat <- cov(sp2.env)
-  n1 <- nrow(sp1.env)
-  n2 <- nrow(sp2.env)
-  n3 <- n1 + n2
-  ### pooled matrix
-  mat3 <- ((n1 / n3) * sp1.mat) + ((n2 / n3) * sp2.mat)
-  ### inverse pooled matrix
-  mat4 <- solve(mat3, tol = 1e-40)
-  ### mean diff
-  mat5 <- as.matrix(colMeans(sp1.env) - colMeans(sp2.env))
-  ### multiply
-  mat6 <- t(mat5) %*% mat4
-  ### multiply
-  d2.org <- sqrt(mat6 %*% mat5)
 
 
-  ## permutation for significance test
-  res <- rep(NA, rep)
-
-  ### pooling both species
-  sp.all.env <- rbind(sp1.env, sp2.env)
-  for (i in 1:rep)
-  {
-    ### Permutation: taking a random sample of the size of species1
-    sp1.rand <-
-      sp.all.env[sample(nrow(sp.all.env), nrow(sp1.env), replace = F), ]
-    sp2.rand <-
-      sp.all.env[!(rownames(sp.all.env) %in% rownames(sp1.rand)), ]
-
-    ### cov matrix
-    mat1.2 <- cov(sp1.rand)
-    mat2.2 <- cov(sp2.rand)
-
-    n1 <- nrow(sp1.rand)
-    n2 <- nrow(sp2.rand)
-    n3 <- n1 + n2
-
-    ### pooled matrix
-    mat3 <- ((n1 / n3) * mat1.2) + ((n2 / n3) * mat2.2)
-    ### inverse pooled matrix
-    mat4 <- solve(mat3, tol = 1e-40)
-    ### mean diff
-    mat5 <- as.matrix(colMeans(sp1.rand) - colMeans(sp2.rand))
-    ### multiply
-    mat6 <- t(mat5) %*% mat4
-    ### multiply
-    res[i] <- sqrt(mat6 %*% mat5)
-  }
-
-  ## significantluy differing climate space when d2.org > 95percentile of permutated distribution
-  sig <- d2.org > quantile(res, 0.95, na.rm = T)
-
-
-  ## novelty: percentage species2 occurences outside species1 envelope
-  lag.mean <- colMeans(sp1.env)
-  cov.lag <- cov(sp1.env)
-  lag.diff <- sp1.env - lag.mean
-  d2.sp1 <-
-    mahalanobis(
-      x = sp1.env,
-      lag.mean,
-      cov = cov.lag,
-      inverted = F,
-      tol = 1e-40
-    )
-  d2.sp2 <-
-    mahalanobis(
-      x = sp2.env,
-      lag.mean,
-      cov = cov.lag,
-      inverted = F,
-      tol = 1e-40
-    )
-
-  novel <- 100 * sum(d2.sp2 > max(d2.sp1)) / nrow(sp2.env)
-
-
-  ## homogenety test: identifying the most infuential variable by removing individual vars
-  d2.subset <- rep(NA, ncol(sp1.env))
-  names(d2.subset)<- colnames(sp1.env)
-
-  for (j in colnames(sp1.env)) {
-
-    sp1.env.subset <- sp1.env[,!(names(sp1.env) %in% j)]
-    sp2.env.subset <- sp2.env[,!(names(sp2.env) %in% j)]
-
-    ### cov matrix
-    sp1.mat.subset <- cov(sp1.env.subset)
-    sp2.mat.subset <- cov(sp2.env.subset)
-
-    n1 <- nrow(sp1.mat.subset)
-    n2 <- nrow(sp2.mat.subset)
-
-    n3 <- n1 + n2
-
-    #pooled matrix
-    mat3 <- ((n1 / n3) * sp1.mat.subset) + ((n2 / n3) * sp2.mat.subset)
-
-    #inverse pooled matrix
-    mat4 <- solve(mat3, tol = 1e-40)
-
-    #mean diff
-    mat5 <- as.matrix(colMeans(sp1.env.subset) - colMeans(sp2.env.subset))
-
-    #multiply
-    mat6 <- t(mat5) %*% mat4
-
-    #multiply
-    d2.subset[j] <- sqrt(mat6 %*% mat5)
-
-  }
-
-  #print(d2.subset)
-  d2.subset <- as.data.frame(d2.subset)
-  var <- rownames(d2.subset)[which.min(d2.subset[,1])]
-
-  results <- rep(x = NA, 5)
-
-  results <- c(d2.org, quantile(res, 0.95,na.rm=T), sig, novel, var)
-  names(results)<-c("d2.org","95 percentile", "Significance", "Novelty", "MIV")
-  return(results)
-}
