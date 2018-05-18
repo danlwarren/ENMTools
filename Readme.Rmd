@@ -45,7 +45,7 @@ First we're going to load in some environmental data.
 ```{r read_files}
 env.files <- list.files(path = "test/testdata/", pattern = "pc", full.names = TRUE)
 env <- stack(env.files)
-names(env) <- c("layer.1", "layer.2", "layer.3", "layer.4")
+names(env) <- c("pc1", "pc2", "pc3", "pc4")
 env <- setMinMax(env)
 ```
 
@@ -60,7 +60,7 @@ You can add data to this object manually:
 ```{r build_ahli}
 names(ahli)
 ahli$species.name <- "ahli"
-ahli$presence.points <- read.csv("test/testdata/ahli.csv")[,3:4]
+ahli$presence.points <- read.csv("./test/testdata/ahli.csv")[,2:3]
 ahli$range <- background.raster.buffer(ahli$presence.points, 50000, mask = env)
 ahli$background.points <- background.points.buffer(points = ahli$presence.points,
                                                    radius = 20000, n = 1000, mask = env[[1]])
@@ -72,7 +72,7 @@ ahli
 Or you can add bits of it when the object is created:
 ```{r build_allogus}
 allogus <- enmtools.species(species.name = "allogus", 
-                            presence.points = read.csv("test/testdata/allogus.csv")[,3:4])
+                            presence.points = read.csv("./test/testdata/allogus.csv")[,3:4])
 
 allogus$range <- background.raster.buffer(allogus$presence.points, 50000, mask = env)
 allogus$background.points <- background.points.buffer(points = allogus$presence.points,
@@ -82,83 +82,122 @@ allogus
 ```
 
 
+However, ENMTools also contains some sample data.  It contains an enmtools.clade object called "iberolacerta.clade", which holds several enmtools.species objects.  It also has some low-resolution Worldclim data that we can use to demonstrate functions.  We'll pull two of those species out now.
+```{r load_iberolacerta}
+data(iberolacerta.clade)
+data(euro.worldclim)
+monticola <- iberolacerta.clade$species$monticola
+cyreni <- iberolacerta.clade$species$cyreni
+env <- euro.worldclim
+```
+
 ## Building an ENM
 
 ENMTools contains functions to simplify the ENM construction process.  Using enmtools.species objects and the correct modeling commands, we can build models very quickly.  These commands are primarily wrappers to dismo model construction and projection functions, and at present are only available for GLM, Maxent, Domain, and Bioclim models.  One of the nice bits about this setup is that it allows enmtools to automatically generate suitability maps, do model evaluation, and plot the marginal suitability of habitat for each variable separately.
 
+Before we get started modeling, however, we might want to trim our predictor set so as to reduce collinearity.  ENMTools contains a couple of handy functions for this.
+
+```{r collinearity1}
+raster.cor.matrix(env)
+```
+
+That's great, but it's a bit hard to pick variables this way.  Let's try it visually instead.
+
+```{r collinearity2}
+raster.cor.plot(env)
+```
+
+The raster.cor.plot function gives us two visualizations.  One heatmap that colors pairs of predictors by their Pearson correlation coefficient, and one cluster plot that does mds scaling of the predictor variables and then plots them in a two dimensional space so that more correlated predictors are closer to each other.  We're going to make an arbitrary decision to just use three predictors, and to keep those predictors relatively uncorrelated we'll select predictors that are far apart in this mds plot.  Here we'll choose bio1, bio12, and bio7.
+
+```{r subsetenv}
+env <- env[[c("bio1", "bio12", "bio7")]]
+plot(env)
+raster.cor.matrix(env)
+```
+
+
 ### GLM
 
 GLMs usually require the user to supply a formula, an enmtools.species object, and some environmental data.  If your formula is a strictly additive function of all of the environmental layers in env, though, enmtools.glm will build a formula automatically.
-```{r build_glms}
-ahli.glm <- enmtools.glm(species = ahli, env = env, f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, test.prop = 0.2)
-allogus.glm <- enmtools.glm(species = allogus, env = env, f = pres ~ layer.1 + layer.2 + layer.3 + layer.4, test.prop = 0.2)
-ahli.glm
+```{r build_glms1}
+monticola.glm <- enmtools.glm(species = monticola, env = env, f = pres ~ bio1 + bio12 + bio7, test.prop = 0.2)
+monticola.glm
 ```
 
 Notice this produces the same formula as:
 
 ```{r build_glms2}
-ahli.glm <- enmtools.glm(species = ahli, env = env, test.prop = 0.2)
-ahli.glm
+monticola.glm <- enmtools.glm(species = monticola, env = env, test.prop = 0.2)
+monticola.glm
 ```
+
+
 
 
 If you want a more complicated formula, though (e.g., with interactions or polynomial effects), you'll need to supply that manually.
 
 ```{r build_glms3}
-ahli.glm <- enmtools.glm(species = ahli, env = env, f = pres ~ poly(layer.1, 2) + poly(layer.2, 2) + poly(layer.3, 2) + poly(layer.4, 2), test.prop = 0.2)
-ahli.glm
+monticola.glm <- enmtools.glm(species = monticola, env = env, f = pres ~ poly(bio1, 2) + poly(bio7, 2) * poly(bio12, 2), test.prop = 0.2)
+monticola.glm
 ```
 
 To check out the marginal response functions, you only need to type
 
 ```{r response_plots}
-ahli.glm$response.plots
+monticola.glm$response.plots
 ```
 
-You can also visualize your models and data in a 2D environment space using any pair of layers from your environment stack.  These plots hold all non-plotted variables (layer.1 and layer.3 in this case) constant at their mean value across all presence points, then vary the plotted variables between the minimum and maximum values in env.
+These plots present a smoothed estimate of the frequency of different levels of the environemntal variable in the presence data and the background points, along with the estimated relationship between that environmental predictor and the suitability of habitat from the model.
+
+You can also visualize your models and data in a 2D environment space using any pair of layers from your environment stack.  These plots hold all non-plotted variables (bio7 in this case) constant at their mean value across all presence points, then vary the plotted variables between the minimum and maximum values in env.
 
 The suit.plot shows you suitability in environment space as a function of your two variables, with brighter colors representing variable combinations predicted to be more suitable.  The points represent the occurrence points for your species in that environment space.  
 
 The colored raster of the background.plot shows you the density of background points in environment space, while the white points again represent your occurrence points in environment space.
 
 ```{r visualize.enm}
-visualize.enm(ahli.glm, env, layers = c("layer.2", "layer.4"))
+visualize.enm(monticola.glm, env, layers = c("bio1", "bio12"), plot.test.data = TRUE)
 ```
 
 ### GAM, Bioclim, Domain, and Maxent
 
-The procedure for building Bioclim, Domain, and Maxent models is similar to the procedure for GLMs, with the exception that you do not need to pass a formula to the model function.  Note that running Maxent models requires a bit of extra setup; see dismo documentation for details.
+The procedure for building Bioclim, Domain, and Maxent models is similar to the procedure for GLMs, with the exception that you do not need to pass a formula to the model function for Maxent, Domain, and Bioclim models.  Note that running Maxent models requires a bit of extra setup; see dismo documentation for details.
 
 ```{r eval = FALSE}
-ahli.gam <- enmtools.gam(ahli, env, test.prop = 0.2)
-ahli.dm <- enmtools.dm(ahli, env, test.prop = 0.2)
-ahli.bc <- enmtools.bc(ahli, env, test.prop = 0.2)
-ahli.mx <- enmtools.maxent(ahli, env, test.prop = 0.2)
+monticola.gam <- enmtools.gam(monticola, env, f = pres ~ poly(bio1, 2) + poly(bio7, 2) * poly(bio12, 2), test.prop = 0.2)
+monticola.dm <- enmtools.dm(monticola, env, test.prop = 0.2)
+monticola.bc <- enmtools.bc(monticola, env, test.prop = 0.2)
+monticola.mx <- enmtools.maxent(monticola, env, test.prop = 0.2)
 ```
 
 
 ## Metrics: breadth, correlation, and overlap
 
-ENMTools provides a number of metrics for ENMs and for similarities between ENMs.  These include measures of niche breadth, based on Levins(1968).  An important caveat when interpreting these metrics is that they are driven to some (variable) extent by the availability of different combinations of environmental variables.  As such they are more accurately interpreted as a measurment of the smoothness of the geographic distribution of suitability scores than as an estimate of the breadth of the fundamental niche; an organism with narrow fundamental niche breadth that nonetheless encompasses a set of environmental conditions that is quite common will have a high breadth when measured using ENMs, while having a low breadth in environment space.
+ENMTools provides a number of metrics for ENMs and for similarities between ENMs.  These include measures of niche breadth, based on Levins(1968).  An important caveat when interpreting these metrics is that they are driven to some (variable) extent by the availability of different combinations of environmental predictors.  As such they are more accurately interpreted as a measurment of the smoothness of the geographic distribution of suitability scores than as an estimate of the breadth of the fundamental niche; an organism with narrow fundamental niche breadth that nonetheless encompasses a set of environmental conditions that is quite common will have a high breadth when measured using ENMs, while having a low breadth in environment space.
 
 ```{r raster_breadth}
-raster.breadth(ahli.glm)
+raster.breadth(monticola.glm)
 ```
 
 
 ENMTools also provides metrics for measuring similarity between ENMs.  These include Schoener's D (Schoener 1968), I (Warren et al. 2008), and the Spearman rank correlation coefficient between two rasters.  While D and I are commonly used in the ENM literature, they may tend to overestimate similarity between ENMs when many grid cells are of similar values (e.g., when two species prefer different habitat but the region contains a great deal of habitat that is unsuitable for both).  
 
 ```{r raster_overlap}
-raster.overlap(ahli.glm, allogus.glm)
+monticola.glm <- enmtools.glm(species = monticola, env = env, f = pres ~ poly(bio1, 2) + poly(bio7, 2) + poly(bio12, 2), test.prop = 0.2)
+cyreni.glm <- enmtools.glm(species = cyreni, env = env, f = pres ~ poly(bio1, 2) + poly(bio7, 2) + poly(bio12, 2), test.prop = 0.2)
+raster.overlap(monticola.glm, cyreni.glm)
 ```
 
 
 A new feature of the R version of ENMTools is that you can now use these same metrics in the n-dimensional space of all combinations of environmental variables, instead of restricting your measures of model similarity to those sets of conditions that appear in the training region.  This is done by repeatedly drawing Latin hypercube samples from the space of all possible combinations of environmental variables given the min and max of each variable within the training region.  ENMTools continues to draw samples until subsequent iterations differ by less than a specified tolerance value.  Lower tolerance values result in more precise estimates of overlap, but can take much longer to calculate.
 
 ```{r env_overlap}
-env.overlap(ahli.glm, allogus.glm, env, tolerance = .001)
+monticola.glm <- enmtools.glm(species = monticola, env = env, f = pres ~ poly(bio1, 2) + poly(bio7, 2) + poly(bio12, 2), test.prop = 0.2)
+cyreni.glm <- enmtools.glm(species = monticola, env = env, f = pres ~ poly(bio1, 2) + poly(bio7, 2) + poly(bio12, 2), test.prop = 0.2)
+env.overlap(monticola.glm, cyreni.glm, env, tolerance = .001)
 ```
+
+The plots that come out of these environment space functions are used for diagnosing convergence of the overlap/breadth metric.  Ideally what you want is a relationship between the metric and the number of samples that shows no clear directional trend.
 
 ## Hypothesis testing
 
@@ -166,16 +205,16 @@ env.overlap(ahli.glm, allogus.glm, env, tolerance = .001)
 
 In this example, we will run a niche identity (also called equivalency) test, as in Warren et al. 2008.  This test takes the presence points for a pair of species and randomly reassigns them to each species, then builds ENMs for these randomized occurrences.  By doing this many times, we can estimate the probability distribution for ENM overlap between species under the null hypothesis that the two species' occurrences in the environment are effectively a random draw from the same underlying distribution.  Note that niche evolution is only one of many reasons why two species' realized environmental distributions might cause departures from this null hypothesis.  See Warren et al. 2014 for details.
 
-To run an identity test, we need to decide what type of models we will build, how many replicates we will run, and (in the case of GLM) a model formula to use for empirical models and the Monte Carlo replicates.  The resulting object contains the replicate models, p values, and plots of the results.  Typically idenity tests are run with at least 99 replicates, but we are using a smaller number here for the sake of execution time.
+To run an identity test, we need to decide what type of models we will build, how many replicates we will run, and (in the case of GLM and GAM) a model formula to use for empirical models and the Monte Carlo replicates.  The resulting object contains the replicate models, p values, and plots of the results.  Typically idenity tests are run with at least 99 replicates, but we are using a smaller number here for the sake of execution time.
 
 _NOTE:_ In order for models to be comparable, both empirical and pseudoreplicate models for the identity test are conducted with pseudoabsence points pooled for the two species being compared.
 
 ```{r id_glm, include = FALSE}
-id.glm <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm", nreps = 4)
+id.glm <- identity.test(species.1 = monticola, species.2 = cyreni, env = env, type = "glm", nreps = 4)
 ```
 
 ```{r eval = FALSE}
-id.glm <- identity.test(species.1 = ahli, species.2 = allogus, env = env, type = "glm", nreps = 4)
+id.glm <- identity.test(species.1 = monticola, species.2 = cyreni, env = env, type = "glm", nreps = 4)
 ```
 
 ```{r, warnings = FALSE, fig.width = 12, fig.height=8}
@@ -193,11 +232,11 @@ In Warren et al. 2008, we developed this test in the context of comparing one sp
 
 Here, for instance, is a Bioclim background test using the classical asymmetric approach:
 ```{r bg_bc_asym, include = FALSE}
-bg.bc.asym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "bc", nreps = 4, test.type = "asymmetric" )
+bg.bc.asym <- background.test(species.1 = monticola, species.2 = cyreni, env = env, type = "bc", nreps = 4, test.type = "asymmetric" )
 ```
 
 ```{r eval = FALSE}
-bg.bc.asym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "bc", nreps = 4, test.type = "asymmetric" )
+bg.bc.asym <- background.test(species.1 = monticola, species.2 = cyreni, env = env, type = "bc", nreps = 4, test.type = "asymmetric" )
 ```
 
 ```{r, warnings = FALSE, fig.width = 12, fig.height=8}
@@ -207,11 +246,11 @@ bg.bc.asym
 
 And here is a Domain background test using the symmetric approach:
 ```{r bg_dm_sym, include = FALSE}
-bg.dm.sym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "dm", nreps = 4, test.type = "symmetric" )
+bg.dm.sym <- background.test(species.1 = monticola, species.2 = cyreni, env = env, type = "dm", nreps = 4, test.type = "symmetric" )
 ```
 
 ```{r eval = FALSE}
-bg.dm.sym <- background.test(species.1 = ahli, species.2 = allogus, env = env, type = "dm", nreps = 4, test.type = "symmetric" )
+bg.dm.sym <- background.test(species.1 = monticola, species.2 = cyreni, env = env, type = "dm", nreps = 4, test.type = "symmetric" )
 ```
 
 ```{r, warnings = FALSE, fig.width = 12, fig.height=8}
@@ -223,20 +262,26 @@ bg.dm.sym
 
 Using enmtools.species objects also provides a simplified interface to the niche equivalency and similarity tests (or identity and background tests, respectively) that were developed by Broennimann et al. (2012).  These tests do not rely on ENMs, instead using kernel density smoothing to estimate density of the species in environment space.  Ecospat also uses the density of the available environment to correct for availability when measuring overlaps, so that overlaps are not strictly driven by availability of combinations of environmental variables.  
 
-These tests only work with two environmental axes, so they are often done with the top two PC axes of a set of environments.  In our case we'll just pick a couple of environmental layers, though (layer.1 and layer.2).  Here's an equivalency/identity test:
+These tests only work with two environmental axes, so they are often done with the top two PC axes of a set of environments.  In our case we'll just pick a couple of environmental layers, though (bio1 and bio2).  Here's an equivalency/identity test:
 
 ```{r ecospat_identity, fig.width = 12, fig.height=8}
-esp.id <- enmtools.ecospat.id(ahli, allogus, env[[c("layer.1", "layer.2")]])
+esp.id <- enmtools.ecospat.id(monticola, cyreni, env[[c("bio1", "bio12")]])
 esp.id
 ```
 
 And here's a symmetric background test.  The difference between symmetric and asymmetric for these tests is the same as for the background tests presented above.
 
 ```{r ecospat_background, fig.width = 12, fig.height=8}
-esp.bg.sym <- enmtools.ecospat.bg(ahli, allogus, env[[c("layer.1", "layer.3")]], test.type = "symmetric")
+esp.bg.sym <- enmtools.ecospat.bg(monticola, cyreni, env[[c("bio1", "bio12")]], test.type = "symmetric")
 esp.bg.sym
 ```
 
+Note that if you provide more than two layers to the enmtools.ecospat function, it will performa a PCA analysis on the provided layers and measure overlaps on the first two axes of that PCA space.
+
+```{r ecospat_background2, fig.width = 12, fig.height=8}
+esp.bg.sym <- enmtools.ecospat.bg(monticola, cyreni, env, test.type = "symmetric")
+esp.bg.sym
+```
 
 ### Rangebreak tests
 
@@ -244,32 +289,36 @@ ENMTools also allows you to perform linear, blob, and ribbon rangebreak tests as
 
 For the linear and blob tests, you call them very much like you would the identity and background tests.  Here's a linear one using GLM models:
 ```{r rangebreak_linear}
-rbl.glm <- rangebreak.linear(ahli, allogus, env, type = "glm", nreps = 4)
+rbl.glm <- rangebreak.linear(monticola, cyreni, env, type = "glm", nreps = 4)
 rbl.glm
 ```
 
 
 And here's a blob test using Bioclim:
 ```{r rangebreak_blob}
-rbb.bc <- rangebreak.blob(ahli, allogus, env, type = "bc", nreps = 4)
+rbb.bc <- rangebreak.blob(monticola, cyreni, env, type = "bc", nreps = 4)
 rbb.bc
 ```
 
 
 If you want to access the individual replicates (for instance to see how your ranges are being split up), you can find them in the list named "replicate.models" inside your rangebreak test object.
 ```{r rbl_reps}
-rbl.glm$replicate.models$ahli.rep.1
-rbl.glm$replicate.models$allogus.rep.1
+rbl.glm$replicate.models$monticola.rep.1
+rbl.glm$replicate.models$cyreni.rep.1
 ```
 
 
-For the ribbon rangebreak test, you will need one extra thing; a third enmtools.species object representing the occurrence points (for one or both species) that fall within the ribbon of putatively unsuitable habitat.  In the case of these two anoles we don't have such a ribbon, so we'll just simulate one based on some random points.
+For the ribbon rangebreak test, you will need one extra thing; a third enmtools.species object representing the occurrence points (for one or both species) that fall within the ribbon of putatively unsuitable habitat.  In the case of these two lizards we don't have such a ribbon, so we'll just simulate one based on some random points.
 
 ```{r build_ribbon}
-ribbon <- enmtools.species(species.name = "ribbon")
-ribbon$presence.points <- data.frame(Longitude = runif(n = 10, min = -79, max = -78.5),
-                                      Latitude = runif(n = 10, min = 21.7, max = 22.1))
+
 plot(env[[1]])
+points(cyreni$presence.points, col = "red")
+points(monticola$presence.points, col = "blue")
+
+ribbon <- enmtools.species(species.name = "ribbon")
+ribbon$presence.points <- data.frame(Longitude = runif(n = 10, min = -9, max = 0),
+                                      Latitude = runif(n = 10, min = 40.5, max = 42))
 points(ribbon$presence.points, pch = 16)
 ribbon$range <- background.raster.buffer(ribbon$presence.points, 20000, mask = env)
 ribbon
@@ -278,7 +327,7 @@ ribbon
 
 Now we'll run a ribbon rangebreak test using GLM models with quadratic effects.  We also need to tell it the width of the ribbons to generate for the replicates.  The units for the width argument are the same units that the presence points are in; e.g., if the points are in decimal degrees you should supply the width of the barrier in decimal degrees. 
 ```{r rangebreak_ribbon, warnings = FALSE, fig.width = 12, fig.height=8}
-rbr.glm <- rangebreak.ribbon(ahli, allogus, ribbon, env, type = "glm", f = pres ~ poly(layer.1, 2) + poly(layer.2, 2) + poly(layer.3, 2) + poly(layer.4, 2), width = 0.5, nreps = 4)
+rbr.glm <- rangebreak.ribbon(monticola, cyreni, ribbon, env, type = "glm", f = pres ~ poly(bio1, 2) + poly(bio12, 2) + poly(bio7, 2), width = 0.5, nreps = 4)
 rbr.glm
 ```
 
@@ -353,6 +402,14 @@ check.clade(brev.clade)
 ```
 
 
+
+That's one way to build a clade object by hand, but there's already one built into ENMTools to experiment with so we'll just use that.  
+
+```{r loadclade}
+data(iberolacerta.clade)
+```
+
+
 ### Age-overlap correlation tests (AOC)
 
 The AOC tests allow you to examine patterns of range, point, and ENM overlap in the context of a phylogeny.  This is effectively a generalized version of several analyses: age-range correlation (e.g., Fitzpatrick and Turelli 2006), ENM overlap in the context of a phylogeny (e.g., Knouft et al. 2006, Warren et al. 2008), and point overlaps (e.g., Cardillo and Warren 2016).
@@ -362,7 +419,7 @@ These tests require the creation of an enmtools.clade object, as above.  AOC tes
 First, let's do one using geog.range.overlaps, as in Fitzpatrick and Turelli 2006.  Note that this analysis requires that each of your species have a range raster stored in their species object (we did that as part of the function used above).  
 
 ```{r range_aoc}
-range.aoc <- enmtools.aoc(clade = brev.clade,  nreps = 50, overlap.source = "range")
+range.aoc <- enmtools.aoc(clade = iberolacerta.clade,  nreps = 50, overlap.source = "range")
 summary(range.aoc)
 ```
 
@@ -370,7 +427,7 @@ summary(range.aoc)
 Now we can do one using point overlaps just by changing the overlap.source argument:
 
 ```{r point_aoc}
-point.aoc <- enmtools.aoc(clade = brev.clade,  nreps = 50, overlap.source = "points")
+point.aoc <- enmtools.aoc(clade = iberolacerta.clade,  nreps = 50, overlap.source = "points")
 summary(point.aoc)
 ```
 
@@ -379,7 +436,7 @@ summary(point.aoc)
 Or we can use similarity between ENMs built for each species.  Here we'll use GLM models:
 
 ```{r enm_aoc}
-glm.aoc <- enmtools.aoc(clade = brev.clade,  env = hisp.env, nreps = 50, overlap.source = "glm", f = pres ~ snv_1 + snv_12)
+glm.aoc <- enmtools.aoc(clade = iberolacerta.clade,  env = env, nreps = 50, overlap.source = "glm", f = pres ~ poly(bio1, 2) + poly(bio12, 2))
 summary(glm.aoc)
 ```
 
