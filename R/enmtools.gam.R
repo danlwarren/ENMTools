@@ -21,7 +21,7 @@
 
 
 
-enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", ...){
+enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", gam.method = "REML", gam.select = TRUE, ...){
 
   notes <- NULL
 
@@ -85,7 +85,7 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
     weights <- rep(1, nrow(species$presence.points) + nrow(species$background.points))
   }
 
-  this.gam <- mgcv::gam(f, analysis.df[,-c(1,2)], family="binomial", weights = weights, ...)
+  this.gam <- mgcv::gam(f, analysis.df[,-c(1,2)], family="binomial", weights = weights, method = gam.method, select = gam.select, ...)
 
   suitability <- predict(env, this.gam, type = "response")
 
