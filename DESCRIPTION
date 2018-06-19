@@ -43,3 +43,4 @@ Depends:
 	dismo
 Suggests:
 	testthat
+Remotes: ecospat/ecospat/ecospat
