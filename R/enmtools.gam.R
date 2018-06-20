@@ -10,6 +10,8 @@
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
 #' @param rts.reps The number of replicates to do for a Raes and ter Steege-style test of significance
 #' @param weights If this is set to "equal", presences and background data will be assigned weights so that the sum of all presence points weights equals the sum of all background point weights.  Otherwise, weights are not provided to the model.
+#' @param gam.method Defaults to restricted maximum likelihood to facilitate predictor selection, but if you want to use another method you can pass anything here that gam's "method" argument understands.
+#' @param gam.select Controls whether gam algorithm attempts to optimize smoothness and reduce model complexity.  See help("gam.selection") for details.
 #' @param ... Arguments to be passed to gam()
 #'
 #' @export enmtools.gam
@@ -21,7 +23,7 @@
 
 
 
-enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", ...){
+enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", gam.method = "REML", gam.select = TRUE, ...){
 
   notes <- NULL
 
@@ -85,7 +87,7 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
     weights <- rep(1, nrow(species$presence.points) + nrow(species$background.points))
   }
 
-  this.gam <- mgcv::gam(f, analysis.df[,-c(1,2)], family="binomial", weights = weights, ...)
+  this.gam <- mgcv::gam(f, analysis.df[,-c(1,2)], family="binomial", weights = weights, method = gam.method, select = gam.select, ...)
 
   suitability <- predict(env, this.gam, type = "response")
 

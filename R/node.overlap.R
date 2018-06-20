@@ -21,6 +21,28 @@ node.overlap <- function(overlap, tree){
 }
 
 
+get.descendant.tips <- function(tree, node, internal = FALSE) {
+
+  daughters <- tree$edge[ , 2][tree$edge[ , 1] == node]
+  old_node_list <- vector()
+  new_node_list <- c(old_node_list, daughters)
+
+  while(!all(new_node_list %in% old_node_list)) {
+    old_node_list <- new_node_list
+    new_node_list <- unique(c(new_node_list, tree$edge[ , 2][tree$edge[ , 1] %in% new_node_list]))
+  }
+  if (length(new_node_list) == 0) {
+    new_node_list <- node
+  }
+  if(internal) {
+    return(sort(new_node_list))
+  } else {
+    return(sort(new_node_list[new_node_list <= length(tree$tip.label)]))
+  }
+
+}
+
+
 # This function takes an internal node number, overlap matrix, and tree
 # and calculates the scaled overlap using the FT method for all pairs of
 # daughter nodes
@@ -69,8 +91,8 @@ descendants <- function(tree, node, internal = FALSE, string = FALSE){
 # Get the scaled overlap for a single pair of daughters
 get.daughter.overlap <- function(tree, overlap, nodes){
 
-   clade1 <- descendants(tree, nodes[1])
-   clade2 <- descendants(tree, nodes[2])
+   clade1 <- get.descendant.tips(tree, nodes[1])
+   clade2 <- get.descendant.tips(tree, nodes[2])
 
    comparisons <- expand.grid(clade1, clade2)
 
@@ -88,7 +110,7 @@ get.mult <- function (tree, tips){
 
    ntips <- length(tree$tip.label)
    mrca <- getMRCA(tree, tips)
-   nds <- descendants(tree, mrca, internal = TRUE)
+   nds <- get.descendant.tips(tree, mrca, internal = TRUE)
 
    if (identical(sort(as.integer(nds)), sort(as.integer(tips)))){
 
@@ -110,7 +132,7 @@ get.mult <- function (tree, tips){
       daughters <- sapply(nds, function(x) length(which(tree$edge[,1] == x)))
 
       # Trim it down to the number of daughters per node that falls along path between tips
-      check <- function(x, tips) any(tips %in% descendants(tree, x))
+      check <- function(x, tips) any(tips %in% get.descendant.tips(tree, x))
       id <- sapply(nds, check, tips = tips)
       mult <- 1/prod(daughters[id]) * 1/(choose(length(which(tree$edge[,1] == mrca)), 2))
    }

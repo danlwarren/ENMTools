@@ -49,7 +49,7 @@ enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  f = NULL, ov
     empirical.models <- lapply(clade$species, function(x) enmtools.maxent(x, env = env))
   }
 
-  if(is.na(match(overlap.source, c("range", "points")))){
+  if(is.na(match(overlap.source, c("range", "points", "matrix")))){
     if(grepl(pattern = "^env", metric)){
       overlap <- sapply(empirical.models, function(x) sapply(empirical.models, function(y) env.overlap(x,y, env=env)[metric]))
     } else {
@@ -69,6 +69,10 @@ enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  f = NULL, ov
   # Presence points
   if(overlap.source == "points"){
     overlap <- sapply(clade$species, function(x) sapply(clade$species, function(y) point.overlap(x,y)))
+  }
+
+  if(overlap.source == "matrix"){
+    overlap = overlap.matrix
   }
 
   tree <- clade$tree
