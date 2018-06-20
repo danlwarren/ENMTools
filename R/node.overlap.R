@@ -31,6 +31,9 @@ get.descendant.tips <- function(tree, node, internal = FALSE) {
     old_node_list <- new_node_list
     new_node_list <- unique(c(new_node_list, tree$edge[ , 2][tree$edge[ , 1] %in% new_node_list]))
   }
+  if (length(new_node_list) == 0) {
+    new_node_list <- node
+  }
   if(internal) {
     return(sort(new_node_list))
   } else {
