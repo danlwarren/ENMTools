@@ -14,8 +14,5 @@
 calc.B2 <- function(x){
   x <- x[!is.na(x)]
   x <- x/sum(x)
-  min.B2 <- 1
-  max.B2 <- 1/(length(x) * (1/length(x))**2)
-  this.B2 <- 1/sum(x**2)
-  return((this.B2 -min.B2)/(max.B2 - min.B2))
+  return((1/sum(x^2) - 1) / (length(x)-1))
 }
