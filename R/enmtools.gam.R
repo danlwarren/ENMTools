@@ -403,7 +403,7 @@ predict.enmtools.gam <- function(model, env, maxpts = 500, do.nmds = TRUE){
   if(do.nmds == TRUE){
     print("Running NMDS, this could take a while...")
 
-    train.env <- subset(model$analysis.df, select=-presence)
+    train.env <- model$analysis.df[,-c("presence")]
     pred.env <- raster::rasterToPoints(env)
     colnames(pred.env) <- colnames(train.env)
 
