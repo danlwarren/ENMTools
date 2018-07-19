@@ -27,7 +27,7 @@
 #' enmtools.ecospat.id(monticola, cyreni, euro.worldclim[[1:2]], nback = 500)
 #' }
 
-enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = NULL, th.sp=0, th.env=0, R=100, nback = 1000, bg.source = "default", ...){
+enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = NULL, th.sp=0, th.env=0, R=100, nback = 1000, bg.source = "default"){
 
   species.1 <- check.bg(species.1, env, nback)
   species.2 <- check.bg(species.2, env, nback)
