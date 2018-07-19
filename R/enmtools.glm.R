@@ -10,6 +10,7 @@
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
 #' @param rts.reps The number of replicates to do for a Raes and ter Steege-style test of significance
 #' @param weights If this is set to "equal", presences and background data will be assigned weights so that the sum of all presence points weights equals the sum of all background point weights.  Otherwise, weights are not provided to the model.
+#' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param ... Arguments to be passed to glm()
 #'
 #' @export enmtools.glm
@@ -21,11 +22,11 @@
 
 
 
-enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", ...){
+enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default", ...){
 
   notes <- NULL
 
-  species <- check.bg(species, env, nback = nback)
+  species <- check.bg(species, env, nback = nback, bg.source = bg.source)
 
   # Builds a default formula using all env
   if(is.null(f)){

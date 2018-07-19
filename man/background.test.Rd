@@ -9,7 +9,7 @@ constructed from the background points supplied for each species.  For Maxent, t
 from the range rasters stored in the enmtools.species objects.}
 \usage{
 background.test(species.1, species.2, env, type, f = NULL, nreps = 99,
-  test.type = "asymmetric", nback = 1000, ...)
+  test.type = "asymmetric", nback = 1000, bg.source = "default", ...)
 }
 \arguments{
 \item{species.1}{An emtools.species object from which presence points (asymmetric) or background (symmetric) will be sampled.}
@@ -27,6 +27,8 @@ background.test(species.1, species.2, env, type, f = NULL, nreps = 99,
 \item{test.type}{Controls whether the background test will be "symmetric" or "asymmetric"}
 
 \item{nback}{Number of background points for models}
+
+\item{bg.source}{Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.}
 
 \item{...}{Additional arguments to be passed to model fitting functions.}
 }

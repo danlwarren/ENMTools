@@ -7,6 +7,7 @@
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
 #' @param nback Number of background points for models. In the case of bioclim models these are only used for evaluation.
 #' @param rts.reps The number of replicates to do for a Raes and ter Steege-style test of significance
+#' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param ... Arguments to be passed to bioclim()
 #'
 #' @export enmtools.bc
@@ -16,7 +17,7 @@
 #' data(iberolacerta.clade)
 #' enmtools.bc(iberolacerta.clade$species$monticola, env = euro.worldclim)
 
-enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwrite = FALSE, nback = 1000, rts.reps = 0, ...){
+enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwrite = FALSE, nback = 1000, rts.reps = 0, bg.source = "default", ...){
 
   notes <- NULL
 

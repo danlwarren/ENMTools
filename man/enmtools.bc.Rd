@@ -5,7 +5,8 @@
 \title{Takes an emtools.species object with presence and background points, and builds a Bioclim model}
 \usage{
 enmtools.bc(species, env = NA, test.prop = 0, report = NULL,
-  overwrite = FALSE, nback = 1000, rts.reps = 0, ...)
+  overwrite = FALSE, nback = 1000, rts.reps = 0, bg.source = "default",
+  ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
@@ -21,6 +22,8 @@ enmtools.bc(species, env = NA, test.prop = 0, report = NULL,
 \item{nback}{Number of background points for models. In the case of bioclim models these are only used for evaluation.}
 
 \item{rts.reps}{The number of replicates to do for a Raes and ter Steege-style test of significance}
+
+\item{bg.source}{Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.}
 
 \item{...}{Arguments to be passed to bioclim()}
 }

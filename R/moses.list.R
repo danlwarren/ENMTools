@@ -5,11 +5,12 @@
 #' @param nback Number of background points to generate, if any
 #' @param f A GLM-style function for model fitting
 #' @param eval Boolean indicating whether or not GLMs should be evaluated using AUC/TSS/etc.
+#' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param ... further arguments to be passed to enmtools.glm
 #'
 #' @export moses.list
 
-moses.list <- function(species.list, env, f = NULL, eval = FALSE, nback = 1000, ...){
+moses.list <- function(species.list, env, f = NULL, eval = FALSE, nback = 1000, bg.source = "default", ...){
 
   if(inherits(species.list, "enmtools.clade")){
     species.list <- species.list$species
@@ -23,7 +24,7 @@ moses.list <- function(species.list, env, f = NULL, eval = FALSE, nback = 1000, 
   check.moses(species.list, env, f)
 
   for(i in 1:length(species.list)){
-    species.list[[i]] <- check.bg(species.list[[i]], env, nback = nback)
+    species.list[[i]] <- check.bg(species.list[[i]], env, nback = nback, bg.source = bg.source)
   }
 
   # We're just going to do all separate vs. all together.  Work on a separate function for phylo tests.

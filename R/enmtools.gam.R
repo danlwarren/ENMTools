@@ -12,6 +12,7 @@
 #' @param weights If this is set to "equal", presences and background data will be assigned weights so that the sum of all presence points weights equals the sum of all background point weights.  Otherwise, weights are not provided to the model.
 #' @param gam.method Defaults to restricted maximum likelihood to facilitate predictor selection, but if you want to use another method you can pass anything here that gam's "method" argument understands.
 #' @param gam.select Controls whether gam algorithm attempts to optimize smoothness and reduce model complexity.  See help("gam.selection") for details.
+#' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param ... Arguments to be passed to gam()
 #'
 #' @export enmtools.gam
@@ -23,11 +24,11 @@
 
 
 
-enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", gam.method = "REML", gam.select = TRUE, ...){
+enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", gam.method = "REML", gam.select = TRUE, bg.source = "default", ...){
 
   notes <- NULL
 
-  species <- check.bg(species, env, nback = nback)
+  species <- check.bg(species, env, nback = nback, bg.source = bg.source)
 
   # Builds a default formula using all env
   if(is.null(f)){

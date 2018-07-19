@@ -10,6 +10,7 @@
 #' @param width Width of the ribbon, in the same units as the occurrence points (e.g, decimal degrees)
 #' @param nreps Number of replicates to perform
 #' @param nback Number of background points for models
+#' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param ... Additional arguments to be passed to model fitting functions.
 #'
 #' @return results A list containing a replicates, models for the empirical data, and summary statistics and plots.
@@ -35,11 +36,11 @@
 #' type = "glm", f= pres ~ bio1 + bio12, nreps = 10)
 #' }
 
-rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL, width = 1, nreps = 99,  nback = 1000, ...){
+rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL, width = 1, nreps = 99,  nback = 1000, bg.source = "default", ...){
 
-  species.1 <- check.bg(species.1, env, nback = nback)
-  species.2 <- check.bg(species.2, env, nback = nback)
-  ribbon <- check.bg(ribbon, env, nback = nback)
+  species.1 <- check.bg(species.1, env, nback = nback, bg.source = bg.source)
+  species.2 <- check.bg(species.2, env, nback = nback, bg.source = bg.source)
+  ribbon <- check.bg(ribbon, env, nback = nback, bg.source = bg.source)
 
   # Making sure species 1 always has the most presence points
   if(nrow(species.1$presence.points) < nrow(species.2$presence.points)){
