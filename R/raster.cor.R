@@ -1,7 +1,7 @@
 #' Calculates the correlation coefficient between two rasters.
 #'
-#' @param x A raster representing the spatial projection of an SDM, or an ENMTools model object with a suitability raster.
-#' @param y A raster representing the spatial projection of an SDM, or an ENMTools model object with a suitability raster.
+#' @param x Either a raster or an ENMTools model object with a suitability raster.
+#' @param y Either a raster or an ENMTools model object with a suitability raster.
 #' @param method The method to be used for calculating correlations.  Defaults to spearman, but can take "kendall" or "pearson" as well.
 #'
 #' @export raster.cor
