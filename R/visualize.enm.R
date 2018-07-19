@@ -15,7 +15,7 @@
 #' @export visualize.enm
 #'
 #' @examples
-#' data(iberolacerta)
+#' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' aurelioi.glm <- enmtools.glm(iberolacerta.clade$species$aurelioi, euro.worldclim,
 #' f = pres ~ poly(bio1, 4) + poly(bio12, 4))
