@@ -105,13 +105,13 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
 
   d.plot <- qplot(bg$sim[,"D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = bg$obs$D, linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
+    xlim(-.05,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
     ggtitle(paste("Ecospat background test:", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
   i.plot <- qplot(bg$sim[,"I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = bg$obs$I, linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") +
+    xlim(-.05,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") +
     ggtitle(paste("Ecospat background test:", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 

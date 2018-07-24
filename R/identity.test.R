@@ -139,13 +139,13 @@ identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99,
 
   d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"D"], linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
+    xlim(-.05,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
     ggtitle(paste("Identity test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
   i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"I"], linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") +
+    xlim(-.05,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") +
     ggtitle(paste("Identity test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
@@ -157,13 +157,13 @@ identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99,
 
   env.d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.D"], linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D, Environmental Space") +
+    xlim(-.05,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D, Environmental Space") +
     ggtitle(paste("Identity test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
   env.i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.I"], linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I, Environmental Space") +
+    xlim(-.05,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I, Environmental Space") +
     ggtitle(paste("Identity test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
