@@ -40,6 +40,8 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
 
     env <- raster.pca(env, n = 2)
 
+    env <- env$rasters
+
     layers <- names(env)
   }
 
