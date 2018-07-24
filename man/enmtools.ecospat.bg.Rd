@@ -23,7 +23,7 @@ enmtools.ecospat.bg(species.1, species.2, env, nreps = 99, layers = NULL,
 
 \item{th.sp}{Quantile of species densities used as a threshold to exclude low species density values.  See documentation for ecospat.grid.clim.dyn.}
 
-\item{th.env}{Quantile of environmental densities across studye sites used as threshold to exclude low
+\item{th.env}{Quantile of environmental densities across study sites used as threshold to exclude low
 environmental density values.  See documentation for ecospat.grid.clim.dyn.}
 
 \item{R}{Resolution of the grid. See documentation for ecospat.grid.clim.dyn.}

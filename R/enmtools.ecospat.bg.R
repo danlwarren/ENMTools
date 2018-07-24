@@ -7,7 +7,7 @@
 #' @param layers A vector of length 2 containing the names of the layers to be used.  If no layer names are provided and there are more than two layers in env, enmtools will perform a pca and use the top two layers from that.
 #' @param test.type Symmetric or asymmetric test.  An asymmetric test is bguivalent to the "one.sided" option in the ecospat documentation, while a symmetric one would be two-sided.
 #' @param th.sp Quantile of species densities used as a threshold to exclude low species density values.  See documentation for ecospat.grid.clim.dyn.
-#' @param th.env Quantile of environmental densities across studye sites used as threshold to exclude low
+#' @param th.env Quantile of environmental densities across study sites used as threshold to exclude low
 #' environmental density values.  See documentation for ecospat.grid.clim.dyn.
 #' @param nback Number of background points to use for density calculations.
 #' @param R Resolution of the grid. See documentation for ecospat.grid.clim.dyn.
