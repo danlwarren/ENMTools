@@ -29,7 +29,7 @@ suit.plot A two dimensional plot of an ENM
 visualize.enm, Makes a heatmap of suitability of habitat in environment space according to a given model
 }
 \examples{
-data(iberolacerta)
+data(iberolacerta.clade)
 data(euro.worldclim)
 aurelioi.glm <- enmtools.glm(iberolacerta.clade$species$aurelioi, euro.worldclim,
 f = pres ~ poly(bio1, 4) + poly(bio12, 4))

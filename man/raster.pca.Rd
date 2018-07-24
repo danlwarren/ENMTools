@@ -12,7 +12,7 @@ raster.pca(env, n)
 \item{n}{The number of PCA layers to return}
 }
 \value{
-env.pca A stack of raster representing the top n pca axes of the initial environmental variables.
+A list containing a stack of rasters representing the top n pca axes of the initial environmental variables, as well as the pca object from the analysis that produced them.
 }
 \description{
 raster.pca, PCA on a set of environmental rasters

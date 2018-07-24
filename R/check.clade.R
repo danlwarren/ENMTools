@@ -40,6 +40,9 @@ check.clade <- function(this.clade){
     lapply(this.clade$species, function(x) check.species(x))
     names(this.clade$species) <- lapply(this.clade$species, function(x) x$species.name)
 
+  } else {
+    # this.clade$species is just an NA
+    stop("Argument species requires a list of enmtools.species objects, is currently NA")
   }
 
   if(!isTRUE(is.na(this.clade$tree))){

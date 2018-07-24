@@ -4,10 +4,11 @@
 #' @param species.1 An emtools.species object
 #' @param species.2 An enmtools.species object
 #' @param env A RasterLayer or RasterStack object containing environmental data
-#' @param type The type of model to construct, currently accepts "glm", "mx", "bc", "gam", or "dm"
+#' @param type The type of model to construct, currently accepts "glm", "mx", "bc", "gam", "rf", or "dm"
 #' @param f A function to use for model fitting.  Only required for GLM models at the moment.
 #' @param nreps Number of replicates to perform
 #' @param nback Number of background points for models
+#' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param ... Additional arguments to be passed to model fitting functions.
 #'
 #' @return results A list containing a replicates, models for the empirical data, and summary statistics and plots.
@@ -28,10 +29,10 @@
 #' f = pres ~ bio1 + bio12, nreps = 10)
 #' }
 
-identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99, nback = 1000, ...){
+identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99, nback = 1000, bg.source = "default", ...){
 
-  species.1 <- check.bg(species.1, env, nback = nback)
-  species.2 <- check.bg(species.2, env, nback = nback)
+  species.1 <- check.bg(species.1, env, nback = nback, bg.source = bg.source)
+  species.2 <- check.bg(species.2, env, nback = nback, bg.source = bg.source)
 
   identity.precheck(species.1, species.2, env, type, f, nreps)
 
@@ -138,13 +139,13 @@ identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99,
 
   d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"D"], linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
+    xlim(-.05,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
     ggtitle(paste("Identity test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
   i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"I"], linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") +
+    xlim(-.05,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") +
     ggtitle(paste("Identity test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
@@ -156,13 +157,13 @@ identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99,
 
   env.d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.D"], linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D, Environmental Space") +
+    xlim(-.05,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D, Environmental Space") +
     ggtitle(paste("Identity test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
   env.i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.I"], linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I, Environmental Space") +
+    xlim(-.05,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I, Environmental Space") +
     ggtitle(paste("Identity test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 

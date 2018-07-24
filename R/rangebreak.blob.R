@@ -8,6 +8,7 @@
 #' @param f A function to use for model fitting.  Only required for GLM models at the moment.
 #' @param nreps Number of replicates to perform
 #' @param nback Number of background points for models
+#' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param ... Additional arguments to be passed to model fitting functions.
 #'
 #' @return results A list containing a replicates, models for the empirical data, and summary statistics and plots.
@@ -27,14 +28,14 @@
 #' }
 
 
-rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 99, nback = 1000, ...){
+rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 99, nback = 1000, bg.source = "default", ...){
 
   # Just for visualization
   plotraster <- env[[1]]
   plotraster[!is.na(plotraster)] <- 1
 
-  species.1 <- check.bg(species.1, env, nback = nback)
-  species.2 <- check.bg(species.2, env, nback = nback)
+  species.1 <- check.bg(species.1, env, nback = nback, bg.source = bg.source)
+  species.2 <- check.bg(species.2, env, nback = nback, bg.source = bg.source)
 
   rangebreak.blob.precheck(species.1, species.2, env, type, f, nreps)
 
@@ -157,13 +158,13 @@ rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
   d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"D"], linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
+    xlim(-.05,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
     ggtitle(paste("Rangebreak test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
   i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"I"], linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") +
+    xlim(-.05,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") +
     ggtitle(paste("Rangebreak test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
@@ -175,13 +176,13 @@ rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
   env.d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.D"], linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D, Environmental Space") +
+    xlim(-.05,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D, Environmental Space") +
     ggtitle(paste("Rangebreak test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
   env.i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.I"], linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I, Environmental Space") +
+    xlim(-.05,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I, Environmental Space") +
     ggtitle(paste("Rangebreak test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 

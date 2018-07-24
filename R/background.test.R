@@ -12,7 +12,9 @@
 #' @param nreps Number of replicates to perform
 #' @param nback Number of background points for models
 #' @param test.type Controls whether the background test will be "symmetric" or "asymmetric"
+#' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param ... Additional arguments to be passed to model fitting functions.
+#'
 #'
 #' @return results A list containing replicates, models for the empirical data, and summary statistics and plots.
 #'
@@ -32,7 +34,7 @@
 #' f = pres ~ bio1 + bio12, nreps = 10)
 #' }
 
-background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99, test.type = "asymmetric", nback = 1000, ...){
+background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99, test.type = "asymmetric", nback = 1000, bg.source = "default", ...){
 
   # Build a description of the analysis to use for summaries and plot titles
   if(test.type == "symmetric"){
@@ -42,8 +44,8 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
   }
   cat(paste("\n", description, "\n"))
 
-  species.1 <- check.bg(species.1, env, nback = nback)
-  species.2 <- check.bg(species.2, env, nback = nback)
+  species.1 <- check.bg(species.1, env, nback = nback, bg.source = bg.source)
+  species.2 <- check.bg(species.2, env, nback = nback, bg.source = bg.source)
 
   # Check to make sure everything's okay
   background.precheck(species.1, species.2, env, type, f, nreps, test.type)
@@ -166,12 +168,12 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
   d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"D"], linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") + ggtitle(description) +
+    xlim(-.05,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") + ggtitle(description) +
     theme(plot.title = element_text(hjust = 0.5))
 
   i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"I"], linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") + ggtitle(description) +
+    xlim(-.05,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") + ggtitle(description) +
     theme(plot.title = element_text(hjust = 0.5))
 
   cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"rank.cor"], geom = "histogram", fill = "density", alpha = 0.5) +
@@ -181,13 +183,13 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
   env.d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.D"], linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D, Environmental Space") +
+    xlim(-.05,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D, Environmental Space") +
     ggtitle(description) +
     theme(plot.title = element_text(hjust = 0.5))
 
   env.i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.I"], linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I, Environmental Space") +
+    xlim(-.05,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I, Environmental Space") +
     ggtitle(description) +
     theme(plot.title = element_text(hjust = 0.5))
 

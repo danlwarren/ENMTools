@@ -7,9 +7,9 @@
 raster.cor(x, y, method = "spearman")
 }
 \arguments{
-\item{x}{A raster representing the spatial projection of an SDM, or an ENMTools model object with a suitability raster.}
+\item{x}{Either a raster or an ENMTools model object with a suitability raster.}
 
-\item{y}{A raster representing the spatial projection of an SDM, or an ENMTools model object with a suitability raster.}
+\item{y}{Either a raster or an ENMTools model object with a suitability raster.}
 
 \item{method}{The method to be used for calculating correlations.  Defaults to spearman, but can take "kendall" or "pearson" as well.}
 }

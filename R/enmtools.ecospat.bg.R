@@ -7,10 +7,11 @@
 #' @param layers A vector of length 2 containing the names of the layers to be used.  If no layer names are provided and there are more than two layers in env, enmtools will perform a pca and use the top two layers from that.
 #' @param test.type Symmetric or asymmetric test.  An asymmetric test is bguivalent to the "one.sided" option in the ecospat documentation, while a symmetric one would be two-sided.
 #' @param th.sp Quantile of species densities used as a threshold to exclude low species density values.  See documentation for ecospat.grid.clim.dyn.
-#' @param th.env Quantile of environmental densities across studye sites used as threshold to exclude low
+#' @param th.env Quantile of environmental densities across study sites used as threshold to exclude low
 #' environmental density values.  See documentation for ecospat.grid.clim.dyn.
 #' @param nback Number of background points to use for density calculations.
 #' @param R Resolution of the grid. See documentation for ecospat.grid.clim.dyn.
+#' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param ... Further arguments to be passed to check.bg
 #'
 #' @return results Some results, once I figure out what results to return
@@ -26,7 +27,7 @@
 #' cyreni <- iberolacerta.clade$species$cyreni
 #' enmtools.ecospat.bg(monticola, cyreni, euro.worldclim[[1:2]], nback = 500)
 
-enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = NULL, test.type = "asymmetric", th.sp=0, th.env=0, R=100, nback = 1000, ...){
+enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = NULL, test.type = "asymmetric", th.sp=0, th.env=0, R=100, nback = 1000, bg.source = "default", ...){
 
   species.1 <- check.bg(species.1, env, nback)
   species.2 <- check.bg(species.2, env, nback)
@@ -38,6 +39,8 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
     print("More than two layers in environment stack and no layers argument passed, performing PCA...")
 
     env <- raster.pca(env, n = 2)
+
+    env <- env$rasters
 
     layers <- names(env)
   }
@@ -102,13 +105,13 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
 
   d.plot <- qplot(bg$sim[,"D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = bg$obs$D, linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
+    xlim(-.05,1) + guides(fill = FALSE, alpha = FALSE) + xlab("D") +
     ggtitle(paste("Ecospat background test:", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
   i.plot <- qplot(bg$sim[,"I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = bg$obs$I, linetype = "longdash") +
-    xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") +
+    xlim(-.05,1) + guides(fill = FALSE, alpha = FALSE) + xlab("I") +
     ggtitle(paste("Ecospat background test:", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 

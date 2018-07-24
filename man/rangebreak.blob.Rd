@@ -5,7 +5,7 @@
 \title{rangebreak.blob Conduct a blob rangebreak test as described in Glor and Warren 2011.}
 \usage{
 rangebreak.blob(species.1, species.2, env, type, f = NULL, nreps = 99,
-  nback = 1000, ...)
+  nback = 1000, bg.source = "default", ...)
 }
 \arguments{
 \item{species.1}{An emtools.species object}
@@ -21,6 +21,8 @@ rangebreak.blob(species.1, species.2, env, type, f = NULL, nreps = 99,
 \item{nreps}{Number of replicates to perform}
 
 \item{nback}{Number of background points for models}
+
+\item{bg.source}{Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.}
 
 \item{...}{Additional arguments to be passed to model fitting functions.}
 }

@@ -3,7 +3,7 @@
 #' @param env A set of environmental layers
 #' @param n The number of PCA layers to return
 #'
-#' @return env.pca A stack of raster representing the top n pca axes of the initial environmental variables.
+#' @return A list containing a stack of rasters representing the top n pca axes of the initial environmental variables, as well as the pca object from the analysis that produced them.
 #'
 #' @keywords raster pca environment
 #'
@@ -38,5 +38,8 @@ raster.pca <- function(env, n){
 
   env.pca <- setMinMax(env.pca)
 
-  return(env.pca)
+  output <- list(rasters = env.pca,
+                 pca.object = pca)
+
+  return(output)
 }
