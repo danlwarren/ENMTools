@@ -162,6 +162,8 @@ print.enmtools.aoc <- function(x, ...){
 }
 
 plot.enmtools.aoc <- function(x, ...){
+  plot(x$tree, no.margin=TRUE, edge.width=2, cex=1)
+  nodelabels(format(x$empirical.df$overlap, digits = 1, nsmall = 2))
 
   grid.arrange(x$regressions.plot, x$intercept.plot,
                x$slope.plot, ncol = 2) +
