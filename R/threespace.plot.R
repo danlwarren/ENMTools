@@ -52,7 +52,7 @@ threespace.plot <- function(model, env){
                               source = allpoints$presence)
 
   # Plot layers in order
-  output <- ggplot(allpoints.pca, aes(PC1, PC2)) +
+  output <- ggplot(allpoints.pca, aes_string("PC1", "PC2")) +
     layer(geom = "point", stat = "identity", position = "identity",
           data = allpoints.pca[allpoints.pca$source == 2,], aes(color = "Env Layers")) +
     layer(geom = "point", stat = "identity", position = "identity",
