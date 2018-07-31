@@ -335,6 +335,33 @@ plot.enmtools.bc <- function(x, ...){
 
 }
 
+
+# Predict method for models of class enmtools.bc
+predict.enmtools.bc <- function(model, env, maxpts = 1000){
+
+  # Make a plot of habitat suitability in the new region
+  suitability <- raster::predict(env, model$model)
+  suit.points <- data.frame(rasterToPoints(suitability))
+  colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
+
+  suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
+    geom_raster(aes_string(fill = "Suitability")) +
+    scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
+    coord_fixed() + theme_classic()
+
+  if(!is.na(model$species.name)){
+    title <- paste("Bioclim model projection for", model$species.name)
+    suit.plot <- suit.plot + ggtitle(title) + theme(plot.title = element_text(hjust = 0.5))
+  }
+
+  this.threespace = threespace.plot(model, env, maxpts)
+
+  output <- list(suitability = suit.plot,
+                 threespace.plot = this.threespace)
+  return(output)
+}
+
+
 # Checking data for analysis using enmtools.bc
 bc.precheck <- function(species, env, f){
 

@@ -69,7 +69,7 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default"){
       stop("CRS mismatch between species range raster and environmental rasters!")
     }
 
-    if(nback > sum(getValues(species$range) > 0, na.rm=TRUE)){
+    if(nback > sum(getValues(species$range) > -1000000000000, na.rm=TRUE)){
       species$background.points <- as.data.frame(rasterToPoints(species$range)[,1:2])
     } else {
       species$background.points <- as.data.frame(randomPoints(species$range, nback, species$presence.points))

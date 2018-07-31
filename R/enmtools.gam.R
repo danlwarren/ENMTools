@@ -385,7 +385,7 @@ plot.enmtools.gam <- function(x, ...){
 
 
 # Predict method for models of class enmtools.gam
-predict.enmtools.gam <- function(model, env, maxpts = 500, do.nmds = TRUE){
+predict.enmtools.gam <- function(model, env, maxpts = 1000){
 
   # Make a plot of habitat suitability in the new region
   suitability <- raster::predict(env, model$model)
@@ -402,39 +402,10 @@ predict.enmtools.gam <- function(model, env, maxpts = 500, do.nmds = TRUE){
     suit.plot <- suit.plot + ggtitle(title) + theme(plot.title = element_text(hjust = 0.5))
   }
 
-  # Make an NMDS plot of the two environment spaces
-  if(do.nmds == TRUE){
-    print("Running NMDS, this could take a while...")
-
-    train.env <- model$analysis.df[,-c("presence")]
-    pred.env <- raster::rasterToPoints(env)
-    colnames(pred.env) <- colnames(train.env)
-
-    # Chop each set of points down to half of maxpts if there are more than that
-    if(nrow(train.env) > maxpts/2){
-      train.env <- train.env[sample(nrow(train.env), size = maxpts/2),]
-    }
-
-    if(nrow(pred.env) > maxpts/2){
-      pred.env <- pred.env[sample(nrow(pred.env), size = maxpts/2),]
-    }
-
-    distmat <- dist(rbind(train.env[,-c(1,2)], pred.env[,-c(1,2)]))
-
-    nmds.results <- vegan::metaMDS(distmat, k = 2)
-
-    nmds.df <- data.frame(nmds.results$points[,1:2])
-
-    nmds.df$source <- c(rep("train", nrow(train.env)), rep("pred", nrow(pred.env)))
-
-    nmds.plot <- qplot(nmds.df$MDS1, nmds.df$MDS2, color = nmds.df$source)
-  }
-
-  print(head(nmds.df))
+  this.threespace = threespace.plot(model, env, maxpts)
 
   output <- list(suitability = suit.plot,
-                 nmds.results = nmds.results,
-                 nmds.plot = nmds.plot)
+                 threespace.plot = this.threespace)
   return(output)
 }
 
