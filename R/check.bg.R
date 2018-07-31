@@ -64,6 +64,11 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default"){
     if(!inherits(species$range, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
       stop("bg.source set to range, but species does not have a recognizable range raster!")
     }
+
+    if(crs(env) != crs(species$range)){
+      stop("CRS mismatch between species range raster and environmental rasters!")
+    }
+
     if(nback > sum(getValues(species$range) > 0, na.rm=TRUE)){
       species$background.points <- as.data.frame(rasterToPoints(species$range)[,1:2])
     } else {

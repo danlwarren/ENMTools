@@ -29,6 +29,9 @@ check.species <- function(this.species){
     if(!inherits(this.species$range, c("raster", "RasterLayer", "RasterBrick", "RasterStack"))){
       stop("Argument range requires an object of class raster or RasterLayer")
     }
+    if(is.na(crs(this.species$range))){
+      stop("Species range raster does not have a CRS set")
+    }
   }
 
   if(!isTRUE(is.na(this.species$presence.points))){
