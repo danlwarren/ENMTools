@@ -372,10 +372,10 @@ plot.enmtools.rf <- function(x, ...){
 
 
 # Predict method for models of class enmtools.rf
-predict.enmtools.rf <- function(model, env, maxpts = 1000){
+predict.enmtools.rf <- function(x, env, maxpts = 1000, ...){
 
   # Make a plot of habitat suitability in the new region
-  suitability <- raster::predict(env, model$model)
+  suitability <- raster::predict(env, x$model)
   suit.points <- data.frame(rasterToPoints(suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
@@ -384,12 +384,12 @@ predict.enmtools.rf <- function(model, env, maxpts = 1000){
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()
 
-  if(!is.na(model$species.name)){
-    title <- paste("Random forests model projection for", model$species.name)
+  if(!is.na(x$species.name)){
+    title <- paste("Random forests model projection for", x$species.name)
     suit.plot <- suit.plot + ggtitle(title) + theme(plot.title = element_text(hjust = 0.5))
   }
 
-  this.threespace = threespace.plot(model, env, maxpts)
+  this.threespace = threespace.plot(x, env, maxpts)
 
   output <- list(suitability = suit.plot,
                  threespace.plot = this.threespace)
