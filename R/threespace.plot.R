@@ -25,16 +25,16 @@ threespace.plot <- function(model, env, maxpts = NA){
   }
 
   if(inherits(model, "enmtools.maxent")){
-    model$analysis.df <- cbind(model$analysis.df, extract(euro.worldclim, model$analysis.df[,1:2]))
+    model$analysis.df <- cbind(model$analysis.df, extract(env, model$analysis.df[,1:2]))
   }
 
   if(inherits(model, c("enmtools.bc", "enmtools.dm"))){
-    model$analysis.df <- cbind(model$analysis.df, extract(euro.worldclim, model$analysis.df[,1:2]))
+    model$analysis.df <- cbind(model$analysis.df, extract(env, model$analysis.df[,1:2]))
     model$analysis.df$presence <- rep(1, nrow(model$analysis.df))
   }
 
   if(inherits(model, "enmtools.ppmlasso")){
-    model$analysis.df <- subset(model$analysis.df, select=-wt)
+    model$analysis.df <- model$analysis.df[,c(names(env), "presence")]
   }
 
   # Chuck out X and Y and stop on any unmatched env variables
