@@ -432,7 +432,7 @@ plot.enmtools.ppmlasso <- function(x, trans_col = NULL, ...){
 
 
 # Predict method for models of class enmtools.ppmlasso
-predict.enmtools.ppmlasso <- function(model, env, maxpts = 1000, ...){
+predict.enmtools.ppmlasso <- function(object, env, maxpts = 1000, ...){
 
   env_cell_area <- prod(res(env))
 
@@ -441,7 +441,7 @@ predict.enmtools.ppmlasso <- function(model, env, maxpts = 1000, ...){
   }
 
   # Make a plot of habitat suitability in the new region
-  suitability <- predict(env, model$model, fun = p.fun)
+  suitability <- predict(env, object$model, fun = p.fun)
   suit.points <- data.frame(rasterToPoints(suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
@@ -450,12 +450,12 @@ predict.enmtools.ppmlasso <- function(model, env, maxpts = 1000, ...){
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()
 
-  if(!is.na(model$species.name)){
-    title <- paste("ppmlasso model projection for", model$species.name)
+  if(!is.na(object$species.name)){
+    title <- paste("ppmlasso model projection for", object$species.name)
     suit.plot <- suit.plot + ggtitle(title) + theme(plot.title = element_text(hjust = 0.5))
   }
 
-  this.threespace = threespace.plot(model, env, maxpts)
+  this.threespace = threespace.plot(object, env, maxpts)
 
   output <- list(suitability = suit.plot,
                  threespace.plot = this.threespace)
