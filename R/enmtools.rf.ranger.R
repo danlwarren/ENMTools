@@ -379,14 +379,14 @@ plot.enmtools.rf.ranger <- function(x, ...){
 
 
 # Predict method for models of class enmtools.rf.ranger
-predict.enmtools.rf.ranger <- function(x, env, maxpts = 1000, ...){
+predict.enmtools.rf.ranger <- function(object, env, maxpts = 1000, ...){
 
-  pfun <- function(x, data, ...) {
-    predict(x, data, ...)$predictions[ , 2]
+  pfun <- function(object, data, ...) {
+    predict(object, data, ...)$predictions[ , 2]
   }
 
   # Make a plot of habitat suitability in the new region
-  suitability <- raster::predict(env, x$model, fun = pfun, type = "response")
+  suitability <- raster::predict(env, object$model, fun = pfun, type = "response")
   suit.points <- data.frame(rasterToPoints(suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
@@ -395,12 +395,12 @@ predict.enmtools.rf.ranger <- function(x, env, maxpts = 1000, ...){
     scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()
 
-  if(!is.na(x$species.name)){
-    title <- paste("Ranger random forests model projection for", x$species.name)
+  if(!is.na(object$species.name)){
+    title <- paste("Ranger random forests model projection for", object$species.name)
     suit.plot <- suit.plot + ggtitle(title) + theme(plot.title = element_text(hjust = 0.5))
   }
 
-  this.threespace = threespace.plot(x, env, maxpts)
+  this.threespace = threespace.plot(object, env, maxpts)
 
   output <- list(suitability = suit.plot,
                  threespace.plot = this.threespace)
