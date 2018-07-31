@@ -31,6 +31,11 @@ marginal.plots <- function(model, env, layer, standardize = TRUE){
     points <- model$analysis.df[model$analysis.df$presence == 1,1:2]
   }
 
+  if(any(is.na(minValue(env))) | any(is.na(maxValue(env)))){
+    env <- setMinMax(env)
+    cat("\n\nSetting min and max for environment layers...\n\n")
+  }
+
   # Create a vector of names in the right order for plot.df
   names <- layer
 
