@@ -370,6 +370,33 @@ plot.enmtools.rf <- function(x, ...){
 
 }
 
+
+# Predict method for models of class enmtools.rf
+predict.enmtools.rf <- function(object, env, maxpts = 1000, ...){
+
+  # Make a plot of habitat suitability in the new region
+  suitability <- raster::predict(env, object$model)
+  suit.points <- data.frame(rasterToPoints(suitability))
+  colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
+
+  suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
+    geom_raster(aes_string(fill = "Suitability")) +
+    scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
+    coord_fixed() + theme_classic()
+
+  if(!is.na(object$species.name)){
+    title <- paste("Random forests model projection for", object$species.name)
+    suit.plot <- suit.plot + ggtitle(title) + theme(plot.title = element_text(hjust = 0.5))
+  }
+
+  this.threespace = threespace.plot(object, env, maxpts)
+
+  output <- list(suitability = suit.plot,
+                 threespace.plot = this.threespace)
+  return(output)
+}
+
+
 # Function for checking data prior to running enmtools.rf
 rf.precheck <- function(f, species, env){
 

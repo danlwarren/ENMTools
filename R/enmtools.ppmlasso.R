@@ -430,6 +430,39 @@ plot.enmtools.ppmlasso <- function(x, trans_col = NULL, ...){
   return(suit.plot)
 }
 
+
+# Predict method for models of class enmtools.ppmlasso
+predict.enmtools.ppmlasso <- function(object, env, maxpts = 1000, ...){
+
+  env_cell_area <- prod(res(env))
+
+  p.fun <- function(object, newdata, ...) {
+    predict.ppmlasso(object, newdata = newdata, ...)*env_cell_area
+  }
+
+  # Make a plot of habitat suitability in the new region
+  suitability <- predict(env, object$model, fun = p.fun)
+  suit.points <- data.frame(rasterToPoints(suitability))
+  colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
+
+  suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
+    geom_raster(aes_string(fill = "Suitability")) +
+    scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
+    coord_fixed() + theme_classic()
+
+  if(!is.na(object$species.name)){
+    title <- paste("ppmlasso model projection for", object$species.name)
+    suit.plot <- suit.plot + ggtitle(title) + theme(plot.title = element_text(hjust = 0.5))
+  }
+
+  this.threespace = threespace.plot(object, env, maxpts)
+
+  output <- list(suitability = suit.plot,
+                 threespace.plot = this.threespace)
+  return(output)
+}
+
+
 # Function for checking data prior to running enmtools.ppmlasso
 ppmlasso.precheck <- function(f, species, env){
 

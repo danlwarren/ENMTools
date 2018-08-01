@@ -2,6 +2,7 @@
 #'
 #' @param model An enmtools.model object
 #' @param env A set of environment layers
+#' @param maxpts Maximum number of points to plot from env layers
 #'
 #' @return A ggplot2 object that plots the distribution of environments in the climate layers to the distribution of environments at background and presence localities.
 #'
@@ -13,7 +14,7 @@
 #' my.model<- enmtools.gam(iberolacerta.clade$species$monticola, euro.worldclim)
 #' threespace.plot(my.model, euro.worldclim)
 
-threespace.plot <- function(model, env){
+threespace.plot <- function(model, env, maxpts = NA){
 
   # Check classes of inputs
   if(!inherits(model, "enmtools.model")){
@@ -21,6 +22,19 @@ threespace.plot <- function(model, env){
   }
   if(!inherits(env, c("raster", "RasterBrick", "RasterStack"))){
     stop("The supplied environmental layers were not recognized as raster objects!")
+  }
+
+  if(inherits(model, "enmtools.maxent")){
+    model$analysis.df <- cbind(model$analysis.df, extract(env, model$analysis.df[,1:2]))
+  }
+
+  if(inherits(model, c("enmtools.bc", "enmtools.dm"))){
+    model$analysis.df <- cbind(model$analysis.df, extract(env, model$analysis.df[,1:2]))
+    model$analysis.df$presence <- rep(1, nrow(model$analysis.df))
+  }
+
+  if(inherits(model, "enmtools.ppmlasso")){
+    model$analysis.df <- model$analysis.df[,c(names(env), "presence")]
   }
 
   # Chuck out X and Y and stop on any unmatched env variables
@@ -39,6 +53,9 @@ threespace.plot <- function(model, env){
   allpoints <- as.data.frame(rasterToPoints(env))
   allpoints$presence <- rep(2, nrow(allpoints))
   allpoints <- allpoints[,-c(1,2)]
+  if(!is.na(maxpts)){
+    allpoints <- allpoints[sample(nrow(allpoints), maxpts),]
+  }
 
   # Combine model and env data frames
   allpoints <- rbind(allpoints, model.df)
@@ -51,14 +68,25 @@ threespace.plot <- function(model, env){
                               PC2 = allpoints.pca$scores[,2],
                               source = allpoints$presence)
 
-  # Plot layers in order
-  output <- ggplot(allpoints.pca, aes_string("PC1", "PC2")) +
-    layer(geom = "point", stat = "identity", position = "identity",
-          data = allpoints.pca[allpoints.pca$source == 2,], aes(color = "Env Layers")) +
-    layer(geom = "point", stat = "identity", position = "identity",
-          data = allpoints.pca[allpoints.pca$source == 0,], aes(color = "Background")) +
-    layer(geom = "point", stat = "identity", position = "identity",
-          data = allpoints.pca[allpoints.pca$source == 1,], aes(color = "Presence"))
+  if(inherits(model, c("enmtools.bc", "enmtools.dm"))){
+    # Plot layers in order
+    output <- ggplot(allpoints.pca, aes_string("PC1", "PC2")) +
+      layer(geom = "point", stat = "identity", position = "identity",
+            data = allpoints.pca[allpoints.pca$source == 2,], aes(color = "Env Layers")) +
+      layer(geom = "point", stat = "identity", position = "identity",
+            data = allpoints.pca[allpoints.pca$source == 1,], aes(color = "Presence"))
+  } else {
+    # Plot layers in order
+    output <- ggplot(allpoints.pca, aes_string("PC1", "PC2")) +
+      layer(geom = "point", stat = "identity", position = "identity",
+            data = allpoints.pca[allpoints.pca$source == 2,], aes(color = "Env Layers")) +
+      layer(geom = "point", stat = "identity", position = "identity",
+            data = allpoints.pca[allpoints.pca$source == 0,], aes(color = "Background")) +
+      layer(geom = "point", stat = "identity", position = "identity",
+            data = allpoints.pca[allpoints.pca$source == 1,], aes(color = "Presence"))
+  }
+
+
 
   return(output)
 }

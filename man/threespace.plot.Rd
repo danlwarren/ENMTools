@@ -4,12 +4,14 @@
 \alias{threespace.plot}
 \title{threespace.plot, A plot that compares the environmental distribution of presence points, background points, and the set of supplied environmental layers.}
 \usage{
-threespace.plot(model, env)
+threespace.plot(model, env, maxpts = NA)
 }
 \arguments{
 \item{model}{An enmtools.model object}
 
 \item{env}{A set of environment layers}
+
+\item{maxpts}{Maximum number of points to plot from env layers}
 }
 \value{
 A ggplot2 object that plots the distribution of environments in the climate layers to the distribution of environments at background and presence localities.
