@@ -39,6 +39,7 @@ threespace.plot <- function(model, env, maxpts = NA){
 
   # Chuck out X and Y and stop on any unmatched env variables
   model.df <- model$analysis.df[,-c(1,2)]
+  model.df <- model.df[complete.cases(model.df),]
 
   if(any(is.na(match(colnames(model.df), c(names(env), "presence"))))){
     stop("Mismatch in column names between model analysis.df and env layer names")
