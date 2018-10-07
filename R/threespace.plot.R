@@ -60,6 +60,7 @@ threespace.plot <- function(model, env, maxpts = NA){
 
   # Combine model and env data frames
   allpoints <- rbind(allpoints, model.df)
+  allpoints <- allpoints[complete.cases(allpoints),]
 
   # Run PCA
   allpoints.pca <- princomp(allpoints[,1:ncol(allpoints) - 1,], cor = T)
