@@ -3,8 +3,6 @@
 #' @param x An enmtools.species object containing a range raster
 #' @param y An enmtools.species object containing a range raster
 #'
-#' @export geog.range.overlap
-#'
 #' @examples
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)

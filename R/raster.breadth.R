@@ -10,8 +10,6 @@
 #'
 #' @keywords keywords
 #'
-#' @export raster.breadth
-#'
 #' @examples
 #' data(iberolacerta)
 #' data(euro.worldclim)

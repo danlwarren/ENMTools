@@ -10,8 +10,6 @@
 #'
 #' @keywords correlation, raster, residuals
 #'
-#' @export raster.resid
-#'
 #' @examples
 #' data(euro.worldclim)
 #' raster.resid(euro.worldclim[[1]], euro.worldclim[[2]])

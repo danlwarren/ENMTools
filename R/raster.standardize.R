@@ -10,8 +10,6 @@
 #'
 #' @keywords keywords
 #'
-#' @export raster.standardize
-#'
 #' @examples
 #' data(euro.worldclim)
 #' raster.standardize(euro.worldclim[[1]])

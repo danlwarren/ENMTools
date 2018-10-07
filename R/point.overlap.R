@@ -3,8 +3,6 @@
 #' @param x An enmtools.species object containing presence points
 #' @param y An enmtools.species object containing presence points
 #'
-#' @export point.overlap
-#'
 #' @examples
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)

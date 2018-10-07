@@ -10,8 +10,6 @@
 #'
 #' @keywords plot, sdm, enm, response
 #'
-#' @export marginal.plots
-#'
 #' @examples
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)

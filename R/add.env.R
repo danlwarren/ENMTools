@@ -3,13 +3,10 @@
 
 #' Code modified from Elith and Hijmans SDM with R tutorial
 #'
-#' @importFrom raster extract
 #'
 #' @param species An enmtools.species or enmtools.clade object
 #' @param env A raster stack of environmental variables
 #' @param verbose Controls printing of progress messages
-#'
-#' @export add.env
 
 
 add.env <- function(species, env, verbose = TRUE){

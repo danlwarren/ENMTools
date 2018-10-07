@@ -12,8 +12,6 @@
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param ... Arguments to be passed to ranger()
 #'
-#' @export enmtools.rf.ranger
-#'
 #' @examples
 #' ## NOT RUN
 #' data(euro.worldclim)

@@ -2,8 +2,6 @@
 #'
 #' @param species.list List of enmtools.species objects that you want to combine together
 #'
-#' @export combine.species
-#'
 #' @examples
 #' data(iberolacerta.clade)
 #' combine.species(iberolacerta.clade$species)

@@ -8,8 +8,6 @@
 #'
 #' @keywords pca environment presence background comparison extrapolation
 #'
-#' @export threespace.plot
-#'
 #' @examples
 #' my.model<- enmtools.gam(iberolacerta.clade$species$monticola, euro.worldclim)
 #' threespace.plot(my.model, euro.worldclim)

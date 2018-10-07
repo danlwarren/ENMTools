@@ -15,8 +15,6 @@
 #'
 #' @keywords identity, equivalency, enmtools, hypothesis testing
 #'
-#' @export identity.test
-#'
 #' @examples
 #' \dontrun{
 #' data(iberolacerta.clade)

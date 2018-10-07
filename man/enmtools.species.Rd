@@ -4,8 +4,8 @@
 \alias{enmtools.species}
 \title{Defining a class for enmtools.species.}
 \usage{
-enmtools.species(range = NA, presence.points = NA, background.points = NA,
-  species.name = NA, models = NA)
+enmtools.species(range = NA, presence.points = NA,
+  background.points = NA, species.name = NA, models = NA)
 }
 \arguments{
 \item{range}{A raster or SpatialPolygon with the actual range they occur in}

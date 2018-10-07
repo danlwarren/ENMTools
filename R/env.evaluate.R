@@ -7,8 +7,6 @@
 #' @param n.background The number of background points to sample from the environment space.
 #' @param ... Arguments to be passed to othfer functions
 #'
-#' @export env.evaluate
-#'
 #' @examples
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)

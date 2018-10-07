@@ -15,8 +15,6 @@
 #'
 #' @keywords rangebreak, biogeography, barrier, enmtools, hypothesis testing
 #'
-#' @export rangebreak.blob
-#'
 #' @examples
 #' \dontrun{
 #' data(iberolacerta.clade)

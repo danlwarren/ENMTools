@@ -20,8 +20,6 @@
 #'
 #' @keywords background, equivalency, enmtools, hypothesis testing
 #'
-#' @export background.test
-#'
 #' @examples
 #' \dontrun{
 #' data(iberolacerta.clade)

@@ -12,8 +12,6 @@
 #'
 #' @keywords keywords
 #'
-#' @export raster.overlap
-#'
 #' @examples
 #' data(iberolacerta)
 #' data(euro.worldclim)

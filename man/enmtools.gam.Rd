@@ -4,9 +4,10 @@
 \alias{enmtools.gam}
 \title{Takes an emtools.species object with presence and background points, and builds a gam}
 \usage{
-enmtools.gam(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000,
-  report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal",
-  gam.method = "REML", gam.select = TRUE, bg.source = "default", ...)
+enmtools.gam(species, env, f = NULL, test.prop = 0, k = 4,
+  nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0,
+  weights = "equal", gam.method = "REML", gam.select = TRUE,
+  bg.source = "default", ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}

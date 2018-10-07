@@ -8,8 +8,6 @@
 #' @param models A list of models that are made for the species, which will be stuffed in there as we go along
 #' to pass the check.  This is used by internal enmtools functions to make sure the necessary data is present
 #' before processing anything.
-#'
-#' @export enmtools.species
 
 
 enmtools.species <- function(range = NA, presence.points = NA, background.points = NA,

@@ -11,8 +11,6 @@
 #'
 #' @keywords niche plot sdm enm overlap
 #'
-#' @export visualize.overlap
-#'
 #' @examples
 #' data(iberolacerta)
 #' ar <- iberolacerta.clade$species$aranica
@@ -90,7 +88,7 @@ visualize.overlap <- function(model.1, model.2, env, nbins = 100, layers, plot.p
       pred1 <- as.numeric(predict(model.1$model, newdata = data.frame(plot.df), type = "response"))
     }
   }
-  
+
   if(inherits(model.2$model, "DistModel")){
     pred2 <- as.numeric(predict(model.2$model, x = data.frame(plot.df), type = "response"))
   } else {

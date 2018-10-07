@@ -6,8 +6,6 @@
 #'
 #' @keywords niche breadth sdm enm
 #'
-#' @export calc.B2
-#'
 #' @examples
 #' calc.B2(c(1, .001, .001))
 

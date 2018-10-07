@@ -3,6 +3,7 @@ Type: Package
 Title: Analysis of niche evolution using niche and distribution models
 Version: 0.2
 Date: 2017-01-11
+Encoding: UTF-8
 Authors@R: c(person(given = "Dan", family = "Warren", role = c("aut", "cre"), email = "dan.l.warren@gmail.com"),
               person(given = "Russell", family = "Dinnage", role = "aut", email = "r.dinnage@gmail.com"),
               person(given = "Nick", family = "Matzke", role = "aut", email = "nick.matzke@anu.edu.au"),
@@ -15,7 +16,7 @@ Maintainer: Dan Warren <dan.l.warren@gmail.com>
 Description: Tools for the ecological and historical biogeography.
 License: GPL-2
 LazyData: TRUE
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 Imports:
 	rgeos,
 	knitr,
