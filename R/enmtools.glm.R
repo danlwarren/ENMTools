@@ -472,7 +472,7 @@ make.enmtools.glm <- function(env, f = NULL, params) {
   temp_spec <- enmtools.species(env[[1]], presence.points = pres, background.points = abs,
                                 species.name = "SP")
   log <- capture.output(fake_model <- enmtools.glm(temp_spec, env, f, bg.source = "points"))
-  fake_model$model$beta <- params
+  fake_model$model$coefficients <- params
 
   suitability <- predict(env, fake_model$model, type = "response")
   fake_model$suitability <- suitability
