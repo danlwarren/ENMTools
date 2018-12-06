@@ -11,6 +11,10 @@ make.enmtools.glm(env, f = NULL, params)
 \item{env}{A raster or raster stack of environmental data.}
 
 \item{f}{Standard R formula}
+
+\item{params}{A matrix of parameters for the model. Must be a vector with length equal to the number
+of terms in the formula f. If f is NULL a formula is built automatically with an intercept, and
+one linear coefficient for each environmental variable.}
 }
 \description{
 Function to generate an empty enmtools.glm object and populate it with

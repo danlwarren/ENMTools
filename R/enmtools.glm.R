@@ -460,10 +460,9 @@ glm.precheck <- function(f, species, env){
 #' user chosen parameters
 #' @param env A raster or raster stack of environmental data.
 #' @param f Standard R formula
-#' @params params A matrix of parameters for the model. Must be a vector with length equal to the number
+#' @param params A matrix of parameters for the model. Must be a vector with length equal to the number
 #' of terms in the formula f. If f is NULL a formula is built automatically with an intercept, and
 #' one linear coefficient for each environmental variable.
-#' @export
 make.enmtools.glm <- function(env, f = NULL, params) {
   if(is.null(f)){
     f <- as.formula(paste("presence", paste(c(names(env)), collapse = " + "), sep = " ~ "))

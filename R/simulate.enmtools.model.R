@@ -6,8 +6,6 @@
 #' @param x entools.model object to simulate from
 #' @param n.points approximate number of points to simulate. You may get small number fewer or greater.
 #' If you need an exact number of points, generate too many, then drop the extra ones.
-#' @method simulate enmtools.model
-#' @export
 simulate.enmtools.model <- function(x, n.points = 1000) {
   ## check if the model outputs predictions as probabilities (otherwise assume densities)
   suit <- x$suitability

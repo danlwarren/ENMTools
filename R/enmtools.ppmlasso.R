@@ -529,10 +529,9 @@ ppmlasso_weights <- function (sp.xy, quad.xy, coord = c("X", "Y"))
 #' user chosen parameters
 #' @param env A raster or raster stack of environmental data.
 #' @param f Standard R formula
-#' @params params A matrix of parameters for the model. Must be a vector with length equal to the number
+#' @param params A matrix of parameters for the model. Must be a vector with length equal to the number
 #' of terms in the formula f. If f is NULL a formula is built automatically with an intercept, two polynomial terms
 #' per environmental variable plus their pairwise interactions, which gives 1 + n.env\*2 + (n.env \* (n.env - 1) / 2)
-#' @export
 make.enmtools.ppmlasso <- function(env, f = NULL, params) {
   if(is.null(f)){
     f <- as.formula(paste0("presence ~ poly(", paste(c(names(env)), collapse = ", "), ", degree = 2, raw = TRUE)"))
