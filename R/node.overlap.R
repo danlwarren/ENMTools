@@ -3,8 +3,6 @@
 #'
 #' @param overlap An overlap matrix
 #' @param tree A tree
-#'
-#' @export node.overlap
 
 
 node.overlap <- function(overlap, tree){

@@ -18,8 +18,6 @@
 #'
 #' @keywords niche plot sdm enm
 #'
-#' @export enmtools.ecospat.bg
-#'
 #' @examples
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)

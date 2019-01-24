@@ -7,8 +7,6 @@
 #'
 #' @keywords raster pca environment
 #'
-#' @export raster.pca
-#'
 #' @examples
 #' env.pca <- raster.pca(euro.worldclim, 2)
 

@@ -3,8 +3,6 @@
 #' @param clade An ENMTools clade object
 #' @param species A name or vector of names of species within the enmtools.clade object.
 #'
-#' @export drop.species
-#'
 #' @examples
 #' data(iberolacerta.clade)
 #' new.clade <- drop.species(iberolacerta.clade, c("cyreni", "monticola"))

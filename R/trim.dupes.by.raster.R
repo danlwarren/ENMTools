@@ -2,8 +2,6 @@
 #'
 #' @param points A two column data frame with X and Y coordinates
 #' @param mask A raster to use as a mask for drawing points
-#'
-#' @export background.points.buffer
 #' @examples
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)

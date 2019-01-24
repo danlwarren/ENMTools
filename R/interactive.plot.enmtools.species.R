@@ -13,7 +13,6 @@
 #' @param cluster.points Should points be clustered? If TRUE, points close together
 #' will be grouped into clusters that can be interactively expanded by clicking
 #' on them.
-#' @export interactive.plot.enmtools.species
 
 interactive.plot.enmtools.species <- function(x, map.provider = "Esri.WorldPhysical", plot.bg = FALSE, cluster.points = FALSE) {
   dat.df <- NULL

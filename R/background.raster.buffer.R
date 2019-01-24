@@ -7,8 +7,6 @@
 #' @param radius Radius for circular buffers to draw around points, in meters.
 #' @param mask A raster to use as a mask
 #'
-#' @export background.raster.buffer
-#'
 #' @examples
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)

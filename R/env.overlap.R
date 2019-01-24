@@ -7,7 +7,6 @@
 #' @param max.reps Maximum number of attempts that will be made to find suitable starting conditions
 #' @param cor.method Which method to use for calculating correlations between models
 #' @param chunk.size How many combinations of environmental variables to try at a time.  If your niche breadth in environment space is small, increasing this value may help you get a result.
-#' @export env.overlap
 #'
 #' @examples
 #' data(iberolacerta.clade)

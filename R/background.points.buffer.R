@@ -7,8 +7,6 @@
 #' @param radius Radius for circular buffers to draw around points, in meters.
 #' @param n Sample size for number of background points to return
 #' @param mask A raster to use as a mask for drawing points
-#'
-#' @export background.points.buffer
 
 
 background.points.buffer <- function(points, radius, n, mask){

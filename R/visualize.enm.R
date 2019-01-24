@@ -12,8 +12,6 @@
 #'
 #' @keywords niche plot sdm enm
 #'
-#' @export visualize.enm
-#'
 #' @examples
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)

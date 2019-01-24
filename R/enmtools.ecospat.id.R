@@ -16,8 +16,6 @@
 #'
 #' @keywords niche plot sdm enm
 #'
-#' @export enmtools.ecospat.id
-#'
 #' @examples
 #' \dontrun{
 #' data(iberolacerta.clade)
