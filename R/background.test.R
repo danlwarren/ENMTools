@@ -13,6 +13,8 @@
 #' @param nback Number of background points for models
 #' @param test.type Controls whether the background test will be "symmetric" or "asymmetric"
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
+#' @param low.memory When set to TRUE, replicate models are written to disc instead of being stored in the output object.  Replicate models stored in the output object contain paths to the replicate models on disk instead of the rasters themselves.
+#' @param rep.dir Directory for storing replicate models when low.memory is set to TRUE.  If not specified, the working directory will be used.
 #' @param ... Additional arguments to be passed to model fitting functions.
 #'
 #'
@@ -32,7 +34,7 @@
 #' f = pres ~ bio1 + bio12, nreps = 10)
 #' }
 
-background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99, test.type = "asymmetric", nback = 1000, bg.source = "default", ...){
+background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99, test.type = "asymmetric", nback = 1000, bg.source = "default", low.memory = FALSE, rep.dir = NA, ...){
 
   # Build a description of the analysis to use for summaries and plot titles
   if(test.type == "symmetric"){
@@ -51,11 +53,26 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
   # Initialize a list to store reps in
   replicate.models <- list()
 
+  # Set the output directory when low.memory = TRUE
+  if(low.memory == TRUE){
+    if(is.na(rep.dir)){
+      rep.dir <- getwd()
+    }
+
+    if(substr(rep.dir, nchar(rep.dir), nchar(rep.dir)) != "/"){
+      rep.dir <- paste0(rep.dir, "/")
+    }
+
+    if(!dir.exists(rep.dir)){
+      stop(paste("Specified directory for storing replicates cannot be found!\n\n", getwd()))
+    }
+  }
+
+
   # For starters we need to combine species background points so that each model
   # is being built with the same background
   species.1$background.points <- rbind(species.1$background.points, species.2$background.points)
   species.2$background.points <- rbind(species.1$background.points, species.2$background.points)
-
 
   # Building models for empirical data
   cat("\nBuilding empirical models...\n")
@@ -149,14 +166,23 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
       rep.species.2.model <- enmtools.rf(rep.species.2, env, ...)
     }
 
-    # Appending models to replicates list
-    replicate.models[[paste0(species.1$species.name, ".rep.", i)]] <- rep.species.1.model
-    replicate.models[[paste0(species.2$species.name, ".rep.", i)]] <- rep.species.2.model
-
     # Appending overlap to results
     reps.overlap <- rbind(reps.overlap, c(unlist(raster.overlap(rep.species.1.model, rep.species.2.model)),
                                           unlist(env.overlap(rep.species.1.model, rep.species.2.model, env = env)[1:3])))
 
+    # Appending models to replicates list
+    if(low.memory == TRUE){
+      path.1 <- paste0(rep.dir, species.1$species.name, ".rep.", i, ".Rda")
+      path.2 <- paste0(rep.dir, species.2$species.name, ".rep.", i, ".Rda")
+      save(rep.species.1.model, file = path.1)
+      save(rep.species.2.model, file = path.2)
+      replicate.models[[paste0(species.1$species.name, ".rep.", i)]] <- path.1
+      replicate.models[[paste0(species.2$species.name, ".rep.", i)]] <- path.2
+
+    } else {
+      replicate.models[[paste0(species.1$species.name, ".rep.", i)]] <- rep.species.1.model
+      replicate.models[[paste0(species.2$species.name, ".rep.", i)]] <- rep.species.2.model
+    }
   }
 
   rownames(reps.overlap) <- c("empirical", paste("rep", 1:nreps))
