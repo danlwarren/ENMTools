@@ -27,7 +27,7 @@
 #' f= pres ~ bio1 + bio12, nreps = 10)
 #' }
 
-rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps = 99,  nback = 1000, bg.source = "default", ...){
+rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps = 99,  nback = 1000, bg.source = "default", low.memory = FALSE, rep.dir = NA, ...){
 
   # Just for visualization
   #   plotraster <- env[[1]]

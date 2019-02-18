@@ -36,7 +36,7 @@
 #' type = "glm", f= pres ~ bio1 + bio12, nreps = 10)
 #' }
 
-rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL, width = 1, nreps = 99,  nback = 1000, bg.source = "default", ...){
+rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL, width = 1, nreps = 99,  nback = 1000, bg.source = "default", low.memory = FALSE, rep.dir = NA, ...){
 
   species.1 <- check.bg(species.1, env, nback = nback, bg.source = bg.source)
   species.2 <- check.bg(species.2, env, nback = nback, bg.source = bg.source)
@@ -252,16 +252,16 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
 
     # Appending models to replicates list
     if(low.memory == TRUE){
-      path.1 <- paste0(rep.dir, species.1$species.name, ".rep.", i, ".Rda")
-      path.2 <- paste0(rep.dir, species.2$species.name, ".rep.", i, ".Rda")
-      path.ribbon <- paste0(rep.dir, "ribbon.rep.", i, ".Rda")
-      path.outside <- paste0(rep.dir, "outside.rep.", i, ".Rda")
+      path.1 <- paste0(rep.dir, species.1$species.name, ".rep.", keepers, ".Rda")
+      path.2 <- paste0(rep.dir, species.2$species.name, ".rep.", keepers, ".Rda")
+      path.ribbon <- paste0(rep.dir, "ribbon.rep.", keepers, ".Rda")
+      path.outside <- paste0(rep.dir, "outside.rep.", keepers, ".Rda")
       save(rep.species.1.model, file = path.1)
       save(rep.species.2.model, file = path.2)
       save(rep.ribbon.model, file = path.ribbon)
       save(rep.outside.model, file = path.outside)
-      replicate.models[[paste0(species.1$species.name, ".rep.", i)]] <- path.1
-      replicate.models[[paste0(species.2$species.name, ".rep.", i)]] <- path.2
+      replicate.models[[paste0(species.1$species.name, ".rep.", keepers)]] <- path.1
+      replicate.models[[paste0(species.2$species.name, ".rep.", keepers)]] <- path.2
       replicate.models[[paste0("ribbon.rep.", keepers)]] <- path.ribbon
       replicate.models[[paste0("outside.rep.", keepers)]] <- path.outside
 
