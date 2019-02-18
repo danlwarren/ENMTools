@@ -25,6 +25,10 @@ rangebreak.linear(species.1, species.2, env, type, f = NULL,
 \item{bg.source}{Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.}
 
 \item{...}{Additional arguments to be passed to model fitting functions.}
+
+\item{low.memory}{When set to TRUE, replicate models are written to disc instead of being stored in the output object.  Replicate models stored in the output object contain paths to the replicate models on disk instead of the rasters themselves.}
+
+\item{rep.dir}{Directory for storing replicate models when low.memory is set to TRUE.  If not specified, the working directory will be used.}
 }
 \value{
 results A list containing a replicates, models for the empirical data, and summary statistics and plots.
