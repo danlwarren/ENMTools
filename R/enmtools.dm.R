@@ -8,7 +8,7 @@
 #' @param nback Number of background points for models.  In the case of Domain, these are only used for evaluation.
 #' @param rts.reps The number of replicates to do for a Raes and ter Steege-style test of significance
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
-#' @param ... Arguments to be passed to bioclim()
+#' @param ... Arguments to be passed to domain()
 #'
 #' @examples
 #' \dontrun{

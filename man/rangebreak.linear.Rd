@@ -5,7 +5,8 @@
 \title{rangebreak.linear Conduct a linear rangebreak test as described in Glor and Warren 2011.}
 \usage{
 rangebreak.linear(species.1, species.2, env, type, f = NULL,
-  nreps = 99, nback = 1000, bg.source = "default", ...)
+  nreps = 99, nback = 1000, bg.source = "default",
+  low.memory = FALSE, rep.dir = NA, ...)
 }
 \arguments{
 \item{species.1}{An emtools.species object}
@@ -23,6 +24,10 @@ rangebreak.linear(species.1, species.2, env, type, f = NULL,
 \item{nback}{Number of background points for models}
 
 \item{bg.source}{Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.}
+
+\item{low.memory}{When set to TRUE, replicate models are written to disc instead of being stored in the output object.  Replicate models stored in the output object contain paths to the replicate models on disk instead of the rasters themselves.}
+
+\item{rep.dir}{Directory for storing replicate models when low.memory is set to TRUE.  If not specified, the working directory will be used.}
 
 \item{...}{Additional arguments to be passed to model fitting functions.}
 }
