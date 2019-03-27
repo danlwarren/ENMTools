@@ -16,7 +16,7 @@ Maintainer: Dan Warren <dan.l.warren@gmail.com>
 Description: Tools for the ecological and historical biogeography.
 License: GPL-2
 LazyData: TRUE
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Imports:
 	rgeos,
 	knitr,
@@ -26,9 +26,8 @@ Imports:
 	viridis,
 	lhs,
 	mgcv,
-	ecospat,
-	phyloclim,
 	fields,
+	ecospat,
 	gbm,
 	randomForest,
 	ape,
