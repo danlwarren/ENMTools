@@ -24,9 +24,9 @@ simulate.enmtools.model <- function(x, n.points = 1000) {
   res
 }
 
-#' Function to convert raster to pixel image
-#' Credit goes to Jeffrey Evans via stack exchange:
-#' https://gis.stackexchange.com/questions/115159/converting-raster-to-im-object-for-point-process-model-covariate-in-r
+# Function to convert raster to pixel image
+# Credit goes to Jeffrey Evans via stack exchange:
+# https://gis.stackexchange.com/questions/115159/converting-raster-to-im-object-for-point-process-model-covariate-in-r
 raster.as.im <- function(im) {
   r <- raster::res(im)
   orig <- sp::bbox(im)[, 1] + 0.5 * r
