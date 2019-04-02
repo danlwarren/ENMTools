@@ -1,3 +1,8 @@
+---
+output:
+  md_document: default
+  keep_md: yes
+---
 ENMTools
 ======================
 This package implements various tests, visualizations, and metrics for use with environmental niche models (ENMs) and species distribution models (SDMs). 
