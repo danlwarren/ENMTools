@@ -5,7 +5,7 @@
 \title{Calculates evaluation metrics (AUC, etc.) using latin hypercube sampling in environment space}
 \usage{
 env.evaluate(species, model, env, bg.source = "background",
-  n.background = 10000, ...)
+  n.background = 10000, test.eval = FALSE, ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
@@ -17,6 +17,8 @@ env.evaluate(species, model, env, bg.source = "background",
 \item{bg.source}{Determines whether minima and maxima of the environment space should be picked using the environment layers or the background points.}
 
 \item{n.background}{The number of background points to sample from the environment space.}
+
+\item{test.eval}{When set to "true", env.evaluate evaluates the test data stored in the model object instead of the training data.}
 
 \item{...}{Arguments to be passed to othfer functions}
 }
