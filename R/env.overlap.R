@@ -74,6 +74,10 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
       }
     }
 
+    # Have to do this because rf is producing tiny negative suitabilities for some
+    # jackass reason
+    pred1[pred1 < 0] <- 0
+    pred2[pred2 < 0] <- 0
 
     print(paste("Trying to find starting conditions, attempt", n.reps))
 
@@ -142,6 +146,9 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
           pred2 <- as.numeric(predict(model.2, newdata = data.frame(predict.table), type = "response"))
         }
       }
+
+      pred1[pred1 < 0] <- 0
+      pred2[pred2 < 0] <- 0
 
       if(sd(pred1) == 0 | sd(pred2) == 0){
         next
