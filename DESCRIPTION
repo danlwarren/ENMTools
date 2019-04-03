@@ -37,7 +37,9 @@ Imports:
 	magrittr,
 	ranger,
 	ENMeval,
-	vegan
+	vegan,
+	sp,
+	spatstat
 Depends:
 	raster,
 	dismo
