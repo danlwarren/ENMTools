@@ -9,7 +9,7 @@
 #' @param map.provider Name of a map provider for the underlying interactive base map.
 #' Default is "Esri.WorldPhysical", and attractive topographic map with no place labels. A
 #' preview of all map provider options can be viewed at \url{http://leaflet-extras.github.io/leaflet-providers/preview/}
-#' @param plot.bg Should background points be plotted?
+#' @param raster.opacity Specifies the opacity level of the suitability raster.
 #' @param cluster.points Should points be clustered? If TRUE, points close together
 #' will be grouped into clusters that can be interactively expanded by clicking
 #' on them.

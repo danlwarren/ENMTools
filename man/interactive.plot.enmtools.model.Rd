@@ -5,7 +5,7 @@
 \title{Plot an enmtools.model object on an interactive map}
 \usage{
 interactive.plot.enmtools.model(x, map.provider = "Esri.WorldPhysical",
-  plot.bg = FALSE, cluster.points = FALSE)
+  cluster.points = FALSE, raster.opacity = 1)
 }
 \arguments{
 \item{x}{entools.model object to plot}
@@ -14,11 +14,11 @@ interactive.plot.enmtools.model(x, map.provider = "Esri.WorldPhysical",
 Default is "Esri.WorldPhysical", and attractive topographic map with no place labels. A
 preview of all map provider options can be viewed at \url{http://leaflet-extras.github.io/leaflet-providers/preview/}}
 
-\item{plot.bg}{Should background points be plotted?}
-
 \item{cluster.points}{Should points be clustered? If TRUE, points close together
 will be grouped into clusters that can be interactively expanded by clicking
 on them.}
+
+\item{raster.opacity}{Specifies the opacity level of the suitability raster.}
 }
 \description{
 Function that take an \code{enmtools.model} object and plots an
