@@ -5,7 +5,7 @@
 \title{Plot an enmtools.species object on an interactive map}
 \usage{
 interactive.plot.enmtools.species(x, map.provider = "Esri.WorldPhysical",
-  plot.bg = FALSE, cluster.points = FALSE)
+  cluster.points = FALSE)
 }
 \arguments{
 \item{x}{entools.species object to plot}
@@ -13,8 +13,6 @@ interactive.plot.enmtools.species(x, map.provider = "Esri.WorldPhysical",
 \item{map.provider}{Name of a map provider for the underlying interactive base map.
 Default is "Esri.WorldPhysical", and attractive topographic map with no place labels. A
 preview of all map provider options can be viewed at \url{http://leaflet-extras.github.io/leaflet-providers/preview/}}
-
-\item{plot.bg}{Should background points be plotted?}
 
 \item{cluster.points}{Should points be clustered? If TRUE, points close together
 will be grouped into clusters that can be interactively expanded by clicking
