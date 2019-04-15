@@ -14,69 +14,99 @@
 #' will be grouped into clusters that can be interactively expanded by clicking
 #' on them.
 
-interactive.plot.enmtools.model <- function(x, map.provider = "Esri.WorldPhysical", plot.bg = FALSE, cluster.points = FALSE) {
+interactive.plot.enmtools.model <- function(x, map.provider = "Esri.WorldPhysical", cluster.points = FALSE, raster.opacity = 1) {
 
-  pal <- colorFactor(c("grey10", "red"), domain = c("0", "1"))
+  presence.points <- NA
+  background.points <- NA
+
 
   if(!is.null(x$analysis.df$presence)) {
     pnts <- x$analysis.df[ , c("Longitude", "Latitude", "presence")]
-
-    if(!plot.bg) {
-      pnts <- pnts[pnts$presence == 1, ]
-    }
+    presence.points <- pnts[pnts$presence == 1, ]
+    background.points <- pnts[pnts$presence == 0, ]
   } else {
-    pnts <- x$analysis.df[ , c("Longitude", "Latitude")]
+    presence.points <- x$analysis.df[ , c("Longitude", "Latitude")]
   }
 
   m <- leaflet(pnts) %>%
-    addProviderTiles(map.provider) %>%
-    addRasterImage(x$suitability, colors = "inferno", opacity = 0.65)
+    addProviderTiles(map.provider, group = "Base map") %>%
+    addRasterImage(x$suitability, colors = "inferno", opacity = raster.opacity, group = "Model")
 
-  if(!is.null(x$analysis.df$presence)) {
-    if(cluster.points) {
-      m <- m %>%
-        addCircleMarkers(~Longitude, ~Latitude, color = ~pal(as.factor(presence)),
-                         stroke = FALSE, fillOpacity = 0.5, radius= 8,
-                         clusterOptions = markerClusterOptions())
-    } else {
-      m <- m %>%
-        addCircleMarkers(~Longitude, ~Latitude, color = ~pal(as.factor(presence)),
-                         stroke = FALSE, fillOpacity = 0.5, radius= 8)
-    }
-  } else {
-    if(cluster.points) {
-      m <- m %>%
-        addCircleMarkers(~Longitude, ~Latitude, color = "red",
-                         stroke = FALSE, fillOpacity = 0.5, radius= 8,
-                         clusterOptions = markerClusterOptions())
-    } else {
-      m <- m %>%
-        addCircleMarkers(~Longitude, ~Latitude, color = "red",
-                         stroke = FALSE, fillOpacity = 0.5, radius= 8)
-    }
+  if(is.data.frame(background.points)){
+    m <- m %>%
+      addCircleMarkers(~Longitude, ~Latitude, color = "black",
+                       stroke = FALSE, fillOpacity = 0.5, radius= 8,
+                       data = background.points, group = "Background points")
   }
 
-  m <- m %>% addLegend(pal = colorNumeric("inferno", c(min(values(x$suitability), na.rm = TRUE),
+  if(cluster.points) {
+    m <- m %>%
+      addCircleMarkers(~Longitude, ~Latitude, color = "red",
+                       stroke = FALSE, fillOpacity = 0.5, radius= 8,
+                       clusterOptions = markerClusterOptions(),
+                       data = presence.points, group = "Training points")
+  } else {
+    m <- m %>%
+      addCircleMarkers(~Longitude, ~Latitude, color = "red",
+                       stroke = FALSE, fillOpacity = 0.5, radius= 8,
+                       data = presence.points, group = "Training points")
+  }
+
+
+  if(is.data.frame(x$test.data)){
+    m <- m %>%
+      addCircleMarkers(~Longitude, ~Latitude, color = "green",
+                       stroke = FALSE, fillOpacity = 0.5, radius= 8,
+                       group = "Test points", data = x$test.data)
+  }
+
+  m <- m %>%
+    addLegend(pal = colorNumeric("inferno", c(min(values(x$suitability), na.rm = TRUE),
                                                        max(values(x$suitability), na.rm = TRUE))), values = c(min(values(x$suitability), na.rm = TRUE),
                                                                                                               max(values(x$suitability), na.rm = TRUE)))
 
-  if(plot.bg) {
+
+  if(is.data.frame(x$test.data) & is.data.frame(background.points)){
+    m <- m %>% addLayersControl(
+      overlayGroups = c("Base map", "Model", "Training points", "Test points", "Background points"),
+      options = layersControlOptions(collapsed = FALSE, position = "bottomleft")
+    )
+
     m <- m %>%
-      addLegend("bottomright", pal = pal, values = c("0", "1"),
-                labFormat = function(type, x) {
-                  labs = c("0" = "Background points",
-                           "1" = "Presence points")
-                  labs[x]
-                })
+      addLegend("bottomright", colors = c("green", "red", "black"),
+                labels = c("Test points", "Training presences", "Background points"))
+
+  } else if(!is.data.frame(x$test.data) & is.data.frame(background.points)) {
+    m <- m %>% addLayersControl(
+      overlayGroups = c("Base map", "Model", "Training points", "Background points"),
+      options = layersControlOptions(collapsed = FALSE, position = "bottomleft")
+    )
+
+    m <- m %>%
+      addLegend("bottomright", colors = c("red", "black"),
+                labels = c("Training presences", "Background points"))
+
+  } else if(is.data.frame(x$test.data) & !is.data.frame(background.points)){
+    m <- m %>% addLayersControl(
+      overlayGroups = c("Base map", "Model", "Training points", "Test points"),
+      options = layersControlOptions(collapsed = FALSE, position = "bottomleft")
+    )
+
+    m <- m %>%
+      addLegend("bottomright", colors = c("green", "red"),
+                labels = c("Test points", "Training presences"))
+
   } else {
+    m <- m %>% addLayersControl(
+      overlayGroups = c("Base map", "Model", "Training points"),
+      options = layersControlOptions(collapsed = FALSE, position = "bottomleft")
+    )
+
     m <- m %>%
-      addLegend("bottomright", pal = pal, values = c("1"),
-                labFormat = function(type, x) {
-                  labs = c("0" = "Background points",
-                           "1" = "Presence points")
-                  labs[x]
-                })
+      addLegend("bottomright", colors = c("red"),
+                labels = c("Training presences"))
   }
+
 
 
   m
