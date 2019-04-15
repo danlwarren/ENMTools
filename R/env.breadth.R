@@ -57,7 +57,8 @@ env.breadth <- function(model, env, tolerance = .0001, max.reps = 10, chunk.size
     }
 
     if(max(pred) == 0){
-      this.B2 <- NA
+      return(list(env.B2 = mean(this.B2),
+                      B2.plot = qplot(gens, this.B2, ylab = "B2", xlab = "Samples")))
     } else {
       this.B2 <- calc.B2(pred)
     }
