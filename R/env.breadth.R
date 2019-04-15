@@ -57,8 +57,7 @@ env.breadth <- function(model, env, tolerance = .0001, max.reps = 10, chunk.size
     }
 
     if(max(pred) == 0){
-      return(list(env.B2 = mean(this.B2),
-                      B2.plot = qplot(gens, this.B2, ylab = "B2", xlab = "Samples")))
+      this.B2 <- NA
     } else {
       this.B2 <- calc.B2(pred)
     }
@@ -74,7 +73,8 @@ env.breadth <- function(model, env, tolerance = .0001, max.reps = 10, chunk.size
   # If we fail to find useful starting conditions we'll just barf an NA and give up
   if(n.reps == max.reps){
     cat("\n\nCould not find suitable starting conditions for environmental breadth, returning NA\n\n")
-    this.B2 <- NA
+    return(list(env.B2 = NA,
+                B2.plot = NA))
   } else {
 
     # So here we've got good starting conditions and we're going to keep going
