@@ -74,6 +74,10 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
       }
     }
 
+    # Have to do this because rf is producing tiny negative suitabilities for some
+    # jackass reason
+    pred1[pred1 < 0] <- 0
+    pred2[pred2 < 0] <- 0
 
     print(paste("Trying to find starting conditions, attempt", n.reps))
 
@@ -97,9 +101,12 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
   # If we fail to find useful starting conditions we'll just barf an NA and give up
   if(n.reps == max.reps){
     cat("\n\nCould not find suitable starting conditions for environmental overlap, returning NA\n\n")
-    this.d <- NA
-    this.i <- NA
-    this.cor <- NA
+    return(list(env.D = NA,
+                env.I = NA,
+                env.cor = NA,
+                env.D.plot = NA,
+                env.I.plot = NA,
+                env.cor.plot = NA))
   } else {
 
     # So here we've got good starting conditions and we're going to keep going
@@ -114,7 +121,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
 
     while(delta > tolerance){
 
-       # print(max(gens))
+      # print(max(gens))
 
 
 
@@ -142,6 +149,9 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
           pred2 <- as.numeric(predict(model.2, newdata = data.frame(predict.table), type = "response"))
         }
       }
+
+      pred1[pred1 < 0] <- 0
+      pred2[pred2 < 0] <- 0
 
       if(sd(pred1) == 0 | sd(pred2) == 0){
         next

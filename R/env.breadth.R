@@ -73,7 +73,8 @@ env.breadth <- function(model, env, tolerance = .0001, max.reps = 10, chunk.size
   # If we fail to find useful starting conditions we'll just barf an NA and give up
   if(n.reps == max.reps){
     cat("\n\nCould not find suitable starting conditions for environmental breadth, returning NA\n\n")
-    this.B2 <- NA
+    return(list(env.B2 = NA,
+                B2.plot = NA))
   } else {
 
     # So here we've got good starting conditions and we're going to keep going
