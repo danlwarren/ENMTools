@@ -5,8 +5,9 @@
 \title{Takes an emtools.species object with presence and background points, and builds a Point Process Model (with Lasso penalty)}
 \usage{
 enmtools.ppmlasso(species, env, f = NULL, test.prop = 0, eval = TRUE,
-  nback = 10000, normalise = FALSE, report = NULL,
-  overwrite = FALSE, rts.reps = 0, bg.source = "default", ...)
+  nback = 1000, env.nback = 10000, normalise = FALSE,
+  report = NULL, overwrite = FALSE, rts.reps = 0,
+  bg.source = "default", ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
@@ -20,6 +21,8 @@ enmtools.ppmlasso(species, env, f = NULL, test.prop = 0, eval = TRUE,
 \item{eval}{Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.}
 
 \item{nback}{Number of background points to draw from range or env, if background points aren't provided}
+
+\item{env.nback}{Number of points to draw from environment space for environment space discrimination metrics.}
 
 \item{normalise}{Should the suitability of the model be normalised? If FALSE (the default), suitability is returned as the predicted number of presence points in each grid cell (occurrence density). If TRUE, occurrence densities are divided by the total predicted density, to give a value ranging from 0 to 1, which represents the proportion of the predicted density for a species that occurs in each grid cell.}
 
