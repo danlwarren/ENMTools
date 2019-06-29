@@ -340,6 +340,10 @@ plot.enmtools.dm <- function(x, ...){
 # Predict method for models of class enmtools.dm
 predict.enmtools.dm <- function(object, env, maxpts = 1000, ...){
 
+  # The domain predict function doesn't like having layers in the stack that aren't in
+  # the presence df
+  env <- env[[colnames(object$model@presence)]]
+
   # Make a plot of habitat suitability in the new region
   suitability <- raster::predict(env, object$model)
   suit.points <- data.frame(rasterToPoints(suitability))
