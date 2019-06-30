@@ -5,8 +5,9 @@
 \title{Takes an emtools.species object with presence and background points, and builds a GLM}
 \usage{
 enmtools.glm(species, env, f = NULL, test.prop = 0, eval = TRUE,
-  nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0,
-  weights = "equal", bg.source = "default", ...)
+  nback = 1000, env.nback = 10000, report = NULL,
+  overwrite = FALSE, rts.reps = 0, weights = "equal",
+  bg.source = "default", ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
@@ -20,6 +21,8 @@ enmtools.glm(species, env, f = NULL, test.prop = 0, eval = TRUE,
 \item{eval}{Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.}
 
 \item{nback}{Number of background points to draw from range or env, if background points aren't provided}
+
+\item{env.nback}{Number of points to draw from environment space for environment space discrimination metrics.}
 
 \item{report}{Optional name of an html file for generating reports}
 

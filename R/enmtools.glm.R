@@ -6,6 +6,7 @@
 #' @param test.prop Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.
 #' @param eval Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.
 #' @param nback Number of background points to draw from range or env, if background points aren't provided
+#' @param env.nback Number of points to draw from environment space for environment space discrimination metrics.
 #' @param report Optional name of an html file for generating reports
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
 #' @param rts.reps The number of replicates to do for a Raes and ter Steege-style test of significance
@@ -20,7 +21,7 @@
 
 
 
-enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default", ...){
+enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default", ...){
 
   notes <- NULL
 
@@ -111,7 +112,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
 
     model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                        this.glm, env)
-    env.model.evaluation <- env.evaluate(species, this.glm, env)
+    env.model.evaluation <- env.evaluate(species, this.glm, env, n.background = env.nback)
 
     # Test eval for randomly withheld data
     if(is.numeric(test.prop)){
@@ -120,7 +121,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
                                           this.glm, env)
         temp.sp <- species
         temp.sp$presence.points <- test.data
-        env.test.evaluation <- env.evaluate(temp.sp, this.glm, env)
+        env.test.evaluation <- env.evaluate(temp.sp, this.glm, env, n.background = env.nback)
       }
     }
 
@@ -132,7 +133,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
         temp.sp <- species
         temp.sp$presence.points <- test.data
         temp.sp$background.points <- test.bg
-        env.test.evaluation <- env.evaluate(temp.sp, this.glm, env)
+        env.test.evaluation <- env.evaluate(temp.sp, this.glm, env, n.background = env.nback)
       }
     }
 
@@ -185,7 +186,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
 
         thisrep.model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                                    thisrep.glm, env)
-        thisrep.env.model.evaluation <- env.evaluate(species, thisrep.glm, env)
+        thisrep.env.model.evaluation <- env.evaluate(species, thisrep.glm, env, n.background = env.nback)
 
         rts.geog.training[i] <- thisrep.model.evaluation@auc
         rts.env.training[i] <- thisrep.env.model.evaluation@auc
@@ -195,7 +196,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
                                                     thisrep.glm, env)
           temp.sp <- rep.species
           temp.sp$presence.points <- test.data
-          thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.glm, env)
+          thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.glm, env, n.background = env.nback)
 
           rts.geog.test[i] <- thisrep.test.evaluation@auc
           rts.env.test[i] <- thisrep.env.test.evaluation@auc

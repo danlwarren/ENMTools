@@ -6,6 +6,7 @@
 #' @param test.prop Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.
 #' @param eval Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.
 #' @param nback Number of background points to draw from range or env, if background points aren't provided
+#' @param env.nback Number of points to draw from environment space for environment space discrimination metrics.
 #' @param normalise Should the suitability of the model be normalised? If FALSE (the default), suitability is returned as the predicted number of presence points in each grid cell (occurrence density). If TRUE, occurrence densities are divided by the total predicted density, to give a value ranging from 0 to 1, which represents the proportion of the predicted density for a species that occurs in each grid cell.
 #' @param report Optional name of an html file for generating reports
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
@@ -22,7 +23,7 @@
 #' enmtools.ppmlasso(iberolacerta.clade$species$monticola, env = euro.worldclim[[1:3]])
 
 
-enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 10000, normalise = FALSE, report = NULL, overwrite = FALSE, rts.reps = 0, bg.source = "default", ...){
+enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, normalise = FALSE, report = NULL, overwrite = FALSE, rts.reps = 0, bg.source = "default", ...){
 
   notes <- NULL
 
@@ -110,7 +111,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
                                         predict.ppmlasso(this.ppmlasso,
                                                          newdata = species$background.points)[ , 1, drop = TRUE])
 
-    env.model.evaluation <- env.evaluate(species, this.ppmlasso, env)
+    env.model.evaluation <- env.evaluate(species, this.ppmlasso, env, n.background = env.nback)
 
     # Test eval for randomly withheld data
     if(is.numeric(test.prop)){
@@ -121,7 +122,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
                                                             newdata = species$background.points)[ , 1, drop = TRUE])
         temp.sp <- species
         temp.sp$presence.points <- test.data
-        env.test.evaluation <- env.evaluate(temp.sp, this.ppmlasso, env)
+        env.test.evaluation <- env.evaluate(temp.sp, this.ppmlasso, env, n.background = env.nback)
       }
     }
 
@@ -136,7 +137,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
         temp.sp <- species
         temp.sp$presence.points <- test.data
         temp.sp$background.points <- test.bg
-        env.test.evaluation <- env.evaluate(temp.sp, this.ppmlasso, env)
+        env.test.evaluation <- env.evaluate(temp.sp, this.ppmlasso, env, n.background = env.nback)
       }
     }
 
@@ -207,7 +208,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
                                                                     newdata = rep.species$presence.points)[ , 1, drop = TRUE],
                                                    predict.ppmlasso(thisrep.ppmlasso,
                                                                     newdata = rep.species$background.points)[ , 1, drop = TRUE])
-        thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.ppmlasso, env)
+        thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.ppmlasso, env, n.background = env.nback)
 
         rts.geog.training[i] <- thisrep.model.evaluation@auc
         rts.env.training[i] <- thisrep.env.model.evaluation@auc
@@ -227,7 +228,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
                                                                       newdata = rep.species$background.points)[ , 1, drop = TRUE])
           temp.sp <- rep.species
           temp.sp$presence.points <- test.data
-          thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.ppmlasso, env)
+          thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.ppmlasso, env, n.background = env.nback)
 
           rts.geog.test[i] <- thisrep.test.evaluation@auc
           rts.env.test[i] <- thisrep.env.test.evaluation@auc

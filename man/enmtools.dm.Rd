@@ -5,7 +5,7 @@
 \title{Takes an emtools.species object with presence and background points, and builds a Domain model}
 \usage{
 enmtools.dm(species, env = NA, test.prop = 0, report = NULL,
-  nback = 1000, overwrite = FALSE, rts.reps = 0,
+  nback = 1000, env.nback = 10000, overwrite = FALSE, rts.reps = 0,
   bg.source = "default", ...)
 }
 \arguments{
@@ -18,6 +18,8 @@ enmtools.dm(species, env = NA, test.prop = 0, report = NULL,
 \item{report}{Optional name of an html file for generating reports}
 
 \item{nback}{Number of background points for models.  In the case of Domain, these are only used for evaluation.}
+
+\item{env.nback}{Number of points to draw from environment space for environment space discrimination metrics.}
 
 \item{overwrite}{TRUE/FALSE whether to overwrite a report file if it already exists}
 

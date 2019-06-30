@@ -5,9 +5,9 @@
 \title{Takes an emtools.species object with presence and background points, and builds a gam}
 \usage{
 enmtools.gam(species, env, f = NULL, test.prop = 0, k = 4,
-  nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0,
-  weights = "equal", gam.method = "REML", gam.select = TRUE,
-  bg.source = "default", ...)
+  nback = 1000, env.nback = 10000, report = NULL,
+  overwrite = FALSE, rts.reps = 0, weights = "equal",
+  gam.method = "REML", gam.select = TRUE, bg.source = "default", ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
@@ -21,6 +21,8 @@ enmtools.gam(species, env, f = NULL, test.prop = 0, k = 4,
 \item{k}{Dimension of the basis used to represent the smooth term.  See documentation for s() for details.}
 
 \item{nback}{Number of background points to draw from range or env, if background points aren't provided}
+
+\item{env.nback}{Number of points to draw from environment space for environment space discrimination metrics.}
 
 \item{report}{Optional name of an html file for generating reports}
 
