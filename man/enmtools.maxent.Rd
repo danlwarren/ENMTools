@@ -5,8 +5,8 @@
 \title{Takes an emtools.species object with presence and background points, and builds a maxent model}
 \usage{
 enmtools.maxent(species, env, test.prop = 0, nback = 1000,
-  report = NULL, overwrite = FALSE, rts.reps = 0,
-  bg.source = "default", ...)
+  env.nback = 10000, report = NULL, overwrite = FALSE,
+  rts.reps = 0, bg.source = "default", ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
@@ -16,6 +16,8 @@ enmtools.maxent(species, env, test.prop = 0, nback = 1000,
 \item{test.prop}{Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.}
 
 \item{nback}{Number of background points to draw from range or env, if background points aren't provided}
+
+\item{env.nback}{Number of points to draw from environment space for environment space discrimination metrics.}
 
 \item{report}{Optional name of an html file for generating reports}
 

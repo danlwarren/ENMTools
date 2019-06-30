@@ -6,6 +6,7 @@
 #' @param report Optional name of an html file for generating reports
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
 #' @param nback Number of background points for models.  In the case of Domain, these are only used for evaluation.
+#' @param env.nback Number of points to draw from environment space for environment space discrimination metrics.
 #' @param rts.reps The number of replicates to do for a Raes and ter Steege-style test of significance
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param ... Arguments to be passed to domain()
@@ -18,7 +19,7 @@
 #' }
 
 
-enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback = 1000, overwrite = FALSE, rts.reps = 0, bg.source = "default", ...){
+enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback = 1000, env.nback = 10000, overwrite = FALSE, rts.reps = 0, bg.source = "default", ...){
 
   notes <- NULL
 
@@ -69,7 +70,7 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
 
   model.evaluation <- dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                this.dm, env)
-  env.model.evaluation <- env.evaluate(species, this.dm, env)
+  env.model.evaluation <- env.evaluate(species, this.dm, env, n.background = env.nback)
 
   # Test eval for randomly withheld data
   if(is.numeric(test.prop)){
@@ -78,7 +79,7 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
                                         this.dm, env)
       temp.sp <- species
       temp.sp$presence.points <- test.data
-      env.test.evaluation <- env.evaluate(temp.sp, this.dm, env)
+      env.test.evaluation <- env.evaluate(temp.sp, this.dm, env, n.background = env.nback)
     }
   }
 
@@ -90,7 +91,7 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
       temp.sp <- species
       temp.sp$presence.points <- test.data
       temp.sp$background.points <- test.bg
-      env.test.evaluation <- env.evaluate(temp.sp, this.dm, env)
+      env.test.evaluation <- env.evaluate(temp.sp, this.dm, env, n.background = env.nback)
     }
   }
 
@@ -140,7 +141,7 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
 
       thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points[,1:2], rep.species$background.points[,1:2],
                                                  thisrep.dm, env)
-      thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.dm, env)
+      thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.dm, env, n.background = env.nback)
 
       rts.geog.training[i] <- thisrep.model.evaluation@auc
       rts.env.training[i] <- thisrep.env.model.evaluation@auc
@@ -150,7 +151,7 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
                                                   thisrep.dm, env)
         temp.sp <- rep.species
         temp.sp$presence.points <- test.data
-        thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.dm, env)
+        thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.dm, env, n.background = env.nback)
 
         rts.geog.test[i] <- thisrep.test.evaluation@auc
         rts.env.test[i] <- thisrep.env.test.evaluation@auc
@@ -338,6 +339,10 @@ plot.enmtools.dm <- function(x, ...){
 
 # Predict method for models of class enmtools.dm
 predict.enmtools.dm <- function(object, env, maxpts = 1000, ...){
+
+  # The domain predict function doesn't like having layers in the stack that aren't in
+  # the presence df
+  env <- env[[colnames(object$model@presence)]]
 
   # Make a plot of habitat suitability in the new region
   suitability <- raster::predict(env, object$model)

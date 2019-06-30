@@ -4,6 +4,7 @@
 #' @param env A raster or raster stack of environmental data.
 #' @param test.prop Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.
 #' @param nback Number of background points to draw from range or env, if background points aren't provided
+#' @param env.nback Number of points to draw from environment space for environment space discrimination metrics.
 #' @param report Optional name of an html file for generating reports
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
 #' @param rts.reps The number of replicates to do for a Raes and ter Steege-style test of significance
@@ -18,7 +19,7 @@
 #' }
 
 
-enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, report = NULL, overwrite = FALSE, rts.reps = 0,  bg.source = "default", ...){
+enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0,  bg.source = "default", ...){
 
   notes <- NULL
 
@@ -72,7 +73,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, report = 
 
   model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                this.mx, env)
-  env.model.evaluation <- env.evaluate(species, this.mx, env)
+  env.model.evaluation <- env.evaluate(species, this.mx, env, n.background = env.nback)
 
   # Test eval for randomly withheld data
   if(is.numeric(test.prop)){
@@ -81,7 +82,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, report = 
                                         this.mx, env)
       temp.sp <- species
       temp.sp$presence.points <- test.data
-      env.test.evaluation <- env.evaluate(temp.sp, this.mx, env)
+      env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)
     }
   }
 
@@ -93,7 +94,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, report = 
       temp.sp <- species
       temp.sp$presence.points <- test.data
       temp.sp$background.points <- test.bg
-      env.test.evaluation <- env.evaluate(temp.sp, this.mx, env)
+      env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)
     }
   }
 
@@ -145,7 +146,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, report = 
 
       thisrep.model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                                  thisrep.mx, env)
-      thisrep.env.model.evaluation <- env.evaluate(species, thisrep.mx, env)
+      thisrep.env.model.evaluation <- env.evaluate(species, thisrep.mx, env, n.background = env.nback)
 
       rts.geog.training[i] <- thisrep.model.evaluation@auc
       rts.env.training[i] <- thisrep.env.model.evaluation@auc
@@ -155,7 +156,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, report = 
                                                   thisrep.mx, env)
         temp.sp <- rep.species
         temp.sp$presence.points <- test.data
-        thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.mx, env)
+        thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.mx, env, n.background = env.nback)
 
         rts.geog.test[i] <- thisrep.test.evaluation@auc
         rts.env.test[i] <- thisrep.env.test.evaluation@auc

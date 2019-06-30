@@ -5,7 +5,7 @@
 \title{Takes an emtools.species object with presence and background points, and builds a Bioclim model}
 \usage{
 enmtools.bc(species, env = NA, test.prop = 0, report = NULL,
-  overwrite = FALSE, nback = 1000, rts.reps = 0,
+  overwrite = FALSE, nback = 1000, env.nback = 10000, rts.reps = 0,
   bg.source = "default", ...)
 }
 \arguments{
@@ -20,6 +20,8 @@ enmtools.bc(species, env = NA, test.prop = 0, report = NULL,
 \item{overwrite}{TRUE/FALSE whether to overwrite a report file if it already exists}
 
 \item{nback}{Number of background points for models. In the case of bioclim models these are only used for evaluation.}
+
+\item{env.nback}{Number of points to draw from environment space for environment space discrimination metrics.}
 
 \item{rts.reps}{The number of replicates to do for a Raes and ter Steege-style test of significance}
 
