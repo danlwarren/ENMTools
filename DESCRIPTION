@@ -39,7 +39,8 @@ Imports:
 	ENMeval,
 	vegan,
 	sp,
-	spatstat
+	spatstat,
+	CalibratR
 Depends:
 	raster,
 	dismo
