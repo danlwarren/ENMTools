@@ -40,7 +40,8 @@ Imports:
 	vegan,
 	sp,
 	spatstat,
-	CalibratR
+	CalibratR,
+	caret
 Depends:
 	raster,
 	dismo
