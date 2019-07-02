@@ -7,7 +7,8 @@
 #' @examples
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
-#' monticola.glm <- enmtools.glm(iberolacerta.clade$species$monticola, env = euro.worldclim, f = pres ~ bio1 + bio9)
+#' monticola.glm <- enmtools.glm(iberolacerta.clade$species$monticola,
+#' env = euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.3)
 #' enmtools.calibrate(monticola.glm)
 
 enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11){
@@ -45,12 +46,12 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11){
   # Get a calibration data frame from caret for plots etc.
   calib <- caret::calibration(obs ~ prob, data = pred.df, class = "presence", cuts = cuts)
 
-  calib.plot <- qplot(midpoint, Percent, data = calib$data,
+  calib.plot <- qplot(calib$data$midpoint, calib$data$Percent,
                       geom = c("line", "point"), xlim = c(0, 100), ylim = c(0, 100),
                       xlab = "Predicted", ylab = "Observed") +
     geom_abline(intercept = 0, slope = 1, linetype = 3)
 
-  class.plot <- qplot(prob, facets = obs ~ ., data = pred.df,
+  class.plot <- qplot(pred.df$prob, facets = obs ~ ., data = pred.df,
                       alpha = 0.5, ylab = "Count", xlab = "Predicted")
 
   ECE <- getECE(pred.df$obs, pred.df$prob, n_bins = cuts)
@@ -120,14 +121,14 @@ get_ECE_equal_width <- function(actual, predicted, bins=10){ #equal width bins
   pred_actual <- cbind(predicted, actual)
 
   if(all(predicted<=1) && all(predicted>=0)){
-    hist_x <- hist(pred_actual[,1], breaks=seq(0,1,1/bins), plot=F)
+    hist_x <- graphics::hist(pred_actual[,1], breaks=seq(0,1,1/bins), plot=F)
   }
   else{
-    hist_x <- hist(pred_actual[,1], breaks=bins, plot=F)
+    hist_x <- graphics::hist(pred_actual[,1], breaks=bins, plot=F)
   }
 
   breaks_y <- hist_x$breaks
-  y_true <- hist(subset(pred_actual[,1], pred_actual[,2]=="1"), breaks=breaks_y, plot=F)
+  y_true <- graphics::hist(subset(pred_actual[,1], pred_actual[,2]=="1"), breaks=breaks_y, plot=F)
   divided <- cut(pred_actual[,1], breaks=c(hist_x$breaks), label = seq(1,length(y_true$mids)), include.lowest = T)
   prediction_in_bin <- list()
   expected <- c()
@@ -197,9 +198,9 @@ get_MCE_equal_width <- function(actual, predicted, bins=10){ #equal width bins
   idx <- order(predicted)
   pred_actual <- (cbind(predicted[idx], labels[idx]))
 
-  hist_x <- hist(pred_actual[,1],breaks=bins, plot=F)
+  hist_x <- graphics::hist(pred_actual[,1],breaks=bins, plot=F)
   breaks_y <- hist_x$breaks
-  y_true <- hist(subset(pred_actual[,1], pred_actual[,2]=="1"),breaks=breaks_y, plot=F)
+  y_true <- graphics::hist(subset(pred_actual[,1], pred_actual[,2]=="1"),breaks=breaks_y, plot=F)
   divided <- cut(pred_actual[,1], breaks=c(hist_x$breaks),label = seq(1,length(y_true$mids)),include.lowest = T)
   prediction_in_bin <- list()
   expected <- c()
