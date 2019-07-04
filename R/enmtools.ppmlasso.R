@@ -32,7 +32,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
   # Builds a default formula using all env
   if(is.null(f)){
     f <- as.formula(paste0("presence ~ poly(", paste(c(names(env)), collapse = ", "), ", degree = 2, raw = TRUE)"))
-    notes <- c(notes, "No formula was provided, so a GLM formula was built automatically.")
+    notes <- c(notes, "No formula was provided, so a ppmlasso formula was built automatically.")
   }
 
   ppmlasso.precheck(f, species, env)
@@ -523,4 +523,33 @@ ppmlasso_weights <- function (sp.xy, quad.xy, coord = c("X", "Y"))
   wt = X.inc * Y.inc/as.numeric(round.table[match(round.id,
                                                   names(round.table))])
   wt
+}
+
+
+#' Function to generate an empty enmtools.ppmlasso object and populate it with
+#' user chosen parameters
+#' @param env A raster or raster stack of environmental data.
+#' @param f Standard R formula
+#' @param params A matrix of parameters for the model. Must be a vector with length equal to the number
+#' of terms in the formula f. If f is NULL a formula is built automatically with an intercept, two polynomial terms
+#' per environmental variable plus their pairwise interactions, which gives 1 + n.env\*2 + (n.env \* (n.env - 1) / 2)
+make.enmtools.ppmlasso <- function(env, f = NULL, params) {
+  if(is.null(f)){
+    f <- as.formula(paste0("presence ~ poly(", paste(c(names(env)), collapse = ", "), ", degree = 2, raw = TRUE)"))
+  }
+  pres <- as.data.frame(coordinates(sampleRandom(env[[1]], size = 10, sp = TRUE)))
+  abs <- as.data.frame(coordinates(sampleRandom(env[[1]], size = 10, sp = TRUE)))
+  temp_spec <- enmtools.species(env[[1]], presence.points = pres, background.points = abs,
+                                species.name = "SP")
+  log <- capture.output(fake_model <- enmtools.ppmlasso(temp_spec, env, f, bg.source = "points"))
+  fake_model$model$beta <- params
+
+  env_cell_area <- prod(res(env))
+  p.fun <- function(object, newdata, ...) {
+    predict.ppmlasso(object, newdata = newdata, ...)*env_cell_area
+  }
+  suitability <- predict(env, fake_model$model, fun = p.fun)
+  fake_model$suitability <- suitability
+  fake_model$analysis.df <- fake_model$analysis.df[1, ]
+  fake_model
 }

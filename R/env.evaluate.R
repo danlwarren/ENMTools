@@ -5,6 +5,7 @@
 #' @param env A raster or raster stack of environmental data.
 #' @param bg.source Determines whether minima and maxima of the environment space should be picked using the environment layers or the background points.
 #' @param n.background The number of background points to sample from the environment space.
+#' @param test.eval When set to "true", env.evaluate evaluates the test data stored in the model object instead of the training data.
 #' @param ... Arguments to be passed to othfer functions
 #'
 #' @examples
@@ -16,7 +17,16 @@
 #' env.evaluate(cyreni, cyreni.glm,  euro.worldclim)
 
 
-env.evaluate <- function(species, model, env, bg.source = "background", n.background = 10000, ...){
+env.evaluate <- function(species, model, env, bg.source = "background", n.background = 10000, test.eval = FALSE, ...){
+
+  # If we're evaluating the test data instead of the training data, we need
+  # to make sure the data exists and then stuff it into the species object if so
+  if(test.eval == TRUE){
+    if(is.na(model$test.data)){
+      stop("Test.eval set to TRUE but no test data present in model object!")
+    }
+    species$presence.points <- model$test.data
+  }
 
   species <- check.bg(species, env)
 

@@ -456,3 +456,35 @@ glm.precheck <- function(f, species, env){
   }
 }
 
+
+#' Function to generate an empty enmtools.glm object and populate it with
+#' user chosen parameters
+#' @param env A raster or raster stack of environmental data.
+#' @param f Standard R formula
+#' @param params A matrix of parameters for the model. Must be a vector with length equal to the number
+#' of terms in the formula f. If f is NULL a formula is built automatically with an intercept, and
+#' one linear coefficient for each environmental variable.
+make.enmtools.glm <- function(env, f = NULL, params) {
+
+  # Make function if not specified
+  if(is.null(f)){
+    f <- as.formula(paste("presence", paste(c(names(env)), collapse = " + "), sep = " ~ "))
+  }
+
+  # Build an enmtools.glm model object so we can stuff parameters into it
+  pres <- as.data.frame(coordinates(sampleRandom(env[[1]], size = 10, sp = TRUE)))
+  abs <- as.data.frame(coordinates(sampleRandom(env[[1]], size = 10, sp = TRUE)))
+  temp_spec <- enmtools.species(env[[1]], presence.points = pres, background.points = abs,
+                                species.name = "SP")
+  log <- capture.output(fake.model <- enmtools.glm(temp_spec, env, f, bg.source = "points"))
+
+  # Assign the specified parameters to the model object
+  fake.model$model$coefficients <- params
+
+  # Recalculate suitability based on supplied parameters
+  suitability <- predict(env, fake.model$model, type = "response")
+  fake.model$suitability <- suitability
+  fake.model$analysis.df <- fake.model$analysis.df[1, ]
+
+  return(fake.model)
+}

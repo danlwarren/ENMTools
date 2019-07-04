@@ -6,9 +6,9 @@
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' pts <- iberolacerta.clade$species$monticola$presence.points
-#' trim.dupes.by.raster(pts, euro.worldclim)
+#' trimdupes.by.raster(pts, euro.worldclim)
 
-trim.dupes.by.raster <- function(points, mask){
+trimdupes.by.raster <- function(points, mask){
 
   pa <- rasterize(points, mask, field=1)
 
