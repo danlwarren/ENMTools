@@ -28,7 +28,7 @@ check.species <- function(this.species){
       stop("Argument range requires an object of class raster or RasterLayer")
     }
     if(is.na(crs(this.species$range))){
-      stop("Species range raster does not have a CRS set")
+      warning("Species range raster does not have a CRS set")
     }
   }
 

@@ -5,6 +5,13 @@ This package implements various tests, visualizations, and metrics for
 use with environmental niche models (ENMs) and species distribution
 models (SDMs).
 
+### Citation:
+
+Warren, D.L., N. Matzke, M. Cardillo, J. Baumgartner, L. Beaumont, N.
+Huron, M. Simões, and R. Dinnage. 2019. ENMTools (Software Package).
+URL: <https://github.com/danlwarren/ENMTools>.
+<doi:10.5281/zenodo.3268814>
+
 ------------------------------------------------------------------------
 
 Installation
@@ -87,14 +94,14 @@ You can add data to this object manually:
     ## 
     ## 
     ## Range raster: 
-    ## class       : RasterLayer 
-    ## dimensions  : 418, 1535, 641630  (nrow, ncol, ncell)
-    ## resolution  : 0.008333333, 0.008333333  (x, y)
-    ## extent      : -86.90809, -74.11642, 19.80837, 23.2917  (xmin, xmax, ymin, ymax)
-    ## coord. ref. : NA 
-    ## data source : in memory
-    ## names       : pc1 
-    ## values      : 1, 1  (min, max)
+    ## class      : RasterLayer 
+    ## dimensions : 418, 1535, 641630  (nrow, ncol, ncell)
+    ## resolution : 0.008333333, 0.008333333  (x, y)
+    ## extent     : -86.90809, -74.11642, 19.80837, 23.2917  (xmin, xmax, ymin, ymax)
+    ## crs        : NA 
+    ## source     : memory
+    ## names      : pc1 
+    ## values     : 1, 1  (min, max)
     ## 
     ## 
     ## 
@@ -118,16 +125,16 @@ You can add data to this object manually:
     ## 
     ##  Longitude   Latitude
     ## ----------  ---------
-    ##  -80.14559   22.16254
-    ##  -80.35392   22.12087
-    ##  -79.87059   22.00420
-    ##  -80.05392   22.02087
-    ##  -80.40392   22.17087
-    ##  -79.97892   21.83754
-    ##  -79.97059   22.08754
-    ##  -80.08726   22.13754
-    ##  -80.25392   22.01254
-    ##  -80.31226   21.99587
+    ##  -79.79559   21.78754
+    ##  -79.99559   22.00420
+    ##  -79.97892   21.78754
+    ##  -80.43726   22.16254
+    ##  -79.76226   21.80420
+    ##  -80.19559   22.10420
+    ##  -80.17892   21.92920
+    ##  -79.97059   21.86254
+    ##  -79.97892   22.14587
+    ##  -79.82059   21.67920
     ## 
     ## 
     ## Species name:  ahli
@@ -146,14 +153,14 @@ Or you can add bits of it when the object is created:
     ## 
     ## 
     ## Range raster: 
-    ## class       : RasterLayer 
-    ## dimensions  : 418, 1535, 641630  (nrow, ncol, ncell)
-    ## resolution  : 0.008333333, 0.008333333  (x, y)
-    ## extent      : -86.90809, -74.11642, 19.80837, 23.2917  (xmin, xmax, ymin, ymax)
-    ## coord. ref. : NA 
-    ## data source : in memory
-    ## names       : pc1 
-    ## values      : 1, 1  (min, max)
+    ## class      : RasterLayer 
+    ## dimensions : 418, 1535, 641630  (nrow, ncol, ncell)
+    ## resolution : 0.008333333, 0.008333333  (x, y)
+    ## extent     : -86.90809, -74.11642, 19.80837, 23.2917  (xmin, xmax, ymin, ymax)
+    ## crs        : NA 
+    ## source     : memory
+    ## names      : pc1 
+    ## values     : 1, 1  (min, max)
     ## 
     ## 
     ## 
@@ -177,16 +184,16 @@ Or you can add bits of it when the object is created:
     ## 
     ##  Longitude   Latitude
     ## ----------  ---------
-    ##  -76.07892   20.12087
-    ##  -75.22892   20.49587
-    ##  -77.93726   20.93754
-    ##  -75.88726   20.23754
-    ##  -77.86226   21.17920
-    ##  -76.40392   20.37087
-    ##  -78.05392   21.28754
-    ##  -76.86226   20.72920
-    ##  -77.85392   21.72087
-    ##  -78.92059   22.25420
+    ##  -78.57892   22.23754
+    ##  -77.06226   20.88754
+    ##  -76.97892   20.72087
+    ##  -78.18726   20.92087
+    ##  -77.03726   20.08754
+    ##  -76.50392   20.39587
+    ##  -77.12059   19.95420
+    ##  -77.95392   21.86254
+    ##  -75.52059   20.76254
+    ##  -75.79559   20.64587
     ## 
     ## 
     ## Species name:  allogus
@@ -353,13 +360,20 @@ enmtools.glm will build a formula automatically.
     ## Adding environmental data to species monticola 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
 
     monticola.glm
 
     ## 
     ## 
     ## Formula:  presence ~ bio1 + bio12 + bio7
-    ## <environment: 0x7fdc2203aa70>
+    ## <environment: 0x7fbefbb7c0f8>
     ## 
     ## 
     ## Data table (top ten lines): 
@@ -370,12 +384,12 @@ enmtools.glm will build a formula automatically.
     ## 2     -6.036635   43.02531     76    1012    246          1
     ## 3     -7.679727   40.38852    137    1143    247          1
     ## 4     -7.790437   40.30959    129    1231    242          1
+    ## 5     -7.473340   43.78935    140     931    179          1
     ## 6     -6.575039   42.91070     84    1012    247          1
     ## 7     -5.132756   43.49572    133     822    190          1
-    ## 8     -7.787378   40.39362    137    1143    247          1
-    ## 9     -4.941888   43.35310    128     843    194          1
     ## 10    -7.621731   40.34170    101    1514    229          1
     ## 11    -7.645674   40.36543    101    1514    229          1
+    ## 13    -6.990000   42.57000    107     893    253          1
     ## 
     ## 
     ## Model:  
@@ -385,22 +399,22 @@ enmtools.glm will build a formula automatically.
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -1.6439  -0.7903  -0.4959   0.8448   2.2629  
+    ## -1.6240  -0.7954  -0.4988   0.8415   2.1911  
     ## 
     ## Coefficients:
     ##               Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept)  8.3089037  2.1931131   3.789 0.000151 ***
-    ## bio1        -0.0342866  0.0065015  -5.274 1.34e-07 ***
-    ## bio12        0.0003411  0.0007222   0.472 0.636701    
-    ## bio7        -0.0205783  0.0049710  -4.140 3.48e-05 ***
+    ## (Intercept)  9.0387856  2.2499375   4.017 5.89e-05 ***
+    ## bio1        -0.0352850  0.0065683  -5.372 7.79e-08 ***
+    ## bio12       -0.0001144  0.0007325  -0.156    0.876    
+    ## bio7        -0.0213880  0.0050851  -4.206 2.60e-05 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
     ##     Null deviance: 576.70  on 719  degrees of freedom
-    ## Residual deviance: 507.23  on 716  degrees of freedom
-    ## AIC: 249.05
+    ## Residual deviance: 512.41  on 716  degrees of freedom
+    ## AIC: 252.02
     ## 
     ## Number of Fisher Scoring iterations: 4
     ## 
@@ -409,17 +423,17 @@ enmtools.glm will build a formula automatically.
     ## Model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 208 
     ## n absences     : 512 
-    ## AUC            : 0.7393705 
-    ## cor            : 0.3210289 
-    ## max TPR+TNR at : -0.01700272 
+    ## AUC            : 0.7310979 
+    ## cor            : 0.3095978 
+    ## max TPR+TNR at : 0.01620189 
     ## 
     ## 
     ## Environment space model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 208 
     ## n absences     : 10000 
-    ## AUC            : 0.4276125 
-    ## cor            : -0.01447189 
-    ## max TPR+TNR at : 0.4956744 
+    ## AUC            : 0.4223212 
+    ## cor            : -0.0178785 
+    ## max TPR+TNR at : 0.3814719 
     ## 
     ## 
     ## Proportion of data wittheld for model fitting:  0.2
@@ -427,28 +441,28 @@ enmtools.glm will build a formula automatically.
     ## Model fit (test data):  class          : ModelEvaluation 
     ## n presences    : 52 
     ## n absences     : 512 
-    ## AUC            : 0.6924579 
-    ## cor            : 0.162511 
-    ## max TPR+TNR at : -0.00580997 
+    ## AUC            : 0.736591 
+    ## cor            : 0.1924099 
+    ## max TPR+TNR at : -0.00896788 
     ## 
     ## 
     ## Environment space model fit (test data):  class          : ModelEvaluation 
     ## n presences    : 52 
     ## n absences     : 10000 
-    ## AUC            : 0.4033269 
-    ## cor            : -0.01488643 
-    ## max TPR+TNR at : 0.4984725 
+    ## AUC            : 0.4194731 
+    ## cor            : -0.008373719 
+    ## max TPR+TNR at : 0.4024466 
     ## 
     ## 
     ## Suitability:  
-    ## class       : RasterLayer 
-    ## dimensions  : 54, 162, 8748  (nrow, ncol, ncell)
-    ## resolution  : 0.1666667, 0.1666667  (x, y)
-    ## extent      : -10, 17, 39, 48  (xmin, xmax, ymin, ymax)
-    ## coord. ref. : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
-    ## data source : in memory
-    ## names       : layer 
-    ## values      : 0.02397329, 0.9972282  (min, max)
+    ## class      : RasterLayer 
+    ## dimensions : 54, 162, 8748  (nrow, ncol, ncell)
+    ## resolution : 0.1666667, 0.1666667  (x, y)
+    ## extent     : -10, 17, 39, 48  (xmin, xmax, ymin, ymax)
+    ## crs        : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
+    ## source     : memory
+    ## names      : layer 
+    ## values     : 0.02633004, 0.9962582  (min, max)
     ## 
     ## 
     ## 
@@ -467,13 +481,20 @@ Notice this produces the same formula as:
     ## Adding environmental data to species monticola 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
 
     monticola.glm
 
     ## 
     ## 
     ## Formula:  presence ~ bio1 + bio12 + bio7
-    ## <environment: 0x7fdc379fe9c8>
+    ## <environment: 0x7fbeea824fc8>
     ## 
     ## 
     ## Data table (top ten lines): 
@@ -484,12 +505,12 @@ Notice this produces the same formula as:
     ## 2     -6.036635   43.02531     76    1012    246          1
     ## 3     -7.679727   40.38852    137    1143    247          1
     ## 4     -7.790437   40.30959    129    1231    242          1
+    ## 5     -7.473340   43.78935    140     931    179          1
     ## 7     -5.132756   43.49572    133     822    190          1
-    ## 8     -7.787378   40.39362    137    1143    247          1
     ## 9     -4.941888   43.35310    128     843    194          1
+    ## 10    -7.621731   40.34170    101    1514    229          1
     ## 11    -7.645674   40.36543    101    1514    229          1
     ## 12    -7.642539   40.36317    101    1514    229          1
-    ## 13    -6.990000   42.57000    107     893    253          1
     ## 
     ## 
     ## Model:  
@@ -499,22 +520,22 @@ Notice this produces the same formula as:
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -1.6668  -0.7985  -0.4761   0.8251   2.2069  
+    ## -1.6379  -0.7870  -0.5065   0.8394   2.2056  
     ## 
     ## Coefficients:
     ##               Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept)  9.7242692  2.2707882   4.282 1.85e-05 ***
-    ## bio1        -0.0371990  0.0066838  -5.566 2.61e-08 ***
-    ## bio12       -0.0000931  0.0007383  -0.126      0.9    
-    ## bio7        -0.0235477  0.0051508  -4.572 4.84e-06 ***
+    ## (Intercept)  8.5283769  2.2181089   3.845 0.000121 ***
+    ## bio1        -0.0350648  0.0065054  -5.390 7.04e-08 ***
+    ## bio12        0.0001073  0.0007217   0.149 0.881828    
+    ## bio7        -0.0201999  0.0050326  -4.014 5.97e-05 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
     ##     Null deviance: 576.70  on 719  degrees of freedom
-    ## Residual deviance: 505.19  on 716  degrees of freedom
-    ## AIC: 245.69
+    ## Residual deviance: 511.42  on 716  degrees of freedom
+    ## AIC: 251.64
     ## 
     ## Number of Fisher Scoring iterations: 4
     ## 
@@ -523,17 +544,17 @@ Notice this produces the same formula as:
     ## Model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 208 
     ## n absences     : 512 
-    ## AUC            : 0.7367131 
-    ## cor            : 0.3226584 
-    ## max TPR+TNR at : 0.06883724 
+    ## AUC            : 0.7362624 
+    ## cor            : 0.3121786 
+    ## max TPR+TNR at : -0.01573163 
     ## 
     ## 
     ## Environment space model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 208 
     ## n absences     : 10000 
-    ## AUC            : 0.4251981 
-    ## cor            : -0.01381147 
-    ## max TPR+TNR at : 0.3610308 
+    ## AUC            : 0.4229288 
+    ## cor            : -0.01736621 
+    ## max TPR+TNR at : 0.4959922 
     ## 
     ## 
     ## Proportion of data wittheld for model fitting:  0.2
@@ -541,28 +562,28 @@ Notice this produces the same formula as:
     ## Model fit (test data):  class          : ModelEvaluation 
     ## n presences    : 52 
     ## n absences     : 512 
-    ## AUC            : 0.7000826 
-    ## cor            : 0.1634975 
-    ## max TPR+TNR at : 0.07265669 
+    ## AUC            : 0.7256611 
+    ## cor            : 0.1852202 
+    ## max TPR+TNR at : 0.01866536 
     ## 
     ## 
     ## Environment space model fit (test data):  class          : ModelEvaluation 
     ## n presences    : 52 
     ## n absences     : 10000 
-    ## AUC            : 0.4120712 
-    ## cor            : -0.01234761 
-    ## max TPR+TNR at : 0.4952489 
+    ## AUC            : 0.416525 
+    ## cor            : -0.01040267 
+    ## max TPR+TNR at : 0.4157732 
     ## 
     ## 
     ## Suitability:  
-    ## class       : RasterLayer 
-    ## dimensions  : 54, 162, 8748  (nrow, ncol, ncell)
-    ## resolution  : 0.1666667, 0.1666667  (x, y)
-    ## extent      : -10, 17, 39, 48  (xmin, xmax, ymin, ymax)
-    ## coord. ref. : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
-    ## data source : in memory
-    ## names       : layer 
-    ## values      : 0.01949305, 0.9973357  (min, max)
+    ## class      : RasterLayer 
+    ## dimensions : 54, 162, 8748  (nrow, ncol, ncell)
+    ## resolution : 0.1666667, 0.1666667  (x, y)
+    ## extent     : -10, 17, 39, 48  (xmin, xmax, ymin, ymax)
+    ## crs        : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
+    ## source     : memory
+    ## names      : layer 
+    ## values     : 0.02645355, 0.9967466  (min, max)
     ## 
     ## 
     ## 
@@ -582,6 +603,13 @@ or polynomial effects), you'll need to supply that manually.
     ## Adding environmental data to species monticola 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
 
     monticola.glm
 
@@ -589,7 +617,7 @@ or polynomial effects), you'll need to supply that manually.
     ## 
     ## Formula:  presence ~ poly(bio1, 2) + poly(bio7, 2) + poly(bio12, 2) + poly(bio7, 
     ##     2):poly(bio12, 2)
-    ## <environment: 0x7fdc20831e60>
+    ## <environment: 0x7fbed20e80e0>
     ## 
     ## 
     ## Data table (top ten lines): 
@@ -600,12 +628,12 @@ or polynomial effects), you'll need to supply that manually.
     ## 2     -6.036635   43.02531     76    1012    246          1
     ## 3     -7.679727   40.38852    137    1143    247          1
     ## 4     -7.790437   40.30959    129    1231    242          1
-    ## 5     -7.473340   43.78935    140     931    179          1
-    ## 6     -6.575039   42.91070     84    1012    247          1
     ## 7     -5.132756   43.49572    133     822    190          1
-    ## 8     -7.787378   40.39362    137    1143    247          1
+    ## 9     -4.941888   43.35310    128     843    194          1
     ## 10    -7.621731   40.34170    101    1514    229          1
     ## 11    -7.645674   40.36543    101    1514    229          1
+    ## 12    -7.642539   40.36317    101    1514    229          1
+    ## 13    -6.990000   42.57000    107     893    253          1
     ## 
     ## 
     ## Model:  
@@ -615,29 +643,29 @@ or polynomial effects), you'll need to supply that manually.
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -1.3269  -0.7112  -0.3866   0.6404   2.6673  
+    ## -1.3197  -0.7204  -0.3827   0.6340   2.8296  
     ## 
     ## Coefficients:
     ##                                 Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept)                      -0.9591     0.4109  -2.334  0.01958 *  
-    ## poly(bio1, 2)1                  -30.6734     5.7687  -5.317 1.05e-07 ***
-    ## poly(bio1, 2)2                  -32.4723     6.4276  -5.052 4.37e-07 ***
-    ## poly(bio7, 2)1                  -16.7741    12.8116  -1.309  0.19043    
-    ## poly(bio7, 2)2                    5.8198    10.6370   0.547  0.58429    
-    ## poly(bio12, 2)1                  34.5309    12.6304   2.734  0.00626 ** 
-    ## poly(bio12, 2)2                  -9.2282     9.7090  -0.950  0.34187    
-    ## poly(bio7, 2)1:poly(bio12, 2)1 -238.9043   440.0210  -0.543  0.58717    
-    ## poly(bio7, 2)2:poly(bio12, 2)1  -76.0475   291.2958  -0.261  0.79404    
-    ## poly(bio7, 2)1:poly(bio12, 2)2  624.6585   287.3713   2.174  0.02973 *  
-    ## poly(bio7, 2)2:poly(bio12, 2)2   99.7371   177.5479   0.562  0.57429    
+    ## (Intercept)                      -0.7282     0.3948  -1.844   0.0651 .  
+    ## poly(bio1, 2)1                  -33.1239     6.0971  -5.433 5.55e-08 ***
+    ## poly(bio1, 2)2                  -36.5310     6.9511  -5.255 1.48e-07 ***
+    ## poly(bio7, 2)1                  -23.8667    12.6013  -1.894   0.0582 .  
+    ## poly(bio7, 2)2                   18.0181    10.3828   1.735   0.0827 .  
+    ## poly(bio12, 2)1                  28.1731    12.1169   2.325   0.0201 *  
+    ## poly(bio12, 2)2                  -6.1736     9.3566  -0.660   0.5094    
+    ## poly(bio7, 2)1:poly(bio12, 2)1  126.9641   417.5648   0.304   0.7611    
+    ## poly(bio7, 2)2:poly(bio12, 2)1 -297.1738   277.7655  -1.070   0.2847    
+    ## poly(bio7, 2)1:poly(bio12, 2)2  388.7163   271.2807   1.433   0.1519    
+    ## poly(bio7, 2)2:poly(bio12, 2)2  230.2286   164.5608   1.399   0.1618    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
     ##     Null deviance: 576.70  on 719  degrees of freedom
-    ## Residual deviance: 448.36  on 709  degrees of freedom
-    ## AIC: 238.89
+    ## Residual deviance: 452.43  on 709  degrees of freedom
+    ## AIC: 241.3
     ## 
     ## Number of Fisher Scoring iterations: 5
     ## 
@@ -646,17 +674,17 @@ or polynomial effects), you'll need to supply that manually.
     ## Model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 208 
     ## n absences     : 512 
-    ## AUC            : 0.7964524 
-    ## cor            : 0.4205467 
-    ## max TPR+TNR at : 0.1333889 
+    ## AUC            : 0.7930063 
+    ## cor            : 0.4071561 
+    ## max TPR+TNR at : 0.01625976 
     ## 
     ## 
     ## Environment space model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 208 
     ## n absences     : 10000 
-    ## AUC            : 0.7314553 
-    ## cor            : 0.1168428 
-    ## max TPR+TNR at : 0.3741629 
+    ## AUC            : 0.6719659 
+    ## cor            : 0.08894771 
+    ## max TPR+TNR at : 0.4481033 
     ## 
     ## 
     ## Proportion of data wittheld for model fitting:  0.2
@@ -664,28 +692,28 @@ or polynomial effects), you'll need to supply that manually.
     ## Model fit (test data):  class          : ModelEvaluation 
     ## n presences    : 52 
     ## n absences     : 512 
-    ## AUC            : 0.7557843 
-    ## cor            : 0.2330202 
-    ## max TPR+TNR at : -0.08155348 
+    ## AUC            : 0.7779072 
+    ## cor            : 0.2417324 
+    ## max TPR+TNR at : -0.2080328 
     ## 
     ## 
     ## Environment space model fit (test data):  class          : ModelEvaluation 
     ## n presences    : 52 
     ## n absences     : 10000 
-    ## AUC            : 0.7097 
-    ## cor            : 0.0509356 
-    ## max TPR+TNR at : 0.2494423 
+    ## AUC            : 0.6598308 
+    ## cor            : 0.04157826 
+    ## max TPR+TNR at : 0.2955711 
     ## 
     ## 
     ## Suitability:  
-    ## class       : RasterLayer 
-    ## dimensions  : 54, 162, 8748  (nrow, ncol, ncell)
-    ## resolution  : 0.1666667, 0.1666667  (x, y)
-    ## extent      : -10, 17, 39, 48  (xmin, xmax, ymin, ymax)
-    ## coord. ref. : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
-    ## data source : in memory
-    ## names       : layer 
-    ## values      : 2.220446e-16, 0.992979  (min, max)
+    ## class      : RasterLayer 
+    ## dimensions : 54, 162, 8748  (nrow, ncol, ncell)
+    ## resolution : 0.1666667, 0.1666667  (x, y)
+    ## extent     : -10, 17, 39, 48  (xmin, xmax, ymin, ymax)
+    ## crs        : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
+    ## source     : memory
+    ## names      : layer 
+    ## values     : 2.220446e-16, 0.9923567  (min, max)
     ## 
     ## 
     ## 
@@ -773,10 +801,10 @@ using ENMs, while having a low breadth in environment space.
     raster.breadth(monticola.glm)
 
     ## $B1
-    ## [1] 0.9440004
+    ## [1] 0.9445673
     ## 
     ## $B2
-    ## [1] 0.5296247
+    ## [1] 0.5414073
 
 ENMTools also provides metrics for measuring similarity between ENMs.
 These include Schoener's D (Schoener 1968), I (Warren et al. 2008), and
@@ -795,6 +823,13 @@ contains a great deal of habitat that is unsuitable for both).
     ## Adding environmental data to species monticola 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
 
     cyreni.glm <- enmtools.glm(species = cyreni, env = env, f = pres ~ poly(bio1, 2) + poly(bio7, 2) + poly(bio12, 2), test.prop = 0.2)
 
@@ -805,17 +840,24 @@ contains a great deal of habitat that is unsuitable for both).
     ## Adding environmental data to species cyreni 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
 
     raster.overlap(monticola.glm, cyreni.glm)
 
     ## $D
-    ## [1] 0.6964057
+    ## [1] 0.669057
     ## 
     ## $I
-    ## [1] 0.9026603
+    ## [1] 0.8839939
     ## 
     ## $rank.cor
-    ## [1] 0.3249225
+    ## [1] 0.30307
 
 A new feature of the R version of ENMTools is that you can now use these
 same metrics in the n-dimensional space of all combinations of
@@ -837,6 +879,13 @@ precise estimates of overlap, but can take much longer to calculate.
     ## Adding environmental data to species monticola 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
 
     cyreni.glm <- enmtools.glm(species = monticola, env = env, f = pres ~ poly(bio1, 2) + poly(bio7, 2) + poly(bio12, 2), test.prop = 0.2)
 
@@ -847,6 +896,13 @@ precise estimates of overlap, but can take much longer to calculate.
     ## Adding environmental data to species monticola 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
 
     env.overlap(monticola.glm, cyreni.glm, env, tolerance = .001)
 
@@ -854,13 +910,13 @@ precise estimates of overlap, but can take much longer to calculate.
     ## [1] "Building replicates..."
 
     ## $env.D
-    ## [1] 0.9747509
+    ## [1] 0.9631428
     ## 
     ## $env.I
-    ## [1] 0.9992639
+    ## [1] 0.9984573
     ## 
     ## $env.cor
-    ## [1] 0.999296
+    ## [1] 0.9986247
     ## 
     ## $env.D.plot
 
@@ -929,23 +985,35 @@ pseudoabsence points pooled for the two species being compared.
     ## 
     ##                      D           I    rank.cor       env.D       env.I     env.cor
     ## ----------  ----------  ----------  ----------  ----------  ----------  ----------
-    ## empirical    0.3244487   0.5929443   0.1049357   0.3680675   0.6160525   0.1365335
-    ## rep 1        0.9677634   0.9990155   0.9920496   0.9653146   0.9979226   0.9947297
-    ## rep 2        0.9489356   0.9972812   0.9647560   0.9451813   0.9947636   0.9718006
-    ## rep 3        0.9765731   0.9993665   0.9920094   0.9739029   0.9991720   0.9953646
-    ## rep 4        0.9422789   0.9965344   0.9877409   0.9628450   0.9978574   0.9886635
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-    ## Warning: Removed 1 rows containing missing values (geom_bar).
+    ## empirical    0.3244487   0.5929443   0.1049357   0.3679904   0.6157157   0.1346273
+    ## rep 1        0.9650752   0.9986401   0.9895283   0.9651080   0.9985140   0.9917857
+    ## rep 2        0.8542767   0.9803007   0.9731018   0.9216392   0.9855454   0.9796226
+    ## rep 3        0.9130669   0.9932626   0.9964534   0.9510721   0.9946931   0.9967796
+    ## rep 4        0.9482891   0.9971329   0.9808413   0.9496265   0.9968980   0.9826041
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 1 rows containing missing values (geom_bar).
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
 
 ![](Readme_files/figure-markdown_strict/unnamed-chunk-3-1.png)
 
@@ -1000,23 +1068,35 @@ asymmetric approach:
     ## 
     ##                      D           I     rank.cor       env.D       env.I     env.cor
     ## ----------  ----------  ----------  -----------  ----------  ----------  ----------
-    ## empirical    0.0242365   0.1455829   -0.0450249   0.0138222   0.1107173   0.1589788
-    ## rep 1        0.6214600   0.8700845    0.6715790   0.5110334   0.7742323   0.6747580
-    ## rep 2        0.6140519   0.8692591    0.6881657   0.4890054   0.7671731   0.6784506
-    ## rep 3        0.6477756   0.8921239    0.7362763   0.5359914   0.8078705   0.7271245
-    ## rep 4        0.6349293   0.8741857    0.6796873   0.5338093   0.7872621   0.7335395
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-    ## Warning: Removed 1 rows containing missing values (geom_bar).
+    ## empirical    0.0242365   0.1455829   -0.0450249   0.0127989   0.1069760   0.1573093
+    ## rep 1        0.6247480   0.8714637    0.6733882   0.5334867   0.7988016   0.7494258
+    ## rep 2        0.6476934   0.8833554    0.7158207   0.5367838   0.7873901   0.6921213
+    ## rep 3        0.6388181   0.8850088    0.7048999   0.5496922   0.8085522   0.7310567
+    ## rep 4        0.6375834   0.8787972    0.7043380   0.5228360   0.7911751   0.7083220
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 1 rows containing missing values (geom_bar).
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
 
 ![](Readme_files/figure-markdown_strict/unnamed-chunk-5-1.png)
 
@@ -1043,23 +1123,35 @@ And here is a Domain background test using the symmetric approach:
     ## 
     ##                      D           I     rank.cor       env.D       env.I     env.cor
     ## ----------  ----------  ----------  -----------  ----------  ----------  ----------
-    ## empirical    0.1974048   0.4272913   -0.1020590   0.0775272   0.2648275   0.2207919
-    ## rep 1        0.9462649   0.9964841    0.6346617   0.8440406   0.9521950   0.9254358
-    ## rep 2        0.9546793   0.9976078    0.7412483   0.8426959   0.9476840   0.8970172
-    ## rep 3        0.9213012   0.9824419    0.7453075   0.7434447   0.8853417   0.8458307
-    ## rep 4        0.9407627   0.9926325    0.6575177   0.7768920   0.9123329   0.9387315
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-    ## Warning: Removed 1 rows containing missing values (geom_bar).
+    ## empirical    0.1974048   0.4272913   -0.1020590   0.0791433   0.2673722   0.2231269
+    ## rep 1        0.9502306   0.9969369    0.7029342   0.8279814   0.9455793   0.9142887
+    ## rep 2        0.9656746   0.9987258    0.8421624   0.9110843   0.9840390   0.9849042
+    ## rep 3        0.9668991   0.9980430    0.8720834   0.8844004   0.9691735   0.9796014
+    ## rep 4        0.9493448   0.9966695    0.6564745   0.8386918   0.9465098   0.9399921
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 1 rows containing missing values (geom_bar).
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
 
 ![](Readme_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
@@ -1111,7 +1203,12 @@ bio2). Here's an equivalency/identity test:
     ## 0 0
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
 
 ![](Readme_files/figure-markdown_strict/ecospat_identity-1.png)![](Readme_files/figure-markdown_strict/ecospat_identity-2.png)
 
@@ -1150,12 +1247,15 @@ presented above.
     ## 
     ## ecospat.bg test p-values:
     ##    D    I 
-    ## 0.56 0.48
+    ## 0.56 0.52
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 24 rows containing non-finite values (stat_bin).
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
 
 ![](Readme_files/figure-markdown_strict/ecospat_background-1.png)![](Readme_files/figure-markdown_strict/ecospat_background-2.png)
 
@@ -1187,21 +1287,24 @@ measure overlaps on the first two axes of that PCA space.
     ## 
     ## ecospat.bg test empirical overlaps:
     ## $D
-    ## [1] 0.039695
+    ## [1] 0.04437498
     ## 
     ## $I
-    ## [1] 0.195018
+    ## [1] 0.20645
     ## 
     ## 
     ## 
     ## ecospat.bg test p-values:
     ##    D    I 
-    ## 0.64 0.44
+    ## 0.66 0.52
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 32 rows containing non-finite values (stat_bin).
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
 
 ![](Readme_files/figure-markdown_strict/ecospat_background2-1.png)![](Readme_files/figure-markdown_strict/ecospat_background2-2.png)
 
@@ -1232,54 +1335,134 @@ the identity and background tests. Here's a linear one using GLM models:
     ## 
     ## 
     ## Building empirical models...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species monticola 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species cyreni 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## [1] "Trying to find starting conditions, attempt 1"
     ## [1] "Building replicates..."
     ## 
     ## Building replicate models...
     ## 
     ## Replicate 1 ...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species monticola 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species cyreni 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## [1] "Trying to find starting conditions, attempt 1"
     ## [1] "Building replicates..."
     ## 
     ## Replicate 2 ...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species monticola 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species cyreni 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## [1] "Trying to find starting conditions, attempt 1"
     ## [1] "Building replicates..."
     ## 
     ## Replicate 3 ...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species monticola 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species cyreni 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## [1] "Trying to find starting conditions, attempt 1"
     ## [1] "Building replicates..."
     ## 
     ## Replicate 4 ...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species monticola 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species cyreni 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## [1] "Trying to find starting conditions, attempt 1"
     ## [1] "Building replicates..."
 
@@ -1293,33 +1476,45 @@ the identity and background tests. Here's a linear one using GLM models:
     ## 
     ## rangebreak test p-values:
     ##        D        I rank.cor    env.D    env.I  env.cor 
-    ##      0.2      0.2      0.4      0.2      0.2      0.4 
+    ##      0.2      0.2      0.8      0.2      0.4      0.8 
     ## 
     ## 
     ## Replicates:
     ## 
     ## 
-    ##                      D           I    rank.cor       env.D       env.I      env.cor
-    ## ----------  ----------  ----------  ----------  ----------  ----------  -----------
-    ## empirical    0.3244487   0.5929443   0.1049357   0.3682391   0.6158986    0.1370378
-    ## rep 1        0.4164302   0.6969905   0.2230349   0.4452615   0.6985640    0.3871524
-    ## rep 2        0.4221705   0.7136580   0.2200321   0.4554071   0.7113299    0.4364791
-    ## rep 3        0.4723282   0.7568531   0.0458225   0.5744372   0.7832484    0.2085522
-    ## rep 4        0.5971889   0.8541483   0.1981989   0.5651623   0.7668461   -0.2813777
+    ##                      D           I     rank.cor       env.D       env.I      env.cor
+    ## ----------  ----------  ----------  -----------  ----------  ----------  -----------
+    ## empirical    0.3244487   0.5929443    0.1049357   0.3686182   0.6160385    0.1366328
+    ## rep 1        0.4899984   0.7817582   -0.0685635   0.5710654   0.7936515    0.0811828
+    ## rep 2        0.4892322   0.7098343    0.0104562   0.4162890   0.5984488   -0.3403526
+    ## rep 3        0.5676085   0.8087495   -0.0948330   0.4739482   0.6549290   -0.5331683
+    ## rep 4        0.5648791   0.8296909    0.2358907   0.5395269   0.7727425    0.4865291
 
 ![](Readme_files/figure-markdown_strict/rangebreak_linear-1.png)
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 1 rows containing missing values (geom_bar).
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 1 rows containing missing values (geom_bar).
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
 
 ![](Readme_files/figure-markdown_strict/rangebreak_linear-2.png)
 
@@ -1337,24 +1532,120 @@ And here's a blob test using Bioclim:
     ## 
     ## 
     ## Building empirical models...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## [1] "Trying to find starting conditions, attempt 1"
     ## [1] "Building replicates..."
     ## 
     ## Building replicate models...
     ## 
     ## Replicate 1 ...
+
+    ## Warning in data.frame(..., check.names = FALSE): row names were found from
+    ## a short variable and have been discarded
+
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## [1] "Trying to find starting conditions, attempt 1"
     ## [1] "Building replicates..."
     ## 
     ## Replicate 2 ...
+
+    ## Warning in data.frame(..., check.names = FALSE): row names were found from
+    ## a short variable and have been discarded
+
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## [1] "Trying to find starting conditions, attempt 1"
     ## [1] "Building replicates..."
     ## 
     ## Replicate 3 ...
+
+    ## Warning in data.frame(..., check.names = FALSE): row names were found from
+    ## a short variable and have been discarded
+
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## [1] "Trying to find starting conditions, attempt 1"
     ## [1] "Building replicates..."
     ## 
     ## Replicate 4 ...
+
+    ## Warning in data.frame(..., check.names = FALSE): row names were found from
+    ## a short variable and have been discarded
+
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## [1] "Trying to find starting conditions, attempt 1"
     ## [1] "Building replicates..."
 
@@ -1368,7 +1659,7 @@ And here's a blob test using Bioclim:
     ## 
     ## rangebreak test p-values:
     ##        D        I rank.cor    env.D    env.I  env.cor 
-    ##      0.4      0.4      0.4      0.4      0.4      0.4 
+    ##      1.0      1.0      1.0      0.8      0.8      0.8 
     ## 
     ## 
     ## Replicates:
@@ -1376,23 +1667,35 @@ And here's a blob test using Bioclim:
     ## 
     ##                      D           I     rank.cor       env.D       env.I     env.cor
     ## ----------  ----------  ----------  -----------  ----------  ----------  ----------
-    ## empirical    0.0242365   0.1455829   -0.0450249   0.0133100   0.1086260   0.1592556
-    ## rep 1        0.6896760   0.8578952    0.7220233   0.4986668   0.7336902   0.7237154
-    ## rep 2        0.0046566   0.0245867   -0.2164500   0.0019719   0.0132680   0.0017443
-    ## rep 3        0.4882798   0.7556071    0.7118018   0.3291984   0.5505698   0.4024447
-    ## rep 4        0.6220568   0.8484927    0.7545716   0.4055820   0.6054990   0.4720669
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-    ## Warning: Removed 1 rows containing missing values (geom_bar).
+    ## empirical    0.0242365   0.1455829   -0.0450249   0.0137616   0.1105921   0.1601701
+    ## rep 1        0.0242365   0.1455829   -0.0450249   0.0136902   0.1105707   0.1589182
+    ## rep 2        0.0242365   0.1455829   -0.0450249   0.0131433   0.1075037   0.1546165
+    ## rep 3        0.0242365   0.1455829   -0.0450249   0.0131419   0.1083426   0.1570253
+    ## rep 4        0.0242365   0.1455829   -0.0450249   0.0142214   0.1124521   0.1624109
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 1 rows containing missing values (geom_bar).
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
 
 ![](Readme_files/figure-markdown_strict/rangebreak_blob-1.png)
 
@@ -1405,23 +1708,23 @@ your ranges are being split up), you can find them in the list named
     ## 
     ## 
     ## Formula:  presence ~ bio1 + bio12 + bio7
-    ## <environment: 0x7fdc11984fb8>
+    ## <environment: 0x7fbed1499578>
     ## 
     ## 
     ## Data table (top ten lines): 
     ## 
     ##  Longitude   Latitude   bio1   bio12   bio7   presence
     ## ----------  ---------  -----  ------  -----  ---------
-    ##      -8.07      43.75    134    1045    166          1
-    ##      -7.94      43.75    131    1061    171          1
-    ##      -8.07      43.66    135    1048    168          1
-    ##      -7.82      43.75    135    1006    174          1
-    ##      -7.95      43.66    129    1080    176          1
-    ##      -7.70      43.75    135    1006    174          1
-    ##      -7.82      43.66    122    1113    184          1
-    ##      -7.95      43.57    129    1080    176          1
-    ##      -8.07      43.48    129    1131    178          1
-    ##      -8.20      43.40    140    1038    164          1
+    ##       0.13      42.64     61    1053    238          1
+    ##      -0.02      42.59     62    1027    240          1
+    ##      -3.77      40.78    114     491    287          1
+    ##      -3.77      40.78    114     491    287          1
+    ##      -3.77      40.78    114     491    287          1
+    ##      -3.86      40.72     94     568    284          1
+    ##      -3.89      40.69     94     568    284          1
+    ##      -3.89      40.69     94     568    284          1
+    ##      -3.89      40.69     94     568    284          1
+    ##      -3.89      40.78     94     568    284          1
     ## 
     ## 
     ## Model:  
@@ -1431,41 +1734,41 @@ your ranges are being split up), you can find them in the list named
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -1.8790  -0.7547  -0.3902   0.7147   1.8858  
+    ## -1.7515  -0.7047  -0.4922   0.7251   1.8735  
     ## 
     ## Coefficients:
     ##               Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept)  8.7745104  2.1895024   4.008 6.14e-05 ***
-    ## bio1        -0.0409593  0.0065667  -6.237 4.45e-10 ***
-    ## bio12        0.0011127  0.0007125   1.562    0.118    
-    ## bio7        -0.0217979  0.0048563  -4.489 7.17e-06 ***
+    ## (Intercept)  5.292e+00  2.191e+00   2.416   0.0157 *  
+    ## bio1        -4.620e-02  5.784e-03  -7.987 1.38e-15 ***
+    ## bio12       -5.792e-05  7.022e-04  -0.082   0.9343    
+    ## bio7        -1.512e-03  5.247e-03  -0.288   0.7732    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
     ##     Null deviance: 720.87  on 901  degrees of freedom
-    ## Residual deviance: 584.14  on 898  degrees of freedom
-    ## AIC: 273.49
+    ## Residual deviance: 616.53  on 898  degrees of freedom
+    ## AIC: 303.39
     ## 
-    ## Number of Fisher Scoring iterations: 5
+    ## Number of Fisher Scoring iterations: 4
     ## 
     ## 
     ## 
     ## Model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 260 
     ## n absences     : 642 
-    ## AUC            : 0.7830068 
-    ## cor            : 0.3935289 
-    ## max TPR+TNR at : -0.4716333 
+    ## AUC            : 0.7679098 
+    ## cor            : 0.3722836 
+    ## max TPR+TNR at : -0.03935635 
     ## 
     ## 
     ## Environment space model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 260 
     ## n absences     : 10000 
-    ## AUC            : 0.4248523 
-    ## cor            : -0.008857617 
-    ## max TPR+TNR at : 0.3841534 
+    ## AUC            : 0.4716504 
+    ## cor            : 0.004989247 
+    ## max TPR+TNR at : 0.3766126 
     ## 
     ## 
     ## Proportion of data wittheld for model fitting:  0
@@ -1477,14 +1780,14 @@ your ranges are being split up), you can find them in the list named
     ## 
     ## 
     ## Suitability:  
-    ## class       : RasterLayer 
-    ## dimensions  : 54, 162, 8748  (nrow, ncol, ncell)
-    ## resolution  : 0.1666667, 0.1666667  (x, y)
-    ## extent      : -10, 17, 39, 48  (xmin, xmax, ymin, ymax)
-    ## coord. ref. : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
-    ## data source : in memory
-    ## names       : layer 
-    ## values      : 0.01243438, 0.9996217  (min, max)
+    ## class      : RasterLayer 
+    ## dimensions : 54, 162, 8748  (nrow, ncol, ncell)
+    ## resolution : 0.1666667, 0.1666667  (x, y)
+    ## extent     : -10, 17, 39, 48  (xmin, xmax, ymin, ymax)
+    ## crs        : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
+    ## source     : memory
+    ## names      : layer 
+    ## values     : 0.03028804, 0.9979967  (min, max)
     ## 
     ## 
     ## 
@@ -1497,23 +1800,23 @@ your ranges are being split up), you can find them in the list named
     ## 
     ## 
     ## Formula:  presence ~ bio1 + bio12 + bio7
-    ## <environment: 0x7fdc3c89aee0>
+    ## <environment: 0x7fbecd056b38>
     ## 
     ## 
     ## Data table (top ten lines): 
     ## 
     ##  Longitude   Latitude   bio1   bio12   bio7   presence
     ## ----------  ---------  -----  ------  -----  ---------
-    ##      -5.18      40.41     85     625    294          1
-    ##      -5.18      40.41     85     625    294          1
-    ##      -5.29      40.31     89     646    296          1
-    ##      -5.29      40.31     89     646    296          1
-    ##      -5.17      40.36     85     625    294          1
-    ##      -5.41      40.22     93     645    295          1
-    ##      -5.41      40.22     93     645    295          1
-    ##      -5.18      40.32     89     646    296          1
-    ##      -4.83      40.50    107     462    298          1
-    ##      -4.83      40.50    107     462    298          1
+    ##      -7.10      43.02    110     994    227          1
+    ##      -6.71      43.47    121     920    211          1
+    ##      -6.71      43.47    121     920    211          1
+    ##      -6.97      43.20    117     942    220          1
+    ##      -6.97      43.20    117     942    220          1
+    ##      -6.84      43.38    117     977    211          1
+    ##      -6.84      43.38    117     977    211          1
+    ##      -7.09      43.11    110     994    227          1
+    ##      -7.09      43.11    110     994    227          1
+    ##      -6.97      43.29    117     942    220          1
     ## 
     ## 
     ## Model:  
@@ -1522,42 +1825,42 @@ your ranges are being split up), you can find them in the list named
     ##     2)], weights = weights)
     ## 
     ## Deviance Residuals: 
-    ##     Min       1Q   Median       3Q      Max  
-    ## -0.7418  -0.3423  -0.1757  -0.0051   1.9055  
+    ##      Min        1Q    Median        3Q       Max  
+    ## -0.94294  -0.21303  -0.07276  -0.05155   1.26988  
     ## 
     ## Coefficients:
-    ##              Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept) -5.386065  10.904553  -0.494   0.6214    
-    ## bio1        -0.105238   0.019167  -5.491    4e-08 ***
-    ## bio12       -0.006370   0.003437  -1.854   0.0638 .  
-    ## bio7         0.070905   0.033311   2.129   0.0333 *  
+    ##               Estimate Std. Error z value Pr(>|z|)    
+    ## (Intercept) 14.7640301  6.1642914   2.395   0.0166 *  
+    ## bio1        -0.0033002  0.0170544  -0.194   0.8466    
+    ## bio12       -0.0003822  0.0021234  -0.180   0.8572    
+    ## bio7        -0.0627133  0.0145805  -4.301  1.7e-05 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
     ##     Null deviance: 210.72  on 847  degrees of freedom
-    ## Residual deviance: 129.35  on 844  degrees of freedom
-    ## AIC: 65.765
+    ## Residual deviance: 101.38  on 844  degrees of freedom
+    ## AIC: 44.261
     ## 
-    ## Number of Fisher Scoring iterations: 7
+    ## Number of Fisher Scoring iterations: 6
     ## 
     ## 
     ## 
     ## Model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 76 
     ## n absences     : 772 
-    ## AUC            : 0.8721366 
-    ## cor            : 0.2682345 
-    ## max TPR+TNR at : -0.1611919 
+    ## AUC            : 0.9113035 
+    ## cor            : 0.4622452 
+    ## max TPR+TNR at : -0.2148879 
     ## 
     ## 
     ## Environment space model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 76 
     ## n absences     : 10000 
-    ## AUC            : 0.8260658 
-    ## cor            : 0.1177308 
-    ## max TPR+TNR at : 0.31541 
+    ## AUC            : 0.7083842 
+    ## cor            : 0.07638908 
+    ## max TPR+TNR at : 0.5549205 
     ## 
     ## 
     ## Proportion of data wittheld for model fitting:  0
@@ -1569,14 +1872,14 @@ your ranges are being split up), you can find them in the list named
     ## 
     ## 
     ## Suitability:  
-    ## class       : RasterLayer 
-    ## dimensions  : 54, 162, 8748  (nrow, ncol, ncell)
-    ## resolution  : 0.1666667, 0.1666667  (x, y)
-    ## extent      : -10, 17, 39, 48  (xmin, xmax, ymin, ymax)
-    ## coord. ref. : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
-    ## data source : in memory
-    ## names       : layer 
-    ## values      : 1.15296e-08, 0.9931977  (min, max)
+    ## class      : RasterLayer 
+    ## dimensions : 54, 162, 8748  (nrow, ncol, ncell)
+    ## resolution : 0.1666667, 0.1666667  (x, y)
+    ## extent     : -10, 17, 39, 48  (xmin, xmax, ymin, ymax)
+    ## crs        : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
+    ## source     : memory
+    ## names      : layer 
+    ## values     : 0.001154449, 0.9976502  (min, max)
     ## 
     ## 
     ## 
@@ -1607,31 +1910,31 @@ so we'll just simulate one based on some random points.
     ## 
     ## 
     ## Range raster: 
-    ## class       : RasterLayer 
-    ## dimensions  : 54, 162, 8748  (nrow, ncol, ncell)
-    ## resolution  : 0.1666667, 0.1666667  (x, y)
-    ## extent      : -10, 17, 39, 48  (xmin, xmax, ymin, ymax)
-    ## coord. ref. : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
-    ## data source : in memory
-    ## names       : bio1 
-    ## values      : 1, 1  (min, max)
+    ## class      : RasterLayer 
+    ## dimensions : 54, 162, 8748  (nrow, ncol, ncell)
+    ## resolution : 0.1666667, 0.1666667  (x, y)
+    ## extent     : -10, 17, 39, 48  (xmin, xmax, ymin, ymax)
+    ## crs        : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
+    ## source     : memory
+    ## names      : bio1 
+    ## values     : 1, 1  (min, max)
     ## 
     ## 
     ## 
     ## Presence points (first ten only): 
     ## 
-    ##  Longitude   Latitude
-    ## ----------  ---------
-    ##  -8.767481   41.29724
-    ##  -7.129208   41.25078
-    ##  -8.560360   41.45911
-    ##  -2.252357   41.77763
-    ##  -8.881490   41.84858
-    ##  -6.539390   40.52293
-    ##  -8.585099   41.29406
-    ##  -4.308883   40.82632
-    ##  -3.536658   40.67851
-    ##  -2.280341   41.96987
+    ##   Longitude   Latitude
+    ## -----------  ---------
+    ##  -6.9988659   41.27830
+    ##  -8.0237974   40.75874
+    ##  -2.9280718   41.21679
+    ##  -0.1083568   41.94188
+    ##  -0.2053868   40.80873
+    ##  -2.3802044   40.71032
+    ##  -7.8316145   41.19650
+    ##  -0.6423769   41.89845
+    ##  -0.9805759   41.52521
+    ##  -2.8223883   41.88515
     ## 
     ## 
     ## Background points not defined.
@@ -1660,21 +1963,53 @@ degrees you should supply the width of the barrier in decimal degrees.
     ## 
     ## 
     ## Building empirical models...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species monticola 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species cyreni 
     ##  Processing presence points...
     ##  Processing background points...
 
     ## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species ribbon 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species outside 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## [1] "Trying to find starting conditions, attempt 1"
     ## [1] "Building replicates..."
     ## [1] "Trying to find starting conditions, attempt 1"
@@ -1687,18 +2022,50 @@ degrees you should supply the width of the barrier in decimal degrees.
     ## Building replicate models...
     ## 
     ## Replicate 1 ...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species monticola 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species cyreni 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species ribbon 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species outside 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## [1] "Trying to find starting conditions, attempt 1"
     ## [1] "Building replicates..."
     ## [1] "Trying to find starting conditions, attempt 1"
@@ -1709,18 +2076,56 @@ degrees you should supply the width of the barrier in decimal degrees.
     ## [1] "Building replicates..."
     ## 
     ## Replicate 2 ...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species monticola 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species cyreni 
     ##  Processing presence points...
     ##  Processing background points...
+
+    ## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species ribbon 
     ##  Processing presence points...
     ##  Processing background points...
+
+    ## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species outside 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## [1] "Trying to find starting conditions, attempt 1"
     ## [1] "Building replicates..."
     ## [1] "Trying to find starting conditions, attempt 1"
@@ -1731,24 +2136,50 @@ degrees you should supply the width of the barrier in decimal degrees.
     ## [1] "Building replicates..."
     ## 
     ## Replicate 3 ...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species monticola 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species cyreni 
     ##  Processing presence points...
     ##  Processing background points...
-
-    ## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species ribbon 
     ##  Processing presence points...
     ##  Processing background points...
-
-    ## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
-
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species outside 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## [1] "Trying to find starting conditions, attempt 1"
     ## [1] "Building replicates..."
     ## [1] "Trying to find starting conditions, attempt 1"
@@ -1759,24 +2190,56 @@ degrees you should supply the width of the barrier in decimal degrees.
     ## [1] "Building replicates..."
     ## 
     ## Replicate 4 ...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species monticola 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species cyreni 
     ##  Processing presence points...
     ##  Processing background points...
 
     ## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species ribbon 
     ##  Processing presence points...
     ##  Processing background points...
 
     ## Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## Adding environmental data to species outside 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## [1] "Trying to find starting conditions, attempt 1"
     ## [1] "Building replicates..."
     ## [1] "Trying to find starting conditions, attempt 1"
@@ -1798,108 +2261,162 @@ degrees you should supply the width of the barrier in decimal degrees.
     ## 
     ## Species 1 vs. Species 2:
     ##        D        I rank.cor    env.D    env.I  env.cor 
-    ##      0.8      0.8      0.4      1.2      0.8      1.2 
+    ##      1.2      1.2      0.4      0.4      0.4      1.2 
     ## 
     ## Species 1 vs. Ribbon:
     ##        D        I rank.cor    env.D    env.I  env.cor 
-    ##      0.4      0.4      0.4      0.4      0.4      0.4 
+    ##      0.8      1.2      0.4      0.8      0.8      0.4 
     ## 
     ## Species 2 vs. Ribbon:
     ##        D        I rank.cor    env.D    env.I  env.cor 
-    ##      0.4      0.4      0.4      0.4      0.4      0.4 
+    ##      0.4      0.8      0.4      0.4      0.4      0.4 
     ## 
     ## Outside vs. Ribbon:
     ##        D        I rank.cor    env.D    env.I  env.cor 
-    ##      0.4      0.4      0.4      0.8      0.8      0.4 
+    ##      0.8      1.2      0.4      0.8      0.8      0.4 
     ## 
     ## 
     ## Replicates:
     ## 
     ## Species 1 vs. Species 2:
-    ##                   D         I    rank.cor     env.D     env.I     env.cor
-    ## empirical 0.1005914 0.2917623 -0.10114941 0.2085903 0.3376812  0.09302784
-    ## rep 1     0.3565518 0.6355876 -0.02596101 0.2230470 0.3737421 -0.12110338
-    ## rep 2     0.4104463 0.6761612  0.08390495 0.2489801 0.3822046 -0.14229292
-    ## rep 3     0.1213811 0.3424171  0.13038532 0.1501157 0.3719485  0.45153350
-    ## rep 4     0.0902216 0.2843522  0.03205496 0.1009398 0.2933058  0.25625175
+    ##                    D         I    rank.cor      env.D     env.I
+    ## empirical 0.10804657 0.3060365 -0.12272718 0.07189009 0.1750578
+    ## rep 1     0.37632040 0.6557407  0.09869762 0.21676011 0.3563165
+    ## rep 2     0.08959717 0.2741635  0.12322255 0.10622085 0.2983803
+    ## rep 3     0.23421039 0.4654351 -0.12059431 0.17871075 0.3124100
+    ## rep 4     0.08853269 0.2755832  0.13292103 0.12007964 0.3210344
+    ##               env.cor
+    ## empirical  0.01449019
+    ## rep 1     -0.04829717
+    ## rep 2      0.29061097
+    ## rep 3     -0.22973626
+    ## rep 4      0.33220017
     ## 
     ## Species 1 vs. Ribbon:
-    ##                   D         I    rank.cor     env.D     env.I    env.cor
-    ## empirical 0.5414841 0.8182575 -0.01472933 0.3157483 0.5681497 0.06923811
-    ## rep 1     0.4468853 0.7307242  0.12674612 0.3126485 0.4898966 0.09526138
-    ## rep 2     0.5364706 0.7818077  0.35937225 0.2548644 0.4567155 0.07342587
-    ## rep 3     0.2277833 0.4805389  0.24684606 0.1355698 0.3490069 0.38817853
-    ## rep 4     0.3071671 0.5701145  0.37629252 0.2941895 0.5521452 0.53269544
+    ##                    D         I    rank.cor      env.D     env.I    env.cor
+    ## empirical 0.54731819 0.7832922 -0.01461423 0.16329425 0.3013604 -0.2141816
+    ## rep 1     0.54039561 0.7908293  0.41341329 0.32139651 0.5249230  0.4645284
+    ## rep 2     0.30333218 0.5615043  0.38784074 0.27405566 0.5302810  0.5304237
+    ## rep 3     0.59415667 0.8489086  0.53061440 0.43871784 0.6813579  0.4834408
+    ## rep 4     0.09579333 0.2909038  0.30802841 0.03907368 0.1742451  0.2554053
     ## 
     ## Species 2 vs. Ribbon:
-    ##                   D         I     rank.cor      env.D     env.I    env.cor
-    ## empirical 0.2271375 0.4942254 -0.006247587 0.09873118 0.1992178 -0.6268091
-    ## rep 1     0.8877557 0.9808929  0.972142787 0.85482266 0.9521763  0.9597145
-    ## rep 2     0.7236891 0.9066791  0.823449461 0.54225084 0.7802574  0.8955788
-    ## rep 3     0.4828211 0.7527276  0.932253465 0.50798800 0.7113498  0.8374995
-    ## rep 4     0.4361225 0.6995519  0.870359442 0.32311605 0.5853179  0.7575722
+    ##                   D         I  rank.cor      env.D     env.I    env.cor
+    ## empirical 0.1876482 0.4119861 0.1925618 0.03879466 0.1012175 -0.3114447
+    ## rep 1     0.7892906 0.9320477 0.9102640 0.55014979 0.7592867  0.8094674
+    ## rep 2     0.4226715 0.6890689 0.8825460 0.34272501 0.6009103  0.7614384
+    ## rep 3     0.6211232 0.8266829 0.6791794 0.70270299 0.8074153  0.6747770
+    ## rep 4     0.2263865 0.4064181 0.7276099 0.18400095 0.3987646  0.5117592
     ## 
     ## Outside vs. Ribbon:
-    ##                   D         I  rank.cor     env.D     env.I   env.cor
-    ## empirical 0.6442788 0.8788862 0.2182055 0.4233755 0.6629133 0.1745643
-    ## rep 1     0.5592673 0.8266039 0.3906555 0.5056916 0.7089894 0.4978725
-    ## rep 2     0.5820008 0.8144199 0.4767257 0.3168624 0.5440349 0.2482848
-    ## rep 3     0.2510722 0.5079192 0.3177119 0.1276517 0.3374701 0.3715698
-    ## rep 4     0.3027025 0.5692949 0.3240719 0.2907300 0.5496800 0.5307634
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-    ## Warning: Removed 1 rows containing missing values (geom_bar).
+    ##                    D         I   rank.cor      env.D     env.I    env.cor
+    ## empirical 0.59937727 0.8253330 0.05074856 0.20265754 0.3658422 -0.2119834
+    ## rep 1     0.59367361 0.8347674 0.55941562 0.35522127 0.5935487  0.6101857
+    ## rep 2     0.31818153 0.5853617 0.38512573 0.30735449 0.5694350  0.6015144
+    ## rep 3     0.80236178 0.9625940 0.86746083 0.63594335 0.8561294  0.6688097
+    ## rep 4     0.09866055 0.2974828 0.34502157 0.03159382 0.1542301  0.1888756
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 1 rows containing missing values (geom_bar).
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
 
 ![](Readme_files/figure-markdown_strict/rangebreak_ribbon-1.png)
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 1 rows containing missing values (geom_bar).
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 1 rows containing missing values (geom_bar).
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
 
 ![](Readme_files/figure-markdown_strict/rangebreak_ribbon-2.png)
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 1 rows containing missing values (geom_bar).
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 1 rows containing missing values (geom_bar).
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
 
 ![](Readme_files/figure-markdown_strict/rangebreak_ribbon-3.png)
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 1 rows containing missing values (geom_bar).
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 1 rows containing missing values (geom_bar).
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 2 rows containing missing values (geom_bar).
 
 ![](Readme_files/figure-markdown_strict/rangebreak_ribbon-4.png)
 
@@ -1909,10 +2426,10 @@ offset.
     rbr.glm$lines.df
 
     ##        slope intercept    offset
-    ## 1 -1.0966462  34.70667 0.3710317
-    ## 2 -0.6354215  39.14627 0.2962010
-    ## 3  0.9441800  49.63428 0.3438273
-    ## 4  0.1388375  44.14309 0.2523980
+    ## 1 -1.4596571  32.36216 0.4423375
+    ## 2  0.1688008  44.35921 0.2535367
+    ## 3 -0.5832021  38.29264 0.2894094
+    ## 4  0.4676698  46.36662 0.2759886
 
 The intercept denotes the intercept corresponding to the CENTER of each
 ribbon. To get the lines denoting the edges of the ribbons (for example
@@ -2017,11 +2534,11 @@ that is called brev.clade.
     ## 
     ##                species.names   in.tree   presence   background   range   
     ## -------------  --------------  --------  ---------  -----------  --------
-    ## brevirostris   brevirostris    TRUE      173        0            present 
+    ## brevirostris   brevirostris    TRUE      183        0            present 
     ## caudalis       caudalis        TRUE      21         0            present 
-    ## distichus      distichus       TRUE      678        0            present 
-    ## marron         marron          TRUE      12         0            present 
-    ## websteri       websteri        TRUE      17         0            present
+    ## distichus      distichus       TRUE      712        0            present 
+    ## marron         marron          TRUE      13         0            present 
+    ## websteri       websteri        TRUE      18         0            present
 
 That's one way to build a clade object by hand, but there's already one
 built into ENMTools to experiment with so we'll just use that.
@@ -2069,10 +2586,12 @@ of the function used above).
     ##      (Intercept) empirical.df$age 
     ##       0.03921569       0.03921569
 
+![](Readme_files/figure-markdown_strict/range_aoc-1.png)
+
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](Readme_files/figure-markdown_strict/range_aoc-1.png)
+![](Readme_files/figure-markdown_strict/range_aoc-2.png)
 
     ## NULL
 
@@ -2090,12 +2609,14 @@ overlap.source argument:
     ## 
     ## p values:
     ##      (Intercept) empirical.df$age 
-    ##        0.3921569        0.4313725
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+    ##        0.4313725        0.4705882
 
 ![](Readme_files/figure-markdown_strict/point_aoc-1.png)
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](Readme_files/figure-markdown_strict/point_aoc-2.png)
 
     ## NULL
 
@@ -2113,11 +2634,19 @@ use GLM models:
     ##  Processing background points...
     ## 
     ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
     ## No background points provided, drawing background from range raster.
     ## 
     ## Adding environmental data to species martinezricai 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## 
     ## 
     ## No background points provided, drawing background from range raster.
@@ -2127,11 +2656,19 @@ use GLM models:
     ##  Processing background points...
     ## 
     ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
     ## No background points provided, drawing background from range raster.
     ## 
     ## Adding environmental data to species horvathi 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
+    ## 
     ## 
     ## 
     ## No background points provided, drawing background from range raster.
@@ -2141,6 +2678,10 @@ use GLM models:
     ##  Processing background points...
     ## 
     ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
     ## No background points provided, drawing background from range raster.
     ## 
     ## Adding environmental data to species aranica 
@@ -2148,11 +2689,18 @@ use GLM models:
     ##  Processing background points...
     ## 
     ## 
+    ## Drawing background from species background points.
+    ## 
+    ## 
+    ## 
     ## No background points provided, drawing background from range raster.
     ## 
     ## Adding environmental data to species bonnali 
     ##  Processing presence points...
     ##  Processing background points...
+    ## 
+    ## 
+    ## Drawing background from species background points.
 
     summary(glm.aoc)
 
@@ -2164,12 +2712,14 @@ use GLM models:
     ## 
     ## p values:
     ##      (Intercept) empirical.df$age 
-    ##        0.1960784        0.2352941
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+    ##        0.2352941        0.2352941
 
 ![](Readme_files/figure-markdown_strict/enm_aoc-1.png)
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](Readme_files/figure-markdown_strict/enm_aoc-2.png)
 
     ## NULL
 

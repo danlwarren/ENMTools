@@ -1,11 +1,15 @@
 ---
-output:
+output: html
   md_document: default
   keep_md: yes
 ---
 ENMTools
 ======================
 This package implements various tests, visualizations, and metrics for use with environmental niche models (ENMs) and species distribution models (SDMs). 
+
+
+### Citation
+Warren, D.L., N. Matzke, M. Cardillo, J. Baumgartner, L. Beaumont, N. Huron, M. Simões, and R. Dinnage.  2019.  ENMTools (Software Package).  URL: https://github.com/danlwarren/ENMTools. doi:10.5281/zenodo.3268814
 
 -----
 
@@ -423,7 +427,7 @@ These tests require the creation of an enmtools.clade object, as above.  AOC tes
 
 First, let's do one using geog.range.overlaps, as in Fitzpatrick and Turelli 2006.  Note that this analysis requires that each of your species have a range raster stored in their species object (we did that as part of the function used above).  
 
-```{r range_aoc}
+```{r range_aoc, warning=FALSE}
 range.aoc <- enmtools.aoc(clade = iberolacerta.clade,  nreps = 50, overlap.source = "range")
 summary(range.aoc)
 ```
