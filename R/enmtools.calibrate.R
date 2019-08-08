@@ -59,12 +59,24 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11){
   MCE <- getMCE(pred.df$obs, pred.df$prob, n_bins = cuts)
   MCE.equal.width <- get_MCE_equal_width(pred.df$obs, pred.df$prob)
 
+  # Testing to see whether models are presence only or presence/background
+  continuous.boyce <- NA
+  if("presence" %in% colnames(model$analysis.df)){
+    continuous.boyce <- ecospat.boyce(model$suitability,
+                                      model$analysis.df[model$analysis.df$presence == 1,1:2])
+  } else {
+    continuous.boyce <- ecospat.boyce(model$suitability,
+                                      model$analysis.df[,1:2])
+  }
+
+
   output <- list(calibration.plot = calib.plot,
                  classification.plot = class.plot,
                  ECE = ECE,
                  ECE.equal.width = ECE.equal.width,
                  MCE = MCE,
-                 MCE.equal.width = MCE.equal.width)
+                 MCE.equal.width = MCE.equal.width,
+                 continuous.boyce = continuous.boyce)
 
   return(output)
 }
