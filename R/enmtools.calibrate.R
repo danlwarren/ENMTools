@@ -3,6 +3,7 @@
 #' @param model An enmtools.model object
 #' @param recalibrate When TRUE, does a full CalibratR "calibrate" run to recalibrate the model.  When FALSE, just returns metrics and plots measuring calibration of the model as is.
 #' @param cuts The number of bins to split suitability scores into for calculating calibration.
+#' @param ... Further arguments to be passed to CalibratR's "calibrate" function.
 #'
 #' @examples
 #' data(euro.worldclim)
@@ -11,7 +12,7 @@
 #' env = euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.3)
 #' enmtools.calibrate(monticola.glm)
 
-enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11){
+enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, ...){
 
   if(suppressWarnings(is.na(model$test.evaluation))){
     stop("No test evaluation data available, cannot measure calibration.")
@@ -69,12 +70,21 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11){
                                       model$analysis.df[,1:2])
   }
 
-  # Need to convert obs to 1/0 for hoslem test
+  # Need to convert obs to 1/0 for hoslem test and calibrate function
   hos.pa <- rep(NA, length(pred.df$obs))
   hos.pa[which(pred.df$obs == "presence")] <- 1
   hos.pa[which(pred.df$obs == "absence")] <- 0
   hoslem <- hoslem.test(hos.pa, pred.df$prob, g = cuts)
 
+  # Recalibrating as needed
+  recalibrated.model <- NA
+  calibrated.suitabilities <- NA
+  if(recalibrate == TRUE){
+    recalibrated.model <- CalibratR::calibrate(hos.pa, pred.df$prob, ...)
+    preds <- raster::rasterToPoints(model$suitability)
+    cal.preds <- CalibratR::predict_calibratR(recalibrated.model$calibration_models, preds[,"layer"])
+    calibrated.suitabilities <- lapply(cal.preds, function(x) rasterize(preds[,1:2], model$suitability, field = x))
+  }
 
   output <- list(calibration.plot = calib.plot,
                  classification.plot = class.plot,
@@ -83,7 +93,9 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11){
                  MCE = MCE,
                  MCE.equal.width = MCE.equal.width,
                  continuous.boyce = continuous.boyce,
-                 hoslem = hoslem)
+                 hoslem = hoslem,
+                 recalibrated.model = recalibrated.model,
+                 calibrated.suitabilities = calibrated.suitabilities)
 
   return(output)
 }
