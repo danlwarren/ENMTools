@@ -1,4 +1,4 @@
-#' Takes an emtools.model object, and reformats it to run through the CalibratR package.  Can either do a full CalibratR run or just return ECE/MCE statistics and plots.
+#' Takes an emtools.model object, and reformats it to run through the CalibratR package, calculates Continuous Boyce Index, and runs a Hosmer-Lemeshow goodness-of-fit test.  Can either do a full CalibratR run or just return ECE/MCE statistics and plots.
 #'
 #' @param model An enmtools.model object
 #' @param recalibrate When TRUE, does a full CalibratR "calibrate" run to recalibrate the model.  When FALSE, just returns metrics and plots measuring calibration of the model as is.
@@ -69,6 +69,12 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11){
                                       model$analysis.df[,1:2])
   }
 
+  # Need to convert obs to 1/0 for hoslem test
+  hos.pa <- rep(NA, length(pred.df$obs))
+  hos.pa[which(pred.df$obs == "presence")] <- 1
+  hos.pa[which(pred.df$obs == "absence")] <- 0
+  hoslem <- hoslem.test(hos.pa, pred.df$prob, g = cuts)
+
 
   output <- list(calibration.plot = calib.plot,
                  classification.plot = class.plot,
@@ -76,7 +82,8 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11){
                  ECE.equal.width = ECE.equal.width,
                  MCE = MCE,
                  MCE.equal.width = MCE.equal.width,
-                 continuous.boyce = continuous.boyce)
+                 continuous.boyce = continuous.boyce,
+                 hoslem = hoslem)
 
   return(output)
 }

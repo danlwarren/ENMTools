@@ -2,7 +2,7 @@
 % Please edit documentation in R/enmtools.calibrate.R
 \name{enmtools.calibrate}
 \alias{enmtools.calibrate}
-\title{Takes an emtools.model object, and reformats it to run through the CalibratR package.  Can either do a full CalibratR run or just return ECE/MCE statistics and plots.}
+\title{Takes an emtools.model object, and reformats it to run through the CalibratR package, calculates Continuous Boyce Index, and runs a Hosmer-Lemeshow goodness-of-fit test.  Can either do a full CalibratR run or just return ECE/MCE statistics and plots.}
 \usage{
 enmtools.calibrate(model, recalibrate = FALSE, cuts = 11)
 }
@@ -14,7 +14,7 @@ enmtools.calibrate(model, recalibrate = FALSE, cuts = 11)
 \item{cuts}{The number of bins to split suitability scores into for calculating calibration.}
 }
 \description{
-Takes an emtools.model object, and reformats it to run through the CalibratR package.  Can either do a full CalibratR run or just return ECE/MCE statistics and plots.
+Takes an emtools.model object, and reformats it to run through the CalibratR package, calculates Continuous Boyce Index, and runs a Hosmer-Lemeshow goodness-of-fit test.  Can either do a full CalibratR run or just return ECE/MCE statistics and plots.
 }
 \examples{
 data(euro.worldclim)
