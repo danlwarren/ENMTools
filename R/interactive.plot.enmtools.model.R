@@ -25,6 +25,7 @@ interactive.plot.enmtools.model <- function(x, map.provider = "Esri.WorldPhysica
     presence.points <- pnts[pnts$presence == 1, ]
     background.points <- pnts[pnts$presence == 0, ]
   } else {
+    pnts <- x$analysis.df[ , c("Longitude", "Latitude")]
     presence.points <- x$analysis.df[ , c("Longitude", "Latitude")]
   }
 
