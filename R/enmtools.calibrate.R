@@ -55,10 +55,16 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, ...){
   class.plot <- qplot(pred.df$prob, facets = obs ~ ., data = pred.df,
                       alpha = 0.5, ylab = "Count", xlab = "Predicted")
 
-  ECE <- getECE(pred.df$obs, pred.df$prob, n_bins = cuts)
-  ECE.equal.width <- get_ECE_equal_width(pred.df$obs, pred.df$prob)
-  MCE <- getMCE(pred.df$obs, pred.df$prob, n_bins = cuts)
-  MCE.equal.width <- get_MCE_equal_width(pred.df$obs, pred.df$prob)
+  # Need to convert obs to 1/0 for hoslem test and calibrate function
+  hos.pa <- rep(NA, length(pred.df$obs))
+  hos.pa[which(pred.df$obs == "presence")] <- 1
+  hos.pa[which(pred.df$obs == "absence")] <- 0
+  hoslem <- hoslem.test(hos.pa, pred.df$prob, g = cuts)
+
+  ECE <- getECE(hos.pa, pred.df$prob, n_bins = cuts)
+  ECE.equal.width <- get_ECE_equal_width(hos.pa, pred.df$prob)
+  MCE <- getMCE(hos.pa, pred.df$prob, n_bins = cuts)
+  MCE.equal.width <- get_MCE_equal_width(hos.pa, pred.df$prob)
 
   # Testing to see whether models are presence only or presence/background
   continuous.boyce <- NA
@@ -70,20 +76,31 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, ...){
                                       model$analysis.df[,1:2])
   }
 
-  # Need to convert obs to 1/0 for hoslem test and calibrate function
-  hos.pa <- rep(NA, length(pred.df$obs))
-  hos.pa[which(pred.df$obs == "presence")] <- 1
-  hos.pa[which(pred.df$obs == "absence")] <- 0
-  hoslem <- hoslem.test(hos.pa, pred.df$prob, g = cuts)
-
   # Recalibrating as needed
   recalibrated.model <- NA
   calibrated.suitabilities <- NA
+  recalibrated.metrics <- list()
+  recalibrated.plots <- list()
+
   if(recalibrate == TRUE){
-    recalibrated.model <- CalibratR::calibrate(hos.pa, pred.df$prob, ...)
+    recalibrated.model <- CalibratR::calibrate(hos.pa, pred.df$prob, evaluate_no_CV_error = FALSE)
     preds <- raster::rasterToPoints(model$suitability)
     cal.preds <- CalibratR::predict_calibratR(recalibrated.model$calibration_models, preds[,"layer"])
     calibrated.suitabilities <- lapply(cal.preds, function(x) rasterize(preds[,1:2], model$suitability, field = x))
+
+    for(i in names(recalibrated.model$predictions)){
+
+      recalibrated.metrics[[i]][["ECE"]] <- mean(sapply(recalibrated.model$summary_CV$models$calibrated[[i]], function(x) x$error$calibration_error$ECE_equal_frequency))
+      recalibrated.metrics[[i]][["ECE.equal.width"]] <- mean(sapply(recalibrated.model$summary_CV$models$calibrated[[i]], function(x) x$error$calibration_error$ECE_equal_width))
+      recalibrated.metrics[[i]][["MCE"]] <- mean(sapply(recalibrated.model$summary_CV$models$calibrated[[i]], function(x) x$error$calibration_error$MCE_equal_frequency))
+      recalibrated.metrics[[i]][["MCE.equal.width"]] <- mean(sapply(recalibrated.model$summary_CV$models$calibrated[[i]], function(x) x$error$calibration_error$MCE_equal_width))
+
+      temp.df <- data.frame(prob = recalibrated.model$predictions[[i]],
+                            obs = pred.df$obs)
+
+      recalibrated.plots[[i]][["class.plot"]] <-   class.plot <- qplot(temp.df$prob, facets = obs ~ ., data = temp.df,
+                                                                      alpha = 0.5, ylab = "Count", xlab = "Predicted")
+    }
   }
 
   output <- list(calibration.plot = calib.plot,
@@ -95,7 +112,9 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, ...){
                  continuous.boyce = continuous.boyce,
                  hoslem = hoslem,
                  recalibrated.model = recalibrated.model,
-                 calibrated.suitabilities = calibrated.suitabilities)
+                 calibrated.suitabilities = calibrated.suitabilities,
+                 recalibrated.metrics = recalibrated.metrics,
+                 recalibrated.plots = recalibrated.plots)
 
   return(output)
 }
