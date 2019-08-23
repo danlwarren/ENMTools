@@ -56,15 +56,15 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, ...){
                       alpha = 0.5, ylab = "Count", xlab = "Predicted")
 
   # Need to convert obs to 1/0 for hoslem test and calibrate function
-  hos.pa <- rep(NA, length(pred.df$obs))
-  hos.pa[which(pred.df$obs == "presence")] <- 1
-  hos.pa[which(pred.df$obs == "absence")] <- 0
-  hoslem <- hoslem.test(hos.pa, pred.df$prob, g = cuts)
+  this.pa <- rep(NA, length(pred.df$obs))
+  this.pa[which(pred.df$obs == "presence")] <- 1
+  this.pa[which(pred.df$obs == "absence")] <- 0
+  hoslem <- hoslem.test(this.pa, pred.df$prob, g = cuts)
 
-  ECE <- getECE(hos.pa, pred.df$prob, n_bins = cuts)
-  ECE.equal.width <- get_ECE_equal_width(hos.pa, pred.df$prob)
-  MCE <- getMCE(hos.pa, pred.df$prob, n_bins = cuts)
-  MCE.equal.width <- get_MCE_equal_width(hos.pa, pred.df$prob)
+  ECE <- getECE(this.pa, pred.df$prob, n_bins = cuts)
+  ECE.equal.width <- get_ECE_equal_width(this.pa, pred.df$prob)
+  MCE <- getMCE(this.pa, pred.df$prob, n_bins = cuts)
+  MCE.equal.width <- get_MCE_equal_width(this.pa, pred.df$prob)
 
   # Testing to see whether models are presence only or presence/background
   continuous.boyce <- NA
@@ -83,16 +83,31 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, ...){
   recalibrated.plots <- list()
 
   if(recalibrate == TRUE){
-    recalibrated.model <- CalibratR::calibrate(hos.pa, pred.df$prob, evaluate_no_CV_error = FALSE)
+    recalibrated.model <- CalibratR::calibrate(this.pa, pred.df$prob, evaluate_no_CV_error = FALSE)
     preds <- raster::rasterToPoints(model$suitability)
     cal.preds <- CalibratR::predict_calibratR(recalibrated.model$calibration_models, preds[,"layer"])
     calibrated.suitabilities <- lapply(cal.preds, function(x) rasterize(preds[,1:2], model$suitability, field = x))
 
-    for(i in names(recalibrated.model$predictions)){
 
-      recalibrated.metrics[[i]][["ECE"]] <- mean(sapply(recalibrated.model$summary_CV$models$calibrated[[i]], function(x) x$error$calibration_error$ECE_equal_frequency))
+    for(i in names(recalibrated.model$summary_CV$models$uncalibrated)){
+
+      recalibrated.metrics[[i]][["ECE"]] <- mean(sapply(recalibrated.model$summary_CV$models$uncalibrated[[i]], function(x) x$error$calibration_error$ECE_equal_freq))
+      recalibrated.metrics[[i]][["ECE.equal.width"]] <- mean(sapply(recalibrated.model$summary_CV$models$uncalibrated[[i]], function(x) x$error$calibration_error$ECE_equal_width))
+      recalibrated.metrics[[i]][["MCE"]] <- mean(sapply(recalibrated.model$summary_CV$models$uncalibrated[[i]], function(x) x$error$calibration_error$MCE_equal_freq))
+      recalibrated.metrics[[i]][["MCE.equal.width"]] <- mean(sapply(recalibrated.model$summary_CV$models$uncalibrated[[i]], function(x) x$error$calibration_error$MCE_equal_width))
+
+      temp.df <- data.frame(prob = recalibrated.model$predictions[[i]],
+                            obs = pred.df$obs)
+
+      recalibrated.plots[[i]][["class.plot"]] <-   class.plot <- qplot(temp.df$prob, facets = obs ~ ., data = temp.df,
+                                                                       alpha = 0.5, ylab = "Count", xlab = "Predicted")
+    }
+
+    for(i in names(recalibrated.model$summary_CV$models$calibrated)){
+
+      recalibrated.metrics[[i]][["ECE"]] <- mean(sapply(recalibrated.model$summary_CV$models$calibrated[[i]], function(x) x$error$calibration_error$ECE_equal_freq))
       recalibrated.metrics[[i]][["ECE.equal.width"]] <- mean(sapply(recalibrated.model$summary_CV$models$calibrated[[i]], function(x) x$error$calibration_error$ECE_equal_width))
-      recalibrated.metrics[[i]][["MCE"]] <- mean(sapply(recalibrated.model$summary_CV$models$calibrated[[i]], function(x) x$error$calibration_error$MCE_equal_frequency))
+      recalibrated.metrics[[i]][["MCE"]] <- mean(sapply(recalibrated.model$summary_CV$models$calibrated[[i]], function(x) x$error$calibration_error$MCE_equal_freq))
       recalibrated.metrics[[i]][["MCE.equal.width"]] <- mean(sapply(recalibrated.model$summary_CV$models$calibrated[[i]], function(x) x$error$calibration_error$MCE_equal_width))
 
       temp.df <- data.frame(prob = recalibrated.model$predictions[[i]],
