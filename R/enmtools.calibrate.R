@@ -101,6 +101,16 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, ...){
 
       recalibrated.plots[[i]][["class.plot"]] <-   class.plot <- qplot(temp.df$prob, facets = obs ~ ., data = temp.df,
                                                                        alpha = 0.5, ylab = "Count", xlab = "Predicted")
+
+      training.p.scores <- raster::extract(calibrated.suitabilities[[i]],
+                                         model$analysis.df[model$analysis.df$presence == 1,1:2])
+      training.a.scores <- raster::extract(calibrated.suitabilities[[i]],
+                                           model$analysis.df[model$analysis.df$presence == 0,1:2])
+      test.p.scores <- raster::extract(calibrated.suitabilities[[i]],
+                                       model$test.data)
+
+      geo.training.evaluation <- dismo::evaluate(training.p.scores, training.a.scores)
+      geo.test.evaluation <- dismo::evaluate(test.p.scores, training.a.scores)
     }
 
     for(i in names(recalibrated.model$summary_CV$models$calibrated)){
@@ -115,6 +125,16 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, ...){
 
       recalibrated.plots[[i]][["class.plot"]] <-   class.plot <- qplot(temp.df$prob, facets = obs ~ ., data = temp.df,
                                                                       alpha = 0.5, ylab = "Count", xlab = "Predicted")
+
+      training.p.scores <- raster::extract(calibrated.suitabilities[[i]],
+                                           model$analysis.df[model$analysis.df$presence == 1,1:2])
+      training.a.scores <- raster::extract(calibrated.suitabilities[[i]],
+                                           model$analysis.df[model$analysis.df$presence == 0,1:2])
+      test.p.scores <- raster::extract(calibrated.suitabilities[[i]],
+                                       model$test.data)
+
+      geo.training.evaluation <- dismo::evaluate(training.p.scores, training.a.scores)
+      geo.test.evaluation <- dismo::evaluate(test.p.scores, training.a.scores)
     }
   }
 
