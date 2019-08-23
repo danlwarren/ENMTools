@@ -3,6 +3,8 @@
 #' @param model An enmtools.model object
 #' @param recalibrate When TRUE, does a full CalibratR "calibrate" run to recalibrate the model.  When FALSE, just returns metrics and plots measuring calibration of the model as is.
 #' @param cuts The number of bins to split suitability scores into for calculating calibration.
+#' @param env A set of environment layers to be used for optional env space metrics
+#' @param n.background Number of background points to be used for env space metrics
 #' @param ... Further arguments to be passed to CalibratR's "calibrate" function.
 #'
 #' @examples
@@ -12,7 +14,7 @@
 #' env = euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.3)
 #' enmtools.calibrate(monticola.glm)
 
-enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, ...){
+enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, n.background = 10000, ...){
 
   if(suppressWarnings(is.na(model$test.evaluation))){
     stop("No test evaluation data available, cannot measure calibration.")
@@ -81,6 +83,8 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, ...){
   calibrated.suitabilities <- NA
   recalibrated.metrics <- list()
   recalibrated.plots <- list()
+  env.training.evaluation <- list()
+  env.test.evaluation <- list()
 
   if(recalibrate == TRUE){
     recalibrated.model <- CalibratR::calibrate(this.pa, pred.df$prob, evaluate_no_CV_error = FALSE)
@@ -88,44 +92,73 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, ...){
     cal.preds <- CalibratR::predict_calibratR(recalibrated.model$calibration_models, preds[,"layer"])
     calibrated.suitabilities <- lapply(cal.preds, function(x) rasterize(preds[,1:2], model$suitability, field = x))
 
+    # Do env space discrim metrics
+    if(inherits(env, c("raster", "RasterBrick", "RasterStack"))){
 
+      allpoints <- rbind(model$analysis.df[,1:2], model$test.data)
+      values <- extract(env, allpoints)
+      maxes <- apply(values, 2, function(x) max(x, na.rm = TRUE))
+      mins <- apply(values, 2, function(x) min(x, na.rm = TRUE))
+
+      this.lhs <- lhs::randomLHS(n.background, length(names(env)))
+      bg.table <- t(t(this.lhs) * (maxes  - mins) + mins)
+      colnames(bg.table) <- names(env)
+
+      p.table <- extract(env, model$analysis.df[model$analysis.df$presence == 1,1:2])
+      test.table <- extract(env, model$test.data)
+
+      # Having to do this for now because the dismo models don't like "newdata"
+      # Unfortunately I think we finally have to use an if statement because ranger predict is really different
+      if(inherits(model, "ranger")) {
+        pred.p <- as.numeric(predict(model$model, data = data.frame(p.table), type = "response")$predictions[ , 2, drop = TRUE])
+        pred.bg <- as.numeric(predict(model$model, data = data.frame(bg.table), type = "response")$predictions[ , 2, drop = TRUE])
+        pred.test <- as.numeric(predict(model$model, data = data.frame(test.table), type = "response")$predictions[ , 2, drop = TRUE])
+      } else {
+        pred.p <- as.numeric(predict(model$model, newdata = data.frame(p.table), x = data.frame(p.table), type = "response"))
+        pred.bg <- as.numeric(predict(model$model, newdata = data.frame(bg.table), x = data.frame(bg.table), type = "response"))
+        pred.test <- as.numeric(predict(model$model, newdata = data.frame(test.table), x = data.frame(test.table), type = "response"))
+      }
+
+      pred.p <- CalibratR::predict_calibratR(recalibrated.model$calibration_models, pred.p)
+      pred.bg <- CalibratR::predict_calibratR(recalibrated.model$calibration_models, pred.bg)
+      pred.test <- CalibratR::predict_calibratR(recalibrated.model$calibration_models, pred.test)
+
+      for(j in names(pred.p)){
+        env.training.evaluation[[j]] <- dismo::evaluate(pred.p[[j]], pred.bg[[j]])
+      }
+
+      for(j in names(pred.test)){
+        env.test.evaluation[[j]] <- dismo::evaluate(pred.test[[j]], pred.bg[[j]])
+      }
+
+    }
+
+    # We have to go through this twice because calibrated and uncalibrated models are stored separately
     for(i in names(recalibrated.model$summary_CV$models$uncalibrated)){
 
+      recalibrated.metrics[[i]] <- list()
+      recalibrated.plots[[i]] <- list()
+
+      # ECE and MCE
       recalibrated.metrics[[i]][["ECE"]] <- mean(sapply(recalibrated.model$summary_CV$models$uncalibrated[[i]], function(x) x$error$calibration_error$ECE_equal_freq))
       recalibrated.metrics[[i]][["ECE.equal.width"]] <- mean(sapply(recalibrated.model$summary_CV$models$uncalibrated[[i]], function(x) x$error$calibration_error$ECE_equal_width))
       recalibrated.metrics[[i]][["MCE"]] <- mean(sapply(recalibrated.model$summary_CV$models$uncalibrated[[i]], function(x) x$error$calibration_error$MCE_equal_freq))
       recalibrated.metrics[[i]][["MCE.equal.width"]] <- mean(sapply(recalibrated.model$summary_CV$models$uncalibrated[[i]], function(x) x$error$calibration_error$MCE_equal_width))
 
+      # Classification plot
       temp.df <- data.frame(prob = recalibrated.model$predictions[[i]],
                             obs = pred.df$obs)
-
       recalibrated.plots[[i]][["class.plot"]] <-   class.plot <- qplot(temp.df$prob, facets = obs ~ ., data = temp.df,
                                                                        alpha = 0.5, ylab = "Count", xlab = "Predicted")
+      # Get a calibration data frame from caret for plots etc.
+      this.calib <- caret::calibration(obs ~ prob, data = temp.df, class = "presence", cuts = cuts)
 
-      training.p.scores <- raster::extract(calibrated.suitabilities[[i]],
-                                         model$analysis.df[model$analysis.df$presence == 1,1:2])
-      training.a.scores <- raster::extract(calibrated.suitabilities[[i]],
-                                           model$analysis.df[model$analysis.df$presence == 0,1:2])
-      test.p.scores <- raster::extract(calibrated.suitabilities[[i]],
-                                       model$test.data)
+      recalibrated.plots[[i]][["calib.plot"]] <- qplot(this.calib$data$midpoint, this.calib$data$Percent,
+                                                       geom = c("line", "point"), xlim = c(0, 100), ylim = c(0, 100),
+                                                       xlab = "Predicted", ylab = "Observed") +
+        geom_abline(intercept = 0, slope = 1, linetype = 3)
 
-      geo.training.evaluation <- dismo::evaluate(training.p.scores, training.a.scores)
-      geo.test.evaluation <- dismo::evaluate(test.p.scores, training.a.scores)
-    }
-
-    for(i in names(recalibrated.model$summary_CV$models$calibrated)){
-
-      recalibrated.metrics[[i]][["ECE"]] <- mean(sapply(recalibrated.model$summary_CV$models$calibrated[[i]], function(x) x$error$calibration_error$ECE_equal_freq))
-      recalibrated.metrics[[i]][["ECE.equal.width"]] <- mean(sapply(recalibrated.model$summary_CV$models$calibrated[[i]], function(x) x$error$calibration_error$ECE_equal_width))
-      recalibrated.metrics[[i]][["MCE"]] <- mean(sapply(recalibrated.model$summary_CV$models$calibrated[[i]], function(x) x$error$calibration_error$MCE_equal_freq))
-      recalibrated.metrics[[i]][["MCE.equal.width"]] <- mean(sapply(recalibrated.model$summary_CV$models$calibrated[[i]], function(x) x$error$calibration_error$MCE_equal_width))
-
-      temp.df <- data.frame(prob = recalibrated.model$predictions[[i]],
-                            obs = pred.df$obs)
-
-      recalibrated.plots[[i]][["class.plot"]] <-   class.plot <- qplot(temp.df$prob, facets = obs ~ ., data = temp.df,
-                                                                      alpha = 0.5, ylab = "Count", xlab = "Predicted")
-
+      # Geo space discrim metrics
       training.p.scores <- raster::extract(calibrated.suitabilities[[i]],
                                            model$analysis.df[model$analysis.df$presence == 1,1:2])
       training.a.scores <- raster::extract(calibrated.suitabilities[[i]],
@@ -133,8 +166,78 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, ...){
       test.p.scores <- raster::extract(calibrated.suitabilities[[i]],
                                        model$test.data)
 
-      geo.training.evaluation <- dismo::evaluate(training.p.scores, training.a.scores)
-      geo.test.evaluation <- dismo::evaluate(test.p.scores, training.a.scores)
+
+      recalibrated.metrics[[i]][["geo.training.evaluation"]] <- dismo::evaluate(training.p.scores, training.a.scores)
+      recalibrated.metrics[[i]][["geo.test.evaluation"]] <- dismo::evaluate(test.p.scores, training.a.scores)
+
+      recalibrated.metrics[[i]][["env.training.evaluation"]] <- env.training.evaluation[[i]]
+      recalibrated.metrics[[i]][["env.test.evaluation"]] <- env.test.evaluation[[i]]
+
+      # Boyce is noyce
+      # Testing to see whether models are presence only or presence/background
+      recalibrated.metrics[[i]][["continuous.boyce"]] <- NA
+      if("presence" %in% colnames(model$analysis.df)){
+        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat.boyce(calibrated.suitabilities[[i]],
+                                          model$analysis.df[model$analysis.df$presence == 1,1:2])
+      } else {
+        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat.boyce(calibrated.suitabilities[[i]],
+                                          model$analysis.df[,1:2])
+      }
+
+    }
+
+    # The code so nice I used it twice
+    for(i in names(recalibrated.model$summary_CV$models$calibrated)){
+
+      recalibrated.metrics[[i]] <- list()
+      recalibrated.plots[[i]] <- list()
+
+      # ECE and MCE
+      recalibrated.metrics[[i]][["ECE"]] <- mean(sapply(recalibrated.model$summary_CV$models$calibrated[[i]], function(x) x$error$calibration_error$ECE_equal_freq))
+      recalibrated.metrics[[i]][["ECE.equal.width"]] <- mean(sapply(recalibrated.model$summary_CV$models$calibrated[[i]], function(x) x$error$calibration_error$ECE_equal_width))
+      recalibrated.metrics[[i]][["MCE"]] <- mean(sapply(recalibrated.model$summary_CV$models$calibrated[[i]], function(x) x$error$calibration_error$MCE_equal_freq))
+      recalibrated.metrics[[i]][["MCE.equal.width"]] <- mean(sapply(recalibrated.model$summary_CV$models$calibrated[[i]], function(x) x$error$calibration_error$MCE_equal_width))
+
+      # Classification plots
+      temp.df <- data.frame(prob = recalibrated.model$predictions[[i]],
+                            obs = pred.df$obs)
+
+      recalibrated.plots[[i]][["class.plot"]] <-   class.plot <- qplot(temp.df$prob, facets = obs ~ ., data = temp.df,
+                                                                       alpha = 0.5, ylab = "Count", xlab = "Predicted")
+
+      # Get a calibration data frame from caret for plots etc.
+      this.calib <- caret::calibration(obs ~ prob, data = temp.df, class = "presence", cuts = cuts)
+
+      recalibrated.plots[[i]][["calib.plot"]] <- qplot(this.calib$data$midpoint, this.calib$data$Percent,
+                                                       geom = c("line", "point"), xlim = c(0, 100), ylim = c(0, 100),
+                                                       xlab = "Predicted", ylab = "Observed") +
+        geom_abline(intercept = 0, slope = 1, linetype = 3)
+
+
+      # Geo space discrim metrics
+      training.p.scores <- raster::extract(calibrated.suitabilities[[i]],
+                                           model$analysis.df[model$analysis.df$presence == 1,1:2])
+      training.a.scores <- raster::extract(calibrated.suitabilities[[i]],
+                                           model$analysis.df[model$analysis.df$presence == 0,1:2])
+      test.p.scores <- raster::extract(calibrated.suitabilities[[i]],
+                                       model$test.data)
+
+      recalibrated.metrics[[i]][["geo.training.evaluation"]] <- dismo::evaluate(training.p.scores, training.a.scores)
+      recalibrated.metrics[[i]][["geo.test.evaluation"]] <- dismo::evaluate(test.p.scores, training.a.scores)
+
+      recalibrated.metrics[[i]][["env.training.evaluation"]] <- env.training.evaluation[[i]]
+      recalibrated.metrics[[i]][["env.test.evaluation"]] <- env.test.evaluation[[i]]
+
+      # Boyce is noyce
+      # Testing to see whether models are presence only or presence/background
+      recalibrated.metrics[[i]][["continuous.boyce"]] <- NA
+      if("presence" %in% colnames(model$analysis.df)){
+        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat.boyce(calibrated.suitabilities[[i]],
+                                                                          model$analysis.df[model$analysis.df$presence == 1,1:2])
+      } else {
+        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat.boyce(calibrated.suitabilities[[i]],
+                                                                          model$analysis.df[,1:2])
+      }
     }
   }
 
