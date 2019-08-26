@@ -49,13 +49,9 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
   # Get a calibration data frame from caret for plots etc.
   calib <- caret::calibration(obs ~ prob, data = pred.df, class = "presence", cuts = cuts)
 
-  calib.plot <- qplot(calib$data$midpoint, calib$data$Percent,
-                      geom = c("line", "point"), xlim = c(0, 100), ylim = c(0, 100),
-                      xlab = "Predicted", ylab = "Observed") +
-    geom_abline(intercept = 0, slope = 1, linetype = 3)
+  this.calib.plot <- calib.plot(pred.df$prob, pred.df$obs, "Uncalibrated", cuts = cuts)
 
-  class.plot <- qplot(pred.df$prob, facets = obs ~ ., data = pred.df,
-                      alpha = 0.5, ylab = "Count", xlab = "Predicted")
+  this.class.plot <- class.plot(pred.df$prob, pred.df$obs, "Uncalibrated", cuts = cuts)
 
   # Need to convert obs to 1/0 for hoslem test and calibrate function
   this.pa <- rep(NA, length(pred.df$obs))
@@ -63,19 +59,19 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
   this.pa[which(pred.df$obs == "absence")] <- 0
   hoslem <- hoslem.test(this.pa, pred.df$prob, g = cuts)
 
-  ECE <- getECE(this.pa, pred.df$prob, n_bins = cuts)
+  ECE <- CalibratR::getECE(this.pa, pred.df$prob, n_bins = cuts)
   ECE.equal.width <- get_ECE_equal_width(this.pa, pred.df$prob)
-  MCE <- getMCE(this.pa, pred.df$prob, n_bins = cuts)
+  MCE <- CalibratR::getMCE(this.pa, pred.df$prob, n_bins = cuts)
   MCE.equal.width <- get_MCE_equal_width(this.pa, pred.df$prob)
 
   # Testing to see whether models are presence only or presence/background
   continuous.boyce <- NA
   if("presence" %in% colnames(model$analysis.df)){
     continuous.boyce <- ecospat.boyce(model$suitability,
-                                      model$analysis.df[model$analysis.df$presence == 1,1:2])
+                                      model$test.data)
   } else {
     continuous.boyce <- ecospat.boyce(model$suitability,
-                                      model$analysis.df[,1:2])
+                                      model$test.data)
   }
 
   # Recalibrating as needed
@@ -92,11 +88,23 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
     cal.preds <- CalibratR::predict_calibratR(recalibrated.model$calibration_models, preds[,"layer"])
     calibrated.suitabilities <- lapply(cal.preds, function(x) rasterize(preds[,1:2], model$suitability, field = x))
 
+    class.plots.1 <- lapply(names(recalibrated.model$summary_CV$models$uncalibrated), function(x) class.plot(recalibrated.model$predictions[[x]], pred.df$obs, x, cuts = cuts))
+    class.plots.2 <- lapply(names(recalibrated.model$summary_CV$models$calibrated), function(x) class.plot(recalibrated.model$predictions[[x]], pred.df$obs, x, cuts = cuts))
+    names(class.plots.1) <- names(recalibrated.model$summary_CV$models$uncalibrated)
+    names(class.plots.2) <- names(recalibrated.model$summary_CV$models$calibrated)
+    recalibrated.plots[["classification.plots"]] <- c(class.plots.1, class.plots.2)
+
+    calib.plots.1 <- lapply(names(recalibrated.model$summary_CV$models$uncalibrated), function(x) calib.plot(recalibrated.model$predictions[[x]], pred.df$obs, x, cuts = cuts))
+    calib.plots.2 <- lapply(names(recalibrated.model$summary_CV$models$calibrated), function(x) calib.plot(recalibrated.model$predictions[[x]], pred.df$obs, x, cuts = cuts))
+    names(calib.plots.1) <- names(recalibrated.model$summary_CV$models$uncalibrated)
+    names(calib.plots.2) <- names(recalibrated.model$summary_CV$models$calibrated)
+    recalibrated.plots[["calibration.plots"]] <- c(calib.plots.1, calib.plots.2)
+
     # Do env space discrim metrics
     if(inherits(env, c("raster", "RasterBrick", "RasterStack"))){
 
       allpoints <- rbind(model$analysis.df[,1:2], model$test.data)
-      values <- extract(env, allpoints)
+      values <- raster::extract(env, allpoints)
       maxes <- apply(values, 2, function(x) max(x, na.rm = TRUE))
       mins <- apply(values, 2, function(x) min(x, na.rm = TRUE))
 
@@ -104,8 +112,8 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
       bg.table <- t(t(this.lhs) * (maxes  - mins) + mins)
       colnames(bg.table) <- names(env)
 
-      p.table <- extract(env, model$analysis.df[model$analysis.df$presence == 1,1:2])
-      test.table <- extract(env, model$test.data)
+      p.table <- raster::extract(env, model$analysis.df[model$analysis.df$presence == 1,1:2])
+      test.table <- raster::extract(env, model$test.data)
 
       # Having to do this for now because the dismo models don't like "newdata"
       # Unfortunately I think we finally have to use an if statement because ranger predict is really different
@@ -137,26 +145,12 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
     for(i in names(recalibrated.model$summary_CV$models$uncalibrated)){
 
       recalibrated.metrics[[i]] <- list()
-      recalibrated.plots[[i]] <- list()
 
       # ECE and MCE
       recalibrated.metrics[[i]][["ECE"]] <- mean(sapply(recalibrated.model$summary_CV$models$uncalibrated[[i]], function(x) x$error$calibration_error$ECE_equal_freq))
       recalibrated.metrics[[i]][["ECE.equal.width"]] <- mean(sapply(recalibrated.model$summary_CV$models$uncalibrated[[i]], function(x) x$error$calibration_error$ECE_equal_width))
       recalibrated.metrics[[i]][["MCE"]] <- mean(sapply(recalibrated.model$summary_CV$models$uncalibrated[[i]], function(x) x$error$calibration_error$MCE_equal_freq))
       recalibrated.metrics[[i]][["MCE.equal.width"]] <- mean(sapply(recalibrated.model$summary_CV$models$uncalibrated[[i]], function(x) x$error$calibration_error$MCE_equal_width))
-
-      # Classification plot
-      temp.df <- data.frame(prob = recalibrated.model$predictions[[i]],
-                            obs = pred.df$obs)
-      recalibrated.plots[[i]][["class.plot"]] <-   class.plot <- qplot(temp.df$prob, facets = obs ~ ., data = temp.df,
-                                                                       alpha = 0.5, ylab = "Count", xlab = "Predicted")
-      # Get a calibration data frame from caret for plots etc.
-      this.calib <- caret::calibration(obs ~ prob, data = temp.df, class = "presence", cuts = cuts)
-
-      recalibrated.plots[[i]][["calib.plot"]] <- qplot(this.calib$data$midpoint, this.calib$data$Percent,
-                                                       geom = c("line", "point"), xlim = c(0, 100), ylim = c(0, 100),
-                                                       xlab = "Predicted", ylab = "Observed") +
-        geom_abline(intercept = 0, slope = 1, linetype = 3)
 
       # Geo space discrim metrics
       training.p.scores <- raster::extract(calibrated.suitabilities[[i]],
@@ -178,10 +172,10 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
       recalibrated.metrics[[i]][["continuous.boyce"]] <- NA
       if("presence" %in% colnames(model$analysis.df)){
         recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat.boyce(calibrated.suitabilities[[i]],
-                                          model$analysis.df[model$analysis.df$presence == 1,1:2])
+                                          model$test.data)
       } else {
         recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat.boyce(calibrated.suitabilities[[i]],
-                                          model$analysis.df[,1:2])
+                                          model$test.data)
       }
 
     }
@@ -190,29 +184,12 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
     for(i in names(recalibrated.model$summary_CV$models$calibrated)){
 
       recalibrated.metrics[[i]] <- list()
-      recalibrated.plots[[i]] <- list()
 
       # ECE and MCE
       recalibrated.metrics[[i]][["ECE"]] <- mean(sapply(recalibrated.model$summary_CV$models$calibrated[[i]], function(x) x$error$calibration_error$ECE_equal_freq))
       recalibrated.metrics[[i]][["ECE.equal.width"]] <- mean(sapply(recalibrated.model$summary_CV$models$calibrated[[i]], function(x) x$error$calibration_error$ECE_equal_width))
       recalibrated.metrics[[i]][["MCE"]] <- mean(sapply(recalibrated.model$summary_CV$models$calibrated[[i]], function(x) x$error$calibration_error$MCE_equal_freq))
       recalibrated.metrics[[i]][["MCE.equal.width"]] <- mean(sapply(recalibrated.model$summary_CV$models$calibrated[[i]], function(x) x$error$calibration_error$MCE_equal_width))
-
-      # Classification plots
-      temp.df <- data.frame(prob = recalibrated.model$predictions[[i]],
-                            obs = pred.df$obs)
-
-      recalibrated.plots[[i]][["class.plot"]] <-   class.plot <- qplot(temp.df$prob, facets = obs ~ ., data = temp.df,
-                                                                       alpha = 0.5, ylab = "Count", xlab = "Predicted")
-
-      # Get a calibration data frame from caret for plots etc.
-      this.calib <- caret::calibration(obs ~ prob, data = temp.df, class = "presence", cuts = cuts)
-
-      recalibrated.plots[[i]][["calib.plot"]] <- qplot(this.calib$data$midpoint, this.calib$data$Percent,
-                                                       geom = c("line", "point"), xlim = c(0, 100), ylim = c(0, 100),
-                                                       xlab = "Predicted", ylab = "Observed") +
-        geom_abline(intercept = 0, slope = 1, linetype = 3)
-
 
       # Geo space discrim metrics
       training.p.scores <- raster::extract(calibrated.suitabilities[[i]],
@@ -233,16 +210,16 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
       recalibrated.metrics[[i]][["continuous.boyce"]] <- NA
       if("presence" %in% colnames(model$analysis.df)){
         recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat.boyce(calibrated.suitabilities[[i]],
-                                                                          model$analysis.df[model$analysis.df$presence == 1,1:2])
+                                                                          model$test.data)
       } else {
         recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat.boyce(calibrated.suitabilities[[i]],
-                                                                          model$analysis.df[,1:2])
+                                                                          model$test.data)
       }
     }
   }
 
-  output <- list(calibration.plot = calib.plot,
-                 classification.plot = class.plot,
+  output <- list(calibration.plot = this.calib.plot,
+                 classification.plot = this.class.plot,
                  ECE = ECE,
                  ECE.equal.width = ECE.equal.width,
                  MCE = MCE,
@@ -254,53 +231,15 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
                  recalibrated.metrics = recalibrated.metrics,
                  recalibrated.plots = recalibrated.plots)
 
+  class(output) <- c("enmtools.calibrate")
+
+  if(recalibrate == TRUE){
+    class(output) <- c(class(output), "enmtools.recalibrated.model")
+  }
+
   return(output)
 }
 
-
-
-# This code comes from the CalibratR package, and is being copy/pasted because it's not exported by the original package.
-getECE <- function(actual, predicted, n_bins=10){ #equal frequency bins
-
-  predicted <- predicted
-  labels <- actual
-  idx <- order(predicted)
-  pred_actual <- (cbind(predicted[idx], labels[idx]))
-
-  N <- nrow(pred_actual)
-  rest <- N%%n_bins
-  S <- 0
-  W <- c()
-  B <- min(N,n_bins) #if less then n_bins elements in data set, then use that number of bins
-  groups <- list()
-
-  for (i in 1:B){ #i von 1 bis B
-    if (i <= rest){ #put rest elements into each bin
-      group_pred <- (pred_actual[(((i-1)*ceiling(N/n_bins)+1) : (i*ceiling(N/n_bins))),1])
-      group_actual <- (pred_actual[(((i-1)*ceiling(N/n_bins)+1) : (i*ceiling(N/n_bins))),2])
-    }
-    else {
-      group_pred <- (pred_actual[((rest+(i-1)*floor(N/n_bins)+1) : (rest+i*floor(N/n_bins))),1])#group size=N/B
-      group_actual <- (pred_actual[((rest+(i-1)*floor(N/n_bins)+1) : (rest+i*floor(N/n_bins))),2])
-    }
-
-    n_ <- length(group_pred)
-    expected <- mean(group_pred) #mean of predictions in bin b
-    observed <- mean(group_actual) #true fraction of pos.instances = prevalence in bin b
-
-    S[i] <- abs(observed-expected) #absolut difference of observed value-predicted value in bin
-    W[i] <- n_/N #empirical frequence of all instances that fall into bin i, should be equal when using equal freq binning approach
-    groups[[i]] <- group_pred
-
-  }
-
-  mean_prediction <- lapply(groups, mean)
-  min_group <- lapply(groups, min)
-  max_group <- lapply(groups, max)
-
-  res <- t(S)%*%W
-  return(as.numeric(res))
-}
 
 
 # This code comes from the CalibratR package, and is being copy/pasted because it's not exported by the original package.
@@ -343,41 +282,6 @@ get_ECE_equal_width <- function(actual, predicted, bins=10){ #equal width bins
   return(as.numeric(t(S_2)%*%W_2))
 }
 
-# This code comes from the CalibratR package, and is being copy/pasted because it's not exported by the original package.
-getMCE <- function(actual, predicted, n_bins=10){
-
-  predicted <- predicted
-  labels <- actual
-  idx <- order(predicted)
-  pred_actual <- (cbind(predicted[idx], actual[idx]))
-  N <- nrow(pred_actual)
-  rest <- N%%n_bins
-  B <- min(N,n_bins)
-
-  S <- 0
-  W <- c()
-  for (i in 1:B){ #i von 1 bis B
-    if (i <= rest){ #put rest elements into each bin
-      group_pred <- (pred_actual[(((i-1)*ceiling(N/n_bins)+1) : (i*ceiling(N/n_bins))),1])
-      group_actual <- (pred_actual[(((i-1)*ceiling(N/n_bins)+1) : (i*ceiling(N/n_bins))),2])
-    }
-    else {
-      group_pred <- (pred_actual[((rest+(i-1)*floor(N/n_bins)+1) : (rest+i*floor(N/n_bins))),1])#group size=N/B
-      group_actual <- (pred_actual[((rest+(i-1)*floor(N/n_bins)+1) : (rest+i*floor(N/n_bins))),2])
-    }
-
-    n <- length(group_pred)
-    expected <- mean(group_pred) #mean of predictions in bin b
-    observed <- mean(group_actual) #true fraction of pos.instances = prevalence in bin b
-
-    S[i] <- abs(observed-expected) #absolut difference of observed value-predicted value in bin
-    W[i] <- n/N #empirical frequence of all instances that fall into bin i, should be pretty much the same among all bins
-  }
-
-  res <- max(S*W)
-  return(res)
-}
-
 # This code comes from the CalibratR package, and is being copy/pasted because it's not exported from that package.
 get_MCE_equal_width <- function(actual, predicted, bins=10){ #equal width bins
 
@@ -410,4 +314,129 @@ get_MCE_equal_width <- function(actual, predicted, bins=10){ #equal width bins
   S_2 <- abs(prevalence-expected)
   W_2 <- counts_all/(length(predicted))
   return(max(S_2*W_2))
+}
+
+
+# Summary for objects of class enmtools.calibrate
+summary.enmtools.calibrate <- function(object, ...){
+
+  print(plot(object))
+
+  cat("Calibration metrics for uncalibrated model: ")
+  stats.df <- data.frame(ECE = object$ECE,
+                         MCE = object$MCE,
+                         ECE.equal.width = object$ECE.equal.width,
+                         MCE.equal.width = object$MCE.equal.width,
+                         boyce.index = object$continuous.boyce$Spearman.cor)
+  print(kable(stats.df))
+
+  print(object$hoslem)
+
+  if(inherits(object, "enmtools.recalibrated.model")){
+    metrics.df <- data.frame(Recalibration = names(object$recalibrated.metrics),
+                             ECE = unlist(lapply(object$recalibrated.metrics, function(x) x$ECE)),
+                             MCE = unlist(lapply(object$recalibrated.metrics, function(x) x$MCE)),
+                             ECE.equal.width = unlist(lapply(object$recalibrated.metrics, function(x) x$ECE.equal.width)),
+                             MCE.equal.width = unlist(lapply(object$recalibrated.metrics, function(x) x$MCE.equal.width)),
+                             boyce.index = unlist(lapply(object$recalibrated.metrics, function(x) x$continuous.boyce$Spearman.cor)))
+    print(kable(metrics.df))
+
+
+  }
+
+}
+
+# Print method for objects of class enmtools.calibrate
+print.enmtools.calibrate <- function(x, ...){
+
+  print(summary(x))
+
+}
+
+
+# Plot method for objects of class enmtools.calibrate
+plot.enmtools.calibrate <- function(x, ...){
+
+  if(inherits(x, "enmtools.recalibrated.model")){
+
+    plotmodel <- function(object, modname){
+      # Pack up summary stats
+      stats.df <- data.frame(Metric = c("ECE", "MCE", "ECE.equal.width", "MCE.equal.width", "boyce.index"),
+                             Value = c(x$recalibrated.metrics[[modname]]$ECE,
+                                       x$recalibrated.metrics[[modname]]$MCE,
+                                       x$recalibrated.metrics[[modname]]$ECE.equal.width,
+                                       x$recalibrated.metrics[[modname]]$MCE.equal.width,
+                                       x$recalibrated.metrics[[modname]]$continuous.boyce$Spearman.cor))
+
+      # Format data table to make it pretty
+      stats.df <- ggpubr::ggtexttable(stats.df, rows = NULL)
+
+      # We want the classification plot to be the same height as the calib plot and table combined
+      # and the easiest way to do this is just to pack them separately
+      p1 <- ggarrange(x$recalibrated.plots$calibration.plot[[modname]], stats.df,
+                      ncol = 1, nrow = 2)
+
+      summary.plot <- ggarrange(p1, x$recalibrated.plots$classification.plot[[modname]] + theme(legend.position="none"),
+                                ncol = 2, nrow = 1)
+      summary.plot <- annotate_figure(summary.plot,
+                                      top = text_grob(modname))
+    }
+
+    recal.plots <- list()
+    for(i in names(x$recalibrated.metrics)){
+      recal.plots[[i]] <- plotmodel(x, i)
+    }
+
+    return(recal.plots)
+  } else {
+
+    # Code to plot the uncalibrated model with metrics
+
+    # Pack up summary stats
+    stats.df <- data.frame(Metric = c("ECE", "MCE", "ECE.equal.width", "MCE.equal.width", "boyce.index"),
+                           Value = c(x$ECE, x$MCE, x$ECE.equal.width, x$MCE.equal.width, x$continuous.boyce$Spearman.cor))
+
+    # Format data table to make it pretty
+    stats.df <- ggpubr::ggtexttable(stats.df, rows = NULL)
+
+    # We want the classification plot to be the same height as the calib plot and table combined
+    # and the easiest way to do this is just to pack them separately
+    p1 <- ggarrange(x$calibration.plot, stats.df,
+                    ncol = 1, nrow = 2)
+
+    summary.plot <- ggarrange(p1, x$classification.plot + theme(legend.position="none"),
+                              ncol = 2, nrow = 1)
+    summary.plot <- annotate_figure(summary.plot,
+                                    top = text_grob("Uncalibrated Model"))
+    return(summary.plot)
+  }
+
+
+}
+
+# Function to make classification plots
+class.plot <- function(pred, obs, name, cuts){
+  temp.df <- data.frame(pred = pred,
+                        obs = obs)
+  return(qplot(temp.df$pred, facets = obs ~ ., data = temp.df,
+               alpha = 0.5, ylab = "Count", xlab = "Predicted",
+               bins = cuts, fill = obs, color = obs, main = name) +
+           theme_minimal() + theme(legend.position = "none", plot.title = element_text(hjust = 0.5)) +
+           scale_x_continuous(limits = c(0, 1), oob = function(x, limits) x))
+}
+
+# Function to make calibration plots
+calib.plot <- function(pred, obs, name, cuts){
+
+  temp.df <- data.frame(pred = pred,
+                        obs = obs)
+
+  this.calib <- caret::calibration(obs ~ pred, data = temp.df, class = "presence", cuts = cuts)
+  this.calib$data <- this.calib$data[complete.cases(this.calib$data),]
+
+  return(qplot(this.calib$data$midpoint, this.calib$data$Percent,
+               geom = c("line", "point"), xlim = c(0, 100), ylim = c(0, 100),
+               xlab = "Predicted", ylab = "Observed", main = name) +
+           geom_abline(intercept = 0, slope = 1, linetype = 3) +
+           theme_minimal() + theme(legend.position = "none", plot.title = element_text(hjust = 0.5)))
 }

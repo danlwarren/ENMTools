@@ -42,7 +42,8 @@ Imports:
 	spatstat,
 	CalibratR,
 	caret,
-	ResourceSelection
+	ResourceSelection,
+	ggpubr
 Depends:
 	raster,
 	dismo
