@@ -4,7 +4,8 @@
 \alias{enmtools.calibrate}
 \title{Takes an emtools.model object, and reformats it to run through the CalibratR package, calculates Continuous Boyce Index, and runs a Hosmer-Lemeshow goodness-of-fit test.  Can either do a full CalibratR run or just return ECE/MCE statistics and plots.}
 \usage{
-enmtools.calibrate(model, recalibrate = FALSE, cuts = 11, ...)
+enmtools.calibrate(model, recalibrate = FALSE, cuts = 11, env = NA,
+  n.background = 10000, ...)
 }
 \arguments{
 \item{model}{An enmtools.model object}
@@ -12,6 +13,10 @@ enmtools.calibrate(model, recalibrate = FALSE, cuts = 11, ...)
 \item{recalibrate}{When TRUE, does a full CalibratR "calibrate" run to recalibrate the model.  When FALSE, just returns metrics and plots measuring calibration of the model as is.}
 
 \item{cuts}{The number of bins to split suitability scores into for calculating calibration.}
+
+\item{env}{A set of environment layers to be used for optional env space metrics}
+
+\item{n.background}{Number of background points to be used for env space metrics}
 
 \item{...}{Further arguments to be passed to CalibratR's "calibrate" function.}
 }
