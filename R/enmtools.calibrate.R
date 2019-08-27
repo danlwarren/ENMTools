@@ -68,10 +68,10 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
   continuous.boyce <- NA
   if("presence" %in% colnames(model$analysis.df)){
     continuous.boyce <- ecospat.boyce(model$suitability,
-                                      model$test.data)
+                                      model$test.data, PEplot = FALSE)
   } else {
     continuous.boyce <- ecospat.boyce(model$suitability,
-                                      model$test.data)
+                                      model$test.data, PEplot = FALSE)
   }
 
   # Recalibrating as needed
@@ -172,10 +172,10 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
       recalibrated.metrics[[i]][["continuous.boyce"]] <- NA
       if("presence" %in% colnames(model$analysis.df)){
         recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat.boyce(calibrated.suitabilities[[i]],
-                                          model$test.data)
+                                          model$test.data, PEplot = FALSE)
       } else {
         recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat.boyce(calibrated.suitabilities[[i]],
-                                          model$test.data)
+                                          model$test.data, PEplot = FALSE)
       }
 
     }
@@ -210,10 +210,10 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
       recalibrated.metrics[[i]][["continuous.boyce"]] <- NA
       if("presence" %in% colnames(model$analysis.df)){
         recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat.boyce(calibrated.suitabilities[[i]],
-                                                                          model$test.data)
+                                                                          model$test.data, PEplot = FALSE)
       } else {
         recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat.boyce(calibrated.suitabilities[[i]],
-                                                                          model$test.data)
+                                                                          model$test.data, PEplot = FALSE)
       }
     }
   }
