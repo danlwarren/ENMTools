@@ -7,6 +7,8 @@
 #' @param max.reps Maximum number of attempts that will be made to find suitable starting conditions
 #' @param cor.method Which method to use for calculating correlations between models
 #' @param chunk.size How many combinations of environmental variables to try at a time.  If your niche breadth in environment space is small, increasing this value may help you get a result.
+#' @param recal.model.1 Optional.  The output of enmtools.recalibrate for model 1, which needs to have been run with "recalibrate = TRUE".
+#' @param recal.model.2 Optional.  The output of enmtools.recalibrate for model 2, which needs to have been run with "recalibrate = TRUE".
 #'
 #' @examples
 #' data(iberolacerta.clade)
@@ -17,7 +19,7 @@
 #' monticola.glm <- enmtools.glm(monticola, euro.worldclim, f = pres ~ bio1 + bio12, nback = 500)
 #' env.overlap(cyreni.glm, monticola.glm, euro.worldclim)
 
-env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, cor.method = "spearman", chunk.size = 100000){
+env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, cor.method = "spearman", chunk.size = 100000, recal.model.1 = NA, recal.model.2 = NA){
 
   if(inherits(model.1, "enmtools.model")){
     model.1 <- model.1$model
@@ -25,6 +27,20 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
 
   if(inherits(model.2, "enmtools.model")){
     model.2 <- model.2$model
+  }
+
+  # Check if recal models exist, and if they're the right class
+  # Have to use 'all' for these because recal models are lists
+  if(!all(is.na(recal.model.1))){
+    if(!inherits(recal.model.1, "enmtools.recalibrated.model")){
+      stop("recal.model.1 is not an enmtools.recalibrated.model object!")
+    }
+  }
+
+  if(!all(is.na(recal.model.2))){
+    if(!inherits(recal.model.2, "enmtools.recalibrated.model")){
+      stop("recal.model.2 is not an enmtools.recalibrated.model object!")
+    }
   }
 
   # These two are tracking whether we have good enough starting conditions
@@ -37,6 +53,11 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
   while(continue == FALSE & n.reps < max.reps){
 
     gens <- chunk.size
+
+    pred1 <- NA
+    pred2 <- NA
+    pred1.recal <- NA
+    pred2.recal <- NA
 
     # Draw a starting latin hypercube scheme
     this.lhs <- randomLHS(chunk.size, length(names(env)))
@@ -86,6 +107,66 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
       next
     }
 
+    # RECALIBRATED MODELS: The trick here is to set this up so that it works whether
+    # one or both models are recalibrated
+
+    recal.this.d <- list()
+    recal.this.i <- list()
+    recal.this.cor <- list()
+
+    # First we'll do it if both are recalibrated
+    if(!all(is.na(recal.model.1)) & !all(is.na(recal.model.2))){
+      recal.names <- intersect(names(recal.model.1$recalibrated.model$predictions),
+                               names(recal.model.2$recalibrated.model$predictions))
+
+      recal.pred1 <- CalibratR::predict_calibratR(recal.model.1$recalibrated.model$calibration_models, pred1)
+      recal.pred2 <- CalibratR::predict_calibratR(recal.model.2$recalibrated.model$calibration_models, pred2)
+
+      for(i in recal.names){
+        recal.pred1[[i]][recal.pred1[[i]] < 0] <- 0
+        recal.pred2[[i]][recal.pred2[[i]] < 0] <- 0
+
+        recal.this.d[[i]] <- 1 - sum(abs(recal.pred1[[i]]/sum(recal.pred1[[i]]) - recal.pred2[[i]]/(sum(recal.pred2[[i]]))))/2
+        recal.this.i[[i]]<- 1 - sum((sqrt(recal.pred1[[i]]/sum(recal.pred1[[i]])) - sqrt(recal.pred2[[i]]/sum(recal.pred2[[i]])))**2)/2
+        recal.this.cor[[i]] <- cor(recal.pred1[[i]], recal.pred2[[i]], method = cor.method)
+      }
+    }
+
+    # Now if just model 1 is recalibrated
+    if(!all(is.na(recal.model.1)) & all(is.na(recal.model.2))){
+      recal.names <- names(recal.model.1$recalibrated.model$predictions)
+
+      recal.pred1 <- CalibratR::predict_calibratR(recal.model.1$recalibrated.model$calibration_models, pred1)
+      recal.pred2 <- pred2
+
+      for(i in recal.names){
+        recal.pred1[[i]][recal.pred1[[i]] < 0] <- 0
+
+        recal.this.d[[i]] <- 1 - sum(abs(recal.pred1[[i]]/sum(recal.pred1[[i]]) - recal.pred2/(sum(recal.pred2))))/2
+        recal.this.i[[i]]<- 1 - sum((sqrt(recal.pred1[[i]]/sum(recal.pred1[[i]])) - sqrt(recal.pred2/sum(recal.pred2)))**2)/2
+        recal.this.cor[[i]] <- cor(recal.pred1[[i]], recal.pred2, method = cor.method)
+      }
+    }
+
+
+    # Now if just model 2 is recalibrated
+    if(all(is.na(recal.model.1)) & !all(is.na(recal.model.2))){
+      recal.names <- names(recal.model.2$recalibrated.model$predictions)
+
+      recal.pred1 <- pred1
+      recal.pred2 <- CalibratR::predict_calibratR(recal.model.2$recalibrated.model$calibration_models, pred2)
+
+      for(i in recal.names){
+        recal.pred2[[i]][recal.pred2[[i]] < 0] <- 0
+
+        recal.this.d[[i]] <- 1 - sum(abs(recal.pred1/sum(recal.pred1) - recal.pred2[[i]]/(sum(recal.pred2[[i]]))))/2
+        recal.this.i[[i]]<- 1 - sum((sqrt(recal.pred1/sum(recal.pred1)) - sqrt(recal.pred2[[i]]/sum(recal.pred2[[i]])))**2)/2
+        recal.this.cor[[i]] <- cor(recal.pred1, recal.pred2[[i]], method = cor.method)
+      }
+    }
+
+
+    # Now for the main models (i.e., not recalibrated)
     this.d <- 1 - sum(abs(pred1/sum(pred1) - pred2/(sum(pred2))))/2
     this.i <- 1 - sum((sqrt(pred1/sum(pred1)) - sqrt(pred2/sum(pred2)))**2)/2
     this.cor <- cor(pred1, pred2, method = cor.method)
@@ -111,7 +192,8 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
 
     # So here we've got good starting conditions and we're going to keep going
     # with the LHS design until we get a minimum difference between subsequent
-    # samples (delta < tolerance)
+    # samples (delta < tolerance).  We're going to diagnose convergence just based
+    # on the main models.
 
     print("Building replicates...")
 
@@ -122,8 +204,6 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
     while(delta > tolerance){
 
       # print(max(gens))
-
-
 
       # Add chunk.size rows to the LHS and build a new predict table
       this.lhs <- randomLHS(chunk.size, length(names(env)))
@@ -159,6 +239,60 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
         gens <- c(gens, max(gens) + chunk.size)
       }
 
+      # RECALIBRATED MODELS: The trick here is to set this up so that it works whether
+      # one or both models are recalibrated
+
+      # First we'll do it if both are recalibrated
+      if(!all(is.na(recal.model.1)) & !all(is.na(recal.model.2))){
+        recal.names <- intersect(names(recal.model.1$recalibrated.model$predictions),
+                                 names(recal.model.2$recalibrated.model$predictions))
+
+        recal.pred1 <- CalibratR::predict_calibratR(recal.model.1$recalibrated.model$calibration_models, pred1)
+        recal.pred2 <- CalibratR::predict_calibratR(recal.model.2$recalibrated.model$calibration_models, pred2)
+
+        for(i in recal.names){
+          recal.pred1[[i]][recal.pred1[[i]] < 0] <- 0
+          recal.pred2[[i]][recal.pred2[[i]] < 0] <- 0
+
+          recal.this.d[[i]] <- c(recal.this.d[[i]], 1 - sum(abs(recal.pred1[[i]]/sum(recal.pred1[[i]]) - recal.pred2[[i]]/(sum(recal.pred2[[i]]))))/2)
+          recal.this.i[[i]]<- c(recal.this.i[[i]], 1 - sum((sqrt(recal.pred1[[i]]/sum(recal.pred1[[i]])) - sqrt(recal.pred2[[i]]/sum(recal.pred2[[i]])))**2)/2)
+          recal.this.cor[[i]] <- c(recal.this.cor[[i]], cor(recal.pred1[[i]], recal.pred2[[i]], method = cor.method))
+        }
+      }
+
+      # Now if just model 1 is recalibrated
+      if(!all(is.na(recal.model.1)) & all(is.na(recal.model.2))){
+        recal.names <- names(recal.model.1$recalibrated.model$predictions)
+
+        recal.pred1 <- CalibratR::predict_calibratR(recal.model.1$recalibrated.model$calibration_models, pred1)
+        recal.pred2 <- pred2
+
+        for(i in recal.names){
+          recal.pred1[[i]][recal.pred1[[i]] < 0] <- 0
+
+          recal.this.d[[i]] <- c(recal.this.d[[i]], 1 - sum(abs(recal.pred1[[i]]/sum(recal.pred1[[i]]) - recal.pred2/(sum(recal.pred2))))/2)
+          recal.this.i[[i]]<- c(recal.this.i[[i]], 1 - sum((sqrt(recal.pred1[[i]]/sum(recal.pred1[[i]])) - sqrt(recal.pred2/sum(recal.pred2)))**2)/2)
+          recal.this.cor[[i]] <- c(recal.this.cor[[i]], cor(recal.pred1[[i]], recal.pred2, method = cor.method))
+        }
+      }
+
+
+      # Now if just model 2 is recalibrated
+      if(all(is.na(recal.model.1)) & !all(is.na(recal.model.2))){
+        recal.names <- names(recal.model.2$recalibrated.model$predictions)
+
+        recal.pred1 <- pred1
+        recal.pred2 <- CalibratR::predict_calibratR(recal.model.2$recalibrated.model$calibration_models, pred2)
+
+        for(i in recal.names){
+          recal.pred2[[i]][recal.pred2[[i]] < 0] <- 0
+
+          recal.this.d[[i]] <- c(recal.this.d[[i]], 1 - sum(abs(recal.pred1/sum(recal.pred1) - recal.pred2[[i]]/(sum(recal.pred2[[i]]))))/2)
+          recal.this.i[[i]]<- c(recal.this.i[[i]], 1 - sum((sqrt(recal.pred1/sum(recal.pred1)) - sqrt(recal.pred2[[i]]/sum(recal.pred2[[i]])))**2)/2)
+          recal.this.cor[[i]] <- c(recal.this.cor[[i]], cor(recal.pred1, recal.pred2[[i]], method = cor.method))
+        }
+      }
+
       # We're going to use this n so we can just do a weighted average of our D/I/cor
       # instead of concatenating pred1 and pred2
       n <- length(this.d)
@@ -179,6 +313,10 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
         this.cor <- c(this.cor, old.cor * (n/(n+1)) + new.cor * 1/(n+1))
       }
 
+      # We're not bothering with the above for recalibrated models because
+      # we're not using them to diagnose convergence - we'll take a moving
+      # average at the end.
+
 
       # Calculate delta for this iteration
       delta <- max(c(abs(mean(this.d) - mean(this.d[-length(this.d)])),
@@ -188,12 +326,31 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
     }
   }
 
-  output <- list(env.D = mean(this.d),
-                 env.I = mean(this.i),
-                 env.cor = mean(this.cor),
-                 env.D.plot = qplot(gens, this.d, ylab = "D", xlab = "Samples", ylim = c(0,1)),
-                 env.I.plot = qplot(gens, this.i, ylab = "I", xlab = "Samples", ylim = c(0,1)),
-                 env.cor.plot = qplot(gens, this.cor, ylab = "Correlation", xlab = "Samples", ylim = c(-1,1)))
+  output <- NA
+
+  # Packing list for non-recalibrated models
+  if(all(is.na(recal.model.1)) & all(is.na(recal.model.2))){
+    output <- list(env.D = mean(this.d),
+                   env.I = mean(this.i),
+                   env.cor = mean(this.cor),
+                   env.D.plot = qplot(gens, this.d, ylab = "D", xlab = "Samples", ylim = c(0,1)),
+                   env.I.plot = qplot(gens, this.i, ylab = "I", xlab = "Samples", ylim = c(0,1)),
+                   env.cor.plot = qplot(gens, this.cor, ylab = "Correlation", xlab = "Samples", ylim = c(-1,1)))
+  } else {
+    # At least one of the models was recalibrated
+    output <- list(env.D = mean(this.d),
+                   env.I = mean(this.i),
+                   env.cor = mean(this.cor),
+                   env.D.plot = qplot(gens, this.d, ylab = "D", xlab = "Samples", ylim = c(0,1)),
+                   env.I.plot = qplot(gens, this.i, ylab = "I", xlab = "Samples", ylim = c(0,1)),
+                   env.cor.plot = qplot(gens, this.cor, ylab = "Correlation", xlab = "Samples", ylim = c(-1,1)),
+                   recal.env.D = lapply(recal.this.d, function(x) mean(x)),
+                   recal.env.i = lapply(recal.this.i, function(x) mean(x)),
+                   recal.env.cor = lapply(recal.this.cor, function(x) mean(x)))
+  }
+
 
   return(output)
 }
+
+
