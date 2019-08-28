@@ -30,6 +30,7 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
     # For models that need to be transformed from logit to probabilities
     p <- exp(model$test.evaluation@presence)/(1 + exp(model$test.evaluation@presence))
     a <- exp(model$test.evaluation@absence)/(1 + exp(model$test.evaluation@absence))
+    train.p <- exp(model$training.evaluation@presence)/(1 + exp(model$training.evaluation@presence))
 
     # Pack it all up
     pred.df <- data.frame(prob = c(p, a),
@@ -39,6 +40,7 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
     # For models that already have probabilities
     p <- model$test.evaluation@presence
     a <- model$test.evaluation@absence
+    train.p <- model$training.evaluation@presence
 
     pred.df <- data.frame(prob = c(p, a),
                           obs = c(rep("presence", length(p)), rep("absence", length(a))))
@@ -141,6 +143,13 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
 
     }
 
+    # Doing recalibration on data from model object (as opposed to whole env)
+    recal.test.p <- CalibratR::predict_calibratR(recalibrated.model$calibration_models, as.numeric(p))
+    recal.train.p <- CalibratR::predict_calibratR(recalibrated.model$calibration_models, as.numeric(train.p))
+    recal.train.a <- CalibratR::predict_calibratR(recalibrated.model$calibration_models, as.numeric(a))
+
+
+
     # We have to go through this twice because calibrated and uncalibrated models are stored separately
     for(i in names(recalibrated.model$summary_CV$models$uncalibrated)){
 
@@ -153,16 +162,8 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
       recalibrated.metrics[[i]][["MCE.equal.width"]] <- mean(sapply(recalibrated.model$summary_CV$models$uncalibrated[[i]], function(x) x$error$calibration_error$MCE_equal_width))
 
       # Geo space discrim metrics
-      training.p.scores <- raster::extract(calibrated.suitabilities[[i]],
-                                           model$analysis.df[model$analysis.df$presence == 1,1:2])
-      training.a.scores <- raster::extract(calibrated.suitabilities[[i]],
-                                           model$analysis.df[model$analysis.df$presence == 0,1:2])
-      test.p.scores <- raster::extract(calibrated.suitabilities[[i]],
-                                       model$test.data)
-
-
-      recalibrated.metrics[[i]][["geo.training.evaluation"]] <- dismo::evaluate(training.p.scores, training.a.scores)
-      recalibrated.metrics[[i]][["geo.test.evaluation"]] <- dismo::evaluate(test.p.scores, training.a.scores)
+      recalibrated.metrics[[i]][["geo.training.evaluation"]] <- dismo::evaluate(recal.train.p[[i]], recal.train.a[[i]])
+      recalibrated.metrics[[i]][["geo.test.evaluation"]] <- dismo::evaluate(recal.test.p[[i]], recal.train.a[[i]])
 
       recalibrated.metrics[[i]][["env.training.evaluation"]] <- env.training.evaluation[[i]]
       recalibrated.metrics[[i]][["env.test.evaluation"]] <- env.test.evaluation[[i]]
@@ -192,15 +193,8 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
       recalibrated.metrics[[i]][["MCE.equal.width"]] <- mean(sapply(recalibrated.model$summary_CV$models$calibrated[[i]], function(x) x$error$calibration_error$MCE_equal_width))
 
       # Geo space discrim metrics
-      training.p.scores <- raster::extract(calibrated.suitabilities[[i]],
-                                           model$analysis.df[model$analysis.df$presence == 1,1:2])
-      training.a.scores <- raster::extract(calibrated.suitabilities[[i]],
-                                           model$analysis.df[model$analysis.df$presence == 0,1:2])
-      test.p.scores <- raster::extract(calibrated.suitabilities[[i]],
-                                       model$test.data)
-
-      recalibrated.metrics[[i]][["geo.training.evaluation"]] <- dismo::evaluate(training.p.scores, training.a.scores)
-      recalibrated.metrics[[i]][["geo.test.evaluation"]] <- dismo::evaluate(test.p.scores, training.a.scores)
+      recalibrated.metrics[[i]][["geo.training.evaluation"]] <- dismo::evaluate(recal.train.p[[i]], recal.train.a[[i]])
+      recalibrated.metrics[[i]][["geo.test.evaluation"]] <- dismo::evaluate(recal.test.p[[i]], recal.train.a[[i]])
 
       recalibrated.metrics[[i]][["env.training.evaluation"]] <- env.training.evaluation[[i]]
       recalibrated.metrics[[i]][["env.test.evaluation"]] <- env.test.evaluation[[i]]
