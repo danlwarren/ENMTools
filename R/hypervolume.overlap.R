@@ -3,6 +3,7 @@
 #' @param species.1 An enmtools.species or enmtools.hypervolume object
 #' @param species.2 An enmtools.species or enmtools.hypervolume object
 #' @param env A stack of environmental rasters, required when enmtools.species objects are passed
+#' @param reduction.factor Passed to hypervolume functions
 #' @param ... Extra parameters to be passed to enmtools.hypervolume
 #'
 #' @examples
@@ -10,7 +11,7 @@
 #' data(iberolacerta.clade)
 #' hypervolume.overlap(iberolacerta.clade$species$monticola, env = euro.worldclim[[c(1,8,12,17)]])
 
-hypervolume.overlap <- function(species.1, species.2, env = NA, ...){
+hypervolume.overlap <- function(species.1, species.2, env = NA, reduction.factor = 0.1, ...){
 
   # Turn species into hypervolumes, if they're not already
   if(inherits(species.1, "enmtools.species")){
@@ -45,4 +46,9 @@ hypervolume.overlap <- function(species.1, species.2, env = NA, ...){
 
   par(op)
   plot(hv.set[[c(3,5,6)]])
+
+  output <- list(overlap = hypervolume_overlap_statistics(hv.set),
+                 hv.set = hv.set)
+
+  return(output)
 }
