@@ -43,7 +43,8 @@ Imports:
 	CalibratR,
 	caret,
 	ResourceSelection,
-	ggpubr
+	ggpubr,
+	hypervolume
 Depends:
 	raster,
 	dismo
