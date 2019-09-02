@@ -322,7 +322,7 @@ summary.enmtools.calibrate <- function(object, ...){
                          ECE.equal.width = object$ECE.equal.width,
                          MCE.equal.width = object$MCE.equal.width,
                          boyce.index = object$continuous.boyce$Spearman.cor)
-  print(kable(stats.df))
+  print(knitr::kable(stats.df))
 
   print(object$hoslem)
 
@@ -333,7 +333,7 @@ summary.enmtools.calibrate <- function(object, ...){
                              ECE.equal.width = unlist(lapply(object$recalibrated.metrics, function(x) x$ECE.equal.width)),
                              MCE.equal.width = unlist(lapply(object$recalibrated.metrics, function(x) x$MCE.equal.width)),
                              boyce.index = unlist(lapply(object$recalibrated.metrics, function(x) x$continuous.boyce$Spearman.cor)))
-    print(kable(metrics.df))
+    print(knitr::kable(metrics.df))
 
 
   }
