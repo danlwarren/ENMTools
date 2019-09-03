@@ -5,7 +5,7 @@
 \title{Takes an emtools.species object and environmental layers, and constructs a hypervolume using the R package hypervolume}
 \usage{
 enmtools.hypervolume(species, env, samples.per.point = 10,
-  reduction.factor = 0.1, ...)
+  reduction.factor = 0.1, method = "gaussian", ...)
 }
 \arguments{
 \item{species}{An enmtools.species object}
@@ -15,6 +15,8 @@ enmtools.hypervolume(species, env, samples.per.point = 10,
 \item{samples.per.point}{To be passed to hypervolume_gaussian}
 
 \item{reduction.factor}{To be passed to hypervolume_project}
+
+\item{method}{Method for constructing hypervolumes, defaults to "gaussian"}
 
 \item{...}{Extra parameters to be passed to hypervolume_gaussian}
 }

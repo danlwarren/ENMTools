@@ -4,6 +4,7 @@
 #' @param env A stack of environmental rasters
 #' @param samples.per.point To be passed to hypervolume_gaussian
 #' @param reduction.factor To be passed to hypervolume_project
+#' @param method Method for constructing hypervolumes, defaults to "gaussian"
 #' @param ... Extra parameters to be passed to hypervolume_gaussian
 #'
 #' @examples
@@ -12,7 +13,7 @@
 #' env <- euro.worldclim[[c(1,8,12,17)]]
 #' monticola.hv <- enmtools.hypervolume(iberolacerta.clade$species$monticola, env = env)
 
-enmtools.hypervolume <- function(species, env, samples.per.point = 10, reduction.factor = 0.1, ...){
+enmtools.hypervolume <- function(species, env, samples.per.point = 10, reduction.factor = 0.1, method = "gaussian", ...){
 
   hypervolume.precheck(species, env)
 
@@ -22,7 +23,14 @@ enmtools.hypervolume <- function(species, env, samples.per.point = 10, reduction
 
   climate <- extract(env, species$presence.points)
 
-  this.hv <- hypervolume::hypervolume_gaussian(climate, name = species$species.name, samples.per.point = samples.per.point, ...)
+  this.hv = NA
+
+  if(method == "gaussian"){
+    this.hv <- hypervolume::hypervolume_gaussian(climate, name = species$species.name, samples.per.point = samples.per.point, ...)
+  } else if(method == "svm"){
+    this.hv <- hypervolume::hypervolume_gaussian(climate, name = species$species.name, samples.per.point = samples.per.point, ...)
+  }
+
 
   this.map <- hypervolume_project(this.hv, env, reduction.factor = reduction.factor)
 
