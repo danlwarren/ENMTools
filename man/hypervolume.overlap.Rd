@@ -24,5 +24,8 @@ Takes an emtools.species object and environmental layers, and constructs a hyper
 \examples{
 data(euro.worldclim)
 data(iberolacerta.clade)
-hypervolume.overlap(iberolacerta.clade$species$monticola, env = euro.worldclim[[c(1,8,12,17)]])
+mont <- iberolacerta.clade$species$monticola
+cyr <- iberolacerta.clade$species$cyreni
+env <- euro.worldclim[[c(1,8,12,17)]]
+hypervolume.overlap(mont, cyr, env = env)
 }

@@ -9,13 +9,14 @@
 #' @examples
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
-#' monticola.hv <- enmtools.hypervolume(iberolacerta.clade$species$monticola, env = euro.worldclim[[c(1,8,12,17)]])
+#' env <- euro.worldclim[[c(1,8,12,17)]]
+#' monticola.hv <- enmtools.hypervolume(iberolacerta.clade$species$monticola, env = env)
 
 enmtools.hypervolume <- function(species, env, samples.per.point = 10, reduction.factor = 0.1, ...){
 
   hypervolume.precheck(species, env)
 
-  for(i in 1:nlayers(env)){
+  for(i in 1:length(names(env))){
     env[[i]] <- (env[[i]] - cellStats(env[[i]], "mean"))/cellStats(env[[i]], "sd")
   }
 

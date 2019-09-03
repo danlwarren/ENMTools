@@ -24,5 +24,6 @@ Takes an emtools.species object and environmental layers, and constructs a hyper
 \examples{
 data(euro.worldclim)
 data(iberolacerta.clade)
-monticola.hv <- enmtools.hypervolume(iberolacerta.clade$species$monticola, env = euro.worldclim[[c(1,8,12,17)]])
+env <- euro.worldclim[[c(1,8,12,17)]]
+monticola.hv <- enmtools.hypervolume(iberolacerta.clade$species$monticola, env = env)
 }

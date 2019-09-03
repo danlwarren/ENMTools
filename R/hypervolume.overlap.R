@@ -9,7 +9,10 @@
 #' @examples
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
-#' hypervolume.overlap(iberolacerta.clade$species$monticola, env = euro.worldclim[[c(1,8,12,17)]])
+#' mont <- iberolacerta.clade$species$monticola
+#' cyr <- iberolacerta.clade$species$cyreni
+#' env <- euro.worldclim[[c(1,8,12,17)]]
+#' hypervolume.overlap(mont, cyr, env = env)
 
 hypervolume.overlap <- function(species.1, species.2, env = NA, reduction.factor = 0.1, ...){
 
