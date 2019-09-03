@@ -116,7 +116,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
     # Test eval for randomly withheld data
     if(is.numeric(test.prop)){
       if(test.prop > 0 & test.prop < 1){
-        test.check <- raster::extract(env, test.data)
+        test.check <- raster::extract(env, test.data[,1:2])
         test.data <- test.data[complete.cases(test.check),]
         test.evaluation <- dismo::evaluate(predict.ppmlasso(this.ppmlasso,
                                                             newdata = test.data)[ , 1, drop = TRUE],
@@ -131,7 +131,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
     # Test eval for spatially structured data
     if(is.character(test.prop)){
       if(test.prop == "block"){
-        test.check <- raster::extract(env, test.data)
+        test.check <- raster::extract(env, test.data[,1:2])
         test.data <- test.data[complete.cases(test.check),]
         test.evaluation <- dismo::evaluate(predict.ppmlasso(this.ppmlasso,
                                                             newdata = test.data)[ , 1, drop = TRUE],
