@@ -114,7 +114,7 @@ rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 9
     start.point <- combined.presence.points[runif(1, 1, nrow(combined.presence.points)),]
 
     # Get Euclidean distance from part.points
-    part.points <- cbind(combined.presence.points, apply(combined.presence.points, 1, function(x) (x[1] - start.point[1])**2 + (x[2] - start.point[2])**2))
+    part.points <- cbind(combined.presence.points, as.vector(rdist(start.point, combined.presence.points)))
 
     # Flip a coin to decide whether we're going from top to bottom or other way around
     if(rbinom(1,1,0.5) == 0){
