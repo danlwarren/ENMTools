@@ -32,6 +32,9 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
     a <- exp(model$test.evaluation@absence)/(1 + exp(model$test.evaluation@absence))
     train.p <- exp(model$training.evaluation@presence)/(1 + exp(model$training.evaluation@presence))
 
+    # Subsampling background test data to get same prevalence as we had with training data
+    a <- sample(a, size = model$test.prop * length(a), replace = FALSE)
+
     # Pack it all up
     pred.df <- data.frame(prob = c(p, a),
                           obs = c(rep("presence", length(p)), rep("absence", length(a))))
@@ -40,6 +43,10 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
     # For models that already have probabilities
     p <- model$test.evaluation@presence
     a <- model$test.evaluation@absence
+
+    # Subsampling background test data to get same prevalence as we had with training data
+    a <- sample(a, size = model$test.prop * length(a), replace = FALSE)
+
     train.p <- model$training.evaluation@presence
 
     pred.df <- data.frame(prob = c(p, a),
@@ -47,6 +54,9 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
   } else {
     stop("Calibration not implemented yet for this model type.")
   }
+
+
+
 
   # Get a calibration data frame from caret for plots etc.
   calib <- caret::calibration(obs ~ prob, data = pred.df, class = "presence", cuts = cuts)
