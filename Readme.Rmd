@@ -1,7 +1,5 @@
 ---
-output: html
-  md_document: default
-  keep_md: yes
+output: html_document
 ---
 ENMTools
 ======================
@@ -9,7 +7,7 @@ This package implements various tests, visualizations, and metrics for use with 
 
 
 ### Citation
-Warren, D.L., N. Matzke, M. Cardillo, J. Baumgartner, L. Beaumont, N. Huron, M. Simões, and R. Dinnage.  2019.  ENMTools (Software Package).  URL: https://github.com/danlwarren/ENMTools. doi:10.5281/zenodo.3268814
+Warren, D.L., N. Matzke, M. Cardillo, J. Baumgartner, L. Beaumont, N. Huron, M. Simões, Teresa L. Iglesias, and R. Dinnage.  2019.  ENMTools (Software Package).  URL: https://github.com/danlwarren/ENMTools. doi:10.5281/zenodo.3268814
 
 -----
 
