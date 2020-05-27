@@ -2,9 +2,12 @@ on:
   push:
     branches:
       - master
+      - develop
+      - gh-actions
   pull_request:
     branches:
       - master
+      - develop
 
 name: R-CMD-check
 
