@@ -3,7 +3,6 @@ on:
     branches:
       - master
       - develop
-      - gh-actions
   pull_request:
     branches:
       - master
@@ -23,7 +22,6 @@ jobs:
         config:
           - {os: windows-latest, r: 'release'}
           - {os: macOS-latest, r: 'release'}
-          - {os: macOS-latest, r: 'devel'}
           - {os: ubuntu-16.04, r: 'release', rspm: "https://packagemanager.rstudio.com/cran/__linux__/xenial/latest"}
 
     env:
