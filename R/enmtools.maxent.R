@@ -375,6 +375,12 @@ predict.enmtools.maxent <- function(object, env, maxpts = 1000, ...){
 # Function for checking data prior to running enmtools.maxent
 maxent.precheck <- function(f, species, env){
 
+  ### This code is copied directly from dismo, since it's not exported from there.
+  jar <- paste(system.file(package="dismo"), "/java/maxent.jar", sep='')
+  if (!file.exists(jar)) {
+    stop('file missing:\n', jar, '.\nPlease download it here: http://www.cs.princeton.edu/~schapire/maxent/')
+  }
+
   ### Check to make sure the data we need is there
   if(!inherits(species, "enmtools.species")){
     stop("Argument \'species\' must contain an enmtools.species object!")
