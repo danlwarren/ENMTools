@@ -16,7 +16,7 @@ Maintainer: Dan Warren <dan.l.warren@gmail.com>
 Description: Tools for the ecological and historical biogeography.
 License: GPL-2
 LazyData: TRUE
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 Imports:
 	rgeos,
 	knitr,
@@ -43,11 +43,11 @@ Imports:
 	CalibratR,
 	caret,
 	ResourceSelection,
-	ggpubr,
-	hypervolume
+	ggpubr
 Depends:
 	raster,
 	dismo
 Suggests:
-	testthat
+	testthat,
+	hypervolume
 Remotes: ecospat/ecospat/ecospat

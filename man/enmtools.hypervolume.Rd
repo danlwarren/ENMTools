@@ -4,8 +4,14 @@
 \alias{enmtools.hypervolume}
 \title{Takes an emtools.species object and environmental layers, and constructs a hypervolume using the R package hypervolume}
 \usage{
-enmtools.hypervolume(species, env, samples.per.point = 10,
-  reduction.factor = 0.1, method = "gaussian", ...)
+enmtools.hypervolume(
+  species,
+  env,
+  samples.per.point = 10,
+  reduction.factor = 0.1,
+  method = "gaussian",
+  ...
+)
 }
 \arguments{
 \item{species}{An enmtools.species object}

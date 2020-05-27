@@ -4,8 +4,14 @@
 \alias{visualize.overlap}
 \title{visualize.overlap, Makes a contour map of suitability of habitat in environment space for two models}
 \usage{
-visualize.overlap(model.1, model.2, env, nbins = 100, layers,
-  plot.points = TRUE)
+visualize.overlap(
+  model.1,
+  model.2,
+  env,
+  nbins = 100,
+  layers,
+  plot.points = TRUE
+)
 }
 \arguments{
 \item{model.1}{An enmtools.model object}

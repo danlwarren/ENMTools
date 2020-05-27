@@ -4,8 +4,14 @@
 \alias{enmtools.calibrate}
 \title{Takes an emtools.model object, and reformats it to run through the CalibratR package, calculates Continuous Boyce Index, and runs a Hosmer-Lemeshow goodness-of-fit test.  Can either do a full CalibratR run or just return ECE/MCE statistics and plots.}
 \usage{
-enmtools.calibrate(model, recalibrate = FALSE, cuts = 11, env = NA,
-  n.background = 10000, ...)
+enmtools.calibrate(
+  model,
+  recalibrate = FALSE,
+  cuts = 11,
+  env = NA,
+  n.background = 10000,
+  ...
+)
 }
 \arguments{
 \item{model}{An enmtools.model object}

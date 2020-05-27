@@ -4,8 +4,11 @@
 \alias{interactive.plot.enmtools.species}
 \title{Plot an enmtools.species object on an interactive map}
 \usage{
-interactive.plot.enmtools.species(x, map.provider = "Esri.WorldPhysical",
-  cluster.points = FALSE)
+interactive.plot.enmtools.species(
+  x,
+  map.provider = "Esri.WorldPhysical",
+  cluster.points = FALSE
+)
 }
 \arguments{
 \item{x}{entools.species object to plot}

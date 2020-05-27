@@ -16,6 +16,11 @@
 
 hypervolume.overlap <- function(species.1, species.2, env = NA, reduction.factor = 0.1, ...){
 
+  if (!requireNamespace("hypervolume", quietly = TRUE)) {
+    stop("Package \"hypervolume\" needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
+
   # Turn species into hypervolumes, if they're not already
   if(inherits(species.1, "enmtools.species")){
     if(!inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){

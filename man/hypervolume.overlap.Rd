@@ -4,8 +4,13 @@
 \alias{hypervolume.overlap}
 \title{Takes an emtools.species object and environmental layers, and constructs a hypervolume using the R package hypervolume}
 \usage{
-hypervolume.overlap(species.1, species.2, env = NA,
-  reduction.factor = 0.1, ...)
+hypervolume.overlap(
+  species.1,
+  species.2,
+  env = NA,
+  reduction.factor = 0.1,
+  ...
+)
 }
 \arguments{
 \item{species.1}{An enmtools.species or enmtools.hypervolume object}

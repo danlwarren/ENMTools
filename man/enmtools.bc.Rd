@@ -4,9 +4,18 @@
 \alias{enmtools.bc}
 \title{Takes an emtools.species object with presence and background points, and builds a Bioclim model}
 \usage{
-enmtools.bc(species, env = NA, test.prop = 0, report = NULL,
-  overwrite = FALSE, nback = 1000, env.nback = 10000, rts.reps = 0,
-  bg.source = "default", ...)
+enmtools.bc(
+  species,
+  env = NA,
+  test.prop = 0,
+  report = NULL,
+  overwrite = FALSE,
+  nback = 1000,
+  env.nback = 10000,
+  rts.reps = 0,
+  bg.source = "default",
+  ...
+)
 }
 \arguments{
 \item{species}{An enmtools.species object}

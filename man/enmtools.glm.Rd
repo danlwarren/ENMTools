@@ -4,10 +4,21 @@
 \alias{enmtools.glm}
 \title{Takes an emtools.species object with presence and background points, and builds a GLM}
 \usage{
-enmtools.glm(species, env, f = NULL, test.prop = 0, eval = TRUE,
-  nback = 1000, env.nback = 10000, report = NULL,
-  overwrite = FALSE, rts.reps = 0, weights = "equal",
-  bg.source = "default", ...)
+enmtools.glm(
+  species,
+  env,
+  f = NULL,
+  test.prop = 0,
+  eval = TRUE,
+  nback = 1000,
+  env.nback = 10000,
+  report = NULL,
+  overwrite = FALSE,
+  rts.reps = 0,
+  weights = "equal",
+  bg.source = "default",
+  ...
+)
 }
 \arguments{
 \item{species}{An enmtools.species object}

@@ -15,6 +15,11 @@
 
 enmtools.hypervolume <- function(species, env, samples.per.point = 10, reduction.factor = 0.1, method = "gaussian", ...){
 
+  if (!requireNamespace("hypervolume", quietly = TRUE)) {
+    stop("Package \"hypervolume\" needed for this function to work. Please install it.",
+         call. = FALSE)
+  }
+
   hypervolume.precheck(species, env)
 
   for(i in 1:length(names(env))){
