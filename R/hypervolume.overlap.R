@@ -45,9 +45,9 @@ hypervolume.overlap <- function(species.1, species.2, env = NA, reduction.factor
     stop("Species 2 is not an enmtools.species or enmtools.hypervolume object!")
   }
 
-  hv.set <- hypervolume_set(species.1$hv, species.2$hv, check.memory = FALSE)
+  hv.set <- hypervolume::hypervolume_set(species.1$hv, species.2$hv, check.memory = FALSE)
 
-  volumes <- get_volume(hv.set)
+  volumes <- hypervolume::get_volume(hv.set)
 
   op=par(mar=c(3,10,1,1))
   barplot(volumes,horiz=TRUE,las=2,main="Hypervolume",cex.names=0.5,col='lightblue')
@@ -55,7 +55,7 @@ hypervolume.overlap <- function(species.1, species.2, env = NA, reduction.factor
   par(op)
   plot(hv.set[[c(3,5,6)]])
 
-  output <- list(overlap = hypervolume_overlap_statistics(hv.set),
+  output <- list(overlap = hypervolume::hypervolume_overlap_statistics(hv.set),
                  hv.set = hv.set)
 
   return(output)

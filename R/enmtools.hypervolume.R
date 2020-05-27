@@ -33,11 +33,11 @@ enmtools.hypervolume <- function(species, env, samples.per.point = 10, reduction
   if(method == "gaussian"){
     this.hv <- hypervolume::hypervolume_gaussian(climate, name = species$species.name, samples.per.point = samples.per.point, ...)
   } else if(method == "svm"){
-    this.hv <- hypervolume::hypervolume_gaussian(climate, name = species$species.name, samples.per.point = samples.per.point, ...)
+    this.hv <- hypervolume::hypervolume_svm(climate, name = species$species.name, samples.per.point = samples.per.point, ...)
   }
 
 
-  this.map <- hypervolume_project(this.hv, env, reduction.factor = reduction.factor)
+  this.map <- hypervolume::hypervolume_project(this.hv, env, reduction.factor = reduction.factor)
 
   output <- list(hv = this.hv,
                  suitability = this.map,
@@ -100,7 +100,7 @@ plot.enmtools.hypervolume <- function(x, ...){
 predict.enmtools.hypervolume <- function(object, env, reduction.factor = 0.1){
 
   # Make a plot of habitat suitability in the new region
-  suitability <- hypervolume_project(object$hv, env, reduction.factor = reduction.factor)
+  suitability <- hypervolume::hypervolume_project(object$hv, env, reduction.factor = reduction.factor)
   suit.points <- data.frame(rasterToPoints(suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
