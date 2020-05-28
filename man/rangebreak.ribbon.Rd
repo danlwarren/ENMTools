@@ -4,9 +4,21 @@
 \alias{rangebreak.ribbon}
 \title{rangebreak.ribbon Conduct a ribbon rangebreak test as described in Glor and Warren 2011.}
 \usage{
-rangebreak.ribbon(species.1, species.2, ribbon, env, type, f = NULL,
-  width = 1, nreps = 99, nback = 1000, bg.source = "default",
-  low.memory = FALSE, rep.dir = NA, ...)
+rangebreak.ribbon(
+  species.1,
+  species.2,
+  ribbon,
+  env,
+  type,
+  f = NULL,
+  width = 1,
+  nreps = 99,
+  nback = 1000,
+  bg.source = "default",
+  low.memory = FALSE,
+  rep.dir = NA,
+  ...
+)
 }
 \arguments{
 \item{species.1}{An emtools.species object}

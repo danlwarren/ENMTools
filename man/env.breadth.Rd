@@ -4,8 +4,7 @@
 \alias{env.breadth}
 \title{Calculates breadth of a model in environment space using latin hypercube sampling}
 \usage{
-env.breadth(model, env, tolerance = 1e-04, max.reps = 10,
-  chunk.size = 1e+05)
+env.breadth(model, env, tolerance = 1e-04, max.reps = 10, chunk.size = 1e+05)
 }
 \arguments{
 \item{model}{An enmtools.model object or a model object that can be projected using the predict() function}

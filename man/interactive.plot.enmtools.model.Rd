@@ -4,8 +4,12 @@
 \alias{interactive.plot.enmtools.model}
 \title{Plot an enmtools.model object on an interactive map}
 \usage{
-interactive.plot.enmtools.model(x, map.provider = "Esri.WorldPhysical",
-  cluster.points = FALSE, raster.opacity = 1)
+interactive.plot.enmtools.model(
+  x,
+  map.provider = "Esri.WorldPhysical",
+  cluster.points = FALSE,
+  raster.opacity = 1
+)
 }
 \arguments{
 \item{x}{entools.model object to plot}

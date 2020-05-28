@@ -4,9 +4,19 @@
 \alias{rangebreak.linear}
 \title{rangebreak.linear Conduct a linear rangebreak test as described in Glor and Warren 2011.}
 \usage{
-rangebreak.linear(species.1, species.2, env, type, f = NULL,
-  nreps = 99, nback = 1000, bg.source = "default",
-  low.memory = FALSE, rep.dir = NA, ...)
+rangebreak.linear(
+  species.1,
+  species.2,
+  env,
+  type,
+  f = NULL,
+  nreps = 99,
+  nback = 1000,
+  bg.source = "default",
+  low.memory = FALSE,
+  rep.dir = NA,
+  ...
+)
 }
 \arguments{
 \item{species.1}{An emtools.species object}

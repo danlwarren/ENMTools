@@ -4,8 +4,15 @@
 \alias{env.evaluate}
 \title{Calculates evaluation metrics (AUC, etc.) using latin hypercube sampling in environment space}
 \usage{
-env.evaluate(species, model, env, bg.source = "background",
-  n.background = 10000, test.eval = FALSE, ...)
+env.evaluate(
+  species,
+  model,
+  env,
+  bg.source = "background",
+  n.background = 10000,
+  test.eval = FALSE,
+  ...
+)
 }
 \arguments{
 \item{species}{An enmtools.species object}
