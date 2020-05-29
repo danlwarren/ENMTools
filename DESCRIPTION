@@ -21,7 +21,6 @@ Imports:
 	rgeos,
 	knitr,
 	ggplot2,
-	grid,
 	gridExtra,
 	viridis,
 	lhs,
@@ -47,4 +46,3 @@ Depends:
 	dismo
 Suggests:
 	testthat
-Remotes: ecospat/ecospat/ecospat
