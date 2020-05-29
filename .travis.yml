@@ -5,4 +5,11 @@ sudo: required
 before_install:
   - echo 'options(Ncpus = 2)' >> ~/.Rprofile
   - echo 'options(mc.cores = 2)' >> ~/.Rprofile
-  
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install libcgal-dev libglu1-mesa-dev mesa-common-dev; fi
+
+addons:
+  apt:
+    packages:
+      - libgdal-dev
+      - libproj-dev
+

@@ -48,5 +48,6 @@ Depends:
 	raster,
 	dismo
 Suggests:
-	testthat
+	testthat,
+	hypervolume
 Remotes: ecospat/ecospat/ecospat
