@@ -24,10 +24,7 @@ Imports:
 	gridExtra,
 	viridis,
 	lhs,
-	mgcv,
 	fields,
-	ecospat,
-	gbm,
 	randomForest,
 	ape,
 	ppmlasso,
@@ -48,5 +45,7 @@ Depends:
 Suggests:
 	testthat,
 	hypervolume,
-	leaflet
+	leaflet,
+	mgcv,
+	ecospat
 Remotes: ecospat/ecospat/ecospat

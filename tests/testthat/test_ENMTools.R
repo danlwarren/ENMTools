@@ -154,6 +154,7 @@ test_that("gam model objects work", {
 #' Simple interactive.plot tests
 test_that("interactive.plot produces correct object", {
   skip_if_not_installed("leaflet")
+  skip_on_ci()
   m_dm <- interactive.plot(cyreni.dm)
   m_dm_cluster <- interactive.plot(cyreni.dm, cluster.points = TRUE)
   expect_is(m_dm, "leaflet")

@@ -12,7 +12,6 @@ check.package <- function(package_name) {
 install.extras <- function() {
   install.packages(c("mgcv",
                       "ecospat",
-                      "gbm",
                       "randomForest",
                       "hypervolume",
                       "ape",

@@ -7,7 +7,7 @@
 #' @param ... Extra parameters to be passed to enmtools.hypervolume
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
 #' mont <- iberolacerta.clade$species$monticola

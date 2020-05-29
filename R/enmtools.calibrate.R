@@ -18,6 +18,8 @@
 
 enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, n.background = 10000, ...){
 
+  check.package("ecospat")
+
   if(suppressWarnings(is.na(model$test.evaluation))){
     stop("No test evaluation data available, cannot measure calibration.")
   }
@@ -82,10 +84,10 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
   # Testing to see whether models are presence only or presence/background
   continuous.boyce <- NA
   if("presence" %in% colnames(model$analysis.df)){
-    continuous.boyce <- ecospat.boyce(model$suitability,
+    continuous.boyce <- ecospat::ecospat.boyce(model$suitability,
                                       model$test.data, PEplot = FALSE)
   } else {
-    continuous.boyce <- ecospat.boyce(model$suitability,
+    continuous.boyce <- ecospat::ecospat.boyce(model$suitability,
                                       model$test.data, PEplot = FALSE)
   }
 
@@ -189,10 +191,10 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
       # Testing to see whether models are presence only or presence/background
       recalibrated.metrics[[i]][["continuous.boyce"]] <- NA
       if("presence" %in% colnames(model$analysis.df)){
-        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat.boyce(calibrated.suitabilities[[i]],
+        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat::ecospat.boyce(calibrated.suitabilities[[i]],
                                           model$test.data, PEplot = FALSE)
       } else {
-        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat.boyce(calibrated.suitabilities[[i]],
+        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat::ecospat.boyce(calibrated.suitabilities[[i]],
                                           model$test.data, PEplot = FALSE)
       }
 
@@ -220,10 +222,10 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
       # Testing to see whether models are presence only or presence/background
       recalibrated.metrics[[i]][["continuous.boyce"]] <- NA
       if("presence" %in% colnames(model$analysis.df)){
-        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat.boyce(calibrated.suitabilities[[i]],
+        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat::ecospat.boyce(calibrated.suitabilities[[i]],
                                                                           model$test.data, PEplot = FALSE)
       } else {
-        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat.boyce(calibrated.suitabilities[[i]],
+        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat::ecospat.boyce(calibrated.suitabilities[[i]],
                                                                           model$test.data, PEplot = FALSE)
       }
     }

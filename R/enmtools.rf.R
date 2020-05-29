@@ -21,6 +21,8 @@
 
 enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, bg.source = "default", ...){
 
+  check.package("randomForest")
+
   notes <- NULL
 
   species <- check.bg(species, env, nback = nback,  bg.source = bg.source)
@@ -74,7 +76,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
   analysis.df <- rbind(species$presence.points, species$background.points)
   analysis.df$presence <- c(rep(1, nrow(species$presence.points)), rep(0, nrow(species$background.points)))
 
-  this.rf <- randomForest(f, analysis.df[,-c(1,2)], ...)
+  this.rf <- randomForest::randomForest(f, analysis.df[,-c(1,2)], ...)
 
   suitability <- predict(env, this.rf, type = "response")
 
@@ -164,7 +166,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
         rts.df <- rbind(rep.species$presence.points, rep.species$background.points)
         rts.df$presence <- c(rep(1, nrow(rep.species$presence.points)), rep(0, nrow(rep.species$background.points)))
 
-        thisrep.rf <- randomForest(f, rts.df[,-c(1,2)], ...)
+        thisrep.rf <- randomForest::randomForest(f, rts.df[,-c(1,2)], ...)
 
         thisrep.model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                                    thisrep.rf, env)

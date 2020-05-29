@@ -27,6 +27,8 @@
 
 enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = NULL, th.sp=0, th.env=0, R=100, nback = 1000, bg.source = "default"){
 
+  check.package("ecospat")
+
   species.1 <- check.bg(species.1, env, nback)
   species.2 <- check.bg(species.2, env, nback)
 
@@ -85,10 +87,10 @@ enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = 
   colnames(background.env) <- c("Species", colnames(species.1$presence.points), names(env))
   background.env <- background.env[complete.cases(background.env),]
 
-  sp1.niche <- ecospat.grid.clim.dyn(background.env[,4:5], sp1.bg.env[,4:5], sp1.env[,4:5], th.sp=th.sp, th.env=th.env, R=R)
-  sp2.niche <- ecospat.grid.clim.dyn(background.env[,4:5], sp2.bg.env[,4:5], sp2.env[,4:5], th.sp=th.sp, th.env=th.env, R=R)
+  sp1.niche <- ecospat::ecospat.grid.clim.dyn(background.env[,4:5], sp1.bg.env[,4:5], sp1.env[,4:5], th.sp=th.sp, th.env=th.env, R=R)
+  sp2.niche <- ecospat::ecospat.grid.clim.dyn(background.env[,4:5], sp2.bg.env[,4:5], sp2.env[,4:5], th.sp=th.sp, th.env=th.env, R=R)
 
-  eq <- ecospat.niche.equivalency.test(sp1.niche, sp2.niche, rep=nreps)
+  eq <- ecospat::ecospat.niche.equivalency.test(sp1.niche, sp2.niche, rep=nreps)
 
 
   empline <- c(eq$obs$D, eq$obs$I)
