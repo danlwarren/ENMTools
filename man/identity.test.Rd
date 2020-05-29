@@ -59,8 +59,7 @@ identity.test(cyreni, monticola, env = euro.worldclim, type = "glm",
 f = pres ~ bio1 + bio12, nreps = 10)
 }
 }
-\keyword{enmtools,}
-\keyword{equivalency,}
-\keyword{hypothesis}
-\keyword{identity,}
-\keyword{testing}
+\keyword{enmtools}
+\keyword{equivalency}
+\keyword{hypothesis-testing}
+\keyword{identity}

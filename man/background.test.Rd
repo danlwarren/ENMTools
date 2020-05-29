@@ -70,8 +70,8 @@ background.test(cyreni, monticola, env = euro.worldclim, type = "glm",
 f = pres ~ bio1 + bio12, nreps = 10)
 }
 }
-\keyword{background,}
-\keyword{enmtools,}
-\keyword{equivalency,}
+\keyword{background}
+\keyword{enmtools}
+\keyword{equivalency}
 \keyword{hypothesis}
 \keyword{testing}

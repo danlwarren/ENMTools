@@ -15,7 +15,7 @@
 #'
 #' @return results A list containing a replicates, models for the empirical data, and summary statistics and plots.
 #'
-#' @keywords rangebreak, biogeography, barrier, enmtools, hypothesis testing
+#' @keywords rangebreak biogeography barrier enmtools hypothesis-testing
 #'
 #' @examples
 #' \dontrun{

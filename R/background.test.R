@@ -20,7 +20,7 @@
 #'
 #' @return results A list containing replicates, models for the empirical data, and summary statistics and plots.
 #'
-#' @keywords background, equivalency, enmtools, hypothesis testing
+#' @keywords background equivalency enmtools hypothesis testing
 #'
 #' @examples
 #' \dontrun{

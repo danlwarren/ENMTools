@@ -8,7 +8,7 @@
 #'
 #' @return results A plot of the marginal response of the model to the environmental variable
 #'
-#' @keywords plot, sdm, enm, response
+#' @keywords plot sdm enm response
 #'
 #' @examples
 #' data(iberolacerta.clade)

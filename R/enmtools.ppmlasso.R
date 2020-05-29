@@ -18,7 +18,7 @@
 #'
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' install.packages("ppmlasso")
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
@@ -426,7 +426,7 @@ plot.enmtools.ppmlasso <- function(x, trans_col = NULL, ...){
   if(!is.null(trans_col)) {
     suit.plot <- suit.plot + scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability"), trans = trans_col)
   } else {
-    suit.plot <- suit.plot + scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability"))
+    suit.plot <- suit.plot + scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability"))
   }
 
   if(!is.na(x$species.name)){
@@ -454,7 +454,7 @@ predict.enmtools.ppmlasso <- function(object, env, maxpts = 1000, ...){
 
   suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
     geom_raster(aes_string(fill = "Suitability")) +
-    scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
+    scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()
 
   if(!is.na(object$species.name)){

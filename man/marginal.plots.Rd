@@ -28,7 +28,7 @@ cyreni.glm <- enmtools.glm(iberolacerta.clade$species$cyreni,
 f = pres ~ bio1 + bio12, euro.worldclim)
 marginal.plots(cyreni.glm, euro.worldclim, "bio1")
 }
-\keyword{enm,}
-\keyword{plot,}
+\keyword{enm}
+\keyword{plot}
 \keyword{response}
-\keyword{sdm,}
+\keyword{sdm}
