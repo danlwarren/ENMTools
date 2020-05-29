@@ -8,7 +8,8 @@
 #' @param ... Extra parameters to be passed to hypervolume_gaussian
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
+#' install.packages("hypervolume")
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
 #' env <- euro.worldclim[[c(1,8,12,17)]]
