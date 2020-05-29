@@ -1,6 +1,6 @@
 Package: ENMTools
 Type: Package
-Title: Analysis of niche evolution using niche and distribution models
+Title: Analysis of Niche Evolution using Niche and Distribution Models
 Version: 0.2
 Date: 2017-01-11
 Encoding: UTF-8
@@ -27,7 +27,6 @@ Imports:
 	reshape2,
 	magrittr,
 	ENMeval,
-	vegan,
 	sp,
 	spatstat,
 	ResourceSelection,
