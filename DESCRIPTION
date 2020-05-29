@@ -11,6 +11,7 @@ Authors@R: c(person(given = "Dan", family = "Warren", role = c("aut", "cre"), em
             person(given = "Linda", family = "Beaumont", role = "ctb"),
 	      	person(given = "Nicholas", family = "Huron", role = "ctb"),
 	      	person(given = "Marianna", family = "Simoes", role = "ctb"),
+		person(given = "Teresa", family = "Iglesias", role = "ctb"),
 	      	person(given = "Russell", family = "Dinnage", role = "aut", email = "r.dinnage@gmail.com"))
 Maintainer: Dan Warren <dan.l.warren@gmail.com>
 Description: Tools for the ecological and historical biogeography.
