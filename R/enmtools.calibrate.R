@@ -10,7 +10,10 @@
 #' @examples
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
-#' monticola.glm <- enmtools.glm(iberolacerta.clade$species$monticola, env = euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.3)
+#' monticola.glm <- enmtools.glm(iberolacerta.clade$species$monticola,
+#'                               env = euro.worldclim,
+#'                               f = pres ~ bio1 + bio9,
+#'                               test.prop = 0.3)
 #' enmtools.calibrate(monticola.glm)
 
 enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, n.background = 10000, ...){

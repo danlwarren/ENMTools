@@ -32,7 +32,6 @@ Imports:
 	ape,
 	ppmlasso,
 	reshape2,
-	leaflet,
 	magrittr,
 	ranger,
 	ENMeval,
@@ -47,4 +46,7 @@ Depends:
 	raster,
 	dismo
 Suggests:
-	testthat
+	testthat,
+	hypervolume,
+	leaflet
+Remotes: ecospat/ecospat/ecospat
