@@ -4,7 +4,9 @@
 \name{euro.worldclim}
 \alias{euro.worldclim}
 \title{Worldclim data for Europe}
-\format{A raster brick with 19 worldclim layers.}
+\format{
+A raster brick with 19 worldclim layers.
+}
 \usage{
 data(euro.worldclim)
 }

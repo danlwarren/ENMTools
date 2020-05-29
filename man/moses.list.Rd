@@ -4,8 +4,15 @@
 \alias{moses.list}
 \title{Takes a list of enmtools.species objects and uses model selection to ask whether they're better treated jointly or separately}
 \usage{
-moses.list(species.list, env, f = NULL, eval = FALSE, nback = 1000,
-  bg.source = "default", ...)
+moses.list(
+  species.list,
+  env,
+  f = NULL,
+  eval = FALSE,
+  nback = 1000,
+  bg.source = "default",
+  ...
+)
 }
 \arguments{
 \item{species.list}{A list of enmtools.species objects, or an enmtools.clade object.}

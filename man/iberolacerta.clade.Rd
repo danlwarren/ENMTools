@@ -4,7 +4,9 @@
 \name{iberolacerta.clade}
 \alias{iberolacerta.clade}
 \title{GBIF data for a clade of Iberolacerta lizards from spain}
-\format{An enmtools.clade object with seven species and a phylogeny.}
+\format{
+An enmtools.clade object with seven species and a phylogeny.
+}
 \usage{
 data(iberolacerta.clade)
 }

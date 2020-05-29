@@ -8,9 +8,20 @@ This test can either be run as an asymmetric test (species.1 vs background of sp
 constructed from the background points supplied for each species.  For Maxent, the replicates will be constructed
 from the range rasters stored in the enmtools.species objects.}
 \usage{
-background.test(species.1, species.2, env, type, f = NULL, nreps = 99,
-  test.type = "asymmetric", nback = 1000, bg.source = "default",
-  low.memory = FALSE, rep.dir = NA, ...)
+background.test(
+  species.1,
+  species.2,
+  env,
+  type,
+  f = NULL,
+  nreps = 99,
+  test.type = "asymmetric",
+  nback = 1000,
+  bg.source = "default",
+  low.memory = FALSE,
+  rep.dir = NA,
+  ...
+)
 }
 \arguments{
 \item{species.1}{An emtools.species object from which presence points (asymmetric) or background (symmetric) will be sampled.}
