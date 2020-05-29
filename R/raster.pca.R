@@ -20,15 +20,19 @@ raster.pca <- function(env, n){
   nas <- which(!complete.cases(env.val))
 
   # Do PCA
-  pca <- princomp(env.val[keepers,], cor=T)
+  pca <- prcomp(env.val[keepers,], retx = TRUE)
 
   # Build dummy layers
   env.pca <- env[[1:n]]
 
   # Add scores and NAs where appropriate
-  env.pca[nas] <- NA
+  # Not sure why but this wasn't always working when
+  # I tried to access layers directly in the stack
   for(i in 1:n){
-    env.pca[[n]][keepers] <- pca$scores[,n]
+    thislayer <- env.pca[[i]]
+    thislayer[nas] <- NA
+    thislayer[keepers] <- pca$x[,i]
+    env.pca[[i]] <- thislayer
   }
 
   # Rename layers and ship it out

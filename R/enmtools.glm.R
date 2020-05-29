@@ -117,6 +117,8 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
     # Test eval for randomly withheld data
     if(is.numeric(test.prop)){
       if(test.prop > 0 & test.prop < 1){
+        test.check <- raster::extract(env, test.data)
+        test.data <- test.data[complete.cases(test.check),]
         test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
                                           this.glm, env)
         temp.sp <- species
@@ -128,6 +130,8 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
     # Test eval for spatially structured data
     if(is.character(test.prop)){
       if(test.prop == "block"){
+        test.check <- raster::extract(env, test.data)
+        test.data <- test.data[complete.cases(test.check),]
         test.evaluation <-dismo::evaluate(test.data, test.bg,
                                           this.glm, env)
         temp.sp <- species
