@@ -27,10 +27,12 @@ hypervolume.overlap(
 Takes an emtools.species object and environmental layers, and constructs a hypervolume using the R package hypervolume
 }
 \examples{
+\dontrun{
 data(euro.worldclim)
 data(iberolacerta.clade)
 mont <- iberolacerta.clade$species$monticola
 cyr <- iberolacerta.clade$species$cyreni
 env <- euro.worldclim[[c(1,8,12,17)]]
 hypervolume.overlap(mont, cyr, env = env)
+}
 }
