@@ -8,10 +8,13 @@
 #' @param ... Extra parameters to be passed to hypervolume_gaussian
 #'
 #' @examples
+#' \dontrun{
+#' install.packages("hypervolume")
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
 #' env <- euro.worldclim[[c(1,8,12,17)]]
 #' monticola.hv <- enmtools.hypervolume(iberolacerta.clade$species$monticola, env = env)
+#' }
 
 enmtools.hypervolume <- function(species, env, samples.per.point = 10, reduction.factor = 0.1, method = "gaussian", ...){
 
