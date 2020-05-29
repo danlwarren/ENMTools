@@ -4,8 +4,15 @@
 \alias{sim.points}
 \title{Simulate a point process from an enmtools.model object}
 \usage{
-sim.points(object, n.points = 1000, seed = NA, sample.type = "ppp",
-  replace = FALSE, threshold = NA, ...)
+sim.points(
+  object,
+  n.points = 1000,
+  seed = NA,
+  sample.type = "ppp",
+  replace = FALSE,
+  threshold = NA,
+  ...
+)
 }
 \arguments{
 \item{object}{entools.model object to simulate from}
