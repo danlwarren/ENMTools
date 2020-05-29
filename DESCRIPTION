@@ -22,21 +22,14 @@ Imports:
 	knitr,
 	ggplot2,
 	gridExtra,
-	viridis,
 	lhs,
 	fields,
-	randomForest,
-	ape,
-	ppmlasso,
 	reshape2,
 	magrittr,
-	ranger,
 	ENMeval,
 	vegan,
 	sp,
 	spatstat,
-	CalibratR,
-	caret,
 	ResourceSelection,
 	ggpubr
 Depends:
@@ -47,5 +40,11 @@ Suggests:
 	hypervolume,
 	leaflet,
 	mgcv,
-	ecospat
+	ecospat,
+	randomForest,
+	ranger,
+	caret,
+	CalibratR,
+	ape,
+	ppmlasso
 Remotes: ecospat/ecospat/ecospat

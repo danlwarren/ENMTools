@@ -18,8 +18,6 @@ install.extras <- function() {
                       "ppmlasso",
                       "leaflet",
                       "ranger",
-                      "ENMeval",
-                      "vegan",
                       "CalibratR",
                       "caret",
                       "ResourceSelection"))
