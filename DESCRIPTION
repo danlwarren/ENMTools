@@ -31,7 +31,6 @@ Imports:
 	vegan,
 	sp,
 	spatstat,
-	ResourceSelection,
 	ggpubr
 Depends:
 	raster,
@@ -47,5 +46,6 @@ Suggests:
 	caret,
 	CalibratR,
 	ape,
+	ResourceSelection,
 	ppmlasso
 Remotes: ecospat/ecospat/ecospat

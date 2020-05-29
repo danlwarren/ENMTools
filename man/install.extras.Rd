@@ -2,10 +2,19 @@
 % Please edit documentation in R/package_depends.R
 \name{install.extras}
 \alias{install.extras}
-\title{Convenience function that installs all extra packages used in ENMTools}
+\title{install.extras}
 \usage{
 install.extras()
 }
 \description{
-Convenience function that installs all extra packages used in ENMTools
+Convenience function that installs all extra packages used in ENMTools.  ENMTools uses
+functions from a lot of external packages, and due to CRAN best practices it doesn't install
+those packages by default.  The function install.extras() just calls install.packages with a
+list of all of the extra packages.  At present this list includes mgcv, ecospat, randomForest,
+hypervolume, ape, ppmlasso, leaflet, ranger, CalibratR, caret, and ResourceSelection.
+}
+\examples{
+\dontrun{
+install.extras()
+}
 }
