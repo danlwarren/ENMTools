@@ -18,12 +18,17 @@
 #'
 #'
 #' @examples
+#' \dontrun{
+#' install.packages("ppmlasso")
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
 #' enmtools.ppmlasso(iberolacerta.clade$species$monticola, env = euro.worldclim[[1:3]])
+#' }
 
 
 enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, normalise = FALSE, report = NULL, overwrite = FALSE, rts.reps = 0, bg.source = "default", ...){
+
+  check.package("ppmlasso")
 
   notes <- NULL
 
@@ -87,7 +92,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
 
   env_cell_area <- prod(res(env))
   p.fun <- function(object, newdata, ...) {
-    predict.ppmlasso(object, newdata = newdata, ...)*env_cell_area
+    ppmlasso::predict.ppmlasso(object, newdata = newdata, ...)*env_cell_area
   }
   suitability <- predict(env, this.ppmlasso, fun = p.fun)
 
@@ -106,9 +111,9 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
       notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
     }
 
-    model.evaluation <- dismo::evaluate(predict.ppmlasso(this.ppmlasso,
+    model.evaluation <- dismo::evaluate(ppmlasso::predict.ppmlasso(this.ppmlasso,
                                                          newdata = species$presence.points)[ , 1, drop = TRUE],
-                                        predict.ppmlasso(this.ppmlasso,
+                                        ppmlasso::predict.ppmlasso(this.ppmlasso,
                                                          newdata = species$background.points)[ , 1, drop = TRUE])
 
     env.model.evaluation <- env.evaluate(species, this.ppmlasso, env, n.background = env.nback)
@@ -118,9 +123,9 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
       if(test.prop > 0 & test.prop < 1){
         test.check <- raster::extract(env, test.data[,1:2])
         test.data <- test.data[complete.cases(test.check),]
-        test.evaluation <- dismo::evaluate(predict.ppmlasso(this.ppmlasso,
+        test.evaluation <- dismo::evaluate(ppmlasso::predict.ppmlasso(this.ppmlasso,
                                                             newdata = test.data)[ , 1, drop = TRUE],
-                                           predict.ppmlasso(this.ppmlasso,
+                                           ppmlasso::predict.ppmlasso(this.ppmlasso,
                                                             newdata = species$background.points)[ , 1, drop = TRUE])
         temp.sp <- species
         temp.sp$presence.points <- test.data
@@ -133,9 +138,9 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
       if(test.prop == "block"){
         test.check <- raster::extract(env, test.data[,1:2])
         test.data <- test.data[complete.cases(test.check),]
-        test.evaluation <- dismo::evaluate(predict.ppmlasso(this.ppmlasso,
+        test.evaluation <- dismo::evaluate(ppmlasso::predict.ppmlasso(this.ppmlasso,
                                                             newdata = test.data)[ , 1, drop = TRUE],
-                                           predict.ppmlasso(this.ppmlasso,
+                                           ppmlasso::predict.ppmlasso(this.ppmlasso,
                                                             newdata = test.bg)[ , 1, drop = TRUE])
         temp.sp <- species
         temp.sp$presence.points <- test.data
@@ -196,7 +201,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
 
         rts.df$wt <- wts
         capture.output(
-          thisrep.ppmlasso <- ppmlasso(f, coord = c("Longitude", "Latitude"), data = rts.df, ...)
+          thisrep.ppmlasso <- ppmlasso::ppmlasso(f, coord = c("Longitude", "Latitude"), data = rts.df, ...)
         )
 
         # capture.output(
@@ -204,12 +209,12 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
         # )
 
         p.fun <- function(object, newdata, ...) {
-          predict.ppmlasso(object, newdata = newdata, ...)*env_cell_area
+          ppmlasso::predict.ppmlasso(object, newdata = newdata, ...)*env_cell_area
         }
 
-        thisrep.model.evaluation <- dismo::evaluate(predict.ppmlasso(thisrep.ppmlasso,
+        thisrep.model.evaluation <- dismo::evaluate(ppmlasso::predict.ppmlasso(thisrep.ppmlasso,
                                                                     newdata = rep.species$presence.points)[ , 1, drop = TRUE],
-                                                   predict.ppmlasso(thisrep.ppmlasso,
+                                                   ppmlasso::predict.ppmlasso(thisrep.ppmlasso,
                                                                     newdata = rep.species$background.points)[ , 1, drop = TRUE])
         thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.ppmlasso, env, n.background = env.nback)
 
@@ -225,9 +230,9 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
           colnames(rep.test.data) <- names
           rep.test.data <- rep.test.data[complete.cases(rep.test.data),]
 
-          thisrep.test.evaluation <- dismo::evaluate(predict.ppmlasso(thisrep.ppmlasso,
+          thisrep.test.evaluation <- dismo::evaluate(ppmlasso::predict.ppmlasso(thisrep.ppmlasso,
                                                                       newdata = rep.test.data)[ , 1, drop = TRUE],
-                                                     predict.ppmlasso(thisrep.ppmlasso,
+                                                     ppmlasso::predict.ppmlasso(thisrep.ppmlasso,
                                                                       newdata = rep.species$background.points)[ , 1, drop = TRUE])
           temp.sp <- rep.species
           temp.sp$presence.points <- test.data
@@ -419,9 +424,9 @@ plot.enmtools.ppmlasso <- function(x, trans_col = NULL, ...){
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
   if(!is.null(trans_col)) {
-    suit.plot <- suit.plot + scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability"), trans = trans_col)
+    suit.plot <- suit.plot + scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability"), trans = trans_col)
   } else {
-    suit.plot <- suit.plot + scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability"))
+    suit.plot <- suit.plot + scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability"))
   }
 
   if(!is.na(x$species.name)){
@@ -439,7 +444,7 @@ predict.enmtools.ppmlasso <- function(object, env, maxpts = 1000, ...){
   env_cell_area <- prod(res(env))
 
   p.fun <- function(object, newdata, ...) {
-    predict.ppmlasso(object, newdata = newdata, ...)*env_cell_area
+    ppmlasso::predict.ppmlasso(object, newdata = newdata, ...)*env_cell_area
   }
 
   # Make a plot of habitat suitability in the new region
@@ -449,7 +454,7 @@ predict.enmtools.ppmlasso <- function(object, env, maxpts = 1000, ...){
 
   suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
     geom_raster(aes_string(fill = "Suitability")) +
-    scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
+    scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()
 
   if(!is.na(object$species.name)){

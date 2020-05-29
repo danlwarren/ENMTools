@@ -15,7 +15,7 @@
 #'
 #' @return results A list containing a replicates, models for the empirical data, and summary statistics and plots.
 #'
-#' @keywords identity, equivalency, enmtools, hypothesis testing
+#' @keywords identity equivalency enmtools hypothesis-testing
 #'
 #' @examples
 #' \dontrun{

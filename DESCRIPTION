@@ -21,27 +21,15 @@ Imports:
 	rgeos,
 	knitr,
 	ggplot2,
-	grid,
 	gridExtra,
-	viridis,
 	lhs,
-	mgcv,
 	fields,
-	ecospat,
-	gbm,
-	randomForest,
-	ape,
-	ppmlasso,
 	reshape2,
-	leaflet,
 	magrittr,
-	ranger,
 	ENMeval,
 	vegan,
 	sp,
 	spatstat,
-	CalibratR,
-	caret,
 	ResourceSelection,
 	ggpubr
 Depends:
@@ -49,5 +37,14 @@ Depends:
 	dismo
 Suggests:
 	testthat,
-	hypervolume
+	hypervolume,
+	leaflet,
+	mgcv,
+	ecospat,
+	randomForest,
+	ranger,
+	caret,
+	CalibratR,
+	ape,
+	ppmlasso
 Remotes: ecospat/ecospat/ecospat

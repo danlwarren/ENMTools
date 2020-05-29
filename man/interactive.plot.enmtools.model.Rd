@@ -4,11 +4,12 @@
 \alias{interactive.plot.enmtools.model}
 \title{Plot an enmtools.model object on an interactive map}
 \usage{
-interactive.plot.enmtools.model(
+\method{interactive.plot}{enmtools.model}(
   x,
   map.provider = "Esri.WorldPhysical",
   cluster.points = FALSE,
-  raster.opacity = 1
+  raster.opacity = 1,
+  ...
 )
 }
 \arguments{
@@ -19,14 +20,15 @@ Default is "Esri.WorldPhysical", and attractive topographic map with no place la
 preview of all map provider options can be viewed at \url{http://leaflet-extras.github.io/leaflet-providers/preview/}}
 
 \item{cluster.points}{Should points be clustered? If TRUE, points close together
-will be grouped into clusters that can be interactively expanded by clicking
-on them.}
+will be grouped into clusters that can be interactively expanded by clicking on them.}
 
 \item{raster.opacity}{Specifies the opacity level of the suitability raster.}
+
+\item{...}{other arguments (not used currently)}
 }
 \description{
 Function that take an \code{enmtools.model} object and plots an
 interactive map of the presence points, background points (if applicable), and
-species suitability map. This function uses \code{\link{leaflet}} for mapping
+species suitability map. This function uses \code{\link[leaflet]{leaflet}} for mapping
 and will only function properly if you have an active internet connection.
 }

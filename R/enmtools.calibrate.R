@@ -8,12 +8,24 @@
 #' @param ... Further arguments to be passed to CalibratR's "calibrate" function.
 #'
 #' @examples
+#' \dontrun{
+#' install.package("CalibratR")
+#' install.package("ecospat")
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
-#' monticola.glm <- enmtools.glm(iberolacerta.clade$species$monticola, env = euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.3)
+#' monticola.glm <- enmtools.glm(iberolacerta.clade$species$monticola,
+#'                               env = euro.worldclim,
+#'                               f = pres ~ bio1 + bio9,
+#'                               test.prop = 0.3)
 #' enmtools.calibrate(monticola.glm)
+#' }
 
 enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, n.background = 10000, ...){
+
+  check.package("ecospat")
+  check.package("CalibratR")
+  check.package("caret")
+  check.package("ResourceSelection")
 
   if(suppressWarnings(is.na(model$test.evaluation))){
     stop("No test evaluation data available, cannot measure calibration.")
@@ -69,7 +81,7 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
   this.pa <- rep(NA, length(pred.df$obs))
   this.pa[which(pred.df$obs == "presence")] <- 1
   this.pa[which(pred.df$obs == "absence")] <- 0
-  hoslem <- hoslem.test(this.pa, pred.df$prob, g = cuts)
+  hoslem <- ResourceSelection::hoslem.test(this.pa, pred.df$prob, g = cuts)
 
   ECE <- CalibratR::getECE(this.pa, pred.df$prob, n_bins = cuts)
   ECE.equal.width <- get_ECE_equal_width(this.pa, pred.df$prob)
@@ -79,10 +91,10 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
   # Testing to see whether models are presence only or presence/background
   continuous.boyce <- NA
   if("presence" %in% colnames(model$analysis.df)){
-    continuous.boyce <- ecospat.boyce(model$suitability,
+    continuous.boyce <- ecospat::ecospat.boyce(model$suitability,
                                       model$test.data, PEplot = FALSE)
   } else {
-    continuous.boyce <- ecospat.boyce(model$suitability,
+    continuous.boyce <- ecospat::ecospat.boyce(model$suitability,
                                       model$test.data, PEplot = FALSE)
   }
 
@@ -186,10 +198,10 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
       # Testing to see whether models are presence only or presence/background
       recalibrated.metrics[[i]][["continuous.boyce"]] <- NA
       if("presence" %in% colnames(model$analysis.df)){
-        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat.boyce(calibrated.suitabilities[[i]],
+        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat::ecospat.boyce(calibrated.suitabilities[[i]],
                                           model$test.data, PEplot = FALSE)
       } else {
-        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat.boyce(calibrated.suitabilities[[i]],
+        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat::ecospat.boyce(calibrated.suitabilities[[i]],
                                           model$test.data, PEplot = FALSE)
       }
 
@@ -217,10 +229,10 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
       # Testing to see whether models are presence only or presence/background
       recalibrated.metrics[[i]][["continuous.boyce"]] <- NA
       if("presence" %in% colnames(model$analysis.df)){
-        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat.boyce(calibrated.suitabilities[[i]],
+        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat::ecospat.boyce(calibrated.suitabilities[[i]],
                                                                           model$test.data, PEplot = FALSE)
       } else {
-        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat.boyce(calibrated.suitabilities[[i]],
+        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat::ecospat.boyce(calibrated.suitabilities[[i]],
                                                                           model$test.data, PEplot = FALSE)
       }
     }

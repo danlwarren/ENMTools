@@ -11,13 +11,14 @@
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
 #' @param rts.reps The number of replicates to do for a Raes and ter Steege-style test of significance
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
-#' @param ... Arguments to be passed to ranger()
+#' @param ... Arguments to be passed to \code{\link[ranger]{ranger}}
 #'
 #' @examples
-#' ## NOT RUN
+#' \dontrun{
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
 #' enmtools.rf(iberolacerta.clade$species$monticola, env = euro.worldclim, nback = 500)
+#' }
 
 enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, bg.source = "default", ...){
 
@@ -75,8 +76,8 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
   analysis.df$presence <- c(rep(1, nrow(species$presence.points)), rep(0, nrow(species$background.points)))
   analysis.df$presence <- as.factor(analysis.df$presence)
 
-  this.rf <- ranger(f, analysis.df[,-c(1,2)], probability = TRUE, ...)
-  this.rf <- ranger(f, analysis.df[,-c(1,2)], probability = TRUE)
+  this.rf <- ranger::ranger(f, analysis.df[,-c(1,2)], probability = TRUE, ...)
+  this.rf <- ranger::ranger(f, analysis.df[,-c(1,2)], probability = TRUE)
 
   pfun <- function(model, data, ...) {
     predict(model, data, ...)$predictions[ , 2]
@@ -170,8 +171,8 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
         rts.df$presence <- c(rep(1, nrow(rep.species$presence.points)), rep(0, nrow(rep.species$background.points)))
         rts.df$presence <- as.factor(rts.df$presence)
 
-        thisrep.rf <- ranger(f, rts.df[,-c(1,2)], probability = TRUE, ...)
-        thisrep.rf <- ranger(f, rts.df[,-c(1,2)], probability = TRUE)
+        thisrep.rf <- ranger::ranger(f, rts.df[,-c(1,2)], probability = TRUE, ...)
+        thisrep.rf <- ranger::ranger(f, rts.df[,-c(1,2)], probability = TRUE)
 
         thisrep.model.evaluation <- dismo::evaluate(predict(thisrep.rf, data = species$presence.points)$predictions[ , 2, drop = TRUE],
                                                    predict(thisrep.rf, data = species$background.points)$predictions[ , 2, drop = TRUE])
@@ -360,7 +361,7 @@ plot.enmtools.rf.ranger <- function(x, ...){
 
   suit.plot <- ggplot(data = suit.points, aes_string(y = "Latitude", x = "Longitude")) +
     geom_raster(aes_string(fill = "Suitability")) +
-    scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
+    scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
     geom_point(data = x$analysis.df[x$analysis.df$presence == 1,],  aes_string(y = "Latitude", x = "Longitude"),
                pch = 21, fill = "white", color = "black", size = 2)
@@ -395,7 +396,7 @@ predict.enmtools.rf.ranger <- function(object, env, maxpts = 1000, ...){
 
   suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
     geom_raster(aes_string(fill = "Suitability")) +
-    scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
+    scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()
 
   if(!is.na(object$species.name)){

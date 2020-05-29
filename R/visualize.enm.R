@@ -101,7 +101,7 @@ visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plo
 
   suit.plot <- ggplot(data = plot.df, aes_string(y = names[2], x = names[1])) +
     geom_raster(aes(fill = pred)) +
-    scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
+    scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     theme_classic() +
     ggtitle(label = "Predicted suitability in environment space") +
     theme(plot.title = element_text(hjust = 0.5))
@@ -125,7 +125,7 @@ visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plo
     background.plot <- ggplot(bgdata, aes_string(y = names[2], x = names[1])) +
       stat_density_2d(aes_string(fill = "..density.."), geom = "raster", contour = FALSE) +
       xlim(layer1.min, layer1.max) + ylim(layer2.min, layer2.max) +
-      scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Density")) + theme_classic() +
+      scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Density")) + theme_classic() +
       ggtitle(label = "Presence points and background density in environment space") +
       theme(plot.title = element_text(hjust = 0.5))
 

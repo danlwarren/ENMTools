@@ -8,7 +8,7 @@
 #'
 #' @return results A list containing a raster of residuals from a linear regression between the two supplied rasters and the linear model itself.
 #'
-#' @keywords correlation, raster, residuals
+#' @keywords correlation raster residuals
 #'
 #' @examples
 #' data(euro.worldclim)

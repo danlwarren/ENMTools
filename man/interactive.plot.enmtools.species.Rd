@@ -4,10 +4,11 @@
 \alias{interactive.plot.enmtools.species}
 \title{Plot an enmtools.species object on an interactive map}
 \usage{
-interactive.plot.enmtools.species(
+\method{interactive.plot}{enmtools.species}(
   x,
   map.provider = "Esri.WorldPhysical",
-  cluster.points = FALSE
+  cluster.points = FALSE,
+  ...
 )
 }
 \arguments{
@@ -20,10 +21,12 @@ preview of all map provider options can be viewed at \url{http://leaflet-extras.
 \item{cluster.points}{Should points be clustered? If TRUE, points close together
 will be grouped into clusters that can be interactively expanded by clicking
 on them.}
+
+\item{...}{other arguments (not used currently)}
 }
 \description{
 Function that take an \code{\link{enmtools.species}} object and plots an
 interactive map of the presence points, background points (if applicable), and
-species range raster (if applicable). This function uses \code{\link{leaflet}} for mapping
+species range raster (if applicable). This function uses \code{\link[leaflet]{leaflet}} for mapping
 and will only function properly if you have an active internet connection.
 }

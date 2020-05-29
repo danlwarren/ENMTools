@@ -75,13 +75,15 @@ bonnali <- iberolacerta.clade$species$bonnali
 
 ib.tree <- iberolacerta.clade$tree
 
-expect_species(monticola)
-expect_species(martinezricai)
-expect_species(cyreni)
-expect_species(horvathi)
-expect_species(aurelioi)
-expect_species(aranica)
-expect_species(bonnali)
+test_that("enmtools.species object work", {
+  expect_species(monticola)
+  expect_species(martinezricai)
+  expect_species(cyreni)
+  expect_species(horvathi)
+  expect_species(aurelioi)
+  expect_species(aranica)
+  expect_species(bonnali)
+})
 
 #' Make an enmtools.clade object
 #'
@@ -101,55 +103,65 @@ check.clade(iberolacerta.clade)
 #'
 #'
 
-# Maxent model testing is skipped, because rJava doesn't play well with Travis CI
-# cyreni.mx <- enmtools.maxent(cyreni, euro.worldclim, test.prop = 0.2)
-# expect_enmtools_model(cyreni.mx)
-
 cyreni.dm <- enmtools.dm(cyreni, euro.worldclim, test.prop = 0.2)
-expect_enmtools_model(cyreni.dm)
-
 cyreni.bc <- enmtools.bc(cyreni, euro.worldclim, test.prop = 0)
-expect_enmtools_model(cyreni.bc)
 
-cyreni.bc <- enmtools.bc(cyreni, euro.worldclim, test.prop = 0.2)
-expect_enmtools_model(cyreni.bc)
+test_that("enmtools.model objects work for core methods", {
 
-cyreni.rf <- enmtools.rf(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
-expect_enmtools_model(cyreni.rf)
+  expect_enmtools_model(cyreni.dm)
+  expect_enmtools_model(cyreni.bc)
 
-cyreni.rf.ranger <- enmtools.rf.ranger(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
-expect_enmtools_model(cyreni.rf.ranger)
+  cyreni.bc <- enmtools.bc(cyreni, euro.worldclim, test.prop = 0.2)
+  expect_enmtools_model(cyreni.bc)
 
-cyreni.ppm <- enmtools.ppmlasso(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
-expect_enmtools_model(cyreni.ppm)
+  cyreni.glm <- enmtools.glm(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
+  expect_enmtools_model(cyreni.glm)
 
-cyreni.glm <- enmtools.glm(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
-expect_enmtools_model(cyreni.glm)
 
-cyreni.gam <- enmtools.gam(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
-expect_enmtools_model(cyreni.gam)
 
-#' m_dm <- interactive.plot.enmtools.model(cyreni.dm)
-#' m_dm_cluster <- interactive.plot.enmtools.model(cyreni.dm, cluster.points = TRUE)
-#' m_dm_bg <- interactive.plot.enmtools.model(cyreni.dm, plot.bg = TRUE)
-#' m_gam <- interactive.plot.enmtools.model(cyreni.gam)
-#' m_gam_cluster <- interactive.plot.enmtools.model(cyreni.gam, cluster.points = TRUE)
-#' m_gam_bg <- interactive.plot.enmtools.model(cyreni.gam, plot.bg = TRUE)
-#' #' Simple interactive.plot tests
-#' test_that("interactive.plot produces correct object", {
-#'   expect_is(m_dm, "leaflet")
-#'   expect_is(m_dm_cluster, "leaflet")
-#'   expect_is(m_dm_bg, "leaflet")
-#'   expect_is(m_gam, "leaflet")
-#'   expect_is(m_gam_cluster, "leaflet")
-#'   expect_is(m_gam_bg, "leaflet")
-#'   expect_match(sapply(m_dm_cluster$x$calls, function(x) x$method), "addRasterImage", all = FALSE)
-#'   expect_match(sapply(m_dm$x$calls, function(x) x$method), "addRasterImage", all = FALSE)
-#'   expect_match(sapply(m_dm_bg$x$calls, function(x) x$method), "addRasterImage", all = FALSE)
-#'   expect_match(sapply(m_gam_cluster$x$calls, function(x) x$method), "addRasterImage", all = FALSE)
-#'   expect_match(sapply(m_gam$x$calls, function(x) x$method), "addRasterImage", all = FALSE)
-#'   expect_match(sapply(m_gam_bg$x$calls, function(x) x$method), "addRasterImage", all = FALSE)
-#' })
+  # skip_on_ci()
+  # skip_on_cran()
+  # cyreni.mx <- enmtools.maxent(cyreni, euro.worldclim, test.prop = 0.2)
+  # expect_enmtools_model(cyreni.mx)
+})
+
+test_that("rf model objects work", {
+  skip_if_not_installed("randomForest")
+  cyreni.rf <- enmtools.rf(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
+  expect_enmtools_model(cyreni.rf)
+})
+
+
+test_that("ranger model objects work", {
+  skip_if_not_installed("ranger")
+  cyreni.rf.ranger <- enmtools.rf.ranger(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
+  expect_enmtools_model(cyreni.rf.ranger)
+})
+
+test_that("ppm model objects work", {
+  skip_if_not_installed("ppmlasso")
+  cyreni.ppm <- enmtools.ppmlasso(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
+  expect_enmtools_model(cyreni.ppm)
+})
+
+test_that("gam model objects work", {
+  skip_if_not_installed("mgcv")
+  cyreni.gam <- enmtools.gam(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
+  expect_enmtools_model(cyreni.gam)
+})
+
+
+#' Simple interactive.plot tests
+test_that("interactive.plot produces correct object", {
+  skip_if_not_installed("leaflet")
+  skip_on_ci()
+  m_dm <- interactive.plot(cyreni.dm)
+  m_dm_cluster <- interactive.plot(cyreni.dm, cluster.points = TRUE)
+  expect_is(m_dm, "leaflet")
+  expect_is(m_dm_cluster, "leaflet")
+  expect_match(sapply(m_dm_cluster$x$calls, function(x) x$method), "addRasterImage", all = FALSE)
+  expect_match(sapply(m_dm$x$calls, function(x) x$method), "addRasterImage", all = FALSE)
+})
 
 #' Geographic space metrics and visualization
 #'

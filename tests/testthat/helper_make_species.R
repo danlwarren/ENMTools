@@ -1,10 +1,12 @@
+# Comment from Russell: The iberolacerta files don't seem to be in the testdata folder,
+# so tabling fixing this for now. It does have ahli and allogus. The testdata folder is
+# way to big anyway, we will need to cut it down to the absolute minimum necessary.
+
 # This code is intended to test the making of species objects from raw data.
-# However, Travis CI isn't finding the raw data files so this is commented until we can fix that.
 
-
-# iberolacerta <- read.csv("./iberolacerta.points.csv")
-# ib.tree <- read.tree(file = "./iberolacerta.brlens.tree")
-# euro.worldclim <- stack("./euro.worldclim.grd")
+# iberolacerta <- read.csv(system.file("testdata", "iberolacerta.points.csv", package="ENMTools"))
+# ib.tree <- read.tree(system.file("testdata", "iberolacerta.brlens.tree", package="ENMTools"))
+# data("euro.worldclim")
 #
 # expect_equal(class(ib.tree), "phylo")
 # expect_equal(length(names(euro.worldclim)), 19)
