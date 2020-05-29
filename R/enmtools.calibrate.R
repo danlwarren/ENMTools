@@ -55,7 +55,8 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
   }
 
 
-
+  print(head(pred.df))
+  print(str(pred.df))
 
   # Get a calibration data frame from caret for plots etc.
   calib <- caret::calibration(obs ~ prob, data = pred.df, class = "presence", cuts = cuts)
