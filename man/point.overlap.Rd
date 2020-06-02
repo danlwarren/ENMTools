@@ -15,6 +15,7 @@ point.overlap(x, y)
 Takes two emtools.species objects with range rasters, calculates overlap between them as in Cardillo and Warren 2016
 }
 \examples{
+install.packages("fields")
 data(iberolacerta.clade)
 data(euro.worldclim)
 cyreni <- iberolacerta.clade$species$cyreni
