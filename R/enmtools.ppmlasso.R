@@ -28,7 +28,7 @@
 
 enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, normalise = FALSE, report = NULL, overwrite = FALSE, rts.reps = 0, bg.source = "default", ...){
 
-  check.package("ppmlasso")
+  check.packages("ppmlasso")
 
   notes <- NULL
 

@@ -117,7 +117,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
     # First we'll do it if both are recalibrated
     if(!all(is.na(recal.model.1)) & !all(is.na(recal.model.2))){
 
-      check.package("CalibratR")
+      check.packages("CalibratR")
 
       recal.names <- intersect(names(recal.model.1$recalibrated.model$predictions),
                                names(recal.model.2$recalibrated.model$predictions))
@@ -138,7 +138,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
     # Now if just model 1 is recalibrated
     if(!all(is.na(recal.model.1)) & all(is.na(recal.model.2))){
 
-      check.package("CalibratR")
+      check.packages("CalibratR")
 
       recal.names <- names(recal.model.1$recalibrated.model$predictions)
 
@@ -158,7 +158,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
     # Now if just model 2 is recalibrated
     if(all(is.na(recal.model.1)) & !all(is.na(recal.model.2))){
 
-      check.package("CalibratR")
+      check.packages("CalibratR")
 
       recal.names <- names(recal.model.2$recalibrated.model$predictions)
 
@@ -254,7 +254,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
       # First we'll do it if both are recalibrated
       if(!all(is.na(recal.model.1)) & !all(is.na(recal.model.2))){
 
-        check.package("CalibratR")
+        check.packages("CalibratR")
 
         recal.names <- intersect(names(recal.model.1$recalibrated.model$predictions),
                                  names(recal.model.2$recalibrated.model$predictions))
@@ -275,7 +275,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
       # Now if just model 1 is recalibrated
       if(!all(is.na(recal.model.1)) & all(is.na(recal.model.2))){
 
-        check.package("CalibratR")
+        check.packages("CalibratR")
 
         recal.names <- names(recal.model.1$recalibrated.model$predictions)
 
@@ -295,7 +295,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
       # Now if just model 2 is recalibrated
       if(all(is.na(recal.model.1)) & !all(is.na(recal.model.2))){
 
-        check.package("CalibratR")
+        check.packages("CalibratR")
 
         recal.names <- names(recal.model.2$recalibrated.model$predictions)
 

@@ -18,7 +18,7 @@
 
 hypervolume.overlap <- function(species.1, species.2, env = NA, reduction.factor = 0.1, ...){
 
-  check.package("hypervolume")
+  check.packages("hypervolume")
 
   # Turn species into hypervolumes, if they're not already
   if(inherits(species.1, "enmtools.species")){

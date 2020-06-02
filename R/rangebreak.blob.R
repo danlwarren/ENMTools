@@ -30,7 +30,7 @@
 
 rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 99, nback = 1000, bg.source = "default", low.memory = FALSE, rep.dir = NA, ...){
 
-  check.package("fields")
+  check.packages("fields")
 
   # Just for visualization
   plotraster <- env[[1]]

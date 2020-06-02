@@ -21,7 +21,7 @@
 
 enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, bg.source = "default", ...){
 
-  check.package("randomForest")
+  check.packages("randomForest")
 
   notes <- NULL
 

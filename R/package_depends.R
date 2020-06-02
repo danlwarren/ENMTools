@@ -26,12 +26,24 @@ install.extras <- function() {
 }
 
 # This function checks if a package is able to be loaded and triggers an error if not
-check.package <- function(package_name) {
-  if (!requireNamespace(package_name, quietly = TRUE)) {
-    stop(paste("Package", package_name,  "needed for this function to work. Please install it.
-               You can install all extra packages used in ENMTools by running install.extras()"),
-         call. = FALSE)
+check.packages <- function(package.names) {
+
+  missing.packages <- c()
+
+  for(i in package.names){
+    if (!requireNamespace(i, quietly = TRUE)) {
+      missing.packages <- c(missing.packages, as.character(i))
+    }
   }
+
+  if(length(missing.packages > 0)){
+    stop("The following packages are needed for this function to work but are not installed. \n\n
+You can install extra packages used in ENMTools manually or install all of them at once by running install.extras().\n\nPackage list: ",
+         paste(missing.packages,  collapse = ", "),
+         call. = FALSE)
+
+  }
+
 }
 
 

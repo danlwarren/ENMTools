@@ -18,7 +18,7 @@
 
 enmtools.hypervolume <- function(species, env, samples.per.point = 10, reduction.factor = 0.1, method = "gaussian", ...){
 
-  check.package("hypervolume")
+  check.packages("hypervolume")
 
   hypervolume.precheck(species, env)
 

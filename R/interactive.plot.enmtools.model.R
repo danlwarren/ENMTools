@@ -16,7 +16,7 @@
 
 interactive.plot.enmtools.model <- function(x, map.provider = "Esri.WorldPhysical", cluster.points = FALSE, raster.opacity = 1, ...) {
 
-  check.package("leaflet")
+  check.packages("leaflet")
 
   presence.points <- NA
   background.points <- NA

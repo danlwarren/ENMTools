@@ -12,7 +12,7 @@
 
 point.overlap <- function(x, y){
 
-  check.package("fields")
+  check.packages("fields")
 
   if(!inherits(x$presence.points, c("data.frame"))){
     stop(paste("Species", x$species.name, "does not have presence points!"))
