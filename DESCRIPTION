@@ -2,7 +2,7 @@ Package: ENMTools
 Type: Package
 Title: Analysis of Niche Evolution using Niche and Distribution Models
 Version: 0.2
-Date: 2017-01-11
+Date: 2020-06-02
 Encoding: UTF-8
 Authors@R: c(person(given = "Dan", family = "Warren", role = c("aut", "cre"), email = "dan.l.warren@gmail.com"),
             person(given = "Nick", family = "Matzke", role = "aut", email = "nick.matzke@anu.edu.au"),
