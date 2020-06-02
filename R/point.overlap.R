@@ -4,12 +4,13 @@
 #' @param y An enmtools.species object containing presence points
 #'
 #' @examples
-#' install.packages("fields")
+#' \dontrun{
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni
 #' monticola <- iberolacerta.clade$species$monticola
 #' point.overlap(cyreni, monticola)
+#' }
 
 point.overlap <- function(x, y){
 
