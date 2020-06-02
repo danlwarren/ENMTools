@@ -269,6 +269,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
                  env.test.evaluation = env.test.evaluation,
                  rts.test = rts.test,
                  suitability = suitability,
+                 call = sys.call(),
                  notes = notes)
 
   class(output) <- c("enmtools.rf", "enmtools.model")

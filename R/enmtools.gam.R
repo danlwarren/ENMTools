@@ -286,6 +286,7 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
                  env.test.evaluation = env.test.evaluation,
                  rts.test = rts.test,
                  suitability = suitability,
+                 call = sys.call(),
                  notes = notes)
 
   class(output) <- c("enmtools.gam", "enmtools.model")

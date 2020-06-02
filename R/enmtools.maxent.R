@@ -251,6 +251,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
                  env.test.evaluation = env.test.evaluation,
                  rts.test = rts.test,
                  suitability = suitability,
+                 call = sys.call(),
                  notes = notes)
 
   class(output) <- c("enmtools.maxent", "enmtools.model")

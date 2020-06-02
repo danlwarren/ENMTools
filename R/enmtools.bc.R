@@ -239,6 +239,7 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
                  env.test.evaluation = env.test.evaluation,
                  rts.test = rts.test,
                  suitability = suitability,
+                 call = sys.call(),
                  notes = notes)
 
   class(output) <- c("enmtools.bc", "enmtools.model")
