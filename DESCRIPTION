@@ -24,7 +24,6 @@ Imports:
 	ggplot2,
 	gridExtra,
 	lhs,
-	reshape2,
 	magrittr,
 	ENMeval,
 	sp,
@@ -46,4 +45,5 @@ Suggests:
 	ape,
 	ResourceSelection,
 	ppmlasso,
-	fields
+	fields,
+	reshape2
