@@ -1,8 +1,9 @@
 ---
+always_allow_html: true
 output:
-  html_document: default
   md_document:
     variant: markdown_github
+  html_document: default
 ---
 ENMTools
 ======================

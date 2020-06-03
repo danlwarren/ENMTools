@@ -2,6 +2,7 @@ ENMTools
 ========
 
 <!-- badges: start -->
+
 [![R build
 status](https://github.com/danlwarren/ENMTools/workflows/R-CMD-check/badge.svg)](https://github.com/danlwarren/ENMTools/actions)
 <!-- badges: end -->
@@ -54,6 +55,21 @@ install_local("PATH")
 library(ENMTools)
 ```
 
+### Installing extras
+
+ENMTools uses functionality from a *LOT* of other R packages, and it’s
+possible that you don’t want to install them all. For that reason many
+of the packages are not automatically installed with ENMTools, but
+instead “suggested”. If you want to install all of the suggested
+packages, we have a function for that. You should only need to use it
+after you first install ENMTools or update R. If you choose not to
+install the extra packages, you will get warnings when you try to use
+functions that require them.
+
+``` r
+install.extras()
+```
+
 ------------------------------------------------------------------------
 
 Interacting with ENMTools
@@ -61,14 +77,27 @@ Interacting with ENMTools
 
 ### Creating enmtools.species objects
 
-First we’re going to load in some environmental data.
+We’re going to load in some environmental data. You can do this from
+local rasters, like so:
 
 ``` r
-env.files <- list.files(path = "./testdata/", pattern = "pc", full.names = TRUE)
+env.files <- list.files(path = "./env_pca/", pattern = "pc", full.names = TRUE)
 env <- stack(env.files)
 names(env) <- c("pc1", "pc2", "pc3", "pc4")
 env <- setMinMax(env)
 ```
+
+Or you can load them from the internet using the raster package’s
+getData() function.
+
+``` r
+library(raster)
+env <- raster::getData('worldclim', var='bio', res=10)
+env <- crop(env, extent(-10, 17, 39, 48))
+plot(env[[1]])
+```
+
+![](Readme_files/figure-markdown_github/getdata-1.png)
 
 ENMTools is primarily designed to examine patterns of similarity and
 difference between ENMs for different species. In order to simplify
@@ -77,8 +106,8 @@ for each of your species into an enmtools.species object. You can create
 and view an empty enmtools.species object just by typing:
 
 ``` r
-ahli <- enmtools.species()
-ahli
+monticola <- enmtools.species()
+monticola
 ```
 
     ## 
@@ -91,137 +120,52 @@ ahli
     ## 
     ## Species name not defined.
 
-You can add data to this object manually:
+You can add bits of it when the object is created:
 
 ``` r
-names(ahli)
-```
-
-    ## [1] "range"             "presence.points"   "background.points"
-    ## [4] "models"            "species.name"
-
-``` r
-ahli$species.name <- "ahli"
-ahli$presence.points <- read.csv("./testdata/ahli.csv")[,2:3]
-ahli$range <- background.raster.buffer(ahli$presence.points, 50000, mask = env)
-ahli$background.points <- background.points.buffer(points = ahli$presence.points,
+monticola.path <- paste(system.file(package="ENMTools"), "/monticola.csv", sep='')
+monticola <- enmtools.species(species.name = "monticola", 
+                            presence.points = read.csv(monticola.path))
+monticola$range <- background.raster.buffer(monticola$presence.points, 50000, mask = env)
+monticola$background.points <- background.points.buffer(points = monticola$presence.points,
                                                    radius = 20000, n = 1000, mask = env[[1]])
-
-ahli
 ```
 
-    ## 
-    ## 
-    ## Range raster: 
-    ## class      : RasterLayer 
-    ## dimensions : 418, 1535, 641630  (nrow, ncol, ncell)
-    ## resolution : 0.008333333, 0.008333333  (x, y)
-    ## extent     : -86.90809, -74.11642, 19.80837, 23.2917  (xmin, xmax, ymin, ymax)
-    ## crs        : NA 
-    ## source     : memory
-    ## names      : pc1 
-    ## values     : 1, 1  (min, max)
-    ## 
-    ## 
-    ## 
-    ## Presence points (first ten only): 
-    ## 
-    ##  Longitude   Latitude
-    ## ----------  ---------
-    ##   -80.0106    21.8744
-    ##   -79.9086    21.8095
-    ##   -79.8065    21.7631
-    ##   -79.8251    21.8095
-    ##   -79.8807    21.8374
-    ##   -79.9550    21.8374
-    ##   -80.3446    22.0136
-    ##   -80.2983    21.9951
-    ##   -80.1776    21.9023
-    ##   -80.1591    21.9673
-    ## 
-    ## 
-    ## Background points (first ten only): 
-    ## 
-    ##  Longitude   Latitude
-    ## ----------  ---------
-    ##  -79.89559   21.85420
-    ##  -79.84559   21.70420
-    ##  -80.18726   21.92087
-    ##  -79.81226   21.77920
-    ##  -80.08726   22.09587
-    ##  -79.92892   22.08754
-    ##  -80.42059   22.10420
-    ##  -79.77059   21.77087
-    ##  -80.40392   22.16254
-    ##  -80.20392   22.08754
-    ## 
-    ## 
-    ## Species name:  ahli
-
-Or you can add bits of it when the object is created:
+Or you can add data to this object after it’s created:
 
 ``` r
-allogus <- enmtools.species(species.name = "allogus", 
-                            presence.points = read.csv("./testdata/allogus.csv")[,2:3])
-
-allogus$range <- background.raster.buffer(allogus$presence.points, 50000, mask = env)
-allogus$background.points <- background.points.buffer(points = allogus$presence.points,
-                                                      radius = 20000, n = 1000, mask = env[[1]])
-
-allogus
+names(monticola)
+monticola$species.name <- "monticola"
+monticola$presence.points <- read.csv(monticola.path)
+monticola$range <- background.raster.buffer(monticola$presence.points, 50000, mask = env)
+monticola$background.points <- background.points.buffer(points = monticola$presence.points,
+                                                   radius = 20000, n = 1000, mask = env[[1]])
 ```
 
-    ## 
-    ## 
-    ## Range raster: 
-    ## class      : RasterLayer 
-    ## dimensions : 418, 1535, 641630  (nrow, ncol, ncell)
-    ## resolution : 0.008333333, 0.008333333  (x, y)
-    ## extent     : -86.90809, -74.11642, 19.80837, 23.2917  (xmin, xmax, ymin, ymax)
-    ## crs        : NA 
-    ## source     : memory
-    ## names      : pc1 
-    ## values     : 1, 1  (min, max)
-    ## 
-    ## 
-    ## 
-    ## Presence points (first ten only): 
-    ## 
-    ##  Longitude   Latitude
-    ## ----------  ---------
-    ##   -79.2527    22.2109
-    ##   -78.7774    22.2241
-    ##   -78.6189    22.2373
-    ##   -78.1039    21.1809
-    ##   -78.0247    21.1809
-    ##   -77.9983    20.9301
-    ##   -77.9719    21.7091
-    ##   -77.9719    21.5507
-    ##   -77.9323    21.6167
-    ##   -77.9323    20.7320
-    ## 
-    ## 
-    ## Background points (first ten only): 
-    ## 
-    ##  Longitude   Latitude
-    ## ----------  ---------
-    ##  -78.22892   21.24587
-    ##  -75.94559   20.69587
-    ##  -79.08726   22.26254
-    ##  -76.97892   20.27087
-    ##  -77.01226   20.87087
-    ##  -77.02892   20.83754
-    ##  -75.79559   20.38754
-    ##  -76.92059   20.82087
-    ##  -76.29559   19.98754
-    ##  -79.23726   22.29587
-    ## 
-    ## 
-    ## Species name:  allogus
+It’s always a very good idea to run the check.species() function on an
+enmtools.species object after you build or modify it.
+
+``` r
+monticola <- check.species(monticola)
+```
+
+And now we can take a look at our species!
+
+``` r
+interactive.plot.enmtools.species(monticola)
+```
+
+    ## PhantomJS not found. You can install it with webshot::install_phantomjs(). If it is installed, please make sure the phantomjs executable can be found via the PATH variable.
+
+<!--html_preserve-->
+
+<script type="application/json" data-for="htmlwidget-7ab8cac82609a2c577b8">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldPhysical",null,"Base map",{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addRasterImage","args":["data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKIAAAA2CAYAAABEBUJOAAABNUlEQVR4nO3aUXKCMBRA0bTTBbOULrlftkiJvpCHAjnnT2BGGO8EQiwFAAAAAAAAAAAAAAAAAAAAgNf4aDz+e2XblHEijK0lxLUItxIvdx6FeAtvKrkRPiLQQa2F+KroasQ4oK/F53dHuJfadYn+IM42Ii7PLRLSs+sR4wF8vvsEFloirG1r2c9BREOcyv4jR2uEkX1Gu5NYPiOW8jdLzvwR5zNvcfBPxgvtiIz4ekY+k5WDO1OIa98vpItoDbGU9hjFwlNbQpwzUSBFb4il5N4u3XoHlRFiFhOKgR0lRKsfg9srxMgt1qSHX72vbzICixLihWX8MXYKHNNLhBcXXWveutYLIdERMRLbbdTKCtMoOJCsEJfR9MQowAFlPyNGjq8R4MB61pqj4cyDrE1sRAgAANz5AcpYLLKmw6GKAAAAAElFTkSuQmCC",[[48,-9.99999999999999],[39,17]],1,null,null,"Range"]},{"method":"addCircleMarkers","args":[[43.75,43.75,43.75,43.75,43.75,43.5833333333333,43.5833333333333,43.5833333333333,43.5833333333333,43.5833333333333,43.5833333333333,43.5833333333333,43.5833333333333,43.5833333333333,43.5833333333333,43.5833333333333,43.5833333333333,43.5833333333333,43.5833333333333,43.5833333333333,43.4166666666667,43.4166666666667,43.4166666666667,43.4166666666667,43.4166666666667,43.4166666666667,43.4166666666667,43.4166666666667,43.4166666666667,43.4166666666667,43.4166666666667,43.4166666666667,43.4166666666667,43.4166666666667,43.4166666666667,43.4166666666667,43.4166666666667,43.4166666666667,43.4166666666667,43.4166666666667,43.4166666666667,43.25,43.25,43.25,43.25,43.25,43.25,43.25,43.25,43.25,43.25,43.25,43.25,43.25,43.25,43.25,43.25,43.25,43.25,43.25,43.25,43.25,43.25,43.25,43.0833333333333,43.0833333333333,43.0833333333333,43.0833333333333,43.0833333333333,43.0833333333333,43.0833333333333,43.0833333333333,43.0833333333333,43.0833333333333,43.0833333333333,43.0833333333333,43.0833333333333,43.0833333333333,43.0833333333333,43.0833333333333,43.0833333333333,43.0833333333333,43.0833333333333,43.0833333333333,43.0833333333333,42.9166666666667,42.9166666666667,42.9166666666667,42.9166666666667,42.9166666666667,42.9166666666667,42.9166666666667,42.9166666666667,42.9166666666667,42.9166666666667,42.9166666666667,42.9166666666667,42.9166666666667,42.9166666666667,42.9166666666667,42.9166666666667,42.9166666666667,42.9166666666667,42.9166666666667,42.9166666666667,42.9166666666667,42.9166666666667,42.9166666666667,42.9166666666667,42.75,42.75,42.75,42.75,42.75,42.75,42.75,42.75,42.75,42.75,42.75,42.75,42.75,42.75,42.75,42.75,42.5833333333333,42.5833333333333,42.5833333333333,42.5833333333333,42.5833333333333,42.5833333333333,42.5833333333333,42.5833333333333,42.5833333333333,42.5833333333333,42.5833333333333,42.4166666666667,42.4166666666667,42.4166666666667,42.4166666666667,42.4166666666667,42.4166666666667,42.4166666666667,42.4166666666667,42.4166666666667,42.4166666666667,42.4166666666667,42.4166666666667,42.25,42.25,42.25,42.25,42.25,42.25,42.25,42.25,42.25,42.0833333333333,42.0833333333333,42.0833333333333,42.0833333333333,42.0833333333333,42.0833333333333,42.0833333333333,42.0833333333333,41.9166666666667,41.9166666666667,41.0833333333333,41.0833333333333,41.0833333333333,41.0833333333333,40.9166666666667,40.9166666666667,40.9166666666667,40.9166666666667,40.9166666666667,40.75,40.75,40.75,40.75,40.75,40.5833333333333,40.5833333333333,40.5833333333333,40.5833333333333,40.5833333333333,40.5833333333333,40.5833333333333,40.5833333333333,40.5833333333333,40.4166666666667,40.4166666666667,40.4166666666667,40.4166666666667,40.4166666666667,40.4166666666667,40.4166666666667,40.4166666666667,40.4166666666667,40.4166666666667,40.4166666666667,40.4166666666667,40.4166666666667,40.4166666666667,40.25,40.25,40.25,40.25,40.25,40.25,40.25,40.25,40.25,40.25,40.25,40.25],[-8.08333333333333,-7.91666666666667,-7.75,-7.58333333333333,-7.41666666666667,-8.25,-8.08333333333333,-7.91666666666667,-7.75,-7.58333333333333,-7.41666666666667,-7.25,-7.08333333333333,-6.91666666666667,-6.75,-6.58333333333333,-6.41666666666667,-6.25,-5.41666666666667,-5.25,-8.41666666666667,-8.25,-8.08333333333333,-7.91666666666667,-7.75,-7.58333333333333,-7.41666666666667,-7.25,-7.08333333333333,-6.91666666666667,-6.75,-6.58333333333333,-6.41666666666667,-6.25,-6.08333333333333,-5.91666666666667,-5.41666666666667,-5.25,-5.08333333333333,-4.91666666666667,-4.75,-8.41666666666667,-8.25,-8.08333333333333,-7.91666666666667,-7.75,-7.41666666666667,-7.25,-7.08333333333333,-6.91666666666667,-6.75,-6.58333333333333,-6.41666666666667,-6.25,-6.08333333333333,-5.91666666666667,-5.75,-5.58333333333333,-5.41666666666667,-5.25,-5.08333333333333,-4.91666666666667,-4.75,-4.58333333333333,-8.25,-8.08333333333333,-7.91666666666667,-7.75,-7.25,-7.08333333333333,-6.91666666666667,-6.75,-6.58333333333333,-6.41666666666667,-6.25,-6.08333333333333,-5.91666666666667,-5.75,-5.58333333333333,-5.41666666666667,-5.25,-5.08333333333333,-4.91666666666667,-4.75,-4.58333333333333,-9.25,-9.08333333333333,-8.91666666666667,-8.25,-8.08333333333333,-7.91666666666667,-7.25,-7.08333333333333,-6.91666666666667,-6.75,-6.58333333333333,-6.41666666666667,-6.25,-6.08333333333333,-5.91666666666667,-5.75,-5.58333333333333,-5.41666666666667,-5.25,-5.08333333333333,-4.91666666666667,-4.75,-4.58333333333333,-4.41666666666667,-9.08333333333333,-8.91666666666667,-7.41666666666667,-7.25,-7.08333333333333,-6.91666666666667,-6.75,-6.58333333333333,-6.41666666666667,-6.25,-6.08333333333333,-5.58333333333333,-5.41666666666667,-0.0833333333333339,0.0833333333333321,0.25,-7.41666666666667,-7.25,-7.08333333333333,-6.91666666666667,-6.75,-2.58333333333333,-2.41666666666667,-0.25,-0.0833333333333339,0.0833333333333321,0.25,-7.41666666666667,-7.25,-7.08333333333333,-6.91666666666667,-6.75,-6.58333333333333,-6.41666666666667,-6.25,-2.58333333333333,-2.41666666666667,-2.25,-0.0833333333333339,-7.58333333333333,-7.41666666666667,-7.25,-7.08333333333333,-6.91666666666667,-6.75,-6.58333333333333,-6.41666666666667,-6.25,-7.58333333333333,-7.41666666666667,-7.25,-7.08333333333333,-6.91666666666667,-6.75,-6.58333333333333,-6.41666666666667,-7.08333333333333,-6.91666666666667,-3.91666666666667,-3.75,-3.58333333333333,-3.41666666666667,-4.25,-4.08333333333333,-3.91666666666667,-3.75,-3.58333333333333,-4.25,-4.08333333333333,-3.91666666666667,-3.75,-3.58333333333333,-6.25,-6.08333333333333,-5.91666666666667,-4.91666666666667,-4.75,-4.25,-4.08333333333333,-3.91666666666667,-3.75,-7.91666666666667,-7.75,-7.58333333333333,-7.41666666666667,-6.08333333333333,-5.91666666666667,-5.75,-5.58333333333333,-5.25,-5.08333333333333,-4.91666666666667,-4.75,-4.58333333333333,-4.41666666666667,-7.91666666666667,-7.75,-7.58333333333333,-5.91666666666667,-5.75,-5.58333333333333,-5.25,-5.08333333333333,-4.91666666666667,-4.75,-4.58333333333333,-4.41666666666667],8,null,"Background points",{"interactive":true,"className":"","stroke":false,"color":"red","weight":5,"opacity":0.5,"fill":true,"fillColor":"red","fillOpacity":0.5},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addCircleMarkers","args":[[43.06957,43.025312,40.388521,40.309587,43.789352,42.910697,43.495722,40.393618,43.353098,40.341695,40.365428,40.363166,42.57,43.299999,42.93,41.939999,42.669998,43.290001,42.830002,43.110001,43.09,42.200001,42.299999,42.84,43.48,43.279999,43.470001,43.560001,43.75,42.84,43.66,43.02,43.02,43.200001,43.209999,42.119999,43.110001,43.099998,42.919998,42.299999,42.290001,42.209999,43,42.57,42.75,43.48,43,43.48,43.310001,43.380001,43.200001,43.09,43.099998,43.189999,43.09,42.200001,42.75,42.75,43.380001,43.389999,43.189999,43.18,42.84,43.66,43.299999,43.200001,43.470001,43.290001,43.009998,42.919998,43.200001,43.099998,43,42.389999,43.48,43.029999,43.290001,43.380001,43.110001,42.93,43.110001,43.009998,43.110001,43.02,43.57,43.75,43.470001,43.389999,43.099998,42.66,43.75,43.290001,43.470001,43.009998,42.290001,43.02,43.18,43.200001,43.290001,43.200001,42.220001,43.110001,43.66,42.860001,42.66,42.220001,43.470001,43.66,43.389999,43.310001,43.110001,42.919998,43.02,42.119999,43.48,43.290001,43.02,43.48,43.57,43.02,42.830002,43.200001,43,43.380001,43.029999,43.75,43.66,43.48,43.290001,43.400002,42.84,42.209999,43.200001,43.470001,43.139999,43.150002,42.880001,42.849998,43.18,42.110001,42.259998,42.82,42.77,42.889999,42.27,42.59,42.83,41.94,43.56,43.11,42.2,42.64,43.2,41.05,43.19,43.2,43.01,40.6,41.05,40.87,40.69,42.92,43.39,43.38,43.11,43.31,42.21,43.31,42.29,42.83,40.78,43.3,43.39,40.3,40.78,43.29,43.39,43.01,43.21,42.2,43.1,42.92,43.57,43.13,42.92,40.31,40.41,43.29,43.3,43.11,42.3,43.2,40.96,43.1,43.09,42.92,43.03,43.2,42.22,43.46,43.1,43.11,40.69,43.38,42.22,42.3,43.2,42.12,43.47,43.47,43.01,43.4,43.2,40.78,40.32,43.29,43.29,42.39,40.5,43.01,43.56,43.47,43.38,43.21,40.32,43.29,43.38,43.1,42.21,40.32,43.19,43.47,43.19,42.99,43.11,42.92,40.57,42.29,43.11,40.78,42.86,43.29,42.459999,43.03,40.87,42.12,43.38,43.27,42.67,43.2,43.38,43.11,43.2,40.96,43.47,43.28,42.94,43.29,42.99,43.47],[-5.171215,-6.036635,-7.679727,-7.790437,-7.47334,-6.575039,-5.132756,-7.787378,-4.941888,-7.621731,-7.645674,-7.642539,-6.99,-7.95,-7.1,-7.01,-7.35,-4.79,-5.51,-5.03,-6.24,-6.52,-6.76,-6.98,-7.45,-6.6,-6.71,-6.96,-8.07,-6.74,-8.07,-7.1,-4.78,-7.09,-8.08,-6.76,-4.78,-5.52,-6.61,-7.24,-6.39,-7.24,-6.24,-7.11,-6.74,-7.33,-5.76,-8.07,-8.32,-6.84,-4.78,-6.11,-6.36,-5.52,-5.89,-6.64,-6.86,-6.98,-7.21,-8.07,-5.4,-6.11,-6.86,-7.82,-8.08,-6.72,-6.84,-6.97,-5.39,-5.39,-5.28,-6.48,-5.88,-6.87,-7.95,-8.08,-7.21,-6.96,-4.91,-6.86,-7.09,-6.61,-6.73,-6.98,-7.82,-7.94,-6.96,-7.33,-5.4,-6.99,-7.7,-4.91,-5.29,-5.52,-6.63,-5.15,-5.89,-6.97,-7.09,-4.91,-7.49,-5.15,-7.95,-9.06,-7.11,-7.36,-5.16,-7.7,-7.95,-8.2,-5.27,-5.63,-6.85,-6.88,-7.7,-5.03,-6.73,-7.83,-7.95,-5.27,-6.61,-5.03,-6.12,-7.09,-7.96,-7.82,-7.57,-7.58,-6.72,-8.2,-7.1,-6.76,-6.85,-7.08,-5.82,-4.91,-6.43,-6.19,-6.55,-6.66,-6.44,-6.73,-6.62,-5.53,-6.58,-0.02,-5.51,-7.01,-7.2,-6.73,-6.52,0.13,-5.03,-3.77,-5.4,-6.72,-6.61,-4.12,-3.65,-4.01,-3.89,-6.61,-7.33,-7.09,-5.15,-8.2,-6.76,-8.32,-6.63,-6.61,-3.89,-7.95,-8.07,-5.77,-3.77,-5.03,-7.95,-6.36,-8.08,-6.64,-6.48,-6.37,-7.58,-6.01,-5.51,-5.65,-5.18,-6.72,-8.08,-7.09,-7.24,-4.78,-3.77,-5.52,-5.97,-5.39,-7.96,-7.09,-7.49,-6.34,-6.36,-5.27,-4.01,-5.28,-7.36,-6.76,-6.97,-6.76,-6.71,-7.08,-5.39,-8.2,-4.91,-4.01,-4.82,-4.91,-4.79,-6.87,-4.83,-5.52,-6.96,-6.84,-5.16,-4.66,-4.59,-6.97,-6.96,-5.4,-7.24,-4.71,-5.52,-6.96,-6.35,-5.97,-5.03,-5.63,-6.11,-6.39,-4.78,-4.13,-9.06,-7.09,-2.45,-8.08,-3.89,-6.88,-6.84,-5.99,-7.35,-6.85,-7.21,-4.91,-5.28,-3.89,-5.29,-6.6,-4.65,-7.21,-6.02,-5.16],8,null,"Occurrence points",{"interactive":true,"className":"","stroke":false,"color":"green","weight":5,"opacity":0.5,"fill":true,"fillColor":"green","fillOpacity":0.5},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addLayersControl","args":[[],["Base map","Range","Background points","Occurrence points"],{"collapsed":false,"autoZIndex":true,"position":"bottomleft","position.1":"topright"}]},{"method":"addLegend","args":[{"colors":["black","red","green"],"labels":["Range raster","Background points","Occurrence points"],"na_color":null,"na_label":"NA","opacity":0.5,"position":"bottomright","type":"unknown","title":null,"extra":null,"layerId":null,"className":"info legend","group":null}]}],"limits":{"lat":[39,48],"lng":[-9.99999999999999,17]}},"evals":[],"jsHooks":[]}</script>
+<!--/html_preserve-->
 
 However, ENMTools also contains some sample data. It contains an
 enmtools.clade object called “iberolacerta.clade”, which holds several
-enmtools.species objects. It also has some low-resolution Worldclim data
+enmtools.species objects including an already-built version of
+Iberolacerta monticola. It also has some low-resolution Worldclim data
 that we can use to demonstrate functions. We’ll pull two of those
 species out now.
 
@@ -408,23 +352,23 @@ monticola.glm
     ## 
     ## 
     ## Formula:  presence ~ bio1 + bio12 + bio7
-    ## <environment: 0x7fd87f610498>
+    ## <environment: 0x7fd4aeb66740>
     ## 
     ## 
     ## Data table (top ten lines): 
     ## 
-    ##  Longitude   Latitude   bio1   bio12   bio7   presence
-    ## ----------  ---------  -----  ------  -----  ---------
-    ##  -5.171215   43.06957     78     917    249          1
-    ##  -6.036635   43.02531     76    1012    246          1
-    ##  -7.679727   40.38852    137    1143    247          1
-    ##  -7.790437   40.30959    129    1231    242          1
-    ##  -7.473340   43.78935    140     931    179          1
-    ##  -6.575039   42.91070     84    1012    247          1
-    ##  -5.132756   43.49572    133     822    190          1
-    ##  -7.787378   40.39362    137    1143    247          1
-    ##  -4.941888   43.35310    128     843    194          1
-    ##  -7.621731   40.34170    101    1514    229          1
+    ##       Longitude   Latitude   bio1   bio12   bio7   presence
+    ## ---  ----------  ---------  -----  ------  -----  ---------
+    ## 1     -5.171215   43.06957     78     917    249          1
+    ## 2     -6.036635   43.02531     76    1012    246          1
+    ## 3     -7.679727   40.38852    137    1143    247          1
+    ## 4     -7.790437   40.30959    129    1231    242          1
+    ## 5     -7.473340   43.78935    140     931    179          1
+    ## 6     -6.575039   42.91070     84    1012    247          1
+    ## 7     -5.132756   43.49572    133     822    190          1
+    ## 8     -7.787378   40.39362    137    1143    247          1
+    ## 9     -4.941888   43.35310    128     843    194          1
+    ## 11    -7.645674   40.36543    101    1514    229          1
     ## 
     ## 
     ## Model:  
@@ -434,22 +378,22 @@ monticola.glm
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -1.6444  -0.7911  -0.4964   0.8343   2.2132  
+    ## -1.6227  -0.7984  -0.4913   0.8336   2.2163  
     ## 
     ## Coefficients:
     ##               Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept)  8.957e+00  2.229e+00   4.019 5.86e-05 ***
-    ## bio1        -3.578e-02  6.595e-03  -5.425 5.78e-08 ***
-    ## bio12       -1.152e-05  7.264e-04  -0.016    0.987    
-    ## bio7        -2.120e-02  5.029e-03  -4.216 2.49e-05 ***
+    ## (Intercept)  9.188e+00  2.248e+00   4.087 4.38e-05 ***
+    ## bio1        -3.510e-02  6.549e-03  -5.359 8.35e-08 ***
+    ## bio12       -9.941e-05  7.366e-04  -0.135    0.893    
+    ## bio7        -2.218e-02  5.069e-03  -4.375 1.21e-05 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
     ##     Null deviance: 576.70  on 719  degrees of freedom
-    ## Residual deviance: 511.24  on 716  degrees of freedom
-    ## AIC: 250.13
+    ## Residual deviance: 510.24  on 716  degrees of freedom
+    ## AIC: 250.48
     ## 
     ## Number of Fisher Scoring iterations: 4
     ## 
@@ -458,17 +402,17 @@ monticola.glm
     ## Model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 208 
     ## n absences     : 512 
-    ## AUC            : 0.7307505 
-    ## cor            : 0.3106546 
-    ## max TPR+TNR at : -0.00905343 
+    ## AUC            : 0.7298678 
+    ## cor            : 0.3143133 
+    ## max TPR+TNR at : 0.0741665 
     ## 
     ## 
     ## Environment space model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 208 
     ## n absences     : 10000 
-    ## AUC            : 0.4181409 
-    ## cor            : -0.01823037 
-    ## max TPR+TNR at : 0.3930726 
+    ## AUC            : 0.4215101 
+    ## cor            : -0.01637437 
+    ## max TPR+TNR at : 0.4981737 
     ## 
     ## 
     ## Proportion of data wittheld for model fitting:  0.2
@@ -476,17 +420,17 @@ monticola.glm
     ## Model fit (test data):  class          : ModelEvaluation 
     ## n presences    : 52 
     ## n absences     : 512 
-    ## AUC            : 0.7401593 
-    ## cor            : 0.1923954 
-    ## max TPR+TNR at : 0.09541808 
+    ## AUC            : 0.7282903 
+    ## cor            : 0.1813117 
+    ## max TPR+TNR at : 0.2438604 
     ## 
     ## 
     ## Environment space model fit (test data):  class          : ModelEvaluation 
     ## n presences    : 52 
     ## n absences     : 10000 
-    ## AUC            : 0.42735 
-    ## cor            : -0.007021744 
-    ## max TPR+TNR at : 0.5236008 
+    ## AUC            : 0.4145173 
+    ## cor            : -0.01005591 
+    ## max TPR+TNR at : 0.3935572 
     ## 
     ## 
     ## Suitability:  
@@ -497,7 +441,7 @@ monticola.glm
     ## crs        : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
     ## source     : memory
     ## names      : layer 
-    ## values     : 0.02493113, 0.9967671  (min, max)
+    ## values     : 0.02466352, 0.996299  (min, max)
     ## 
     ## 
     ## 
@@ -533,7 +477,7 @@ monticola.glm
     ## 
     ## 
     ## Formula:  presence ~ bio1 + bio12 + bio7
-    ## <environment: 0x7fd89739b5b8>
+    ## <environment: 0x7fd4afcc37b8>
     ## 
     ## 
     ## Data table (top ten lines): 
@@ -544,12 +488,12 @@ monticola.glm
     ## 2     -6.036635   43.02531     76    1012    246          1
     ## 3     -7.679727   40.38852    137    1143    247          1
     ## 6     -6.575039   42.91070     84    1012    247          1
-    ## 8     -7.787378   40.39362    137    1143    247          1
-    ## 9     -4.941888   43.35310    128     843    194          1
+    ## 7     -5.132756   43.49572    133     822    190          1
     ## 10    -7.621731   40.34170    101    1514    229          1
-    ## 13    -6.990000   42.57000    107     893    253          1
     ## 14    -7.950000   43.30000    120    1200    194          1
     ## 15    -7.100000   42.93000    115     935    234          1
+    ## 16    -7.010000   41.94000    110     931    265          1
+    ## 17    -7.350000   42.67000    121     995    231          1
     ## 
     ## 
     ## Model:  
@@ -559,22 +503,22 @@ monticola.glm
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -1.6292  -0.7933  -0.5011   0.8362   2.1837  
+    ## -1.6706  -0.7929  -0.4816   0.8211   2.2545  
     ## 
     ## Coefficients:
     ##               Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept)  9.0382969  2.2768562   3.970 7.20e-05 ***
-    ## bio1        -0.0356784  0.0065688  -5.431 5.59e-08 ***
-    ## bio12       -0.0001353  0.0007499  -0.180    0.857    
-    ## bio7        -0.0211254  0.0051330  -4.116 3.86e-05 ***
+    ## (Intercept) 10.6723716  2.3735632   4.496 6.91e-06 ***
+    ## bio1        -0.0393469  0.0068540  -5.741 9.43e-09 ***
+    ## bio12       -0.0005188  0.0007709  -0.673    0.501    
+    ## bio7        -0.0249437  0.0053198  -4.689 2.75e-06 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
     ##     Null deviance: 576.70  on 719  degrees of freedom
-    ## Residual deviance: 512.49  on 716  degrees of freedom
-    ## AIC: 252.03
+    ## Residual deviance: 505.73  on 716  degrees of freedom
+    ## AIC: 246.13
     ## 
     ## Number of Fisher Scoring iterations: 4
     ## 
@@ -583,17 +527,17 @@ monticola.glm
     ## Model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 208 
     ## n absences     : 512 
-    ## AUC            : 0.7319524 
-    ## cor            : 0.3097709 
-    ## max TPR+TNR at : 0.03635544 
+    ## AUC            : 0.7371544 
+    ## cor            : 0.3219626 
+    ## max TPR+TNR at : 0.06642673 
     ## 
     ## 
     ## Environment space model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 208 
     ## n absences     : 10000 
-    ## AUC            : 0.4232428 
-    ## cor            : -0.01788326 
-    ## max TPR+TNR at : 0.4010422 
+    ## AUC            : 0.4213096 
+    ## cor            : -0.01428931 
+    ## max TPR+TNR at : 0.4000277 
     ## 
     ## 
     ## Proportion of data wittheld for model fitting:  0.2
@@ -601,17 +545,17 @@ monticola.glm
     ## Model fit (test data):  class          : ModelEvaluation 
     ## n presences    : 52 
     ## n absences     : 512 
-    ## AUC            : 0.7374925 
-    ## cor            : 0.1911097 
-    ## max TPR+TNR at : 0.01289892 
+    ## AUC            : 0.7013597 
+    ## cor            : 0.1611015 
+    ## max TPR+TNR at : 0.09236149 
     ## 
     ## 
     ## Environment space model fit (test data):  class          : ModelEvaluation 
     ## n presences    : 52 
     ## n absences     : 10000 
-    ## AUC            : 0.4199731 
-    ## cor            : -0.00860026 
-    ## max TPR+TNR at : 0.5031497 
+    ## AUC            : 0.3996615 
+    ## cor            : -0.01321132 
+    ## max TPR+TNR at : 0.4092138 
     ## 
     ## 
     ## Suitability:  
@@ -622,7 +566,7 @@ monticola.glm
     ## crs        : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
     ## source     : memory
     ## names      : layer 
-    ## values     : 0.02655582, 0.9963761  (min, max)
+    ## values     : 0.01859726, 0.9977367  (min, max)
     ## 
     ## 
     ## 
@@ -660,7 +604,7 @@ monticola.glm
     ## 
     ## Formula:  presence ~ poly(bio1, 2) + poly(bio7, 2) + poly(bio12, 2) + poly(bio7, 
     ##     2):poly(bio12, 2)
-    ## <environment: 0x7fd887fc2ac0>
+    ## <environment: 0x7fd4af8ef798>
     ## 
     ## 
     ## Data table (top ten lines): 
@@ -668,15 +612,15 @@ monticola.glm
     ##       Longitude   Latitude   bio1   bio12   bio7   presence
     ## ---  ----------  ---------  -----  ------  -----  ---------
     ## 2     -6.036635   43.02531     76    1012    246          1
+    ## 3     -7.679727   40.38852    137    1143    247          1
     ## 4     -7.790437   40.30959    129    1231    242          1
-    ## 5     -7.473340   43.78935    140     931    179          1
     ## 6     -6.575039   42.91070     84    1012    247          1
     ## 7     -5.132756   43.49572    133     822    190          1
     ## 8     -7.787378   40.39362    137    1143    247          1
     ## 9     -4.941888   43.35310    128     843    194          1
     ## 10    -7.621731   40.34170    101    1514    229          1
+    ## 12    -7.642539   40.36317    101    1514    229          1
     ## 14    -7.950000   43.30000    120    1200    194          1
-    ## 15    -7.100000   42.93000    115     935    234          1
     ## 
     ## 
     ## Model:  
@@ -686,29 +630,29 @@ monticola.glm
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -1.3420  -0.7132  -0.3920   0.6893   2.8463  
+    ## -1.3110  -0.7090  -0.4031   0.6543   2.7021  
     ## 
     ## Coefficients:
-    ##                                 Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept)                      -1.0486     0.4298  -2.439   0.0147 *  
-    ## poly(bio1, 2)1                  -31.2522     6.0225  -5.189 2.11e-07 ***
-    ## poly(bio1, 2)2                  -31.8242     6.8084  -4.674 2.95e-06 ***
-    ## poly(bio7, 2)1                  -23.0516    13.1412  -1.754   0.0794 .  
-    ## poly(bio7, 2)2                   11.6572    10.4187   1.119   0.2632    
-    ## poly(bio12, 2)1                  27.9920    12.7896   2.189   0.0286 *  
-    ## poly(bio12, 2)2                 -16.0955    10.3089  -1.561   0.1184    
-    ## poly(bio7, 2)1:poly(bio12, 2)1 -208.0519   453.1052  -0.459   0.6461    
-    ## poly(bio7, 2)2:poly(bio12, 2)1 -347.8826   276.2943  -1.259   0.2080    
-    ## poly(bio7, 2)1:poly(bio12, 2)2  363.5869   268.4933   1.354   0.1757    
-    ## poly(bio7, 2)2:poly(bio12, 2)2  202.9025   156.3711   1.298   0.1944    
+    ##                                Estimate Std. Error z value Pr(>|z|)    
+    ## (Intercept)                      -1.030      0.424  -2.429  0.01513 *  
+    ## poly(bio1, 2)1                  -29.649      5.623  -5.273 1.34e-07 ***
+    ## poly(bio1, 2)2                  -30.012      6.210  -4.832 1.35e-06 ***
+    ## poly(bio7, 2)1                  -12.916     12.959  -0.997  0.31889    
+    ## poly(bio7, 2)2                    6.181     10.482   0.590  0.55540    
+    ## poly(bio12, 2)1                  35.430     12.772   2.774  0.00553 ** 
+    ## poly(bio12, 2)2                 -12.824      9.844  -1.303  0.19268    
+    ## poly(bio7, 2)1:poly(bio12, 2)1 -339.663    450.870  -0.753  0.45124    
+    ## poly(bio7, 2)2:poly(bio12, 2)1 -149.519    282.522  -0.529  0.59665    
+    ## poly(bio7, 2)1:poly(bio12, 2)2  546.379    275.136   1.986  0.04705 *  
+    ## poly(bio7, 2)2:poly(bio12, 2)2  122.960    163.468   0.752  0.45193    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
-    ##     Null deviance: 576.7  on 719  degrees of freedom
-    ## Residual deviance: 454.4  on 709  degrees of freedom
-    ## AIC: 243
+    ##     Null deviance: 576.70  on 719  degrees of freedom
+    ## Residual deviance: 457.74  on 709  degrees of freedom
+    ## AIC: 245.11
     ## 
     ## Number of Fisher Scoring iterations: 5
     ## 
@@ -717,17 +661,17 @@ monticola.glm
     ## Model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 208 
     ## n absences     : 512 
-    ## AUC            : 0.7920861 
-    ## cor            : 0.4124899 
-    ## max TPR+TNR at : 0.05445894 
+    ## AUC            : 0.7874944 
+    ## cor            : 0.4123488 
+    ## max TPR+TNR at : 0.1346912 
     ## 
     ## 
     ## Environment space model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 208 
     ## n absences     : 10000 
-    ## AUC            : 0.7613937 
-    ## cor            : 0.1296033 
-    ## max TPR+TNR at : 0.4603189 
+    ## AUC            : 0.7483029 
+    ## cor            : 0.12484 
+    ## max TPR+TNR at : 0.3106917 
     ## 
     ## 
     ## Proportion of data wittheld for model fitting:  0.2
@@ -735,17 +679,17 @@ monticola.glm
     ## Model fit (test data):  class          : ModelEvaluation 
     ## n presences    : 52 
     ## n absences     : 512 
-    ## AUC            : 0.7847431 
-    ## cor            : 0.258389 
-    ## max TPR+TNR at : 0.205913 
+    ## AUC            : 0.7932317 
+    ## cor            : 0.2667824 
+    ## max TPR+TNR at : 0.13692 
     ## 
     ## 
     ## Environment space model fit (test data):  class          : ModelEvaluation 
     ## n presences    : 52 
     ## n absences     : 10000 
-    ## AUC            : 0.7573923 
-    ## cor            : 0.06486546 
-    ## max TPR+TNR at : 0.3688106 
+    ## AUC            : 0.7511808 
+    ## cor            : 0.0632771 
+    ## max TPR+TNR at : 0.3110502 
     ## 
     ## 
     ## Suitability:  
@@ -756,7 +700,7 @@ monticola.glm
     ## crs        : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
     ## source     : memory
     ## names      : layer 
-    ## values     : 2.220446e-16, 0.954622  (min, max)
+    ## values     : 2.220446e-16, 0.9704931  (min, max)
     ## 
     ## 
     ## 
@@ -854,10 +798,10 @@ raster.breadth(monticola.glm)
 ```
 
     ## $B1
-    ## [1] 0.9466589
+    ## [1] 0.9485595
     ## 
     ## $B2
-    ## [1] 0.5519553
+    ## [1] 0.5582789
 
 ENMTools also provides metrics for measuring similarity between ENMs.
 These include Schoener’s D (Schoener 1968), I (Warren et al. 2008), and
@@ -910,13 +854,13 @@ raster.overlap(monticola.glm, cyreni.glm)
 ```
 
     ## $D
-    ## [1] 0.6718855
+    ## [1] 0.6830795
     ## 
     ## $I
-    ## [1] 0.8888624
+    ## [1] 0.8935148
     ## 
     ## $rank.cor
-    ## [1] 0.3138799
+    ## [1] 0.2862231
 
 A new feature of the R version of ENMTools is that you can now use these
 same metrics in the n-dimensional space of all combinations of
@@ -975,13 +919,13 @@ env.overlap(monticola.glm, cyreni.glm, env, tolerance = .001)
     ## [1] "Building replicates..."
 
     ## $env.D
-    ## [1] 0.9635861
+    ## [1] 0.9479397
     ## 
     ## $env.I
-    ## [1] 0.9980813
+    ## [1] 0.9961393
     ## 
     ## $env.cor
-    ## [1] 0.9981912
+    ## [1] 0.994656
     ## 
     ## $env.D.plot
 
@@ -1054,11 +998,11 @@ id.glm
     ## 
     ##                      D           I    rank.cor       env.D       env.I     env.cor
     ## ----------  ----------  ----------  ----------  ----------  ----------  ----------
-    ## empirical    0.3244487   0.5929443   0.1049357   0.3677457   0.6156208   0.1353276
-    ## rep 1        0.8970922   0.9904049   0.8965106   0.8720274   0.9759294   0.8666152
-    ## rep 2        0.9370161   0.9964323   0.9954697   0.9567992   0.9961165   0.9958503
-    ## rep 3        0.9442894   0.9967116   0.9772274   0.9473453   0.9965164   0.9797720
-    ## rep 4        0.9329538   0.9955566   0.9391922   0.9105042   0.9884824   0.9273312
+    ## empirical    0.3244487   0.5929443   0.1049357   0.3702728   0.6173426   0.1382323
+    ## rep 1        0.9651263   0.9990052   0.9995625   0.9799195   0.9993926   0.9997259
+    ## rep 2        0.9555505   0.9983196   0.9787684   0.9565279   0.9974753   0.9869872
+    ## rep 3        0.9408846   0.9963909   0.9657639   0.9385034   0.9932377   0.9725036
+    ## rep 4        0.9736969   0.9992617   0.9969009   0.9828253   0.9994548   0.9982245
 
 ![](Readme_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
@@ -1117,11 +1061,11 @@ bg.bc.asym
     ## 
     ##                      D           I     rank.cor       env.D       env.I     env.cor
     ## ----------  ----------  ----------  -----------  ----------  ----------  ----------
-    ## empirical    0.0242365   0.1455829   -0.0450249   0.0140560   0.1112921   0.1600544
-    ## rep 1        0.6058605   0.8582046    0.6501127   0.4774109   0.7406193   0.6308582
-    ## rep 2        0.6539330   0.8946606    0.7399613   0.5531113   0.8025018   0.6733972
-    ## rep 3        0.6719038   0.9064508    0.7844833   0.5852861   0.8299980   0.7449234
-    ## rep 4        0.6584314   0.8855979    0.7264155   0.5268244   0.7687682   0.6512239
+    ## empirical    0.0242365   0.1455829   -0.0450249   0.0139447   0.1112518   0.1605736
+    ## rep 1        0.6618239   0.8978238    0.7496649   0.5790826   0.8256691   0.7346644
+    ## rep 2        0.6285125   0.8700776    0.6657550   0.5191014   0.7703038   0.6697477
+    ## rep 3        0.6646040   0.9016134    0.7690369   0.5561483   0.8094668   0.7669896
+    ## rep 4        0.6647238   0.8981147    0.7514702   0.5717497   0.8171230   0.7029688
 
 ![](Readme_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
@@ -1152,11 +1096,11 @@ bg.dm.sym
     ## 
     ##                      D           I     rank.cor       env.D       env.I     env.cor
     ## ----------  ----------  ----------  -----------  ----------  ----------  ----------
-    ## empirical    0.1974048   0.4272913   -0.1020590   0.0780030   0.2651276   0.2207599
-    ## rep 1        0.9377558   0.9963716    0.6378358   0.8362503   0.9572793   0.9210746
-    ## rep 2        0.9562179   0.9959520    0.7741840   0.8677725   0.9582127   0.9592936
-    ## rep 3        0.9401910   0.9930586    0.6798451   0.7888838   0.9202337   0.9465968
-    ## rep 4        0.9729291   0.9976050    0.8570497   0.8889699   0.9676164   0.9590800
+    ## empirical    0.1974048   0.4272913   -0.1020590   0.0775623   0.2645385   0.2206893
+    ## rep 1        0.9509940   0.9970105    0.6677082   0.8482221   0.9547292   0.9274305
+    ## rep 2        0.9533348   0.9981036    0.5457460   0.8972314   0.9849384   0.9565055
+    ## rep 3        0.9589487   0.9976435    0.8141599   0.8326076   0.9537578   0.9599762
+    ## rep 4        0.9464994   0.9946195    0.7866542   0.8174494   0.9342328   0.9531094
 
 ![](Readme_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
@@ -1164,7 +1108,7 @@ bg.dm.sym
 
 Using enmtools.species objects also provides a simplified interface to
 the niche equivalency and similarity tests (or identity and background
-tests, respectively) that were developed by Broennimann et al. (2012).
+tests, respectively) that were developed by Broennimann et al. (2012).
 These tests do not rely on ENMs, instead using kernel density smoothing
 to estimate density of the species in environment space. Ecospat also
 uses the density of the available environment to correct for
@@ -1252,7 +1196,7 @@ esp.bg.sym
     ## 
     ## ecospat.bg test p-values:
     ##    D    I 
-    ## 0.42 0.32
+    ## 0.48 0.36
 
 ![](Readme_files/figure-markdown_github/ecospat_background-1.png)![](Readme_files/figure-markdown_github/ecospat_background-2.png)
 
@@ -1297,7 +1241,7 @@ esp.bg.sym
     ## 
     ## ecospat.bg test p-values:
     ##    D    I 
-    ## 0.58 0.58
+    ## 0.48 0.40
 
 ![](Readme_files/figure-markdown_github/ecospat_background2-1.png)![](Readme_files/figure-markdown_github/ecospat_background2-2.png)
 
@@ -1473,19 +1417,19 @@ rbl.glm
     ## 
     ## rangebreak test p-values:
     ##        D        I rank.cor    env.D    env.I  env.cor 
-    ##      0.4      0.4      0.4      0.4      0.4      1.0 
+    ##      0.4      0.4      0.6      0.4      0.4      0.8 
     ## 
     ## 
     ## Replicates:
     ## 
     ## 
-    ##                      D           I    rank.cor       env.D       env.I      env.cor
-    ## ----------  ----------  ----------  ----------  ----------  ----------  -----------
-    ## empirical    0.3244487   0.5929443   0.1049357   0.3684403   0.6159160    0.1360303
-    ## rep 1        0.7367776   0.9371496   0.3525105   0.6399078   0.8469776   -0.1557731
-    ## rep 2        0.2992174   0.5582095   0.0556068   0.3491892   0.5868418    0.0372725
-    ## rep 3        0.7314563   0.9346716   0.3261329   0.6236088   0.8356646   -0.2284763
-    ## rep 4        0.7234739   0.9294263   0.3020399   0.6436864   0.8429577   -0.1495767
+    ##                      D           I     rank.cor       env.D       env.I      env.cor
+    ## ----------  ----------  ----------  -----------  ----------  ----------  -----------
+    ## empirical    0.3244487   0.5929443    0.1049357   0.3680269   0.6156600    0.1351890
+    ## rep 1        0.2992174   0.5582095    0.0556068   0.3453155   0.5834033    0.0320804
+    ## rep 2        0.4210823   0.6995871    0.2260137   0.4470461   0.6997146    0.3805585
+    ## rep 3        0.4908584   0.7820489   -0.0602491   0.5747473   0.7962220    0.0986697
+    ## rep 4        0.6451580   0.8801286    0.1971547   0.5496357   0.7546442   -0.3888845
 
 ![](Readme_files/figure-markdown_github/rangebreak_linear-1.png)![](Readme_files/figure-markdown_github/rangebreak_linear-2.png)
 
@@ -1618,7 +1562,7 @@ rbb.bc
     ## 
     ## rangebreak test p-values:
     ##        D        I rank.cor    env.D    env.I  env.cor 
-    ##      1.0      1.0      1.0      0.8      0.8      1.0 
+    ##      0.6      0.6      0.4      0.4      0.4      0.4 
     ## 
     ## 
     ## Replicates:
@@ -1626,11 +1570,11 @@ rbb.bc
     ## 
     ##                      D           I     rank.cor       env.D       env.I     env.cor
     ## ----------  ----------  ----------  -----------  ----------  ----------  ----------
-    ## empirical    0.0242365   0.1455829   -0.0450249   0.0138993   0.1115047   0.1613371
-    ## rep 1        0.0242365   0.1455829   -0.0450249   0.0136313   0.1098929   0.1570864
-    ## rep 2        0.0242365   0.1455829   -0.0450249   0.0140387   0.1120468   0.1593494
-    ## rep 3        0.0242365   0.1455829   -0.0450249   0.0134696   0.1092234   0.1598079
-    ## rep 4        0.0242365   0.1455829   -0.0450249   0.0137475   0.1104920   0.1580641
+    ## empirical    0.0242365   0.1455829   -0.0450249   0.0139659   0.1111037   0.1592336
+    ## rep 1        0.0043070   0.0229435   -0.2181012   0.0016077   0.0124834   0.0016175
+    ## rep 2        0.7346826   0.8883696    0.8354964   0.5217177   0.7175192   0.5227507
+    ## rep 3        0.6877305   0.9032299    0.8283227   0.5599550   0.7976309   0.7247965
+    ## rep 4        0.0175362   0.1020455   -0.0212972   0.0362747   0.1607758   0.2115328
 
 ![](Readme_files/figure-markdown_github/rangebreak_blob-1.png)
 
@@ -1645,23 +1589,23 @@ rbl.glm$replicate.models$monticola.rep.1
     ## 
     ## 
     ## Formula:  presence ~ bio1 + bio12 + bio7
-    ## <environment: 0x7fd887c1c8e8>
+    ## <environment: 0x7fd4a05c51f8>
     ## 
     ## 
     ## Data table (top ten lines): 
     ## 
     ##  Longitude   Latitude   bio1   bio12   bio7   presence
     ## ----------  ---------  -----  ------  -----  ---------
-    ##   0.130000    42.6400     61    1053    238          1
-    ##  -0.020000    42.5900     62    1027    240          1
-    ##  -2.450000    42.4600    126     512    265          1
-    ##  -4.660000    43.2100    113     877    209          1
-    ##  -4.790000    43.2900     90     958    223          1
-    ##  -4.790000    43.2900     90     958    223          1
-    ##  -4.780000    43.2000     90     958    223          1
-    ##  -4.780000    43.2000     90     958    223          1
-    ##  -4.941888    43.3531    128     843    194          1
-    ##  -4.910000    43.2900     85     975    228          1
+    ##   -8.07000   43.75000    134    1045    166          1
+    ##   -7.94000   43.75000    131    1061    171          1
+    ##   -7.82000   43.75000    135    1006    174          1
+    ##   -7.70000   43.75000    135    1006    174          1
+    ##   -8.07000   43.66000    135    1048    168          1
+    ##   -7.47334   43.78935    140     931    179          1
+    ##   -7.95000   43.66000    129    1080    176          1
+    ##   -7.82000   43.66000    122    1113    184          1
+    ##   -7.70000   43.66000    122    1113    184          1
+    ##   -7.57000   43.66000    124    1067    187          1
     ## 
     ## 
     ## Model:  
@@ -1671,41 +1615,41 @@ rbl.glm$replicate.models$monticola.rep.1
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -1.6659  -0.7681  -0.5174   0.7605   2.0156  
+    ## -1.9270  -0.7589  -0.3689   0.7003   1.8964  
     ## 
     ## Coefficients:
-    ##              Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept) 15.498098   2.550909   6.076 1.24e-09 ***
-    ## bio1        -0.051271   0.006526  -7.856 3.96e-15 ***
-    ## bio12       -0.003070   0.000849  -3.617 0.000298 ***
-    ## bio7        -0.030088   0.005674  -5.303 1.14e-07 ***
+    ##               Estimate Std. Error z value Pr(>|z|)    
+    ## (Intercept) 11.9319736  2.2737260   5.248 1.54e-07 ***
+    ## bio1        -0.0472009  0.0068304  -6.910 4.83e-12 ***
+    ## bio12        0.0002876  0.0007058   0.407    0.684    
+    ## bio7        -0.0292366  0.0051457  -5.682 1.33e-08 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
     ##     Null deviance: 720.87  on 901  degrees of freedom
-    ## Residual deviance: 624.54  on 898  degrees of freedom
-    ## AIC: 305.43
+    ## Residual deviance: 571.11  on 898  degrees of freedom
+    ## AIC: 263.26
     ## 
-    ## Number of Fisher Scoring iterations: 4
+    ## Number of Fisher Scoring iterations: 5
     ## 
     ## 
     ## 
     ## Model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 260 
     ## n absences     : 642 
-    ## AUC            : 0.7537173 
-    ## cor            : 0.3403305 
-    ## max TPR+TNR at : -0.09402619 
+    ## AUC            : 0.7888659 
+    ## cor            : 0.4067992 
+    ## max TPR+TNR at : 0.09289407 
     ## 
     ## 
     ## Environment space model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 260 
     ## n absences     : 10000 
-    ## AUC            : 0.4336342 
-    ## cor            : -0.007358654 
-    ## max TPR+TNR at : 0.4653531 
+    ## AUC            : 0.4287431 
+    ## cor            : -0.001385296 
+    ## max TPR+TNR at : 0.5231318 
     ## 
     ## 
     ## Proportion of data wittheld for model fitting:  0
@@ -1724,7 +1668,7 @@ rbl.glm$replicate.models$monticola.rep.1
     ## crs        : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
     ## source     : memory
     ## names      : layer 
-    ## values     : 0.01937755, 0.9989029  (min, max)
+    ## values     : 0.00680771, 0.9996784  (min, max)
     ## 
     ## 
     ## 
@@ -1739,23 +1683,23 @@ rbl.glm$replicate.models$cyreni.rep.1
     ## 
     ## 
     ## Formula:  presence ~ bio1 + bio12 + bio7
-    ## <environment: 0x7fd884061b98>
+    ## <environment: 0x7fd4bc693a50>
     ## 
     ## 
     ## Data table (top ten lines): 
     ## 
     ##  Longitude   Latitude   bio1   bio12   bio7   presence
     ## ----------  ---------  -----  ------  -----  ---------
-    ##   -7.95000   43.66000    129    1080    176          1
-    ##   -5.32176   40.35238     85     625    294          1
-    ##   -5.29000   40.31000     89     646    296          1
-    ##   -5.29000   40.31000     89     646    296          1
-    ##   -7.83000   43.48000    118    1153    193          1
-    ##   -7.11000   42.57000     95    1051    246          1
-    ##   -6.76000   42.12000     84     980    264          1
-    ##   -6.76000   42.12000     84     980    264          1
-    ##   -8.07000   43.75000    134    1045    166          1
-    ##   -7.95000   43.57000    129    1080    176          1
+    ##  -4.130000   40.78000     91     555    284          1
+    ##  -4.130000   40.78000     91     555    284          1
+    ##  -4.130000   40.78000     91     555    284          1
+    ##  -3.939233   40.80118     94     568    284          1
+    ##  -5.770000   40.39000    110     574    293          1
+    ##  -5.770000   40.39000    110     574    293          1
+    ##  -4.010000   40.78000     91     555    284          1
+    ##  -4.010000   40.78000     91     555    284          1
+    ##  -4.010000   40.78000     91     555    284          1
+    ##  -5.300000   40.49000     85     625    294          1
     ## 
     ## 
     ## Model:  
@@ -1764,42 +1708,42 @@ rbl.glm$replicate.models$cyreni.rep.1
     ##     2)], weights = weights)
     ## 
     ## Deviance Residuals: 
-    ##     Min       1Q   Median       3Q      Max  
-    ## -0.8147  -0.3998  -0.2550  -0.1753   1.6529  
+    ##      Min        1Q    Median        3Q       Max  
+    ## -0.84834  -0.29914  -0.11057  -0.00099   1.53572  
     ## 
     ## Coefficients:
-    ##              Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept) -3.491326   4.005133  -0.872 0.383365    
-    ## bio1        -0.014774   0.012123  -1.219 0.222991    
-    ## bio12        0.004464   0.001301   3.431 0.000601 ***
-    ## bio7         0.005490   0.008481   0.647 0.517383    
+    ##               Estimate Std. Error z value Pr(>|z|)    
+    ## (Intercept) -36.873784  11.770105  -3.133  0.00173 ** 
+    ## bio1         -0.112942   0.023773  -4.751 2.03e-06 ***
+    ## bio12        -0.001980   0.003807  -0.520  0.60298    
+    ## bio7          0.173901   0.040517   4.292 1.77e-05 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
     ##     Null deviance: 210.72  on 847  degrees of freedom
-    ## Residual deviance: 170.59  on 844  degrees of freedom
-    ## AIC: 87.858
+    ## Residual deviance: 114.23  on 844  degrees of freedom
+    ## AIC: 56.593
     ## 
-    ## Number of Fisher Scoring iterations: 4
+    ## Number of Fisher Scoring iterations: 8
     ## 
     ## 
     ## 
     ## Model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 76 
     ## n absences     : 772 
-    ## AUC            : 0.7811222 
-    ## cor            : 0.2745855 
-    ## max TPR+TNR at : -0.3666092 
+    ## AUC            : 0.8985206 
+    ## cor            : 0.2616533 
+    ## max TPR+TNR at : -0.1224394 
     ## 
     ## 
     ## Environment space model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 76 
     ## n absences     : 10000 
-    ## AUC            : 0.4959961 
-    ## cor            : 0.007125081 
-    ## max TPR+TNR at : 0.4092848 
+    ## AUC            : 0.8395066 
+    ## cor            : 0.13004 
+    ## max TPR+TNR at : 0.3074197 
     ## 
     ## 
     ## Proportion of data wittheld for model fitting:  0
@@ -1818,7 +1762,7 @@ rbl.glm$replicate.models$cyreni.rep.1
     ## crs        : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
     ## source     : memory
     ## names      : layer 
-    ## values     : 0.02669289, 0.9994239  (min, max)
+    ## values     : 2.220446e-16, 0.9998234  (min, max)
     ## 
     ## 
     ## 
@@ -1866,18 +1810,18 @@ ribbon
     ## 
     ## Presence points (first ten only): 
     ## 
-    ##   Longitude   Latitude
-    ## -----------  ---------
-    ##  -0.5190984   41.52450
-    ##  -2.9586995   41.33876
-    ##  -7.6472751   41.15329
-    ##  -6.5151506   40.74633
-    ##  -0.1808655   41.69522
-    ##  -4.3387245   41.97236
-    ##  -5.9279990   40.65496
-    ##  -0.2388877   40.95952
-    ##  -2.2195772   40.83546
-    ##  -2.1471651   41.03296
+    ##  Longitude   Latitude
+    ## ----------  ---------
+    ##  -2.710110   41.68400
+    ##  -1.409324   41.75997
+    ##  -8.857594   40.97279
+    ##  -4.467018   41.56909
+    ##  -1.147251   41.22926
+    ##  -2.895049   41.91698
+    ##  -3.898922   41.12935
+    ##  -6.300657   41.73490
+    ##  -1.470455   41.06071
+    ##  -8.135529   40.90007
     ## 
     ## 
     ## Background points not defined.
@@ -2193,11 +2137,11 @@ rbr.glm
     ## 
     ## Species 1 vs. Species 2:
     ##        D        I rank.cor    env.D    env.I  env.cor 
-    ##      0.4      0.4      1.2      0.4      0.4      1.2 
+    ##      0.4      0.4      0.4      0.4      0.4      1.2 
     ## 
     ## Species 1 vs. Ribbon:
     ##        D        I rank.cor    env.D    env.I  env.cor 
-    ##      0.8      0.8      0.8      0.4      0.4      0.4 
+    ##      0.8      0.8      0.8      0.8      0.8      0.4 
     ## 
     ## Species 2 vs. Ribbon:
     ##        D        I rank.cor    env.D    env.I  env.cor 
@@ -2205,42 +2149,42 @@ rbr.glm
     ## 
     ## Outside vs. Ribbon:
     ##        D        I rank.cor    env.D    env.I  env.cor 
-    ##      0.8      0.8      0.8      1.2      0.4      0.4 
+    ##      1.2      0.8      0.8      0.8      0.8      0.4 
     ## 
     ## 
     ## Replicates:
     ## 
     ## Species 1 vs. Species 2:
-    ##                   D         I   rank.cor     env.D     env.I      env.cor
-    ## empirical 0.1131296 0.3179598 -0.1224431 0.0874310 0.2013877  0.002959439
-    ## rep 1     0.2010182 0.4500530  0.3163082 0.2048888 0.4458920  0.484436665
-    ## rep 2     0.2943660 0.5294455 -0.2285120 0.2578637 0.3856800 -0.096357440
-    ## rep 3     0.1698312 0.4039546  0.2583394 0.1726204 0.3985242  0.410736974
-    ## rep 4     0.3720688 0.6028250 -0.2084978 0.2429237 0.3641753 -0.210502937
+    ##                    D         I    rank.cor      env.D     env.I     env.cor
+    ## empirical 0.09563344 0.2773912 -0.13001274 0.07929948 0.1890483  0.04634598
+    ## rep 1     0.32571200 0.5975720  0.03199639 0.27229601 0.4292887 -0.04718642
+    ## rep 2     0.47175811 0.7359257  0.38463907 0.23842761 0.4301462  0.19806445
+    ## rep 3     0.12636491 0.3628144  0.07040730 0.29150743 0.4442903  0.18757337
+    ## rep 4     0.36135461 0.6079395 -0.11990183 0.24144320 0.3598227 -0.17244692
     ## 
     ## Species 1 vs. Ribbon:
-    ##                   D         I    rank.cor     env.D     env.I      env.cor
-    ## empirical 0.3716422 0.6266750 -0.03257543 0.1127960 0.2359181 -0.179351247
-    ## rep 1     0.4046526 0.6794684  0.39255805 0.1570915 0.3846699  0.584792586
-    ## rep 2     0.2998159 0.5486657 -0.08934095 0.2810876 0.4101816 -0.003167514
-    ## rep 3     0.4042510 0.6746900  0.41716472 0.1649519 0.3998389  0.611950745
-    ## rep 4     0.4377208 0.7117987  0.34805111 0.2361334 0.4291054  0.222033642
+    ##                    D         I   rank.cor      env.D      env.I     env.cor
+    ## empirical 0.41400321 0.6576868  0.1039598 0.15672356 0.27339280 -0.29068847
+    ## rep 1     0.48299987 0.7523778  0.4260796 0.30753418 0.54899804  0.28595229
+    ## rep 2     0.66396384 0.8688856  0.6258878 0.34499925 0.60591954  0.75017742
+    ## rep 3     0.04467014 0.1903442 -0.2432176 0.01834095 0.07495722 -0.09175445
+    ## rep 4     0.48880908 0.7574501  0.3656087 0.25863530 0.44563200  0.17655053
     ## 
     ## Species 2 vs. Ribbon:
     ##                   D         I  rank.cor      env.D      env.I    env.cor
-    ## empirical 0.2445532 0.4389351 0.3889232 0.02802897 0.05897263 -0.2418362
-    ## rep 1     0.4883325 0.7643652 0.9199006 0.50459424 0.74490817  0.8603930
-    ## rep 2     0.8871702 0.9801727 0.9856084 0.94003083 0.98412736  0.9914659
-    ## rep 3     0.4492870 0.7208281 0.9015008 0.54881411 0.77094183  0.8224641
-    ## rep 4     0.6931527 0.8641988 0.7477696 0.55390420 0.78233981  0.8499550
+    ## empirical 0.2047253 0.3711309 0.1603354 0.03873533 0.07968535 -0.3581003
+    ## rep 1     0.7626802 0.9260112 0.8711796 0.63042052 0.83713235  0.8917772
+    ## rep 2     0.7125481 0.9034020 0.8560082 0.49378810 0.70586385  0.6052986
+    ## rep 3     0.3991656 0.6547037 0.7159358 0.15671369 0.39310553  0.4395030
+    ## rep 4     0.7537451 0.8952297 0.7879107 0.64284352 0.84734577  0.8915596
     ## 
     ## Outside vs. Ribbon:
-    ##                   D         I   rank.cor     env.D     env.I    env.cor
-    ## empirical 0.4437471 0.7049832 0.14823652 0.1574158 0.3117742 -0.1425710
-    ## rep 1     0.4095001 0.6778612 0.37659838 0.1234613 0.3290120  0.4152267
-    ## rep 2     0.3462521 0.6031074 0.05730232 0.3576070 0.4982152  0.0849811
-    ## rep 3     0.4160359 0.6835539 0.43567542 0.1377689 0.3580384  0.5108408
-    ## rep 4     0.4906136 0.7603765 0.54419642 0.3437760 0.5694442  0.4723018
+    ##                    D         I   rank.cor      env.D     env.I    env.cor
+    ## empirical 0.48649639 0.7278116  0.3056086 0.21041592 0.3481907 -0.2512931
+    ## rep 1     0.48570612 0.7544960  0.4168713 0.33584465 0.5910064  0.3358261
+    ## rep 2     0.68837081 0.8757448  0.6746798 0.31757621 0.5787816  0.4428331
+    ## rep 3     0.06768905 0.2440620 -0.2337182 0.02805506 0.1086315 -0.1088008
+    ## rep 4     0.54668863 0.8053557  0.5418124 0.36451456 0.5736560  0.4155024
 
 ![](Readme_files/figure-markdown_github/rangebreak_ribbon-1.png)![](Readme_files/figure-markdown_github/rangebreak_ribbon-2.png)![](Readme_files/figure-markdown_github/rangebreak_ribbon-3.png)![](Readme_files/figure-markdown_github/rangebreak_ribbon-4.png)
 
@@ -2251,11 +2195,11 @@ offset.
 rbr.glm$lines.df
 ```
 
-    ##       slope intercept    offset
-    ## 1  2.516692  60.59417 0.6770219
-    ## 2 -2.440047  30.64741 0.6592528
-    ## 3  1.917778  56.37219 0.5407096
-    ## 4 -1.047192  36.98274 0.3619921
+    ##        slope intercept    offset
+    ## 1 -0.2418273  41.70449 0.2572062
+    ## 2 -2.8091179  23.13636 0.7454505
+    ## 3  0.2438461  41.81856 0.2573253
+    ## 4 -1.0289391  37.05143 0.3587056
 
 The intercept denotes the intercept corresponding to the CENTER of each
 ribbon. To get the lines denoting the edges of the ribbons (for example
@@ -2280,7 +2224,9 @@ package.
 library(rgbif)
 library(ape)
 
-hisp.anoles <- read.nexus(file = "./testdata/StarBEAST_MCC.species.txt")
+tree.path <- paste(system.file(package="ENMTools"), "/StarBEAST_MCC.species.txt", sep='')
+
+hisp.anoles <- read.nexus(file = tree.path)
 
 keepers <- c("brevirostris", "marron", "caudalis", "websteri", "distichus")
 
@@ -2293,7 +2239,9 @@ plot(hisp.anoles)
 So there’s our tree. Now we’re going to grab some environmental data.
 
 ``` r
-hisp.env <- stack(list.files("./testdata/Hispaniola_Worldclim", full.names = TRUE))
+hisp.env <- raster::getData('worldclim', var='bio', res=10)
+hisp.env <- raster::crop(hisp.env, extent(-75, -65, 16, 21))
+
 hisp.env <- setMinMax(hisp.env)
 ```
 
@@ -2360,11 +2308,11 @@ check.clade(brev.clade)
     ## 
     ##                species.names   in.tree   presence   background   range   
     ## -------------  --------------  --------  ---------  -----------  --------
-    ## brevirostris   brevirostris    TRUE      187        0            present 
-    ## caudalis       caudalis        TRUE      21         0            present 
-    ## distichus      distichus       TRUE      780        0            present 
-    ## marron         marron          TRUE      13         0            present 
-    ## websteri       websteri        TRUE      18         0            present
+    ## brevirostris   brevirostris    TRUE      200        0            present 
+    ## caudalis       caudalis        TRUE      26         0            present 
+    ## distichus      distichus       TRUE      834        0            present 
+    ## marron         marron          TRUE      14         0            present 
+    ## websteri       websteri        TRUE      21         0            present
 
 That’s one way to build a clade object by hand, but there’s already one
 built into ENMTools to experiment with so we’ll just use that.
@@ -2414,7 +2362,7 @@ summary(range.aoc)
     ## 
     ## p values:
     ##      (Intercept) empirical.df$age 
-    ##       0.03921569       0.07843137
+    ##       0.07843137       0.07843137
 
 ![](Readme_files/figure-markdown_github/range_aoc-1.png)![](Readme_files/figure-markdown_github/range_aoc-2.png)
 
@@ -2436,7 +2384,7 @@ summary(point.aoc)
     ## 
     ## p values:
     ##      (Intercept) empirical.df$age 
-    ##        0.2745098        0.4313725
+    ##        0.5490196        0.7058824
 
 ![](Readme_files/figure-markdown_github/point_aoc-1.png)![](Readme_files/figure-markdown_github/point_aoc-2.png)
 
@@ -2538,7 +2486,7 @@ summary(glm.aoc)
     ## 
     ## p values:
     ##      (Intercept) empirical.df$age 
-    ##        0.1960784        0.2745098
+    ##        0.3137255        0.3921569
 
 ![](Readme_files/figure-markdown_github/enm_aoc-1.png)![](Readme_files/figure-markdown_github/enm_aoc-2.png)
 

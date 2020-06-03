@@ -24,6 +24,7 @@ install.extras <- function() {
                      "caret",
                      "ResourceSelection",
                      "rgdal",
+                     "fields",
                      "rJava"))
 }
 
