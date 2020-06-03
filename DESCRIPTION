@@ -6,12 +6,12 @@ Date: 2020-06-02
 Encoding: UTF-8
 Authors@R: c(person(given = "Dan", family = "Warren", role = c("aut", "cre"), email = "dan.l.warren@gmail.com"),
             person(given = "Nick", family = "Matzke", role = "aut", email = "nick.matzke@anu.edu.au"),
-			person(given = "Marcel", family = "Cardillo", role = "aut", email = "marcel.cardillo@anu.edu.au"),
-            person(given = "John", family = "Baumgartner", role = "ctb"),
-            person(given = "Linda", family = "Beaumont", role = "ctb"),
-	      	person(given = "Nicholas", family = "Huron", role = "ctb"),
-	      	person(given = "Marianna", family = "Simoes", role = "ctb"),
-		person(given = "Teresa", family = "Iglesias", role = "ctb"),
+			person(given = "Marcel", family = "Cardillo", role = "art", email = "marcel.cardillo@anu.edu.au"),
+            person(given = "John", family = "Baumgartner", role = "aut"),
+            person(given = "Linda", family = "Beaumont", role = "aut"),
+	      	person(given = "Nicholas", family = "Huron", role = "aut"),
+	      	person(given = "Marianna", family = "Simoes", role = "aut"),
+		person(given = "Teresa", family = "Iglesias", role = "aut"),
 	      	person(given = "Russell", family = "Dinnage", role = "aut", email = "r.dinnage@gmail.com"))
 Maintainer: Dan Warren <dan.l.warren@gmail.com>
 Description: Tools for the ecological and historical biogeography.
