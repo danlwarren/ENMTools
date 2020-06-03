@@ -17,6 +17,8 @@ Takes a raster stack and returns a data frame containing Pearson correlation coe
 between the included rasters
 }
 \examples{
+\dontrun{
 data(euro.worldclim)
 raster.cor.matrix(euro.worldclim)
+}
 }

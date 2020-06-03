@@ -14,7 +14,7 @@ Authors@R: c(person(given = "Dan", family = "Warren", role = c("aut", "cre"), em
 		person(given = "Teresa", family = "Iglesias", role = "aut"),
 	      	person(given = "Russell", family = "Dinnage", role = "aut", email = "r.dinnage@gmail.com"))
 Maintainer: Dan Warren <dan.l.warren@gmail.com>
-Description: Tools for the ecological and historical biogeography.
+Description: Tools for constructing niche models and analyzing patterns of niche evolution.
 License: GPL-2
 LazyData: TRUE
 RoxygenNote: 7.1.0
