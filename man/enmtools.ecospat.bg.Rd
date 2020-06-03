@@ -52,11 +52,13 @@ results Some results, once I figure out what results to return
 enmtools.ecospat.bg, Runs an ecospat background/similarity test using enmtool.species objects.
 }
 \examples{
+\dontrun{
 data(iberolacerta.clade)
 data(euro.worldclim)
 monticola <- iberolacerta.clade$species$monticola
 cyreni <- iberolacerta.clade$species$cyreni
 enmtools.ecospat.bg(monticola, cyreni, euro.worldclim[[1:2]], nback = 500)
+}
 }
 \keyword{enm}
 \keyword{niche}

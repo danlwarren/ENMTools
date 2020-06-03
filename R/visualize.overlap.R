@@ -12,13 +12,15 @@
 #' @keywords niche plot sdm enm overlap
 #'
 #' @examples
-#' data(iberolacerta)
+#' \dontrun{
+#' data(iberolacerta.clade)
 #' ar <- iberolacerta.clade$species$aranica
 #' au <- iberolacerta.clade$species$aurelioi
 #' data(euro.worldclim)
 #' aranica.bc <- enmtools.bc(ar, euro.worldclim)
 #' aurelioi.bc <- enmtools.bc(au, euro.worldclim)
 #' visualize.overlap(aranica.bc, aurelioi.bc, euro.worldclim, layers = c("bio1", "bio9"))
+#' }
 
 visualize.overlap <- function(model.1, model.2, env, nbins = 100, layers, plot.points = TRUE){
 

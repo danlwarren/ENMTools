@@ -19,11 +19,13 @@
 #' @keywords niche plot sdm enm
 #'
 #' @examples
+#' \dontrun{
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' monticola <- iberolacerta.clade$species$monticola
 #' cyreni <- iberolacerta.clade$species$cyreni
 #' enmtools.ecospat.bg(monticola, cyreni, euro.worldclim[[1:2]], nback = 500)
+#' }
 
 enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = NULL, test.type = "asymmetric", th.sp=0, th.env=0, R=100, nback = 1000, bg.source = "default", ...){
 

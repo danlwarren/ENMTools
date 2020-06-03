@@ -7,12 +7,14 @@
 #' @param chunk.size How many combinations of environmental variables to try at a time.  If your niche breadth in environment space is small, increasing this value may help you get a result.
 #'
 #' @examples
+#' \dontrun{
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni
 #' cyreni.glm <- enmtools.glm(cyreni, euro.worldclim, test.prop = 0.2,
 #' f = pres ~ bio1 + bio12, nback = 500)
 #' env.breadth(cyreni.glm,  euro.worldclim)
+#' }
 
 env.breadth <- function(model, env, tolerance = .0001, max.reps = 10, chunk.size = 100000){
 
