@@ -1,8 +1,8 @@
 Package: ENMTools
 Type: Package
-Title: Analysis of niche evolution using niche and distribution models
+Title: Analysis of Niche Evolution using Niche and Distribution Models
 Version: 0.2
-Date: 2017-01-11
+Date: 2020-06-02
 Encoding: UTF-8
 Authors@R: c(person(given = "Dan", family = "Warren", role = c("aut", "cre"), email = "dan.l.warren@gmail.com"),
             person(given = "Nick", family = "Matzke", role = "aut", email = "nick.matzke@anu.edu.au"),
@@ -11,6 +11,7 @@ Authors@R: c(person(given = "Dan", family = "Warren", role = c("aut", "cre"), em
             person(given = "Linda", family = "Beaumont", role = "ctb"),
 	      	person(given = "Nicholas", family = "Huron", role = "ctb"),
 	      	person(given = "Marianna", family = "Simoes", role = "ctb"),
+		person(given = "Teresa", family = "Iglesias", role = "ctb"),
 	      	person(given = "Russell", family = "Dinnage", role = "aut", email = "r.dinnage@gmail.com"))
 Maintainer: Dan Warren <dan.l.warren@gmail.com>
 Description: Tools for the ecological and historical biogeography.
@@ -21,30 +22,28 @@ Imports:
 	rgeos,
 	knitr,
 	ggplot2,
-	grid,
 	gridExtra,
-	viridis,
 	lhs,
-	mgcv,
-	fields,
-	ecospat,
-	gbm,
-	randomForest,
-	ape,
-	ppmlasso,
-	reshape2,
-	leaflet,
 	magrittr,
-	ranger,
 	ENMeval,
-	vegan,
 	sp,
 	spatstat,
-	CalibratR,
-	caret
+	ggpubr
 Depends:
 	raster,
 	dismo
 Suggests:
-	testthat
-Remotes: ecospat/ecospat/ecospat
+	testthat,
+	hypervolume,
+	leaflet,
+	mgcv,
+	ecospat,
+	randomForest,
+	ranger,
+	caret,
+	CalibratR,
+	ape,
+	ResourceSelection,
+	ppmlasso,
+	fields,
+	reshape2

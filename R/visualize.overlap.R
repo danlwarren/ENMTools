@@ -104,7 +104,7 @@ visualize.overlap <- function(model.1, model.2, env, nbins = 100, layers, plot.p
   #This is where I'm going to need to look up how to overlap two contours!
   overlap.plot <- ggplot(data = plot.df, aes_string(y = names[2], x = names[1])) +
     geom_contour(aes(z = pred1), colour = "red") + geom_contour(aes(z = pred2)) +
-    scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
+    scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     theme_classic() +
     ggtitle(label = "Predicted suitability in environment space")
 

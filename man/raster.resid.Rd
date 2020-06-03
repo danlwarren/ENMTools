@@ -22,6 +22,6 @@ and a spatial raster of the residuals from that model.
 data(euro.worldclim)
 raster.resid(euro.worldclim[[1]], euro.worldclim[[2]])
 }
-\keyword{correlation,}
-\keyword{raster,}
+\keyword{correlation}
+\keyword{raster}
 \keyword{residuals}

@@ -2,7 +2,7 @@
 #'
 #' Function that take an \code{enmtools.model} object and plots an
 #' interactive map of the presence points, background points (if applicable), and
-#' species suitability map. This function uses \code{\link{leaflet}} for mapping
+#' species suitability map. This function uses \code{\link[leaflet]{leaflet}} for mapping
 #' and will only function properly if you have an active internet connection.
 #'
 #' @param x entools.model object to plot
@@ -11,10 +11,12 @@
 #' preview of all map provider options can be viewed at \url{http://leaflet-extras.github.io/leaflet-providers/preview/}
 #' @param raster.opacity Specifies the opacity level of the suitability raster.
 #' @param cluster.points Should points be clustered? If TRUE, points close together
-#' will be grouped into clusters that can be interactively expanded by clicking
-#' on them.
+#' will be grouped into clusters that can be interactively expanded by clicking on them.
+#' @param ... other arguments (not used currently)
 
-interactive.plot.enmtools.model <- function(x, map.provider = "Esri.WorldPhysical", cluster.points = FALSE, raster.opacity = 1) {
+interactive.plot.enmtools.model <- function(x, map.provider = "Esri.WorldPhysical", cluster.points = FALSE, raster.opacity = 1, ...) {
+
+  check.packages("leaflet")
 
   presence.points <- NA
   background.points <- NA
@@ -25,29 +27,30 @@ interactive.plot.enmtools.model <- function(x, map.provider = "Esri.WorldPhysica
     presence.points <- pnts[pnts$presence == 1, ]
     background.points <- pnts[pnts$presence == 0, ]
   } else {
+    pnts <- x$analysis.df[ , c("Longitude", "Latitude")]
     presence.points <- x$analysis.df[ , c("Longitude", "Latitude")]
   }
 
-  m <- leaflet(pnts) %>%
-    addProviderTiles(map.provider, group = "Base map") %>%
-    addRasterImage(x$suitability, colors = "inferno", opacity = raster.opacity, group = "Model")
+  m <- leaflet::leaflet(pnts) %>%
+    leaflet::addProviderTiles(map.provider, group = "Base map") %>%
+    leaflet::addRasterImage(x$suitability, colors = "inferno", opacity = raster.opacity, group = "Model")
 
   if(is.data.frame(background.points)){
     m <- m %>%
-      addCircleMarkers(~Longitude, ~Latitude, color = "black",
+      leaflet::addCircleMarkers(~Longitude, ~Latitude, color = "black",
                        stroke = FALSE, fillOpacity = 0.5, radius= 8,
                        data = background.points, group = "Background points")
   }
 
   if(cluster.points) {
     m <- m %>%
-      addCircleMarkers(~Longitude, ~Latitude, color = "red",
+      leaflet::addCircleMarkers(~Longitude, ~Latitude, color = "red",
                        stroke = FALSE, fillOpacity = 0.5, radius= 8,
-                       clusterOptions = markerClusterOptions(),
+                       clusterOptions = leaflet::markerClusterOptions(),
                        data = presence.points, group = "Training points")
   } else {
     m <- m %>%
-      addCircleMarkers(~Longitude, ~Latitude, color = "red",
+      leaflet::addCircleMarkers(~Longitude, ~Latitude, color = "red",
                        stroke = FALSE, fillOpacity = 0.5, radius= 8,
                        data = presence.points, group = "Training points")
   }
@@ -55,59 +58,63 @@ interactive.plot.enmtools.model <- function(x, map.provider = "Esri.WorldPhysica
 
   if(is.data.frame(x$test.data)){
     m <- m %>%
-      addCircleMarkers(~Longitude, ~Latitude, color = "green",
+      leaflet::addCircleMarkers(~Longitude, ~Latitude, color = "green",
                        stroke = FALSE, fillOpacity = 0.5, radius= 8,
                        group = "Test points", data = x$test.data)
   }
 
   m <- m %>%
-    addLegend(pal = colorNumeric("inferno", c(min(values(x$suitability), na.rm = TRUE),
+    leaflet::addLegend(pal = leaflet::colorNumeric("inferno", c(min(values(x$suitability), na.rm = TRUE),
                                                        max(values(x$suitability), na.rm = TRUE))), values = c(min(values(x$suitability), na.rm = TRUE),
                                                                                                               max(values(x$suitability), na.rm = TRUE)))
 
 
   if(is.data.frame(x$test.data) & is.data.frame(background.points)){
-    m <- m %>% addLayersControl(
+    m <- m %>% leaflet::addLayersControl(
       overlayGroups = c("Base map", "Model", "Training points", "Test points", "Background points"),
-      options = layersControlOptions(collapsed = FALSE, position = "bottomleft")
+      options = leaflet::layersControlOptions(collapsed = FALSE, position = "bottomleft")
     )
 
     m <- m %>%
-      addLegend("bottomright", colors = c("green", "red", "black"),
+      leaflet::addLegend("bottomright", colors = c("green", "red", "black"),
                 labels = c("Test points", "Training presences", "Background points"))
 
   } else if(!is.data.frame(x$test.data) & is.data.frame(background.points)) {
-    m <- m %>% addLayersControl(
+    m <- m %>% leaflet::addLayersControl(
       overlayGroups = c("Base map", "Model", "Training points", "Background points"),
-      options = layersControlOptions(collapsed = FALSE, position = "bottomleft")
+      options = leaflet::layersControlOptions(collapsed = FALSE, position = "bottomleft")
     )
 
     m <- m %>%
-      addLegend("bottomright", colors = c("red", "black"),
+      leaflet::addLegend("bottomright", colors = c("red", "black"),
                 labels = c("Training presences", "Background points"))
 
   } else if(is.data.frame(x$test.data) & !is.data.frame(background.points)){
-    m <- m %>% addLayersControl(
+    m <- m %>% leaflet::addLayersControl(
       overlayGroups = c("Base map", "Model", "Training points", "Test points"),
-      options = layersControlOptions(collapsed = FALSE, position = "bottomleft")
+      options = leaflet::layersControlOptions(collapsed = FALSE, position = "bottomleft")
     )
 
     m <- m %>%
-      addLegend("bottomright", colors = c("green", "red"),
+      leaflet::addLegend("bottomright", colors = c("green", "red"),
                 labels = c("Test points", "Training presences"))
 
   } else {
-    m <- m %>% addLayersControl(
+    m <- m %>% leaflet::addLayersControl(
       overlayGroups = c("Base map", "Model", "Training points"),
-      options = layersControlOptions(collapsed = FALSE, position = "bottomleft")
+      options = leaflet::layersControlOptions(collapsed = FALSE, position = "bottomleft")
     )
 
     m <- m %>%
-      addLegend("bottomright", colors = c("red"),
+      leaflet::addLegend("bottomright", colors = c("red"),
                 labels = c("Training presences"))
   }
 
 
 
   m
+}
+
+interactive.plot <- function (x, ...) {
+  UseMethod("interactive.plot", x)
 }

@@ -75,6 +75,8 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
   # Test eval for randomly withheld data
   if(is.numeric(test.prop)){
     if(test.prop > 0 & test.prop < 1){
+      test.check <- raster::extract(env, test.data)
+      test.data <- test.data[complete.cases(test.check),]
       test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
                                         this.dm, env)
       temp.sp <- species
@@ -86,6 +88,8 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
   # Test eval for spatially structured data
   if(is.character(test.prop)){
     if(test.prop == "block"){
+      test.check <- raster::extract(env, test.data)
+      test.data <- test.data[complete.cases(test.check),]
       test.evaluation <-dismo::evaluate(test.data, test.bg,
                                         this.dm, env)
       temp.sp <- species
@@ -238,6 +242,7 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
                  env.test.evaluation = env.test.evaluation,
                  rts.test = rts.test,
                  suitability = suitability,
+                 call = sys.call(),
                  notes = notes)
 
   class(output) <- c("enmtools.dm", "enmtools.model")
@@ -317,7 +322,7 @@ plot.enmtools.dm <- function(x, ...){
 
   suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
     geom_raster(aes_string(fill = "Suitability")) +
-    scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
+    scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
     geom_point(data = x$analysis.df, aes_string(y = "Latitude", x = "Longitude"),
                pch = 21, fill = "white", color = "black", size = 2)
@@ -351,7 +356,7 @@ predict.enmtools.dm <- function(object, env, maxpts = 1000, ...){
 
   suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
     geom_raster(aes_string(fill = "Suitability")) +
-    scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
+    scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()
 
   if(!is.na(object$species.name)){

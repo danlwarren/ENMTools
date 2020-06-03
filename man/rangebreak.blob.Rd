@@ -57,9 +57,8 @@ rangebreak.blob(cyreni, aranica, env = euro.worldclim, type = "glm",
 f= pres ~ bio1 + bio12, nreps = 10)
 }
 }
-\keyword{barrier,}
-\keyword{biogeography,}
-\keyword{enmtools,}
-\keyword{hypothesis}
-\keyword{rangebreak,}
-\keyword{testing}
+\keyword{barrier}
+\keyword{biogeography}
+\keyword{enmtools}
+\keyword{hypothesis-testing}
+\keyword{rangebreak}

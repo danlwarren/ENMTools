@@ -2,7 +2,7 @@
 #'
 #' Function that take an \code{\link{enmtools.species}} object and plots an
 #' interactive map of the presence points, background points (if applicable), and
-#' species range raster (if applicable). This function uses \code{\link{leaflet}} for mapping
+#' species range raster (if applicable). This function uses \code{\link[leaflet]{leaflet}} for mapping
 #' and will only function properly if you have an active internet connection.
 #'
 #' @param x entools.species object to plot
@@ -12,11 +12,13 @@
 #' @param cluster.points Should points be clustered? If TRUE, points close together
 #' will be grouped into clusters that can be interactively expanded by clicking
 #' on them.
+#' @param ... other arguments (not used currently)
+interactive.plot.enmtools.species <- function(x, map.provider = "Esri.WorldPhysical", cluster.points = FALSE, ...) {
 
-interactive.plot.enmtools.species <- function(x, map.provider = "Esri.WorldPhysical", cluster.points = FALSE) {
+  check.packages("leaflet")
 
-  m <- leaflet() %>%
-    addProviderTiles(map.provider, group = "Base map")
+  m <- leaflet::leaflet() %>%
+    leaflet::addProviderTiles(map.provider, group = "Base map")
 
   overlays <- "Base map"
   labels <- NULL
@@ -24,7 +26,7 @@ interactive.plot.enmtools.species <- function(x, map.provider = "Esri.WorldPhysi
 
   if(class(x$range) == "RasterLayer"){
     m <- m %>%
-      addRasterImage(x$range, function(y) ifelse(is.na(y), "#00000000", "#00000090"),
+      leaflet::addRasterImage(x$range, function(y) ifelse(is.na(y), "#00000000", "#00000090"),
                      group = "Range")
     overlays <- c(overlays, "Range")
     labels <- c(labels, "Range raster")
@@ -35,7 +37,7 @@ interactive.plot.enmtools.species <- function(x, map.provider = "Esri.WorldPhysi
   if(class(x$background.points)  %in% c("data.frame", "matrix")){
     background.points <- x$background.points
     m <- m %>%
-      addCircleMarkers(~Longitude, ~Latitude, color = "red",
+      leaflet::addCircleMarkers(~Longitude, ~Latitude, color = "red",
                        data = background.points, stroke = FALSE, fillOpacity = 0.5,
                        radius = 8, group = "Background points")
     overlays <- c(overlays, "Background points")
@@ -47,13 +49,13 @@ interactive.plot.enmtools.species <- function(x, map.provider = "Esri.WorldPhysi
     presence.points <- x$presence.points
     if(cluster.points) {
       m <- m %>%
-        addCircleMarkers(~Longitude, ~Latitude, color = "green",
+        leaflet::addCircleMarkers(~Longitude, ~Latitude, color = "green",
                          stroke = FALSE, fillOpacity = 0.5, radius = 8,
-                         data = presence.points, clusterOptions = markerClusterOptions(),
+                         data = presence.points, clusterOptions = leaflet::markerClusterOptions(),
                          group = "Occurrence points")
     } else {
       m <- m %>%
-        addCircleMarkers(~Longitude, ~Latitude, color = "green",
+        leaflet::addCircleMarkers(~Longitude, ~Latitude, color = "green",
                          data = presence.points, stroke = FALSE, fillOpacity = 0.5,
                          radius = 8, group = "Occurrence points")
     }
@@ -62,15 +64,15 @@ interactive.plot.enmtools.species <- function(x, map.provider = "Esri.WorldPhysi
     colors <- c(colors, "green")
   }
 
-  m <- m %>% addLayersControl(
+  m <- m %>% leaflet::addLayersControl(
     overlayGroups = overlays,
-    options = layersControlOptions(collapsed = FALSE, position = "bottomleft")
+    options = leaflet::layersControlOptions(collapsed = FALSE, position = "bottomleft")
   )
 
   # Build the legend given what's defined
 
   m <- m %>%
-    addLegend("bottomright", colors = colors,
+    leaflet::addLegend("bottomright", colors = colors,
               labels = labels)
 
   m

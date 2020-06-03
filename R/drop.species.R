@@ -10,6 +10,8 @@
 
 drop.species <- function(clade, species){
 
+  check.packages("ape")
+
   if(!inherits(clade, "enmtools.clade")){
     stop("Clade is not an enmtools.clade object!")
   }
@@ -22,7 +24,7 @@ drop.species <- function(clade, species){
 
   dropped$species <- dropped$species[!names(dropped$species) %in% species]
 
-  dropped$tree <- drop.tip(dropped$tree, species)
+  dropped$tree <- ape::drop.tip(dropped$tree, species)
 
   return(dropped)
 }

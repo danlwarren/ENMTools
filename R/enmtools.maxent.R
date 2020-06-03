@@ -21,6 +21,8 @@
 
 enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0,  bg.source = "default", ...){
 
+  check.packages("rJava")
+
   notes <- NULL
 
   species <- check.bg(species, env, nback = nback, bg.source = bg.source)
@@ -78,6 +80,8 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
   # Test eval for randomly withheld data
   if(is.numeric(test.prop)){
     if(test.prop > 0 & test.prop < 1){
+      test.check <- raster::extract(env, test.data)
+      test.data <- test.data[complete.cases(test.check),]
       test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
                                         this.mx, env)
       temp.sp <- species
@@ -89,6 +93,8 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
   # Test eval for spatially structured data
   if(is.character(test.prop)){
     if(test.prop == "block"){
+      test.check <- raster::extract(env, test.data)
+      test.data <- test.data[complete.cases(test.check),]
       test.evaluation <-dismo::evaluate(test.data, test.bg,
                                         this.mx, env)
       temp.sp <- species
@@ -247,6 +253,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
                  env.test.evaluation = env.test.evaluation,
                  rts.test = rts.test,
                  suitability = suitability,
+                 call = sys.call(),
                  notes = notes)
 
   class(output) <- c("enmtools.maxent", "enmtools.model")
@@ -325,7 +332,7 @@ plot.enmtools.maxent <- function(x, ...){
 
   suit.plot <- ggplot(data = suit.points, aes_string(y = "Latitude", x = "Longitude")) +
     geom_raster(aes_string(fill = "Suitability")) +
-    scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
+    scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
     geom_point(data = x$analysis.df[x$analysis.df$presence ==1,],  aes_string(y = "Latitude", x = "Longitude"),
                pch = 21, fill = "white", color = "black", size = 2)
@@ -356,7 +363,7 @@ predict.enmtools.maxent <- function(object, env, maxpts = 1000, ...){
 
   suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
     geom_raster(aes_string(fill = "Suitability")) +
-    scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
+    scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()
 
   if(!is.na(object$species.name)){
@@ -374,6 +381,12 @@ predict.enmtools.maxent <- function(object, env, maxpts = 1000, ...){
 
 # Function for checking data prior to running enmtools.maxent
 maxent.precheck <- function(f, species, env){
+
+  ### This code is copied directly from dismo, since it's not exported from there.
+  jar <- paste(system.file(package="dismo"), "/java/maxent.jar", sep='')
+  if (!file.exists(jar)) {
+    stop('file missing:\n', jar, '.\nPlease download it here: http://www.cs.princeton.edu/~schapire/maxent/')
+  }
 
   ### Check to make sure the data we need is there
   if(!inherits(species, "enmtools.species")){

@@ -17,13 +17,17 @@
 #' @param ... Arguments to be passed to gam()
 #'
 #' @examples
+#' \dontrun{
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
 #' enmtools.gam(iberolacerta.clade$species$monticola, env = euro.worldclim, f = pres ~ bio1 + bio9)
+#' }
 
 
 
 enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", gam.method = "REML", gam.select = TRUE, bg.source = "default", ...){
+
+  check.packages("mgcv")
 
   notes <- NULL
 
@@ -108,6 +112,8 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
   # Test eval for randomly withheld data
   if(is.numeric(test.prop)){
     if(test.prop > 0 & test.prop < 1){
+      test.check <- raster::extract(env, test.data)
+      test.data <- test.data[complete.cases(test.check),]
       test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
                                         this.gam, env)
       temp.sp <- species
@@ -119,6 +125,8 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
   # Test eval for spatially structured data
   if(is.character(test.prop)){
     if(test.prop == "block"){
+      test.check <- raster::extract(env, test.data)
+      test.data <- test.data[complete.cases(test.check),]
       test.evaluation <-dismo::evaluate(test.data, test.bg,
                                         this.gam, env)
       temp.sp <- species
@@ -173,7 +181,7 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
       rts.df <- rbind(rep.species$presence.points, rep.species$background.points)
       rts.df$presence <- c(rep(1, nrow(rep.species$presence.points)), rep(0, nrow(rep.species$background.points)))
 
-      thisrep.gam <- gam(f, rts.df[,-c(1,2)], family="binomial", ...)
+      thisrep.gam <- mgcv::gam(f, rts.df[,-c(1,2)], family="binomial", ...)
 
       thisrep.model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                                  thisrep.gam, env)
@@ -278,6 +286,7 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
                  env.test.evaluation = env.test.evaluation,
                  rts.test = rts.test,
                  suitability = suitability,
+                 call = sys.call(),
                  notes = notes)
 
   class(output) <- c("enmtools.gam", "enmtools.model")
@@ -363,7 +372,7 @@ plot.enmtools.gam <- function(x, ...){
 
   suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
     geom_raster(aes_string(fill = "Suitability")) +
-    scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
+    scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
     geom_point(data = x$analysis.df[x$analysis.df$presence == 1,],  aes_string(y = "Latitude", x = "Longitude"),
                pch = 21, fill = "white", color = "black", size = 2)
@@ -393,7 +402,7 @@ predict.enmtools.gam <- function(object, env, maxpts = 1000, ...){
 
   suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
     geom_raster(aes_string(fill = "Suitability")) +
-    scale_fill_viridis(option = "B", guide = guide_colourbar(title = "Suitability")) +
+    scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()
 
   if(!is.na(object$species.name)){

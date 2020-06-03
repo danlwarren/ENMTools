@@ -22,3 +22,7 @@ Notes/*
 .Rhistory
 
 .RData
+
+benchmarks/*
+
+wc5/*
