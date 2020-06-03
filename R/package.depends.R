@@ -22,7 +22,9 @@ install.extras <- function() {
                      "ranger",
                      "CalibratR",
                      "caret",
-                     "ResourceSelection"))
+                     "ResourceSelection",
+                     "rgdal",
+                     "rJava"))
 }
 
 # This function checks if a package is able to be loaded and triggers an error if not

@@ -21,6 +21,8 @@
 
 enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0,  bg.source = "default", ...){
 
+  check.packages("rJava")
+
   notes <- NULL
 
   species <- check.bg(species, env, nback = nback, bg.source = bg.source)
