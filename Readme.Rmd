@@ -2,7 +2,7 @@
 always_allow_html: true
 output:
   md_document:
-    variant: markdown_github
+    variant: gfm
   html_document: default
 ---
 ENMTools
