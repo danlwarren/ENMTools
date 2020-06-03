@@ -1,7 +1,7 @@
 Package: ENMTools
 Type: Package
 Title: Analysis of Niche Evolution using Niche and Distribution Models
-Version: 0.2
+Version: 1.0
 Date: 2020-06-02
 Encoding: UTF-8
 Authors@R: c(person(given = "Dan", family = "Warren", role = c("aut", "cre"), email = "dan.l.warren@gmail.com"),
@@ -28,7 +28,8 @@ Imports:
 	ENMeval,
 	sp,
 	spatstat,
-	ggpubr
+	ggpubr,
+	rgdal
 Depends:
 	raster,
 	dismo

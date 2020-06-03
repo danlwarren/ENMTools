@@ -23,7 +23,6 @@ install.extras <- function() {
                      "CalibratR",
                      "caret",
                      "ResourceSelection",
-                     "rgdal",
                      "fields",
                      "rJava"))
 }
