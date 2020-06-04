@@ -3,7 +3,7 @@
 #' @param n The number of PCA layers to return
 #' @param ... Any number of environmental raster stacks or bricks
 #'
-#' @return A list containing a stack or brick of rasters for each input set representing the top n pca axes of the initial environmental variables, as well as the pca object from the analysis that produced them.
+#' @return A list containing a stack or brick of rasters for each input set representing the top n pca axes of the initial environmental variables, as well as the pca object from the analysis that produced them and some useful plots showing the distribution of each PC in the different stacks.
 #'
 #' @keywords raster pca environment
 #'
@@ -56,7 +56,9 @@ multistack.pca <- function(..., n = 2){
   nas <- lapply(env.val, function(x) which(!complete.cases(x)))
 
   # Do PCA
-  pca <- prcomp(do.call("rbind", env.val), retx = TRUE, scale = TRUE)
+  pca.df <- do.call("rbind", env.val)
+  pca.df <- pca.df[complete.cases(pca.df),]
+  pca <- prcomp(pca.df, retx = TRUE, scale = TRUE)
 
   # Build dummy layers
   env.pca <- stacks
@@ -81,7 +83,28 @@ multistack.pca <- function(..., n = 2){
     env.pca[[i]] <- setMinMax(env.pca[[i]])
   }
 
+  # Now we'll make some plots of the distribution of each PC in each stack
+  pc.plots <- list()
+
+  # Janky code to make a vector of stack names going with each observation in pca
+  nkeepers <- sapply(keepers, length)
+  data.source <- Reduce(c, sapply(names(keepers), function(x) rep(x, nkeepers[[x]])))
+
+  # Doing this weird local() trick to keep qplot from making the same plot over and over
+  for (i in 1:n) {
+    pc.name <- colnames(pca$x)[i]
+    pc.plots[[pc.name]] <- local({
+      i <- i
+      p1 <- qplot(pca$x[,i], fill = data.source,
+                    color = data.source, geom = "density",
+                    alpha = 0.3) + xlab(pc.name) + guides(alpha = FALSE) +
+        labs(fill = "Data source", color = "Data source")
+      print(p1)
+    })
+  }
+
   output <- list(raster.stacks = env.pca,
+                 pc.plots = pc.plots,
                  pca.object = pca)
 
   return(output)

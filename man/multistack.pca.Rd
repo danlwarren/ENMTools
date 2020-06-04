@@ -12,7 +12,7 @@ multistack.pca(..., n = 2)
 \item{n}{The number of PCA layers to return}
 }
 \value{
-A list containing a stack or brick of rasters for each input set representing the top n pca axes of the initial environmental variables, as well as the pca object from the analysis that produced them.
+A list containing a stack or brick of rasters for each input set representing the top n pca axes of the initial environmental variables, as well as the pca object from the analysis that produced them and some useful plots showing the distribution of each PC in the different stacks.
 }
 \description{
 multistack.pca, simultaneous PCA on more than one stack of environmental rasters
