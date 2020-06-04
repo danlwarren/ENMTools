@@ -42,7 +42,9 @@ enmtools.bc(
 Takes an emtools.species object with presence and background points, and builds a Bioclim model
 }
 \examples{
+\dontrun{
 data(euro.worldclim)
 data(iberolacerta.clade)
 enmtools.bc(iberolacerta.clade$species$monticola, env = euro.worldclim)
+}
 }
