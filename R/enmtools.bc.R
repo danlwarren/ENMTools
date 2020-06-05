@@ -12,9 +12,11 @@
 #' @param ... Arguments to be passed to bioclim()
 #'
 #' @examples
+#' \dontrun{
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
 #' enmtools.bc(iberolacerta.clade$species$monticola, env = euro.worldclim)
+#' }
 
 enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwrite = FALSE, nback = 1000, env.nback = 10000, rts.reps = 0, bg.source = "default", ...){
 
@@ -239,6 +241,7 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
                  env.test.evaluation = env.test.evaluation,
                  rts.test = rts.test,
                  suitability = suitability,
+                 call = sys.call(),
                  notes = notes)
 
   class(output) <- c("enmtools.bc", "enmtools.model")

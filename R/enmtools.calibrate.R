@@ -22,10 +22,7 @@
 
 enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, n.background = 10000, ...){
 
-  check.package("ecospat")
-  check.package("CalibratR")
-  check.package("caret")
-  check.package("ResourceSelection")
+  check.packages(c("ecospat", "CalibratR", "caret", "ResourceSelection"))
 
   if(suppressWarnings(is.na(model$test.evaluation))){
     stop("No test evaluation data available, cannot measure calibration.")

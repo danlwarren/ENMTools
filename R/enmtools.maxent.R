@@ -21,6 +21,8 @@
 
 enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0,  bg.source = "default", ...){
 
+  check.packages("rJava")
+
   notes <- NULL
 
   species <- check.bg(species, env, nback = nback, bg.source = bg.source)
@@ -251,6 +253,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
                  env.test.evaluation = env.test.evaluation,
                  rts.test = rts.test,
                  suitability = suitability,
+                 call = sys.call(),
                  notes = notes)
 
   class(output) <- c("enmtools.maxent", "enmtools.model")

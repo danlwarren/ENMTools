@@ -15,7 +15,7 @@
 #' @param ... other arguments (not used currently)
 interactive.plot.enmtools.species <- function(x, map.provider = "Esri.WorldPhysical", cluster.points = FALSE, ...) {
 
-  check.package("leaflet")
+  check.packages("leaflet")
 
   m <- leaflet::leaflet() %>%
     leaflet::addProviderTiles(map.provider, group = "Base map")

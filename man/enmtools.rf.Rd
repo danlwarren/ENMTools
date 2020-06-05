@@ -48,8 +48,9 @@ enmtools.rf(
 Takes an emtools.species object with presence and background points, and builds a random forest model
 }
 \examples{
-## NOT RUN
+\dontrun{
 data(euro.worldclim)
 data(iberolacerta.clade)
 enmtools.rf(iberolacerta.clade$species$monticola, env = euro.worldclim, nback = 500)
+}
 }

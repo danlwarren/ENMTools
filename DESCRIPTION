@@ -1,19 +1,20 @@
 Package: ENMTools
 Type: Package
 Title: Analysis of Niche Evolution using Niche and Distribution Models
-Version: 0.2
-Date: 2017-01-11
+Version: 1.0
+Date: 2020-06-02
 Encoding: UTF-8
 Authors@R: c(person(given = "Dan", family = "Warren", role = c("aut", "cre"), email = "dan.l.warren@gmail.com"),
             person(given = "Nick", family = "Matzke", role = "aut", email = "nick.matzke@anu.edu.au"),
-			person(given = "Marcel", family = "Cardillo", role = "aut", email = "marcel.cardillo@anu.edu.au"),
-            person(given = "John", family = "Baumgartner", role = "ctb"),
-            person(given = "Linda", family = "Beaumont", role = "ctb"),
-	      	person(given = "Nicholas", family = "Huron", role = "ctb"),
-	      	person(given = "Marianna", family = "Simoes", role = "ctb"),
+			person(given = "Marcel", family = "Cardillo", role = "art", email = "marcel.cardillo@anu.edu.au"),
+            person(given = "John", family = "Baumgartner", role = "aut"),
+            person(given = "Linda", family = "Beaumont", role = "aut"),
+	      	person(given = "Nicholas", family = "Huron", role = "aut"),
+	      	person(given = "Marianna", family = "Simoes", role = "aut"),
+		person(given = "Teresa", family = "Iglesias", role = "aut"),
 	      	person(given = "Russell", family = "Dinnage", role = "aut", email = "r.dinnage@gmail.com"))
 Maintainer: Dan Warren <dan.l.warren@gmail.com>
-Description: Tools for the ecological and historical biogeography.
+Description: Tools for constructing niche models and analyzing patterns of niche evolution.
 License: GPL-2
 LazyData: TRUE
 RoxygenNote: 7.1.0
@@ -23,14 +24,12 @@ Imports:
 	ggplot2,
 	gridExtra,
 	lhs,
-	fields,
-	reshape2,
 	magrittr,
 	ENMeval,
 	sp,
 	spatstat,
-	ResourceSelection,
-	ggpubr
+	ggpubr,
+	rgdal
 Depends:
 	raster,
 	dismo
@@ -45,5 +44,7 @@ Suggests:
 	caret,
 	CalibratR,
 	ape,
-	ppmlasso
-Remotes: ecospat/ecospat/ecospat
+	ResourceSelection,
+	ppmlasso,
+	fields,
+	reshape2

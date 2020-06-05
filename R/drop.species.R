@@ -10,7 +10,7 @@
 
 drop.species <- function(clade, species){
 
-  check.package("ape")
+  check.packages("ape")
 
   if(!inherits(clade, "enmtools.clade")){
     stop("Clade is not an enmtools.clade object!")

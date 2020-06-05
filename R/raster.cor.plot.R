@@ -10,6 +10,8 @@
 
 raster.cor.plot <- function(env, method = "pearson"){
 
+  check.packages("reshape2")
+
   n.layers <- length(names(env))
 
   cor.mat <- as.data.frame(matrix(nrow = n.layers, ncol = n.layers))

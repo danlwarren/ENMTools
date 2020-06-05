@@ -4,13 +4,17 @@
 #' @param y An enmtools.species object containing presence points
 #'
 #' @examples
+#' \dontrun{
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni
 #' monticola <- iberolacerta.clade$species$monticola
 #' point.overlap(cyreni, monticola)
+#' }
 
 point.overlap <- function(x, y){
+
+  check.packages("fields")
 
   if(!inherits(x$presence.points, c("data.frame"))){
     stop(paste("Species", x$species.name, "does not have presence points!"))
@@ -21,9 +25,9 @@ point.overlap <- function(x, y){
   }
 
   # Get distance matrices for within and between species
-  within1 <- rdist(x$presence.points, x$presence.points)
-  within2 <- rdist(y$presence.points, y$presence.points)
-  between <- rdist(x$presence.points, y$presence.points)
+  within1 <- fields::rdist(x$presence.points, x$presence.points)
+  within2 <- fields::rdist(y$presence.points, y$presence.points)
+  between <- fields::rdist(x$presence.points, y$presence.points)
 
   # Init some empty score arrays for each species
   score1 <- rep(NA,nrow(within1))

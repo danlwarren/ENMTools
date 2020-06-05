@@ -30,6 +30,8 @@
 
 rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 99, nback = 1000, bg.source = "default", low.memory = FALSE, rep.dir = NA, ...){
 
+  check.packages("fields")
+
   # Just for visualization
   plotraster <- env[[1]]
   plotraster[!is.na(plotraster)] <- 1
@@ -114,7 +116,7 @@ rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 9
     start.point <- combined.presence.points[runif(1, 1, nrow(combined.presence.points)),]
 
     # Get Euclidean distance from part.points
-    part.points <- cbind(combined.presence.points, as.vector(rdist(start.point, combined.presence.points)))
+    part.points <- cbind(combined.presence.points, as.vector(fields::rdist(start.point, combined.presence.points)))
 
     # Flip a coin to decide whether we're going from top to bottom or other way around
     if(rbinom(1,1,0.5) == 0){

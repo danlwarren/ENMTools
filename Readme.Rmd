@@ -1,7 +1,9 @@
 ---
+always_allow_html: true
 output:
   md_document:
-    variant: markdown_github
+    variant: gfm
+  html_document: default
 ---
 ENMTools
 ======================
@@ -49,6 +51,16 @@ library(ENMTools)
 library(ENMTools)
 ```
 
+
+### Installing extras
+
+ENMTools uses functionality from a *LOT* of other R packages, and it's possible that you don't want to install them all.  For that reason many of the packages are not automatically installed with ENMTools, but instead "suggested".  If you want to install all of the suggested packages, we have a function for that.  You should only need to use it after you first install ENMTools or update R.  If you choose not to install the extra packages, you will get warnings when you try to use functions that require them.
+
+```{r install_extras, eval = FALSE}
+install.extras()
+```
+
+
 -----
 
 
@@ -56,48 +68,70 @@ library(ENMTools)
 
 ### Creating enmtools.species objects
 
-First we're going to load in some environmental data.
-```{r read_files}
-env.files <- list.files(path = "./testdata/", pattern = "pc", full.names = TRUE)
+We're going to load in some environmental data.  You can do this from local rasters, like so:
+```{r read_files, eval = FALSE}
+env.files <- list.files(path = "./env_pca/", pattern = "pc", full.names = TRUE)
 env <- stack(env.files)
 names(env) <- c("pc1", "pc2", "pc3", "pc4")
 env <- setMinMax(env)
 ```
 
+Or you can load them from the internet using the raster package's getData() function.
+
+```{r getdata}
+library(raster)
+env <- raster::getData('worldclim', var='bio', res=10)
+env <- crop(env, extent(-10, 17, 39, 48))
+plot(env[[1]])
+```
+
+
 ENMTools is primarily designed to examine patterns of similarity and difference between ENMs for different species.  In order to simplify interactions with the functions in ENMTools, you need to put your data for each of your species into an enmtools.species object.  You can create and view an empty enmtools.species object just by typing:
 
 ```{r empty_species}
-ahli <- enmtools.species()
-ahli
+monticola <- enmtools.species()
+monticola
 ```
 
-You can add data to this object manually:
-```{r build_ahli}
-names(ahli)
-ahli$species.name <- "ahli"
-ahli$presence.points <- read.csv("./testdata/ahli.csv")[,2:3]
-ahli$range <- background.raster.buffer(ahli$presence.points, 50000, mask = env)
-ahli$background.points <- background.points.buffer(points = ahli$presence.points,
+You can add bits of it when the object is created:
+```{r build_monticola1, eval = TRUE}
+monticola.path <- paste(system.file(package="ENMTools"), "/monticola.csv", sep='')
+monticola <- enmtools.species(species.name = "monticola", 
+                            presence.points = read.csv(monticola.path))
+monticola$range <- background.raster.buffer(monticola$presence.points, 50000, mask = env)
+monticola$background.points <- background.points.buffer(points = monticola$presence.points,
                                                    radius = 20000, n = 1000, mask = env[[1]])
+```
 
-ahli
+Or you can add data to this object after it's created:
+```{r build_monticola2, eval = FALSE}
+names(monticola)
+monticola$species.name <- "monticola"
+monticola$presence.points <- read.csv(monticola.path)
+monticola$range <- background.raster.buffer(monticola$presence.points, 50000, mask = env)
+monticola$background.points <- background.points.buffer(points = monticola$presence.points,
+                                                   radius = 20000, n = 1000, mask = env[[1]])
 ```
 
 
-Or you can add bits of it when the object is created:
-```{r build_allogus}
-allogus <- enmtools.species(species.name = "allogus", 
-                            presence.points = read.csv("./testdata/allogus.csv")[,2:3])
 
-allogus$range <- background.raster.buffer(allogus$presence.points, 50000, mask = env)
-allogus$background.points <- background.points.buffer(points = allogus$presence.points,
-                                                      radius = 20000, n = 1000, mask = env[[1]])
 
-allogus
+It's always a very good idea to run the check.species() function on an enmtools.species object after you build or modify it.
+
+```{r check_species}
+monticola <- check.species(monticola)
+```
+
+And now we can take a look at our species!
+
+```{r interactive_plot}
+interactive.plot.enmtools.species(monticola)
 ```
 
 
-However, ENMTools also contains some sample data.  It contains an enmtools.clade object called "iberolacerta.clade", which holds several enmtools.species objects.  It also has some low-resolution Worldclim data that we can use to demonstrate functions.  We'll pull two of those species out now.
+
+However, ENMTools also contains some sample data.  It contains an enmtools.clade object called "iberolacerta.clade", which holds several enmtools.species objects including an already-built version of Iberolacerta monticola.  It also has some low-resolution Worldclim data that we can use to demonstrate functions.  We'll pull two of those species out now.
+
 ```{r load_iberolacerta}
 data(iberolacerta.clade)
 data(euro.worldclim)
@@ -326,7 +360,6 @@ rbl.glm$replicate.models$cyreni.rep.1
 For the ribbon rangebreak test, you will need one extra thing; a third enmtools.species object representing the occurrence points (for one or both species) that fall within the ribbon of putatively unsuitable habitat.  In the case of these two lizards we don't have such a ribbon, so we'll just simulate one based on some random points.
 
 ```{r build_ribbon}
-
 plot(env[[1]])
 points(cyreni$presence.points, col = "red")
 points(monticola$presence.points, col = "blue")
@@ -362,7 +395,9 @@ Some of the tests in ENMTools, including some really neat ones that are still in
 library(rgbif)
 library(ape)
 
-hisp.anoles <- read.nexus(file = "./testdata/StarBEAST_MCC.species.txt")
+tree.path <- paste(system.file(package="ENMTools"), "/StarBEAST_MCC.species.txt", sep='')
+
+hisp.anoles <- read.nexus(file = tree.path)
 
 keepers <- c("brevirostris", "marron", "caudalis", "websteri", "distichus")
 
@@ -373,7 +408,9 @@ plot(hisp.anoles)
 So there's our tree.  Now we're going to grab some environmental data.
 
 ```{r read_env}
-hisp.env <- stack(list.files("./testdata/Hispaniola_Worldclim", full.names = TRUE))
+hisp.env <- raster::getData('worldclim', var='bio', res=10)
+hisp.env <- raster::crop(hisp.env, extent(-75, -65, 16, 21))
+
 hisp.env <- setMinMax(hisp.env)
 ```
 

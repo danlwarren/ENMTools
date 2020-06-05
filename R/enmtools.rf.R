@@ -14,14 +14,15 @@
 #' @param ... Arguments to be passed to rf()
 #'
 #' @examples
-#' ## NOT RUN
+#' \dontrun{
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
 #' enmtools.rf(iberolacerta.clade$species$monticola, env = euro.worldclim, nback = 500)
+#' }
 
 enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, bg.source = "default", ...){
 
-  check.package("randomForest")
+  check.packages("randomForest")
 
   notes <- NULL
 
@@ -269,6 +270,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
                  env.test.evaluation = env.test.evaluation,
                  rts.test = rts.test,
                  suitability = suitability,
+                 call = sys.call(),
                  notes = notes)
 
   class(output) <- c("enmtools.rf", "enmtools.model")
