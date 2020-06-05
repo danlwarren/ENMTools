@@ -153,7 +153,7 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
 
     for(i in 1:rts.reps){
 
-      print(paste("Replicate", i, "of", rts.reps))
+      message(paste("Replicate", i, "of", rts.reps))
 
       # Repeating analysis with scrambled pa points and then evaluating models
       rep.species <- species
@@ -309,8 +309,8 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
     if(file.exists(report) & overwrite == FALSE){
       stop("Report file exists, and overwrite is set to FALSE!")
     } else {
-      # cat("\n\nGenerating html report...\n")
-print("This function not enabled yet.  Check back soon!")
+      # message("\n\nGenerating html report...\n")
+message("This function not enabled yet.  Check back soon!")
       # makereport(output, outfile = report)
     }
   }

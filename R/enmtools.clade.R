@@ -14,14 +14,14 @@ enmtools.clade <- function(species = NA, tree = NA){
 
       # Checking to see if species is a list
       if(!"list" %in% class(species)){
-         print("Argument species requires a list of enmtools.species objects")
+         stop("Argument species requires a list of enmtools.species objects")
       }
 
       # This if statement is asking whether any of the list elements don't have
       # enmtools.species in their class definitions
       if(any(unlist(lapply(species, function(x) !"enmtools.species" %in% class(x))))){
-         print("The following objects in the species list do not appear to be enmtools.species objects:")
-         print(names(which(unlist(lapply(species, function(x) !"enmtools.species" %in% class(x))))))
+         warning("The following objects in the species list do not appear to be enmtools.species objects:\n",
+         names(which(unlist(lapply(species, function(x) !"enmtools.species" %in% class(x))))))
       }
 
    }
@@ -29,7 +29,7 @@ enmtools.clade <- function(species = NA, tree = NA){
    if(!isTRUE(is.na(tree))){
       # Checking to see if species is a list
       if(!"phylo" %in% class(tree)){
-         print("Argument tree requires a phylo object")
+         stop("Argument tree requires a phylo object")
       }
    }
 

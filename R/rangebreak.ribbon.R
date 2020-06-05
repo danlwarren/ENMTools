@@ -84,7 +84,7 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
   combined.presence.points <- rbind(species.1$presence.points, species.2$presence.points, ribbon$presence.points)
 
   # Build models for empirical data
-  cat("\nBuilding empirical models...\n")
+  message("\nBuilding empirical models...\n")
   if(type == "glm"){
     empirical.species.1.model <- enmtools.glm(species.1, env, f, ...)
     empirical.species.2.model <- enmtools.glm(species.2, env, f, ...)
@@ -145,13 +145,13 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
 
   lines.df <- data.frame(slope = rep(NA, nreps), intercept = rep(NA, nreps), offset = rep(NA, nreps))
 
-  cat("\nBuilding replicate models...\n")
+  message("\nBuilding replicate models...\n")
 
   # We'll use this to keep track of how many iterations were successful
   keepers <- 1
 
   while(keepers <= nreps){
-    cat(paste("\nReplicate", keepers, "...\n"))
+    message(paste("\nReplicate", keepers, "...\n"))
 
     rep.species.1 <- species.1
     rep.species.2 <- species.2

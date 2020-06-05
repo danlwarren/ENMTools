@@ -18,7 +18,7 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default"){
   if(bg.source %in% c("points", "range", "env")){
 
     # Background source manually supplied
-    print(paste("Pulling background points from", bg.source))
+    message(paste("Pulling background points from", bg.source))
 
   } else {
 
@@ -26,18 +26,18 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default"){
     if(inherits(species$background.points, "data.frame")){
 
       bg.source = "points"
-      cat("\n\nDrawing background from species background points.\n\n")
+      message("\n\nDrawing background from species background points.\n\n")
 
     } else if(inherits(species$range, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
 
       # Drawing points from range raster
       bg.source = "range"
-      cat("\n\nNo background points provided, drawing background from range raster.\n\n")
+      message("\n\nNo background points provided, drawing background from range raster.\n\n")
 
     } else if(inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))) {
 
       # Drawing from env
-      cat("\nNo background points or range raster, drawing background from environmental layers.\n\n")
+      message("\nNo background points or range raster, drawing background from environmental layers.\n\n")
       bg.source = "env"
 
     } else {
