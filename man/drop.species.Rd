@@ -18,6 +18,8 @@ An enmtools.clade object with the provided species dropped both from the tree an
 Takes a an ENMTools clade object and a vector of species names.  Drops the species from the tree and removes data from the clade object.
 }
 \examples{
+\dontrun{
 data(iberolacerta.clade)
 new.clade <- drop.species(iberolacerta.clade, c("cyreni", "monticola"))
+}
 }
