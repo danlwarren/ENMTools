@@ -12,7 +12,7 @@
 #' @param ... Arguments to be passed to domain()
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
 #' enmtools.dm(iberolacerta.clade$species$monticola, env = euro.worldclim)

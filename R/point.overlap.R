@@ -4,7 +4,7 @@
 #' @param y An enmtools.species object containing presence points
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni

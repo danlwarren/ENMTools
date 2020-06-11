@@ -48,7 +48,7 @@ enmtools.rf.ranger(
 Takes an emtools.species object with presence and background points, and builds a random forest model using the 'probability mode' in package `ranger`
 }
 \examples{
-\dontrun{
+\donttest{
 data(euro.worldclim)
 data(iberolacerta.clade)
 enmtools.rf(iberolacerta.clade$species$monticola, env = euro.worldclim, nback = 500)

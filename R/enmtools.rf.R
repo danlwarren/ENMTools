@@ -14,7 +14,7 @@
 #' @param ... Arguments to be passed to rf()
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
 #' enmtools.rf(iberolacerta.clade$species$monticola, env = euro.worldclim, nback = 500)

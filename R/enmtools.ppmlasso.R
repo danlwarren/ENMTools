@@ -18,7 +18,7 @@
 #'
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' install.packages("ppmlasso")
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)

@@ -8,7 +8,7 @@
 #' @param ... Further arguments to be passed to CalibratR's "calibrate" function.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' install.package("CalibratR")
 #' install.package("ecospat")
 #' data(euro.worldclim)

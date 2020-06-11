@@ -42,7 +42,7 @@ enmtools.maxent(
 Takes an emtools.species object with presence and background points, and builds a maxent model
 }
 \examples{
-\dontrun{
+\donttest{
 data(euro.worldclim)
 data(iberolacerta.clade)
 enmtools.maxent(iberolacerta.clade$species$monticola, env = euro.worldclim)

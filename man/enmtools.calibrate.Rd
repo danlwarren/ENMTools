@@ -30,7 +30,7 @@ enmtools.calibrate(
 Takes an emtools.model object, and reformats it to run through the CalibratR package, calculates Continuous Boyce Index, and runs a Hosmer-Lemeshow goodness-of-fit test.  Can either do a full CalibratR run or just return ECE/MCE statistics and plots.
 }
 \examples{
-\dontrun{
+\donttest{
 install.package("CalibratR")
 install.package("ecospat")
 data(euro.worldclim)

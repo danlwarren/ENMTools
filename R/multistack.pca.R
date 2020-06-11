@@ -8,7 +8,7 @@
 #' @keywords raster pca environment
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' world <- raster::getData(name = "worldclim", download = TRUE, var = "bio", res = 5)
 #' test1 <- crop(world, extent(10, 15, 10, 15))
 #' test2 <- crop(world, extent(17, 22, 17, 22))

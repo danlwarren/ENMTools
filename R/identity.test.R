@@ -18,7 +18,7 @@
 #' @keywords identity equivalency enmtools hypothesis-testing
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni

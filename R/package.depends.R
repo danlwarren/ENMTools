@@ -7,7 +7,7 @@
 #' hypervolume, ape, ppmlasso, leaflet, ranger, CalibratR, caret, and ResourceSelection.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' install.extras()
 #' }
 

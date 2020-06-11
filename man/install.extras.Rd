@@ -14,7 +14,7 @@ list of all of the extra packages.  At present this list includes mgcv, ecospat,
 hypervolume, ape, ppmlasso, leaflet, ranger, CalibratR, caret, and ResourceSelection.
 }
 \examples{
-\dontrun{
+\donttest{
 install.extras()
 }
 }

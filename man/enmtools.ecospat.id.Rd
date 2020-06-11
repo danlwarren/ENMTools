@@ -46,7 +46,7 @@ results Some results, once I figure out what results to return
 enmtools.ecospat.id, Runs an ecospat identity test using enmtool.species objects.
 }
 \examples{
-\dontrun{
+\donttest{
 data(iberolacerta.clade)
 data(euro.worldclim)
 monticola <- iberolacerta.clade$species$monticola

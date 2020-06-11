@@ -30,7 +30,7 @@ enmtools.hypervolume(
 Takes an emtools.species object and environmental layers, and constructs a hypervolume using the R package hypervolume
 }
 \examples{
-\dontrun{
+\donttest{
 install.packages("hypervolume")
 data(euro.worldclim)
 data(iberolacerta.clade)

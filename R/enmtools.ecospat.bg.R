@@ -19,7 +19,7 @@
 #' @keywords niche plot sdm enm
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' monticola <- iberolacerta.clade$species$monticola

@@ -57,7 +57,7 @@ enmtools.gam(
 Takes an emtools.species object with presence and background points, and builds a gam
 }
 \examples{
-\dontrun{
+\donttest{
 data(euro.worldclim)
 data(iberolacerta.clade)
 enmtools.gam(iberolacerta.clade$species$monticola, env = euro.worldclim, f = pres ~ bio1 + bio9)

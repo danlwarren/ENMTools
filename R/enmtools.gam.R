@@ -17,7 +17,7 @@
 #' @param ... Arguments to be passed to gam()
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
 #' enmtools.gam(iberolacerta.clade$species$monticola, env = euro.worldclim, f = pres ~ bio1 + bio9)
