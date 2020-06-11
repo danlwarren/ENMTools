@@ -14,7 +14,12 @@ Authors@R: c(person(given = "Dan", family = "Warren", role = c("aut", "cre"), em
 		person(given = "Teresa", family = "Iglesias", role = "aut"),
 	      	person(given = "Russell", family = "Dinnage", role = "aut", email = "r.dinnage@gmail.com"))
 Maintainer: Dan Warren <dan.l.warren@gmail.com>
-Description: Tools for constructing niche models and analyzing patterns of niche evolution.
+Description: Tools for constructing niche models and analyzing patterns of niche evolution.  Acts as an interface for many popular modeling algorithms, and allows users to conduct Monte Carlo tests to address basic questions in evolutionary ecology and biogeography.  
+Warren, D.L., R.E. Glor, and M. Turelli (2008) <doi:10.1111/j.1558-5646.2008.00482.x>
+Glor, R.E., and D.L. Warren (2011) <doi:10.1111/j.1558-5646.2010.01177.x>
+Warren, D.L., R.E. Glor, and M. Turelli (2010) <doi:10.1111/j.1600-0587.2009.06142.x>
+Cardillo, M., and D.L. Warren (2016) <doi:10.1111/geb.12455>
+D.L. Warren, L.J. Beaumont, R. Dinnage, and J.B. Baumgartner (2019) <doi:10.1111/ecog.03900>
 License: GPL-2
 LazyData: TRUE
 RoxygenNote: 7.1.0
