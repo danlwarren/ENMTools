@@ -7,6 +7,8 @@
 #' @param method Method for constructing hypervolumes, defaults to "gaussian"
 #' @param ... Extra parameters to be passed to hypervolume_gaussian
 #'
+#' @return An enmtools hypvervolume object containing a hypervolume object, a raster of suitability scores, the species name, and the occurrence data frame.
+#'
 #' @examples
 #' \donttest{
 #' install.packages("hypervolume")

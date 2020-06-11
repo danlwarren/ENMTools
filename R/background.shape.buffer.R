@@ -4,6 +4,8 @@
 #'
 #' @param points A two column data frame with X and Y coordinates
 #' @param radius Radius for circular buffers to draw around points, in meters.
+#'
+#' @return A polygon shapefile.
 
 
 background.shape.buffer <- function(points, radius){

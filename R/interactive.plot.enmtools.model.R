@@ -13,6 +13,8 @@
 #' @param cluster.points Should points be clustered? If TRUE, points close together
 #' will be grouped into clusters that can be interactively expanded by clicking on them.
 #' @param ... other arguments (not used currently)
+#'
+#' @return An interactive leaflet plot depicting the predictions and data from the enmtools.model object.
 
 interactive.plot.enmtools.model <- function(x, map.provider = "Esri.WorldPhysical", cluster.points = FALSE, raster.opacity = 1, ...) {
 

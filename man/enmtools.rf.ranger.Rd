@@ -44,6 +44,9 @@ enmtools.rf.ranger(
 
 \item{...}{Arguments to be passed to \code{\link[ranger]{ranger}}}
 }
+\value{
+An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
+}
 \description{
 Takes an emtools.species object with presence and background points, and builds a random forest model using the 'probability mode' in package `ranger`
 }

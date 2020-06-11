@@ -26,6 +26,9 @@ enmtools.hypervolume(
 
 \item{...}{Extra parameters to be passed to hypervolume_gaussian}
 }
+\value{
+An enmtools hypvervolume object containing a hypervolume object, a raster of suitability scores, the species name, and the occurrence data frame.
+}
 \description{
 Takes an emtools.species object and environmental layers, and constructs a hypervolume using the R package hypervolume
 }

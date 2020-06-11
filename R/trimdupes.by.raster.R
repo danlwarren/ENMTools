@@ -2,6 +2,9 @@
 #'
 #' @param points A two column data frame with X and Y coordinates
 #' @param mask A raster to use as a mask for drawing points
+#'
+#' @return A new data frame with one point per grid cell.
+#'
 #' @examples
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)

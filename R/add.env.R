@@ -1,12 +1,11 @@
-#' Takes a set of points, a buffer radius, a sample size, and a mask and returns
-#' randomly sampled points from within that buffer radius.
-
+#' Takes an enmtools.species object and a set of environment layers, and adds the environmental predictor values to the occurrence data.  Typically not called by the user directly.
 #' Code modified from Elith and Hijmans SDM with R tutorial
-#'
 #'
 #' @param species An enmtools.species or enmtools.clade object
 #' @param env A raster stack of environmental variables
 #' @param verbose Controls printing of progress messages
+#'
+#' @return An enmtools.species object with environmental data attached to it.
 
 
 add.env <- function(species, env, verbose = TRUE){

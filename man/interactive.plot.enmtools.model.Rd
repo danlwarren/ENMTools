@@ -26,6 +26,9 @@ will be grouped into clusters that can be interactively expanded by clicking on 
 
 \item{...}{other arguments (not used currently)}
 }
+\value{
+An interactive leaflet plot depicting the predictions and data from the enmtools.model object.
+}
 \description{
 Function that take an \code{enmtools.model} object and plots an
 interactive map of the presence points, background points (if applicable), and

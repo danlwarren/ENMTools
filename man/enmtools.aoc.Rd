@@ -32,6 +32,9 @@ enmtools.aoc(
 \item{metric}{The overlap metric to use. For ENM sources, this can be any combination of "D", "I", "cor", "env.D", "env.I", and "env.cor".
 for range and point overlap this argument is ignored.}
 }
+\value{
+A list containing a data frame of coefficients from the empirical regression of overlap on time along with the coefficients from all Monte Carlo replicates, along with plots and p values for the accompanying statistical tests.
+}
 \description{
 Takes an overlap matrix and a tree and runs permutation tests to
 determine the statistical significance of the relationship between

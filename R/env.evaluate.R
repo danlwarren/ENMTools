@@ -8,6 +8,8 @@
 #' @param test.eval When set to "true", env.evaluate evaluates the test data stored in the model object instead of the training data.
 #' @param ... Arguments to be passed to othfer functions
 #'
+#' @return A dismo evaluate object measuring the performance of model predictions in environment space.
+#'
 #' @examples
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)

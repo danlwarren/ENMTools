@@ -3,6 +3,8 @@
 #' @param x An enmtools.species object containing a range raster
 #' @param y An enmtools.species object containing a range raster
 #'
+#' @return A numeric value measuring range overlap.
+#'
 #' @examples
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)

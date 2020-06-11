@@ -23,6 +23,9 @@ hypervolume.overlap(
 
 \item{...}{Extra parameters to be passed to enmtools.hypervolume}
 }
+\value{
+A list containing a set of hypervolume objects and the overlap that was measured between them.
+}
 \description{
 Takes an emtools.species object and environmental layers, and constructs a hypervolume using the R package hypervolume
 }

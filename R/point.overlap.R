@@ -3,6 +3,8 @@
 #' @param x An enmtools.species object containing presence points
 #' @param y An enmtools.species object containing presence points
 #'
+#' @return A numeric value measuring the overlap between point distributions.
+#'
 #' @examples
 #' \donttest{
 #' data(iberolacerta.clade)

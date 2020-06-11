@@ -6,6 +6,8 @@
 #' @param reduction.factor Passed to hypervolume functions
 #' @param ... Extra parameters to be passed to enmtools.hypervolume
 #'
+#' @return A list containing a set of hypervolume objects and the overlap that was measured between them.
+#'
 #' @examples
 #' \donttest{
 #' data(euro.worldclim)

@@ -6,7 +6,7 @@
 #' @param x An object of class raster or RasterLayer, or an ENMTools model object containing a suitability raster.
 #' @param verbose Controls printing of diagnostic messages
 #'
-#' @return results A vector containing the two metrics
+#' @return results A vector containing the two metrics B1 and B2 for niche breadth.
 #'
 #' @keywords keywords
 #'

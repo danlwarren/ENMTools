@@ -1,8 +1,9 @@
-#' Takes an overlap matrix and a tree and returns average overlap at
-#' nodes using Fitzpatrick & Turelli averaging method
+#' Takes an overlap matrix and a tree and returns average overlap at nodes using Fitzpatrick & Turelli averaging method.  Typicall called via enmtools.aoc rather than used directly.
 #'
 #' @param overlap An overlap matrix
 #' @param tree A tree
+#'
+#' @return A data frame of node ages and overlaps
 
 
 node.overlap <- function(overlap, tree){

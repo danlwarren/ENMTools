@@ -1,6 +1,8 @@
 #' Defining a class for enmtools.clade.  Each clade gets:
 #' @param species A list of enmtools.species objects
 #' @param tree A tree showing the relationships between the species
+#'
+#' @return An enmtools.clade object, either empty or containing a formatted version of the data that was passed into the function.
 
 
 

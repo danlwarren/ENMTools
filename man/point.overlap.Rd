@@ -11,6 +11,9 @@ point.overlap(x, y)
 
 \item{y}{An enmtools.species object containing presence points}
 }
+\value{
+A numeric value measuring the overlap between point distributions.
+}
 \description{
 Takes two emtools.species objects with range rasters, calculates overlap between them as in Cardillo and Warren 2016
 }

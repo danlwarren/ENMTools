@@ -16,7 +16,7 @@ marginal.plots(model, env, layer, standardize = TRUE)
 \item{standardize}{Whether to set the maximum of the response function to 1, or to instead use the raw values.}
 }
 \value{
-results A plot of the marginal response of the model to the environmental variable
+results A plot of the marginal response of the model to the environmental variable.
 }
 \description{
 marginal.plots Plots the marginal response of a model to an environmental variable with all other variables held at their mean in env

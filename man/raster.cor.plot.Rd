@@ -12,6 +12,9 @@ raster.cor.plot(env, method = "pearson")
 
 \item{method}{Type of correlation to measure.  Can do "pearson", "kendall", or "spearman"}
 }
+\value{
+A list of two plots.  The first maps the correlations between rasters into an MDS space, so that predictors that fall close together in that space are more correlated.  The second plot is a heatmap depicting the correlations between pairs of layers.
+}
 \description{
 Takes a raster stack and returns a data frame containing Pearson correlation coefficients
 between the included rasters

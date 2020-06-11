@@ -6,7 +6,7 @@
 #' @param layer The name of the layer to plot
 #' @param standardize Whether to set the maximum of the response function to 1, or to instead use the raw values.
 #'
-#' @return results A plot of the marginal response of the model to the environmental variable
+#' @return results A plot of the marginal response of the model to the environmental variable.
 #'
 #' @keywords plot sdm enm response
 #'

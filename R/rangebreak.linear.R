@@ -13,7 +13,7 @@
 #' @param rep.dir Directory for storing replicate models when low.memory is set to TRUE.  If not specified, the working directory will be used.
 #' @param ... Additional arguments to be passed to model fitting functions.
 #'
-#' @return results A list containing a replicates, models for the empirical data, and summary statistics and plots.
+#' @return results A list containing the replicates, models for the empirical data, and summary statistics and plots.
 #'
 #' @keywords rangebreak biogeography barrier enmtools hypothesis-testing
 #'

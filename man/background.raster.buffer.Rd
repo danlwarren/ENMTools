@@ -15,6 +15,9 @@ background.raster.buffer(points, radius, mask)
 
 \item{mask}{A raster to use as a mask}
 }
+\value{
+A raster object with values of 1 in every grid cell falling within the buffer.
+}
 \description{
 Takes a set of points, a buffer radius, and a mask and returns
 a raster based on that buffer radius.

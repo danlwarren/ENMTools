@@ -13,6 +13,9 @@ raster.cor(x, y, method = "spearman")
 
 \item{method}{The method to be used for calculating correlations.  Defaults to spearman, but can take "kendall" or "pearson" as well.}
 }
+\value{
+A numeric correlation coefficient.
+}
 \description{
 Calculates the correlation coefficient between two rasters.
 }

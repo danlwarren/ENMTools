@@ -10,6 +10,8 @@
 #' @param replace whether to sample with replacement.
 #' @param threshold a threshold suitability below which probability of sampling drops to zero.  Used for "thresh.pa" and "thresh.con" sampling.
 #' @param ... additional parameters, not currently used but included for S3 compatability
+#'
+#' @return A data frame of simulated points from the enmtools.model object
 
 sim.points <- function(object, n.points = 1000, seed = NA, sample.type = "ppp", replace = FALSE, threshold = NA, ...) {
 

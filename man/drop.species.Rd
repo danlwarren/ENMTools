@@ -11,6 +11,9 @@ drop.species(clade, species)
 
 \item{species}{A name or vector of names of species within the enmtools.clade object.}
 }
+\value{
+An enmtools.clade object with the provided species dropped both from the tree and from the set of enmtools.species objects.
+}
 \description{
 Takes a an ENMTools clade object and a vector of species names.  Drops the species from the tree and removes data from the clade object.
 }

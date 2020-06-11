@@ -7,6 +7,8 @@
 #' @param n.background Number of background points to be used for env space metrics
 #' @param ... Further arguments to be passed to CalibratR's "calibrate" function.
 #'
+#' @return An enmtools.calibrate object containing calibration and classificaction plots, metrics of model calibration, and (optionally) versions of the model that were recalibrated using various methods.
+#'
 #' @examples
 #' \donttest{
 #' install.package("CalibratR")

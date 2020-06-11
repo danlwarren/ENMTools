@@ -4,6 +4,8 @@
 #' @param env A raster or raster stack of environmental data.
 #' @param nback Number of background points to generate, if any
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
+#'
+#' @return An enmtools.species object with background points.
 
 check.bg <- function(species, env = NA, nback = 1000, bg.source = "default"){
 

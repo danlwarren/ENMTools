@@ -11,6 +11,9 @@ raster.standardize(x, verbose = FALSE)
 
 \item{verbose}{Controls printing of diagnostic messages}
 }
+\value{
+A new raster object, standardized so that values sum to 1
+}
 \description{
 This function is used by a lot of the metrics calculated by ENMTools, in order to
 standardize suitability scores so they sum to 1 over a geographic space.

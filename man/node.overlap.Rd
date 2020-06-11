@@ -2,8 +2,7 @@
 % Please edit documentation in R/node.overlap.R
 \name{node.overlap}
 \alias{node.overlap}
-\title{Takes an overlap matrix and a tree and returns average overlap at
-nodes using Fitzpatrick & Turelli averaging method}
+\title{Takes an overlap matrix and a tree and returns average overlap at nodes using Fitzpatrick & Turelli averaging method.  Typicall called via enmtools.aoc rather than used directly.}
 \usage{
 node.overlap(overlap, tree)
 }
@@ -12,7 +11,9 @@ node.overlap(overlap, tree)
 
 \item{tree}{A tree}
 }
+\value{
+A data frame of node ages and overlaps
+}
 \description{
-Takes an overlap matrix and a tree and returns average overlap at
-nodes using Fitzpatrick & Turelli averaging method
+Takes an overlap matrix and a tree and returns average overlap at nodes using Fitzpatrick & Turelli averaging method.  Typicall called via enmtools.aoc rather than used directly.
 }

@@ -10,6 +10,8 @@
 #' @param recal.model.1 Optional.  The output of enmtools.recalibrate for model 1, which needs to have been run with "recalibrate = TRUE".
 #' @param recal.model.2 Optional.  The output of enmtools.recalibrate for model 2, which needs to have been run with "recalibrate = TRUE".
 #'
+#' @return A list of values measuring the overlap between models in environment space, as well as some plots depicting change of the estimates as a function of how many samples were used, which are included as a sort of convergence diagnostic.
+#'
 #' @examples
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)

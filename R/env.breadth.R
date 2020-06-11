@@ -6,6 +6,8 @@
 #' @param max.reps Maximum number of attempts that will be made to find suitable starting conditions
 #' @param chunk.size How many combinations of environmental variables to try at a time.  If your niche breadth in environment space is small, increasing this value may help you get a result.
 #'
+#' @return A list containing the environmental space version of the B2 metric and a plot of B2 estimates as a function of sample size, used as a convergence diagnostic.
+#'
 #' @examples
 #' \donttest{
 #' data(iberolacerta.clade)

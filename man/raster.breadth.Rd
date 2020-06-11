@@ -12,7 +12,7 @@ raster.breadth(x, verbose = FALSE)
 \item{verbose}{Controls printing of diagnostic messages}
 }
 \value{
-results A vector containing the two metrics
+results A vector containing the two metrics B1 and B2 for niche breadth.
 }
 \description{
 This function measures the spatial heterogeneity of the distribution of suitability

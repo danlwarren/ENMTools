@@ -6,6 +6,9 @@
 \usage{
 install.extras()
 }
+\value{
+No return value.
+}
 \description{
 Convenience function that installs all extra packages used in ENMTools.  ENMTools uses
 functions from a lot of external packages, and due to CRAN best practices it doesn't install

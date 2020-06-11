@@ -30,7 +30,7 @@ visualize.enm(
 \item{minmax}{A named list of minima and maxima for each axis, in case the user wants to constrain or expand the space over which models are plotted.}
 }
 \value{
-suit.plot A two dimensional plot of an ENM
+suit.plot A list containing two dimensional plot of an ENM in environment space and a plot of the available environments.
 }
 \description{
 visualize.enm, Makes a heatmap of suitability of habitat in environment space according to a given model

@@ -11,6 +11,9 @@ geog.range.overlap(x, y)
 
 \item{y}{An enmtools.species object containing a range raster}
 }
+\value{
+A numeric value measuring range overlap.
+}
 \description{
 Takes two emtools.species objects with range rasters, calculates overlap between them as in Fitzpatrick and Turelli 2006
 }

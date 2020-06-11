@@ -29,6 +29,9 @@ moses.list(
 
 \item{...}{further arguments to be passed to enmtools.glm}
 }
+\value{
+A list containing GLMs for the groups separately and together, as well as AIC values for those models.
+}
 \description{
 Takes a list of enmtools.species objects and uses model selection to ask whether they're better treated jointly or separately
 }

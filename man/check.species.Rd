@@ -9,6 +9,9 @@ check.species(this.species)
 \arguments{
 \item{this.species}{An enmtools.species object to be checked.}
 }
+\value{
+An enmtools.species object with appropriate formatting.
+}
 \description{
 Checking compliance for an object of class enmtools.species.
 }

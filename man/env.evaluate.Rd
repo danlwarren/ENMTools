@@ -29,6 +29,9 @@ env.evaluate(
 
 \item{...}{Arguments to be passed to othfer functions}
 }
+\value{
+A dismo evaluate object measuring the performance of model predictions in environment space.
+}
 \description{
 Calculates evaluation metrics (AUC, etc.) using latin hypercube sampling in environment space
 }

@@ -47,6 +47,9 @@ enmtools.ppmlasso(
 
 \item{...}{Arguments to be passed to ppmlasso()}
 }
+\value{
+An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
+}
 \description{
 Takes an emtools.species object with presence and background points, and builds a Point Process Model (with Lasso penalty)
 }

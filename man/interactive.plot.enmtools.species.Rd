@@ -24,6 +24,9 @@ on them.}
 
 \item{...}{other arguments (not used currently)}
 }
+\value{
+An interactive leaflet plot visualizing the data present in the species object.
+}
 \description{
 Function that take an \code{\link{enmtools.species}} object and plots an
 interactive map of the presence points, background points (if applicable), and

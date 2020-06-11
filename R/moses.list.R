@@ -7,6 +7,8 @@
 #' @param eval Boolean indicating whether or not GLMs should be evaluated using AUC/TSS/etc.
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param ... further arguments to be passed to enmtools.glm
+#'
+#' @return A list containing GLMs for the groups separately and together, as well as AIC values for those models.
 
 moses.list <- function(species.list, env, f = NULL, eval = FALSE, nback = 1000, bg.source = "default", ...){
 

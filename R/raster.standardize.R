@@ -7,6 +7,7 @@
 #' @param x A raster or RasterLayer object, or an ENMTools model object containing a suitability raster.
 #' @param verbose Controls printing of diagnostic messages
 #'
+#' @return A new raster object, standardized so that values sum to 1
 #'
 #' @keywords keywords
 #'
