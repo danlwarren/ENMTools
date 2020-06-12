@@ -15,6 +15,7 @@
 #'
 #' @examples
 #' \donttest{
+#' install.extras(repos='http://cran.us.r-project.org')
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
 #' enmtools.maxent(iberolacerta.clade$species$monticola, env = euro.worldclim)
