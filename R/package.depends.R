@@ -13,7 +13,7 @@
 #' install.extras()
 #' }
 
-install.extras <- function() {
+install.extras <- function(repos='http://cran.us.r-project.org') {
   install.packages(c("mgcv",
                      "ecospat",
                      "randomForest",
@@ -26,7 +26,7 @@ install.extras <- function() {
                      "caret",
                      "ResourceSelection",
                      "fields",
-                     "rJava"))
+                     "rJava"), repos=repos)
 }
 
 # This function checks if a package is able to be loaded and triggers an error if not

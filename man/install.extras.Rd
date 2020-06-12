@@ -4,7 +4,7 @@
 \alias{install.extras}
 \title{install.extras}
 \usage{
-install.extras()
+install.extras(repos = "http://cran.us.r-project.org")
 }
 \value{
 No return value.
