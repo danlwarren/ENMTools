@@ -34,7 +34,7 @@ Takes an emtools.model object, and reformats it to run through the CalibratR pac
 }
 \examples{
 \donttest{
-install.extras()
+install.extras(repos='http://cran.us.r-project.org')
 data(euro.worldclim)
 data(iberolacerta.clade)
 monticola.glm <- enmtools.glm(iberolacerta.clade$species$monticola,

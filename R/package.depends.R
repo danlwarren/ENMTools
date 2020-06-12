@@ -6,6 +6,8 @@
 #' list of all of the extra packages.  At present this list includes mgcv, ecospat, randomForest,
 #' hypervolume, ape, ppmlasso, leaflet, ranger, CalibratR, caret, and ResourceSelection.
 #'
+#' @param repos URL for the repository to use for installing R packages
+#'
 #' @return No return value.
 #'
 #' @examples

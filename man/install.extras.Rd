@@ -6,6 +6,9 @@
 \usage{
 install.extras(repos = "http://cran.us.r-project.org")
 }
+\arguments{
+\item{repos}{URL for the repository to use for installing R packages}
+}
 \value{
 No return value.
 }
