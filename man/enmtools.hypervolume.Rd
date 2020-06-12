@@ -34,7 +34,7 @@ Takes an emtools.species object and environmental layers, and constructs a hyper
 }
 \examples{
 \donttest{
-install.packages("hypervolume")
+install.extras(repos='http://cran.us.r-project.org')
 data(euro.worldclim)
 data(iberolacerta.clade)
 env <- euro.worldclim[[c(1,8,12,17)]]

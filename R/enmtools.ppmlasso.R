@@ -20,7 +20,7 @@
 #'
 #' @examples
 #' \donttest{
-#' install.packages("ppmlasso")
+#' install.extras(repos='http://cran.us.r-project.org')
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
 #' enmtools.ppmlasso(iberolacerta.clade$species$monticola, env = euro.worldclim[[1:3]])
