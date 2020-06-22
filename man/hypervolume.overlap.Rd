@@ -31,6 +31,7 @@ Takes an emtools.species object and environmental layers, and constructs a hyper
 }
 \examples{
 \donttest{
+install.extras(repos='http://cran.us.r-project.org')
 data(euro.worldclim)
 data(iberolacerta.clade)
 mont <- iberolacerta.clade$species$monticola
