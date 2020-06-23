@@ -22,7 +22,7 @@
 #' \donttest{
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
-#' #' if(requireNamespace("mgcv", quietly = TRUE)) {
+#' if(requireNamespace("mgcv", quietly = TRUE)) {
 #'     enmtools.gam(iberolacerta.clade$species$monticola, env = euro.worldclim, f = pres ~ bio1 + bio9)
 #' }
 #' }
