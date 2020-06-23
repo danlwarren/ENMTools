@@ -45,7 +45,7 @@ An enmtools model object containing species name, model formula (if any), model 
 Takes an emtools.species object with presence and background points, and builds a maxent model
 }
 \examples{
-\donttest{
+\dontrun{
 install.extras(repos='http://cran.us.r-project.org')
 data(euro.worldclim)
 data(iberolacerta.clade)
