@@ -8,7 +8,9 @@
 #' @examples
 #' \dontrun{
 #' data(iberolacerta.clade)
-#' new.clade <- drop.species(iberolacerta.clade, c("cyreni", "monticola"))
+#' if(requireNamespace("ape", quietly = TRUE)) {
+#'     new.clade <- drop.species(iberolacerta.clade, c("cyreni", "monticola"))
+#' }
 #' }
 
 

@@ -49,6 +49,8 @@ Takes an emtools.species object with presence and background points, and builds 
 install.extras(repos='http://cran.us.r-project.org')
 data(euro.worldclim)
 data(iberolacerta.clade)
-enmtools.maxent(iberolacerta.clade$species$monticola, env = euro.worldclim)
+if(requireNamespace("rJava", quietly = TRUE)) {
+    enmtools.maxent(iberolacerta.clade$species$monticola, env = euro.worldclim)
+}
 }
 }

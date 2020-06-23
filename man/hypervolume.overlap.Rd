@@ -37,6 +37,8 @@ data(iberolacerta.clade)
 mont <- iberolacerta.clade$species$monticola
 cyr <- iberolacerta.clade$species$cyreni
 env <- euro.worldclim[[c(1,8,12,17)]]
-hypervolume.overlap(mont, cyr, env = env)
+if(requireNamespace("hypervolume", quietly = TRUE)) {
+    hypervolume.overlap(mont, cyr, env = env)
+}
 }
 }

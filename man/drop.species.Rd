@@ -20,6 +20,8 @@ Takes a an ENMTools clade object and a vector of species names.  Drops the speci
 \examples{
 \dontrun{
 data(iberolacerta.clade)
-new.clade <- drop.species(iberolacerta.clade, c("cyreni", "monticola"))
+if(requireNamespace("ape", quietly = TRUE)) {
+    new.clade <- drop.species(iberolacerta.clade, c("cyreni", "monticola"))
+}
 }
 }

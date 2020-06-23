@@ -38,6 +38,8 @@ install.extras(repos='http://cran.us.r-project.org')
 data(euro.worldclim)
 data(iberolacerta.clade)
 env <- euro.worldclim[[c(1,8,12,17)]]
-monticola.hv <- enmtools.hypervolume(iberolacerta.clade$species$monticola, env = env)
+if(requireNamespace("hypervolume", quietly = TRUE)) {
+    monticola.hv <- enmtools.hypervolume(iberolacerta.clade$species$monticola, env = env)
+}
 }
 }

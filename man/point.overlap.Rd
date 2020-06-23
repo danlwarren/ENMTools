@@ -23,6 +23,8 @@ data(iberolacerta.clade)
 data(euro.worldclim)
 cyreni <- iberolacerta.clade$species$cyreni
 monticola <- iberolacerta.clade$species$monticola
-point.overlap(cyreni, monticola)
+if(requireNamespace("fields", quietly = TRUE)) {
+    point.overlap(cyreni, monticola)
+}
 }
 }
