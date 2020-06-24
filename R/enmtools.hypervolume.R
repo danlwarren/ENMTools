@@ -118,7 +118,8 @@ predict.enmtools.hypervolume <- function(object, env, reduction.factor = 0.1){
     suit.plot <- suit.plot + ggtitle(title) + theme(plot.title = element_text(hjust = 0.5))
   }
 
-  output <- list(suitability = suit.plot)
+  output <- list(suitability = suit.plot,
+                 raster = suitability)
 
   return(output)
 }

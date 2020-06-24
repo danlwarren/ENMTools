@@ -400,7 +400,7 @@ plot.enmtools.gam <- function(x, ...){
 predict.enmtools.gam <- function(object, env, maxpts = 1000, ...){
 
   # Make a plot of habitat suitability in the new region
-  suitability <- raster::predict(env, object$model)
+  suitability <- raster::predict(env, object$model, type = "response")
   suit.points <- data.frame(rasterToPoints(suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
@@ -417,6 +417,7 @@ predict.enmtools.gam <- function(object, env, maxpts = 1000, ...){
   this.threespace = threespace.plot(object, env, maxpts)
 
   output <- list(suitability = suit.plot,
+                 raster = suitability,
                  threespace.plot = this.threespace)
   return(output)
 }
