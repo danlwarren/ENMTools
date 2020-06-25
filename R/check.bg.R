@@ -65,7 +65,7 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default"){
       stop("bg.source set to range, but species does not have a recognizable range raster!")
     }
 
-    if(as.character(crs(env)) != as.character(crs(species$range))){
+    if(!raster::compareCRS(crs(env), crs(species$range))){
       stop("CRS mismatch between species range raster and environmental rasters!")
     }
 
