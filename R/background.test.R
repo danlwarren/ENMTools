@@ -42,7 +42,7 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
   } else {
     description <- paste("\n\nAsymmetric background test\n", species.1$species.name, "vs.", species.2$species.name, "background")
   }
-  cat(paste("\n", description, "\n"))
+  message(paste("\n", description, "\n"))
 
   species.1 <- check.bg(species.1, env, nback = nback, bg.source = bg.source)
   species.2 <- check.bg(species.2, env, nback = nback, bg.source = bg.source)
@@ -75,7 +75,7 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
   species.2$background.points <- rbind(species.1$background.points, species.2$background.points)
 
   # Building models for empirical data
-  cat("\nBuilding empirical models...\n")
+  message("\nBuilding empirical models...\n")
   if(type == "glm"){
     empirical.species.1.model <- enmtools.glm(species.1, env, f, ...)
     empirical.species.2.model <- enmtools.glm(species.2, env, f, ...)
@@ -110,9 +110,9 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
                          unlist(env.overlap(empirical.species.1.model, empirical.species.2.model, env = env)[1:3]))
   reps.overlap <- empirical.overlap
 
-  cat("\nBuilding replicate models...\n")
+  message("\nBuilding replicate models...\n")
   for(i in 1:nreps){
-    cat(paste("\nReplicate", i, "...\n"))
+    message(paste("\nReplicate", i, "...\n"))
 
     rep.species.1 <- species.1
     rep.species.2 <- species.2
@@ -318,12 +318,12 @@ background.precheck <- function(species.1, species.2, env, type, f, nreps, test.
 
 summary.enmtools.background.test <- function(object, ...){
 
-  cat(paste("\n\n", object$description))
+  message(paste("\n\n", object$description))
 
-  cat("\n\nbackground test p-values:\n")
+  message("\n\nbackground test p-values:\n")
   print(object$p.values)
 
-  cat("\n\nReplicates:\n")
+  message("\n\nReplicates:\n")
   print(kable(head(object$reps.overlap)))
 
   plot(object)

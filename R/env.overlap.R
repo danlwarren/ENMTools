@@ -102,7 +102,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
     pred1[pred1 < 0] <- 0
     pred2[pred2 < 0] <- 0
 
-    print(paste("Trying to find starting conditions, attempt", n.reps))
+    message(paste("Trying to find starting conditions, attempt", n.reps))
 
     if(sd(pred1) == 0 | sd(pred2) == 0){
       n.reps <- n.reps + 1
@@ -192,7 +192,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
 
   # If we fail to find useful starting conditions we'll just barf an NA and give up
   if(n.reps == max.reps){
-    cat("\n\nCould not find suitable starting conditions for environmental overlap, returning NA\n\n")
+    warning("\n\nCould not find suitable starting conditions for environmental overlap, returning NA\n\n")
     return(list(env.D = NA,
                 env.I = NA,
                 env.cor = NA,
@@ -206,7 +206,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
     # samples (delta < tolerance).  We're going to diagnose convergence just based
     # on the main models.
 
-    print("Building replicates...")
+    message("Building replicates...")
 
     delta <- 1
 

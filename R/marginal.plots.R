@@ -31,7 +31,7 @@ marginal.plots <- function(model, env, layer, standardize = TRUE){
 
   if(any(is.na(minValue(env))) | any(is.na(maxValue(env)))){
     env <- setMinMax(env)
-    cat("\n\nSetting min and max for environment layers...\n\n")
+    message("\n\nSetting min and max for environment layers...\n\n")
   }
 
   # Create a vector of names in the right order for plot.df

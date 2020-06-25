@@ -38,7 +38,7 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
   if(length(names(env)) == 2){
     layers <- names(env)
   } else if (is.null(layers)) {
-    print("More than two layers in environment stack and no layers argument passed, performing PCA...")
+    message("More than two layers in environment stack and no layers argument passed, performing PCA...")
 
     env <- raster.pca(env, n = 2)
 

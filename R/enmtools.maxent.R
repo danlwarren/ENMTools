@@ -125,7 +125,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
     rts.env.test <- c()
 
     for(i in 1:rts.reps){
-      print(paste("Replicate", i, "of", rts.reps))
+      message(paste("Replicate", i, "of", rts.reps))
 
       # Repeating analysis with scrambled pa points and then evaluating models
       rep.species <- species
@@ -277,8 +277,8 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
     if(file.exists(report) & overwrite == FALSE){
       stop("Report file exists, and overwrite is set to FALSE!")
     } else {
-      # cat("\n\nGenerating html report...\n")
-print("This function not enabled yet.  Check back soon!")
+      # message("\n\nGenerating html report...\n")
+      message("This function not enabled yet.  Check back soon!")
       # makereport(output, outfile = report)
     }
   }
