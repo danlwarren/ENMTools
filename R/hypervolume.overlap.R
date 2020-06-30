@@ -9,7 +9,7 @@
 #' @return A list containing a set of hypervolume objects and the overlap that was measured between them.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' install.extras(repos='http://cran.us.r-project.org')
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
@@ -52,6 +52,10 @@ hypervolume.overlap <- function(species.1, species.2, env = NA, reduction.factor
   hv.set <- hypervolume::hypervolume_set(species.1$hv, species.2$hv, check.memory = FALSE)
 
   volumes <- hypervolume::get_volume(hv.set)
+
+  # Storing and resetting par on exit as required by CRAN
+  opar <- par(no.readonly =TRUE)
+  on.exit(par(opar))
 
   op=par(mar=c(3,10,1,1))
   barplot(volumes,horiz=TRUE,las=2,main="Hypervolume",cex.names=0.5,col='lightblue')

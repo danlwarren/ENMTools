@@ -10,7 +10,7 @@
 #' @return An enmtools hypvervolume object containing a hypervolume object, a raster of suitability scores, the species name, and the occurrence data frame.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' install.extras(repos='http://cran.us.r-project.org')
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)

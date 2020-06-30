@@ -30,7 +30,7 @@ A list containing a set of hypervolume objects and the overlap that was measured
 Takes an emtools.species object and environmental layers, and constructs a hypervolume using the R package hypervolume
 }
 \examples{
-\donttest{
+\dontrun{
 install.extras(repos='http://cran.us.r-project.org')
 data(euro.worldclim)
 data(iberolacerta.clade)

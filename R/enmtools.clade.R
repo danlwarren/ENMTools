@@ -74,6 +74,10 @@ plot.enmtools.clade <- function(x, ...){
   n.rows <- ceiling(sqrt(n.plot))
   n.cols <- ceiling(n.plot/n.rows)
 
+  # Storing and resetting par on exit as required by CRAN
+  opar <- par(no.readonly =TRUE)
+  on.exit(par(opar))
+
   plot.new()
   par(mfrow = c(n.rows, n.cols))
 

@@ -33,7 +33,7 @@ An enmtools hypvervolume object containing a hypervolume object, a raster of sui
 Takes an emtools.species object and environmental layers, and constructs a hypervolume using the R package hypervolume
 }
 \examples{
-\donttest{
+\dontrun{
 install.extras(repos='http://cran.us.r-project.org')
 data(euro.worldclim)
 data(iberolacerta.clade)

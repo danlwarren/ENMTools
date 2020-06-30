@@ -4,10 +4,12 @@
 \alias{install.extras}
 \title{install.extras}
 \usage{
-install.extras(repos = "http://cran.us.r-project.org")
+install.extras(repos = "http://cran.us.r-project.org", ...)
 }
 \arguments{
 \item{repos}{URL for the repository to use for installing R packages}
+
+\item{...}{Other parameters to be passed to \code{install.packages}}
 }
 \value{
 No return value.
