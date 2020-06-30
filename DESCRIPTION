@@ -4,7 +4,7 @@ Title: Analysis of Niche Evolution using Niche and Distribution Models
 Version: 1.0
 Date: 2020-06-02
 Encoding: UTF-8
-Authors@R: c(person(given = "Dan", family = "Warren", role = c("aut", "cre"), email = "dan.l.warren@gmail.com"),
+Authors@R: c(person(given = "Dan", family = "Warren", role = c("aut", "cre"), email = "dan.l.warren@gmail.com", comment = c(ORCID = "0000-0002-8747-2451")),
             person(given = "Nick", family = "Matzke", role = "ctb", email = "nick.matzke@anu.edu.au"),
 			person(given = "Marcel", family = "Cardillo", role = "ctb", email = "marcel.cardillo@anu.edu.au"),
             person(given = "John", family = "Baumgartner", role = "ctb"),
@@ -12,7 +12,7 @@ Authors@R: c(person(given = "Dan", family = "Warren", role = c("aut", "cre"), em
 	      	person(given = "Nicholas", family = "Huron", role = "ctb"),
 	      	person(given = "Marianna", family = "Simoes", role = "ctb"),
 		person(given = "Teresa", family = "Iglesias", role = "ctb"),
-	      	person(given = "Russell", family = "Dinnage", role = "aut", email = "r.dinnage@gmail.com"))
+	      	person(given = "Russell", family = "Dinnage", role = "aut", email = "r.dinnage@gmail.com", comment = c(ORCID = "0000-0003-0846-2819")))
 Maintainer: Dan Warren <dan.l.warren@gmail.com>
 Description: Description: Tools for constructing niche models and analyzing patterns of niche evolution.  Acts as an interface for many popular modeling algorithms, and allows users to conduct Monte Carlo tests to address basic questions in evolutionary ecology and biogeography.  Warren, D.L., R.E. Glor, and M. Turelli (2008) <doi:10.1111/j.1558-5646.2008.00482.x> Glor, R.E., and D.L. Warren (2011) <doi:10.1111/j.1558-5646.2010.01177.x> Warren, D.L., R.E. Glor, and M. Turelli (2010) <doi:10.1111/j.1600-0587.2009.06142.x> Cardillo, M., and D.L. Warren (2016) <doi:10.1111/geb.12455> D.L. Warren, L.J. Beaumont, R. Dinnage, and J.B. Baumgartner (2019) <doi:10.1111/ecog.03900>  
 License: GPL-2
