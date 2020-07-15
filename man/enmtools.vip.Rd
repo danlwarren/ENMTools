@@ -24,7 +24,7 @@ An enmtools.vip object
 Takes an emtools.model object, and performs variable importance analyses on it using methods from the vip package
 }
 \examples{
-\donttest{
+\dontrun{
 install.extras(repos='http://cran.us.r-project.org')
 data(euro.worldclim)
 data(iberolacerta.clade)

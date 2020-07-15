@@ -9,7 +9,7 @@
 #' @return An enmtools.vip object
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' install.extras(repos='http://cran.us.r-project.org')
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
