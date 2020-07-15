@@ -1,0 +1,116 @@
+#' Takes an emtools.model object, and performs variable importance analyses on it using methods from the vip package
+#'
+#' @param model An enmtools.model object
+#' @param metric The metric to use for measuring how variables affect model predictions
+#' @param nsim The number of simulations to be run for method "permute"
+#' @param method A character string or vector containing any combination of "model", "permute", "shap", or "firm".  For details on what these mean, see the vip package help.
+#' @param ... Further arguments to be passed to vip's "vi" functions.
+#'
+#' @return An enmtools.vip object
+#'
+#' @examples
+#' \donttest{
+#' install.extras(repos='http://cran.us.r-project.org')
+#' data(euro.worldclim)
+#' data(iberolacerta.clade)
+#' monticola.glm <- enmtools.glm(iberolacerta.clade$species$monticola,
+#'                               env = euro.worldclim,
+#'                               f = pres ~ bio1 + bio9 + bio11,
+#'                               test.prop = 0.3)
+#' enmtools.vip(monticola.glm)
+#' }
+
+enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", ...){
+
+  check.packages(c("vip", "pdp", "fastshap"))
+
+  output <- list()
+
+  if(inherits(model, "enmtools.glm")){
+    thismodel <- model$model
+    feature_names <- labels(terms(monticola.glm$model))
+    train <- model$analysis.df[,-c(1,2)]
+    target <- "presence"
+    pred_wrapper <- predict
+    reference_class <- "1"
+  }
+
+  if("model" %in% method){
+    output[["model"]] <- vi_model(thismodel)
+  }
+
+  if("permute" %in% method){
+    output[["permute"]] <- vi_permute(thismodel,
+                                      feature_names = feature_names,
+                                      train = train,
+                                      target = target,
+                                      metric = metric,
+                                      pred_wrapper = pred_wrapper,
+                                      reference_class = "1",
+                                      nsim = nsim,
+                                      keep = TRUE)
+
+    plotdf <- melt(attr(output[["permute"]], "raw_scores"))
+    colnames(plotdf) <- c("Variable", "Permutation", "Importance")
+
+    output[["permute.plot"]] <- ggplot(plotdf, aes(x = Importance, y = fct_reorder(Variable, Importance), fill = ..x..)) +
+      geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+      scale_fill_viridis(name = "Importance", option = "D") +
+      theme_ridges() +
+      theme(legend.position = "none") +
+      ylab("Variable") +
+      theme(axis.title.x = element_text(hjust = 0.5)) +
+      theme(axis.title.y = element_text(hjust = 0.5))
+  }
+
+  # To access the raw scores from reps you use attr(results$permute, "raw_scores")
+
+  if("shap" %in% method){
+    output[["shap"]] <- vi_shap(thismodel,
+                                feature_names = feature_names,
+                                train = train,
+                                pred_wrapper = pred_wrapper,
+                                nsim = nsim)
+
+    # plotdf <- melt(attr(output[["shap"]], "raw_scores"))
+    # colnames(plotdf) <- c("Variable", "Permutation", "Importance")
+    #
+    # output[["shap.plot"]] <- ggplot(plotdf, aes(x = Importance, y = fct_reorder(Variable, Importance), fill = ..x..)) +
+    #   geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+    #   scale_fill_viridis(name = "Importance", option = "D") +
+    #   theme_ridges() +
+    #   theme(legend.position = "none") +
+    #   ylab("Variable") +
+    #   theme(axis.title.x = element_text(hjust = 0.5)) +
+    #   theme(axis.title.y = element_text(hjust = 0.5))
+  }
+
+  if("firm" %in% method){
+    output[["firm"]] <- vi_firm(thismodel,
+                                feature_names = feature_names,
+                                train = train,
+                                target = target,
+                                metric = metric,
+                                pred_wrapper = pred_wrapper,
+                                reference_class = "1",
+                                nsim = nsim)
+
+    # plotdf <- melt(attr(output[["firm"]], "raw_scores"))
+    # colnames(plotdf) <- c("Variable", "Permutation", "Importance")
+    #
+    # output[["firm.plot"]] <- ggplot(plotdf, aes(x = Importance, y = fct_reorder(Variable, Importance), fill = ..x..)) +
+    #   geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+    #   scale_fill_viridis(name = "Importance", option = "D") +
+    #   theme_ridges() +
+    #   theme(legend.position = "none") +
+    #   ylab("Variable") +
+    #   theme(axis.title.x = element_text(hjust = 0.5)) +
+    #   theme(axis.title.y = element_text(hjust = 0.5))
+  }
+
+  class(output) <- c("enmtools.vip")
+
+  return(output)
+
+}
+

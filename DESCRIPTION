@@ -52,4 +52,7 @@ Suggests:
 	ResourceSelection,
 	ppmlasso,
 	fields,
-	reshape2
+	reshape2,
+	vip,
+	pdp,
+	fastshap
