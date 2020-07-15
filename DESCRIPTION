@@ -34,7 +34,8 @@ Imports:
 	sp,
 	spatstat,
 	ggpubr,
-	rgdal
+	rgdal,
+	ggridges
 Depends:
 	raster,
 	dismo

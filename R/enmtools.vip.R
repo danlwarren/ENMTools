@@ -36,11 +36,11 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
   }
 
   if("model" %in% method){
-    output[["model"]] <- vi_model(thismodel)
+    output[["model"]] <- vip::vi_model(thismodel)
   }
 
   if("permute" %in% method){
-    output[["permute"]] <- vi_permute(thismodel,
+    output[["permute"]] <- vip::vi_permute(thismodel,
                                       feature_names = feature_names,
                                       train = train,
                                       target = target,
@@ -66,7 +66,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
   # To access the raw scores from reps you use attr(results$permute, "raw_scores")
 
   if("shap" %in% method){
-    output[["shap"]] <- vi_shap(thismodel,
+    output[["shap"]] <- vip::vi_shap(thismodel,
                                 feature_names = feature_names,
                                 train = train,
                                 pred_wrapper = pred_wrapper,
@@ -86,7 +86,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
   }
 
   if("firm" %in% method){
-    output[["firm"]] <- vi_firm(thismodel,
+    output[["firm"]] <- vip::vi_firm(thismodel,
                                 feature_names = feature_names,
                                 train = train,
                                 target = target,
