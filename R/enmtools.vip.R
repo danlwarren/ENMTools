@@ -26,6 +26,10 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
 
   output <- list()
 
+  if(inherits(model, "enmtools.bc") | inherits(model, "enmtools.dm")){
+    stop("Variable importance tests not available for models of this type.")
+  }
+
   if(inherits(model, "enmtools.glm")){
     thismodel <- model$model
     feature_names <- labels(terms(thismodel))
@@ -50,6 +54,16 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
     train <- model$analysis.df[,-c(1,2)]
     target <- "presence"
     pred_wrapper <- predict
+    reference_class <- "1"
+  }
+
+  if(inherits(model, "enmtools.rf.ranger")){
+    thismodel <- model$model
+    feature_names <- colnames(model$analysis.df)
+    feature_names <- feature_names[!feature_names %in% c("Longitude", "Latitude", "presence")]
+    train <- model$analysis.df[,-c(1,2)]
+    target <- "presence"
+    pred_wrapper <- function(object, newdata) predict(object, data = newdata, type = "response")$predictions
     reference_class <- "1"
   }
 
@@ -93,7 +107,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
     colnames(plotdf) <- c("Variable", "Permutation", "Importance")
 
     output[["permute.plot"]] <- ggplot(plotdf, aes(x = Importance, y = fct_reorder(Variable, Importance), fill = ..x..)) +
-      geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+      geom_density_ridges_gradient(stat = "binline", bins = 20, scale = 0.95) +
       scale_fill_viridis(name = "Importance", option = "D") +
       theme_ridges() +
       theme(legend.position = "none") +

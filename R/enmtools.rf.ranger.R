@@ -79,7 +79,6 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
   analysis.df$presence <- as.factor(analysis.df$presence)
 
   this.rf <- ranger::ranger(f, analysis.df[,-c(1,2)], probability = TRUE, ...)
-  this.rf <- ranger::ranger(f, analysis.df[,-c(1,2)], probability = TRUE)
 
   pfun <- function(model, data, ...) {
     predict(model, data, ...)$predictions[ , 2]
@@ -174,7 +173,6 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
         rts.df$presence <- as.factor(rts.df$presence)
 
         thisrep.rf <- ranger::ranger(f, rts.df[,-c(1,2)], probability = TRUE, ...)
-        thisrep.rf <- ranger::ranger(f, rts.df[,-c(1,2)], probability = TRUE)
 
         thisrep.model.evaluation <- dismo::evaluate(predict(thisrep.rf, data = species$presence.points)$predictions[ , 2, drop = TRUE],
                                                    predict(thisrep.rf, data = species$background.points)$predictions[ , 2, drop = TRUE])
