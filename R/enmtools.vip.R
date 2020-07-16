@@ -50,6 +50,21 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
       output[["model"]] <- "Variable importance using this method has not been implemented for models of this type."
     } else {
       output[["model"]] <- vip::vi_model(thismodel)
+
+      output[["model.plot"]] <- ggplot(output[["model"]],
+                                      aes(x = Importance,
+                                          y = fct_reorder(Variable, Importance),
+                                          height = stat(density),
+                                          fill = fct_reorder(Variable, Importance))) +
+        geom_density_ridges(stat = "binline", bins = 20, scale = 0.95, draw_baseline = FALSE) +
+        scale_fill_viridis(name = "Variable", option = "D", discrete = TRUE) +
+        theme_ridges() +
+        theme(legend.position = "none") +
+        ylab("Variable") +
+        theme(axis.title.x = element_text(hjust = 0.5)) +
+        theme(axis.title.y = element_text(hjust = 0.5)) +
+        ggtitle("Variable importance, model-specific method") +
+        theme(plot.title = element_text(hjust = 0.5))
     }
 
   }
