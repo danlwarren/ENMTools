@@ -35,20 +35,35 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
     reference_class <- "1"
   }
 
+  if(inherits(model, "enmtools.gam")){
+    thismodel <- model$model
+    feature_names <- labels(terms(monticola.glm$model))
+    train <- model$analysis.df[,-c(1,2)]
+    target <- "presence"
+    pred_wrapper <- predict
+    reference_class <- "1"
+  }
+
   if("model" %in% method){
-    output[["model"]] <- vip::vi_model(thismodel)
+
+    if(inherits(model, c("enmtools.gam"))){
+      output[["model"]] <- "Variable importance using this method has not been implemented for models of this type."
+    } else {
+      output[["model"]] <- vip::vi_model(thismodel)
+    }
+
   }
 
   if("permute" %in% method){
     output[["permute"]] <- vip::vi_permute(thismodel,
-                                      feature_names = feature_names,
-                                      train = train,
-                                      target = target,
-                                      metric = metric,
-                                      pred_wrapper = pred_wrapper,
-                                      reference_class = "1",
-                                      nsim = nsim,
-                                      keep = TRUE)
+                                           feature_names = feature_names,
+                                           train = train,
+                                           target = target,
+                                           metric = metric,
+                                           pred_wrapper = pred_wrapper,
+                                           reference_class = "1",
+                                           nsim = nsim,
+                                           keep = TRUE)
 
     plotdf <- melt(attr(output[["permute"]], "raw_scores"))
     colnames(plotdf) <- c("Variable", "Permutation", "Importance")
@@ -67,10 +82,10 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
 
   if("shap" %in% method){
     output[["shap"]] <- vip::vi_shap(thismodel,
-                                feature_names = feature_names,
-                                train = train,
-                                pred_wrapper = pred_wrapper,
-                                nsim = nsim)
+                                     feature_names = feature_names,
+                                     train = train,
+                                     pred_wrapper = pred_wrapper,
+                                     nsim = nsim)
 
     # plotdf <- melt(attr(output[["shap"]], "raw_scores"))
     # colnames(plotdf) <- c("Variable", "Permutation", "Importance")
@@ -87,13 +102,13 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
 
   if("firm" %in% method){
     output[["firm"]] <- vip::vi_firm(thismodel,
-                                feature_names = feature_names,
-                                train = train,
-                                target = target,
-                                metric = metric,
-                                pred_wrapper = pred_wrapper,
-                                reference_class = "1",
-                                nsim = nsim)
+                                     feature_names = feature_names,
+                                     train = train,
+                                     target = target,
+                                     metric = metric,
+                                     pred_wrapper = pred_wrapper,
+                                     reference_class = "1",
+                                     nsim = nsim)
 
     # plotdf <- melt(attr(output[["firm"]], "raw_scores"))
     # colnames(plotdf) <- c("Variable", "Permutation", "Importance")
