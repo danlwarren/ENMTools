@@ -67,18 +67,29 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
     reference_class <- "1"
   }
 
+  if(inherits(model, "enmtools.maxent")){
+    thismodel <- model$model
+    train <- rbind(attr(thismodel, "presence"), attr(thismodel, "absence"))
+    feature_names <- colnames(train)
+    train$presence <- c(rep(1, nrow(attr(thismodel, "presence"))),
+                        rep(0, nrow(attr(thismodel, "absence"))))
+    target <- "presence"
+    pred_wrapper <- function(object, newdata) predict(object, newdata)
+    reference_class <- "1"
+  }
+
   if("model" %in% method){
 
-    if(inherits(model, c("enmtools.gam"))){
+    if(inherits(model, c("enmtools.gam")) | inherits(model, c("enmtools.maxent"))){
       output[["model"]] <- "Variable importance using this method has not been implemented for models of this type."
     } else {
       output[["model"]] <- vip::vi_model(thismodel)
 
       output[["model.plot"]] <- ggplot(output[["model"]],
-                                      aes(x = Importance,
-                                          y = fct_reorder(Variable, Importance),
-                                          height = stat(density),
-                                          fill = fct_reorder(Variable, Importance))) +
+                                       aes(x = Importance,
+                                           y = fct_reorder(Variable, Importance),
+                                           height = stat(density),
+                                           fill = fct_reorder(Variable, Importance))) +
         geom_density_ridges(stat = "binline", bins = 20, scale = 0.95, draw_baseline = FALSE) +
         scale_fill_viridis(name = "Variable", option = "D", discrete = TRUE) +
         theme_ridges() +
@@ -143,15 +154,29 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
       theme(plot.title = element_text(hjust = 0.5))
   }
 
+
   if("firm" %in% method){
-    output[["firm"]] <- vip::vi_firm(thismodel,
-                                     feature_names = feature_names,
-                                     train = train,
-                                     target = target,
-                                     metric = metric,
-                                     pred_wrapper = pred_wrapper,
-                                     reference_class = "1",
-                                     nsim = nsim)
+
+    # This method is using pred.fun instead of pred_wrapper,
+    # I think because it's being passed to pdp
+    if(inherits(model, c("enmtools.maxent"))){
+      output[["firm"]] <- vip::vi_firm(thismodel,
+                                       feature_names = feature_names,
+                                       train = train,
+                                       target = target,
+                                       metric = metric,
+                                       pred.fun = pred_wrapper,
+                                       reference_class = "1",
+                                       nsim = nsim)
+    } else {
+      output[["firm"]] <- vip::vi_firm(thismodel,
+                                             feature_names = feature_names,
+                                             train = train,
+                                             target = target,
+                                             metric = metric,
+                                             reference_class = "1",
+                                             nsim = nsim)
+    }
 
     output[["firm.plot"]] <- ggplot(output[["firm"]],
                                     aes(x = Importance,
