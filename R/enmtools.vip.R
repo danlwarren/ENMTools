@@ -78,9 +78,19 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
     reference_class <- "1"
   }
 
+  if(inherits(model, "enmtools.ppmlasso")){
+    thismodel <- model$model
+    feature_names <- colnames(model$analysis.df)
+    feature_names <- feature_names[!feature_names %in% c("Longitude", "Latitude", "presence", "wt")]
+    train <- model$analysis.df[,c(feature_names, "presence")]
+    target <- "presence"
+    pred_wrapper <- function(object, newdata) predict(object, newdata = newdata, type = "response")
+    reference_class <- "1"
+  }
+
   if("model" %in% method){
 
-    if(inherits(model, c("enmtools.gam")) | inherits(model, c("enmtools.maxent"))){
+    if(inherits(model, c("enmtools.gam")) | inherits(model, c("enmtools.maxent")) | inherits(model, c("enmtools.ppmlasso"))){
       output[["model"]] <- "Variable importance using this method has not been implemented for models of this type."
     } else {
       output[["model"]] <- vip::vi_model(thismodel)
