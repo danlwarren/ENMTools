@@ -28,7 +28,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
 
   if(inherits(model, "enmtools.glm")){
     thismodel <- model$model
-    feature_names <- labels(terms(monticola.glm$model))
+    feature_names <- labels(terms(thismodel))
     train <- model$analysis.df[,-c(1,2)]
     target <- "presence"
     pred_wrapper <- predict
@@ -37,7 +37,16 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
 
   if(inherits(model, "enmtools.gam")){
     thismodel <- model$model
-    feature_names <- labels(terms(monticola.glm$model))
+    feature_names <- labels(terms(thismodel))
+    train <- model$analysis.df[,-c(1,2)]
+    target <- "presence"
+    pred_wrapper <- predict
+    reference_class <- "1"
+  }
+
+  if(inherits(model, "enmtools.rf")){
+    thismodel <- model$model
+    feature_names <- labels(terms(thismodel))
     train <- model$analysis.df[,-c(1,2)]
     target <- "presence"
     pred_wrapper <- predict
