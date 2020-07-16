@@ -3,10 +3,12 @@ on:
     branches:
       - master
       - develop
+      - vip
   pull_request:
     branches:
       - master
       - develop
+      - vip
 
 name: R-CMD-check
 
