@@ -75,7 +75,9 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
       theme(legend.position = "none") +
       ylab("Variable") +
       theme(axis.title.x = element_text(hjust = 0.5)) +
-      theme(axis.title.y = element_text(hjust = 0.5))
+      theme(axis.title.y = element_text(hjust = 0.5)) +
+      ggtitle("Variable importance, permutation method") +
+      theme(plot.title = element_text(hjust = 0.5))
   }
 
   # To access the raw scores from reps you use attr(results$permute, "raw_scores")
@@ -87,17 +89,20 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
                                      pred_wrapper = pred_wrapper,
                                      nsim = nsim)
 
-    # plotdf <- melt(attr(output[["shap"]], "raw_scores"))
-    # colnames(plotdf) <- c("Variable", "Permutation", "Importance")
-    #
-    # output[["shap.plot"]] <- ggplot(plotdf, aes(x = Importance, y = fct_reorder(Variable, Importance), fill = ..x..)) +
-    #   geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
-    #   scale_fill_viridis(name = "Importance", option = "D") +
-    #   theme_ridges() +
-    #   theme(legend.position = "none") +
-    #   ylab("Variable") +
-    #   theme(axis.title.x = element_text(hjust = 0.5)) +
-    #   theme(axis.title.y = element_text(hjust = 0.5))
+    output[["shap.plot"]] <- ggplot(output[["shap"]],
+                                    aes(x = Importance,
+                                        y = fct_reorder(Variable, Importance),
+                                        height = stat(density),
+                                        fill = fct_reorder(Variable, Importance))) +
+      geom_density_ridges(stat = "binline", bins = 20, scale = 0.95, draw_baseline = FALSE) +
+      scale_fill_viridis(name = "Variable", option = "D", discrete = TRUE) +
+      theme_ridges() +
+      theme(legend.position = "none") +
+      ylab("Variable") +
+      theme(axis.title.x = element_text(hjust = 0.5)) +
+      theme(axis.title.y = element_text(hjust = 0.5)) +
+      ggtitle("Variable importance, SHAP method") +
+      theme(plot.title = element_text(hjust = 0.5))
   }
 
   if("firm" %in% method){
@@ -110,17 +115,20 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
                                      reference_class = "1",
                                      nsim = nsim)
 
-    # plotdf <- melt(attr(output[["firm"]], "raw_scores"))
-    # colnames(plotdf) <- c("Variable", "Permutation", "Importance")
-    #
-    # output[["firm.plot"]] <- ggplot(plotdf, aes(x = Importance, y = fct_reorder(Variable, Importance), fill = ..x..)) +
-    #   geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
-    #   scale_fill_viridis(name = "Importance", option = "D") +
-    #   theme_ridges() +
-    #   theme(legend.position = "none") +
-    #   ylab("Variable") +
-    #   theme(axis.title.x = element_text(hjust = 0.5)) +
-    #   theme(axis.title.y = element_text(hjust = 0.5))
+    output[["firm.plot"]] <- ggplot(output[["firm"]],
+                                    aes(x = Importance,
+                                        y = fct_reorder(Variable, Importance),
+                                        height = stat(density),
+                                        fill = fct_reorder(Variable, Importance))) +
+      geom_density_ridges(stat = "binline", bins = 20, scale = 0.95, draw_baseline = FALSE) +
+      scale_fill_viridis(name = "Variable", option = "D", discrete = TRUE) +
+      theme_ridges() +
+      theme(legend.position = "none") +
+      ylab("Variable") +
+      theme(axis.title.x = element_text(hjust = 0.5)) +
+      theme(axis.title.y = element_text(hjust = 0.5)) +
+      ggtitle("Variable importance, FIRM method") +
+      theme(plot.title = element_text(hjust = 0.5))
   }
 
   class(output) <- c("enmtools.vip")
