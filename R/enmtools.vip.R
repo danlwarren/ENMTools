@@ -15,7 +15,6 @@
 #' data(iberolacerta.clade)
 #' monticola.glm <- enmtools.glm(iberolacerta.clade$species$monticola,
 #'                               env = euro.worldclim,
-#'                               f = pres ~ bio1 + bio9 + bio11,
 #'                               test.prop = 0.3)
 #' enmtools.vip(monticola.glm)
 #' }
