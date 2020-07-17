@@ -35,7 +35,6 @@ Imports:
 	spatstat,
 	ggpubr,
 	rgdal,
-	ggridges,
 	forcats
 Depends:
 	raster,

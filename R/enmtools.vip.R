@@ -96,18 +96,27 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
 
       output[["model.plot"]] <- ggplot(output[["model"]],
                                        aes(x = Importance,
-                                           y = fct_reorder(Variable, Importance),
-                                           height = stat(density),
-                                           fill = fct_reorder(Variable, Importance))) +
-        geom_density_ridges(stat = "binline", bins = 20, scale = 0.95, draw_baseline = FALSE) +
-        scale_fill_viridis(name = "Variable", option = "D", discrete = TRUE) +
-        theme_ridges() +
-        theme(legend.position = "none") +
+                                           fill = fct_reorder(Variable, Importance, .desc = TRUE))) +
+        geom_histogram(bins = 20) +
+        theme_bw() +
+        geom_hline(yintercept = 0, color = "grey") +
+        scale_fill_viridis(name = "Variable", option = "D", discrete = TRUE, direction = -1) +
+        facet_grid(rows = vars(fct_reorder(Variable, Importance, .desc = TRUE)), switch = "y") +
         ylab("Variable") +
-        theme(axis.title.x = element_text(hjust = 0.5)) +
-        theme(axis.title.y = element_text(hjust = 0.5)) +
         ggtitle("Variable importance, model-specific method") +
-        theme(plot.title = element_text(hjust = 0.5))
+        theme(plot.title = element_text(hjust = 0.5),
+              axis.text.y = element_blank(),
+              axis.ticks.y = element_blank(),
+              panel.spacing = unit(0, "lines"),
+              axis.title.x = element_text(hjust = 0.5),
+              axis.title.y = element_text(hjust = 0.5),
+              legend.position = "none",
+              panel.grid.minor = element_blank(),
+              panel.grid.major.y = element_blank(),
+              panel.border = element_blank(),
+              strip.background = element_blank(),
+              strip.text.y.left = element_text(angle = 0),
+              plot.margin = margin(7, 14, 7, 7))
     }
 
   }
@@ -126,16 +135,29 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
     plotdf <- melt(attr(output[["permute"]], "raw_scores"))
     colnames(plotdf) <- c("Variable", "Permutation", "Importance")
 
-    output[["permute.plot"]] <- ggplot(plotdf, aes(x = Importance, y = fct_reorder(Variable, Importance), fill = ..x..)) +
-      geom_density_ridges_gradient(stat = "binline", bins = 20, scale = 0.95) +
-      scale_fill_viridis(name = "Importance", option = "D") +
-      theme_ridges() +
-      theme(legend.position = "none") +
+    output[["permute.plot"]] <- ggplot(plotdf,
+                                       aes(x = Importance,
+                                           fill = ..x..)) +
+      geom_histogram(bins = 20) +
+      theme_bw() +
+      geom_hline(yintercept = 0, color = "grey") +
+      scale_fill_viridis(name = "Variable", option = "D") +
+      facet_grid(rows = vars(fct_reorder(Variable, Importance, .desc = TRUE)), switch = "y") +
       ylab("Variable") +
-      theme(axis.title.x = element_text(hjust = 0.5)) +
-      theme(axis.title.y = element_text(hjust = 0.5)) +
-      ggtitle("Variable importance, permutation method") +
-      theme(plot.title = element_text(hjust = 0.5))
+      ggtitle("Variable importance, FIRM method") +
+      theme(plot.title = element_text(hjust = 0.5),
+            axis.text.y = element_blank(),
+            axis.ticks.y = element_blank(),
+            panel.spacing = unit(0, "lines"),
+            axis.title.x = element_text(hjust = 0.5),
+            axis.title.y = element_text(hjust = 0.5),
+            legend.position = "none",
+            panel.grid.minor = element_blank(),
+            panel.grid.major.y = element_blank(),
+            panel.border = element_blank(),
+            strip.background = element_blank(),
+            strip.text.y.left = element_text(angle = 0),
+            plot.margin = margin(7, 14, 7, 7))
   }
 
   # To access the raw scores from reps you use attr(results$permute, "raw_scores")
@@ -149,18 +171,27 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
 
     output[["shap.plot"]] <- ggplot(output[["shap"]],
                                     aes(x = Importance,
-                                        y = fct_reorder(Variable, Importance),
-                                        height = stat(density),
-                                        fill = fct_reorder(Variable, Importance))) +
-      geom_density_ridges(stat = "binline", bins = 20, scale = 0.95, draw_baseline = FALSE) +
-      scale_fill_viridis(name = "Variable", option = "D", discrete = TRUE) +
-      theme_ridges() +
-      theme(legend.position = "none") +
+                                        fill = fct_reorder(Variable, Importance, .desc = TRUE))) +
+      geom_histogram(bins = 20) +
+      theme_bw() +
+      geom_hline(yintercept = 0, color = "grey") +
+      scale_fill_viridis(name = "Variable", option = "D", discrete = TRUE, direction = -1) +
+      facet_grid(rows = vars(fct_reorder(Variable, Importance, .desc = TRUE)), switch = "y") +
       ylab("Variable") +
-      theme(axis.title.x = element_text(hjust = 0.5)) +
-      theme(axis.title.y = element_text(hjust = 0.5)) +
       ggtitle("Variable importance, SHAP method") +
-      theme(plot.title = element_text(hjust = 0.5))
+      theme(plot.title = element_text(hjust = 0.5),
+            axis.text.y = element_blank(),
+            axis.ticks.y = element_blank(),
+            panel.spacing = unit(0, "lines"),
+            axis.title.x = element_text(hjust = 0.5),
+            axis.title.y = element_text(hjust = 0.5),
+            legend.position = "none",
+            panel.grid.minor = element_blank(),
+            panel.grid.major.y = element_blank(),
+            panel.border = element_blank(),
+            strip.background = element_blank(),
+            strip.text.y.left = element_text(angle = 0),
+            plot.margin = margin(7, 14, 7, 7))
   }
 
 
@@ -179,28 +210,37 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
                                        nsim = nsim)
     } else {
       output[["firm"]] <- vip::vi_firm(thismodel,
-                                             feature_names = feature_names,
-                                             train = train,
-                                             target = target,
-                                             metric = metric,
-                                             reference_class = "1",
-                                             nsim = nsim)
+                                       feature_names = feature_names,
+                                       train = train,
+                                       target = target,
+                                       metric = metric,
+                                       reference_class = "1",
+                                       nsim = nsim)
     }
 
     output[["firm.plot"]] <- ggplot(output[["firm"]],
                                     aes(x = Importance,
-                                        y = fct_reorder(Variable, Importance),
-                                        height = stat(density),
-                                        fill = fct_reorder(Variable, Importance))) +
-      geom_density_ridges(stat = "binline", bins = 20, scale = 0.95, draw_baseline = FALSE) +
-      scale_fill_viridis(name = "Variable", option = "D", discrete = TRUE) +
-      theme_ridges() +
-      theme(legend.position = "none") +
+                                        fill = fct_reorder(Variable, Importance, .desc = TRUE))) +
+      geom_histogram(bins = 20) +
+      theme_bw() +
+      geom_hline(yintercept = 0, color = "grey") +
+      scale_fill_viridis(name = "Variable", option = "D", discrete = TRUE, direction = -1) +
+      facet_grid(rows = vars(fct_reorder(Variable, Importance, .desc = TRUE)), switch = "y") +
       ylab("Variable") +
-      theme(axis.title.x = element_text(hjust = 0.5)) +
-      theme(axis.title.y = element_text(hjust = 0.5)) +
       ggtitle("Variable importance, FIRM method") +
-      theme(plot.title = element_text(hjust = 0.5))
+      theme(plot.title = element_text(hjust = 0.5),
+            axis.text.y = element_blank(),
+            axis.ticks.y = element_blank(),
+            panel.spacing = unit(0, "lines"),
+            axis.title.x = element_text(hjust = 0.5),
+            axis.title.y = element_text(hjust = 0.5),
+            legend.position = "none",
+            panel.grid.minor = element_blank(),
+            panel.grid.major.y = element_blank(),
+            panel.border = element_blank(),
+            strip.background = element_blank(),
+            strip.text.y.left = element_text(angle = 0),
+            plot.margin = margin(7, 14, 7, 7))
   }
 
   class(output) <- c("enmtools.vip")
