@@ -21,7 +21,7 @@
 
 enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", ...){
 
-  check.packages(c("vip", "pdp", "fastshap"))
+  check.packages(c("vip", "pdp", "fastshap", "reshape2", "viridis"))
 
   output <- list()
 

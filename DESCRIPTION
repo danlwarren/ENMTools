@@ -56,4 +56,5 @@ Suggests:
 	reshape2,
 	vip,
 	pdp,
-	fastshap
+	fastshap,
+	viridis
