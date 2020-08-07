@@ -6,12 +6,17 @@
 #' list of all of the extra packages.  At present this list includes mgcv, ecospat, randomForest,
 #' hypervolume, ape, ppmlasso, leaflet, ranger, CalibratR, caret, and ResourceSelection.
 #'
+#' @param repos URL for the repository to use for installing R packages
+#' @param ... Other parameters to be passed to \code{install.packages}
+#'
+#' @return No return value.
+#'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' install.extras()
 #' }
 
-install.extras <- function() {
+install.extras <- function(repos='http://cran.us.r-project.org', ...) {
   install.packages(c("mgcv",
                      "ecospat",
                      "randomForest",
@@ -24,7 +29,7 @@ install.extras <- function() {
                      "caret",
                      "ResourceSelection",
                      "fields",
-                     "rJava"))
+                     "rJava"), repos=repos, ...)
 }
 
 # This function checks if a package is able to be loaded and triggers an error if not

@@ -11,6 +11,9 @@ enmtools.clade(species = NA, tree = NA)
 
 \item{tree}{A tree showing the relationships between the species}
 }
+\value{
+An enmtools.clade object, either empty or containing a formatted version of the data that was passed into the function.
+}
 \description{
 Defining a class for enmtools.clade.  Each clade gets:
 }

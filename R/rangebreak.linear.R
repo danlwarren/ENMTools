@@ -13,12 +13,12 @@
 #' @param rep.dir Directory for storing replicate models when low.memory is set to TRUE.  If not specified, the working directory will be used.
 #' @param ... Additional arguments to be passed to model fitting functions.
 #'
-#' @return results A list containing a replicates, models for the empirical data, and summary statistics and plots.
+#' @return results A list containing the replicates, models for the empirical data, and summary statistics and plots.
 #'
 #' @keywords rangebreak biogeography barrier enmtools hypothesis-testing
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni
@@ -64,7 +64,7 @@ rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps =
   combined.presence.points <- rbind(species.1$presence.points, species.2$presence.points)
 
   # Build models for empirical data
-  cat("\nBuilding empirical models...\n")
+  message("\nBuilding empirical models...\n")
   if(type == "glm"){
     empirical.species.1.model <- enmtools.glm(species.1, env, f, ...)
     empirical.species.2.model <- enmtools.glm(species.2, env, f, ...)
@@ -102,9 +102,9 @@ rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps =
 
   lines.df <- data.frame(slope = rep(NA, nreps), intercept = rep(NA, nreps))
 
-  cat("\nBuilding replicate models...\n")
+  message("\nBuilding replicate models...\n")
   for(i in 1:nreps){
-    cat(paste("\nReplicate", i, "...\n"))
+    message(paste("\nReplicate", i, "...\n"))
 
     rep.species.1 <- species.1
     rep.species.2 <- species.2

@@ -2,8 +2,7 @@
 % Please edit documentation in R/add.env.R
 \name{add.env}
 \alias{add.env}
-\title{Takes a set of points, a buffer radius, a sample size, and a mask and returns
-randomly sampled points from within that buffer radius.
+\title{Takes an enmtools.species object and a set of environment layers, and adds the environmental predictor values to the occurrence data.  Typically not called by the user directly.
 Code modified from Elith and Hijmans SDM with R tutorial}
 \usage{
 add.env(species, env, verbose = TRUE)
@@ -15,8 +14,10 @@ add.env(species, env, verbose = TRUE)
 
 \item{verbose}{Controls printing of progress messages}
 }
+\value{
+An enmtools.species object with environmental data attached to it.
+}
 \description{
-Takes a set of points, a buffer radius, a sample size, and a mask and returns
-randomly sampled points from within that buffer radius.
+Takes an enmtools.species object and a set of environment layers, and adds the environmental predictor values to the occurrence data.  Typically not called by the user directly.
 Code modified from Elith and Hijmans SDM with R tutorial
 }

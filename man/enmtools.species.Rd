@@ -25,6 +25,9 @@ enmtools.species(
 to pass the check.  This is used by internal enmtools functions to make sure the necessary data is present
 before processing anything.}
 }
+\value{
+Returns an enmtools.species object, either empty or populated with the parameter values that were passed into the function.
+}
 \description{
 Each species gets:
 }

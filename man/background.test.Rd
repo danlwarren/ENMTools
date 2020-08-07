@@ -59,7 +59,7 @@ constructed from the background points supplied for each species.  For Maxent, t
 from the range rasters stored in the enmtools.species objects.
 }
 \examples{
-\dontrun{
+\donttest{
 data(iberolacerta.clade)
 data(euro.worldclim)
 cyreni <- iberolacerta.clade$species$cyreni

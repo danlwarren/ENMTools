@@ -6,7 +6,7 @@
 #' @param layer The name of the layer to plot
 #' @param standardize Whether to set the maximum of the response function to 1, or to instead use the raw values.
 #'
-#' @return results A plot of the marginal response of the model to the environmental variable
+#' @return results A plot of the marginal response of the model to the environmental variable.
 #'
 #' @keywords plot sdm enm response
 #'
@@ -31,7 +31,7 @@ marginal.plots <- function(model, env, layer, standardize = TRUE){
 
   if(any(is.na(minValue(env))) | any(is.na(maxValue(env)))){
     env <- setMinMax(env)
-    cat("\n\nSetting min and max for environment layers...\n\n")
+    message("\n\nSetting min and max for environment layers...\n\n")
   }
 
   # Create a vector of names in the right order for plot.df

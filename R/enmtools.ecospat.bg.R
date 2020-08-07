@@ -14,12 +14,12 @@
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param ... Further arguments to be passed to check.bg
 #'
-#' @return results Some results, once I figure out what results to return
+#' @return A list containing the ecospat output kernel density estimates for each species and their background, as well as the results of hypothesis tests and their accompanying plots.
 #'
 #' @keywords niche plot sdm enm
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' monticola <- iberolacerta.clade$species$monticola
@@ -38,7 +38,7 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
   if(length(names(env)) == 2){
     layers <- names(env)
   } else if (is.null(layers)) {
-    print("More than two layers in environment stack and no layers argument passed, performing PCA...")
+    message("More than two layers in environment stack and no layers argument passed, performing PCA...")
 
     env <- raster.pca(env, n = 2)
 

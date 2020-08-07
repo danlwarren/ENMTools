@@ -1,6 +1,8 @@
 #' Defining a class for enmtools.clade.  Each clade gets:
 #' @param species A list of enmtools.species objects
 #' @param tree A tree showing the relationships between the species
+#'
+#' @return An enmtools.clade object, either empty or containing a formatted version of the data that was passed into the function.
 
 
 
@@ -14,14 +16,14 @@ enmtools.clade <- function(species = NA, tree = NA){
 
       # Checking to see if species is a list
       if(!"list" %in% class(species)){
-         print("Argument species requires a list of enmtools.species objects")
+         stop("Argument species requires a list of enmtools.species objects")
       }
 
       # This if statement is asking whether any of the list elements don't have
       # enmtools.species in their class definitions
       if(any(unlist(lapply(species, function(x) !"enmtools.species" %in% class(x))))){
-         print("The following objects in the species list do not appear to be enmtools.species objects:")
-         print(names(which(unlist(lapply(species, function(x) !"enmtools.species" %in% class(x))))))
+         warning("The following objects in the species list do not appear to be enmtools.species objects:\n",
+         names(which(unlist(lapply(species, function(x) !"enmtools.species" %in% class(x))))))
       }
 
    }
@@ -29,7 +31,7 @@ enmtools.clade <- function(species = NA, tree = NA){
    if(!isTRUE(is.na(tree))){
       # Checking to see if species is a list
       if(!"phylo" %in% class(tree)){
-         print("Argument tree requires a phylo object")
+         stop("Argument tree requires a phylo object")
       }
    }
 
@@ -71,6 +73,10 @@ plot.enmtools.clade <- function(x, ...){
   # Figure out how many rows and columns we need, declare a new plot
   n.rows <- ceiling(sqrt(n.plot))
   n.cols <- ceiling(n.plot/n.rows)
+
+  # Storing and resetting par on exit as required by CRAN
+  opar <- par(no.readonly =TRUE)
+  on.exit(par(opar))
 
   plot.new()
   par(mfrow = c(n.rows, n.cols))

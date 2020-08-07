@@ -17,6 +17,9 @@ background.points.buffer(points, radius, n, mask)
 
 \item{mask}{A raster to use as a mask for drawing points}
 }
+\value{
+A data frame of points drawn at random from circular buffers around the occurrence points.
+}
 \description{
 Takes a set of points, a buffer radius, a sample size, and a mask and returns
 randomly sampled points from within that buffer radius.

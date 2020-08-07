@@ -2,6 +2,8 @@
 #'
 #' @param filename Name of a .csv file
 #' @param species.col Name of the column from the csv file to use for species names.  Default is "species".
+#'
+#' @return A list containing species objects, one for each unique value in species.col.
 
 species.from.file <- function(filename, species.col = "species"){
 

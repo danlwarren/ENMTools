@@ -12,12 +12,15 @@ raster.cor.matrix(env, method = "pearson")
 
 \item{method}{Type of correlation to measure.  Can do "pearson", "kendall", or "spearman"}
 }
+\value{
+A data frame of correlation coefficients for a set of rasters.
+}
 \description{
 Takes a raster stack and returns a data frame containing Pearson correlation coefficients
 between the included rasters
 }
 \examples{
-\dontrun{
+\donttest{
 data(euro.worldclim)
 raster.cor.matrix(euro.worldclim)
 }

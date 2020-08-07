@@ -20,7 +20,7 @@ A ggplot2 object that plots the distribution of environments in the climate laye
 threespace.plot, A plot that compares the environmental distribution of presence points, background points, and the set of supplied environmental layers.
 }
 \examples{
-\dontrun{
+\donttest{
 my.model<- enmtools.gam(iberolacerta.clade$species$monticola, euro.worldclim)
 threespace.plot(my.model, euro.worldclim)
 }

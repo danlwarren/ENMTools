@@ -3,13 +3,17 @@
 #' @param x An enmtools.species object containing presence points
 #' @param y An enmtools.species object containing presence points
 #'
+#' @return A numeric value measuring the overlap between point distributions.
+#'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni
 #' monticola <- iberolacerta.clade$species$monticola
-#' point.overlap(cyreni, monticola)
+#' if(requireNamespace("fields", quietly = TRUE)) {
+#'     point.overlap(cyreni, monticola)
+#' }
 #' }
 
 point.overlap <- function(x, y){

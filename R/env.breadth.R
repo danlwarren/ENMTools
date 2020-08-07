@@ -6,8 +6,10 @@
 #' @param max.reps Maximum number of attempts that will be made to find suitable starting conditions
 #' @param chunk.size How many combinations of environmental variables to try at a time.  If your niche breadth in environment space is small, increasing this value may help you get a result.
 #'
+#' @return A list containing the environmental space version of the B2 metric and a plot of B2 estimates as a function of sample size, used as a convergence diagnostic.
+#'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni
@@ -74,7 +76,7 @@ env.breadth <- function(model, env, tolerance = .0001, max.reps = 10, chunk.size
 
   # If we fail to find useful starting conditions we'll just barf an NA and give up
   if(n.reps == max.reps){
-    cat("\n\nCould not find suitable starting conditions for environmental breadth, returning NA\n\n")
+    warning("\n\nCould not find suitable starting conditions for environmental breadth, returning NA\n\n")
     return(list(env.B2 = NA,
                 B2.plot = NA))
   } else {

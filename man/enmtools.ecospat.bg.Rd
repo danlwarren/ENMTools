@@ -46,13 +46,13 @@ environmental density values.  See documentation for ecospat.grid.clim.dyn.}
 \item{...}{Further arguments to be passed to check.bg}
 }
 \value{
-results Some results, once I figure out what results to return
+A list containing the ecospat output kernel density estimates for each species and their background, as well as the results of hypothesis tests and their accompanying plots.
 }
 \description{
 enmtools.ecospat.bg, Runs an ecospat background/similarity test using enmtool.species objects.
 }
 \examples{
-\dontrun{
+\donttest{
 data(iberolacerta.clade)
 data(euro.worldclim)
 monticola <- iberolacerta.clade$species$monticola

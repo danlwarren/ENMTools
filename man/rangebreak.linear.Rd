@@ -42,13 +42,13 @@ rangebreak.linear(
 \item{...}{Additional arguments to be passed to model fitting functions.}
 }
 \value{
-results A list containing a replicates, models for the empirical data, and summary statistics and plots.
+results A list containing the replicates, models for the empirical data, and summary statistics and plots.
 }
 \description{
 rangebreak.linear Conduct a linear rangebreak test as described in Glor and Warren 2011.
 }
 \examples{
-\dontrun{
+\donttest{
 data(iberolacerta.clade)
 data(euro.worldclim)
 cyreni <- iberolacerta.clade$species$cyreni

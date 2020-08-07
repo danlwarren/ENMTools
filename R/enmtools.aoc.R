@@ -10,6 +10,8 @@
 #' @param metric The overlap metric to use. For ENM sources, this can be any combination of "D", "I", "cor", "env.D", "env.I", and "env.cor".
 #' for range and point overlap this argument is ignored.
 #' @param env Environmental layers for use when overlap is calculated using niche models.
+#'
+#' @return A list containing a data frame of coefficients from the empirical regression of overlap on time along with the coefficients from all Monte Carlo replicates, along with plots and p values for the accompanying statistical tests.
 
 enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  f = NULL, overlap.matrix = NULL, metric = "D"){
 

@@ -8,6 +8,8 @@
 #' @param models A list of models that are made for the species, which will be stuffed in there as we go along
 #' to pass the check.  This is used by internal enmtools functions to make sure the necessary data is present
 #' before processing anything.
+#'
+#' @return Returns an enmtools.species object, either empty or populated with the parameter values that were passed into the function.
 
 
 enmtools.species <- function(range = NA, presence.points = NA, background.points = NA,
@@ -19,25 +21,25 @@ enmtools.species <- function(range = NA, presence.points = NA, background.points
 
   if(!isTRUE(is.na(range))){
     if(!any(c("raster", "RasterLayer", "SpatialPolygons") %in% class(range))){
-      print("Argument range requires an object of class raster or SpatialPolygons")
+      stop("Argument range requires an object of class raster or SpatialPolygons")
     }
   }
 
   if(!isTRUE(is.na(presence.points))){
     if(!any(c("data.frame") %in% class(presence.points))){
-      print("Argument presence.points requires an object of class data.frame")
+      stop("Argument presence.points requires an object of class data.frame")
     }
   }
 
   if(!isTRUE(is.na(background.points))){
     if(!any("data.frame" %in% class(background.points))){
-      print("Argument background.points requires an object of class data.frame")
+      stop("Argument background.points requires an object of class data.frame")
     }
   }
 
   if(!isTRUE(is.na(species.name))){
     if(!any("character" %in% class(species.name))){
-      print("Argument species.name requires an object of class character")
+      stop("Argument species.name requires an object of class character")
     }
   }
 

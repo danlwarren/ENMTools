@@ -13,6 +13,9 @@
 #' will be grouped into clusters that can be interactively expanded by clicking
 #' on them.
 #' @param ... other arguments (not used currently)
+#'
+#' @return An interactive leaflet plot visualizing the data present in the species object.
+
 interactive.plot.enmtools.species <- function(x, map.provider = "Esri.WorldPhysical", cluster.points = FALSE, ...) {
 
   check.packages("leaflet")

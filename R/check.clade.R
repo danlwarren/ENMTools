@@ -1,6 +1,8 @@
 #' Checking for complians of an enmtools.clade object
 #' @param this.clade An enmtools.clade object
 #'
+#' @return An enmtools.clade object with appropriate formatting.
+#'
 #' @examples
 #' data(iberolacerta.clade)
 #' check.clade(iberolacerta.clade)

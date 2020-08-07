@@ -13,8 +13,10 @@
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param ... Arguments to be passed to rf()
 #'
+#' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
+#'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
 #' enmtools.rf(iberolacerta.clade$species$monticola, env = euro.worldclim, nback = 500)
@@ -139,7 +141,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
       rts.env.test <- c()
 
       for(i in 1:rts.reps){
-        print(paste("Replicate", i, "of", rts.reps))
+        message(paste("Replicate", i, "of", rts.reps))
 
         # Repeating analysis with scrambled pa points and then evaluating models
         rep.species <- species
@@ -293,8 +295,8 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
     if(file.exists(report) & overwrite == FALSE){
       stop("Report file exists, and overwrite is set to FALSE!")
     } else {
-      # cat("\n\nGenerating html report...\n")
-print("This function not enabled yet.  Check back soon!")
+      # message("\n\nGenerating html report...\n")
+      message("This function not enabled yet.  Check back soon!")
       # makereport(output, outfile = report)
     }
   }
@@ -399,6 +401,7 @@ predict.enmtools.rf <- function(object, env, maxpts = 1000, ...){
   this.threespace = threespace.plot(object, env, maxpts)
 
   output <- list(suitability = suit.plot,
+                 raster = suitability,
                  threespace.plot = this.threespace)
   return(output)
 }

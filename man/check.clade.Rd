@@ -9,6 +9,9 @@ check.clade(this.clade)
 \arguments{
 \item{this.clade}{An enmtools.clade object}
 }
+\value{
+An enmtools.clade object with appropriate formatting.
+}
 \description{
 Checking for complians of an enmtools.clade object
 }

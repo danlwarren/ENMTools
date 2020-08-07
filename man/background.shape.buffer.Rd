@@ -13,6 +13,9 @@ background.shape.buffer(points, radius)
 
 \item{radius}{Radius for circular buffers to draw around points, in meters.}
 }
+\value{
+A polygon shapefile.
+}
 \description{
 Takes a set of points and a buffer radius, and returns
 a polygon.

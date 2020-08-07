@@ -42,13 +42,13 @@ identity.test(
 \item{...}{Additional arguments to be passed to model fitting functions.}
 }
 \value{
-results A list containing a replicates, models for the empirical data, and summary statistics and plots.
+results A list containing the replicates, models for the empirical data, and summary statistics and plots.
 }
 \description{
 identity.test Conduct a niche identity/equivalency test as described in Warren et al. 2008.
 }
 \examples{
-\dontrun{
+\donttest{
 data(iberolacerta.clade)
 data(euro.worldclim)
 cyreni <- iberolacerta.clade$species$cyreni

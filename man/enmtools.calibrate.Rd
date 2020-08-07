@@ -26,13 +26,15 @@ enmtools.calibrate(
 
 \item{...}{Further arguments to be passed to CalibratR's "calibrate" function.}
 }
+\value{
+An enmtools.calibrate object containing calibration and classificaction plots, metrics of model calibration, and (optionally) versions of the model that were recalibrated using various methods.
+}
 \description{
 Takes an emtools.model object, and reformats it to run through the CalibratR package, calculates Continuous Boyce Index, and runs a Hosmer-Lemeshow goodness-of-fit test.  Can either do a full CalibratR run or just return ECE/MCE statistics and plots.
 }
 \examples{
-\dontrun{
-install.package("CalibratR")
-install.package("ecospat")
+\donttest{
+install.extras(repos='http://cran.us.r-project.org')
 data(euro.worldclim)
 data(iberolacerta.clade)
 monticola.glm <- enmtools.glm(iberolacerta.clade$species$monticola,

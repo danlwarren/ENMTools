@@ -8,7 +8,7 @@
 #' @param plot.test.data Logical determining whether test data should be plotted, if present.  If test data is plotted, it will appear as translucent green triangles.
 #' @param minmax A named list of minima and maxima for each axis, in case the user wants to constrain or expand the space over which models are plotted.
 #'
-#' @return suit.plot A two dimensional plot of an ENM
+#' @return suit.plot A list containing two dimensional plot of an ENM in environment space and a plot of the available environments.
 #'
 #' @keywords niche plot sdm enm
 #'

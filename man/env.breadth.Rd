@@ -17,11 +17,14 @@ env.breadth(model, env, tolerance = 1e-04, max.reps = 10, chunk.size = 1e+05)
 
 \item{chunk.size}{How many combinations of environmental variables to try at a time.  If your niche breadth in environment space is small, increasing this value may help you get a result.}
 }
+\value{
+A list containing the environmental space version of the B2 metric and a plot of B2 estimates as a function of sample size, used as a convergence diagnostic.
+}
 \description{
 Calculates breadth of a model in environment space using latin hypercube sampling
 }
 \examples{
-\dontrun{
+\donttest{
 data(iberolacerta.clade)
 data(euro.worldclim)
 cyreni <- iberolacerta.clade$species$cyreni

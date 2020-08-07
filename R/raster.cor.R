@@ -4,6 +4,8 @@
 #' @param y Either a raster or an ENMTools model object with a suitability raster.
 #' @param method The method to be used for calculating correlations.  Defaults to spearman, but can take "kendall" or "pearson" as well.
 #'
+#' @return A numeric correlation coefficient.
+#'
 #' @examples
 #' data(euro.worldclim)
 #' raster.cor(euro.worldclim[[1]], euro.worldclim[[2]])

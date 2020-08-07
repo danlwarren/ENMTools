@@ -42,19 +42,21 @@ rangebreak.blob(
 \item{...}{Additional arguments to be passed to model fitting functions.}
 }
 \value{
-results A list containing a replicates, models for the empirical data, and summary statistics and plots.
+results A list containing the replicates, models for the empirical data, and summary statistics and plots.
 }
 \description{
 rangebreak.blob Conduct a blob rangebreak test as described in Glor and Warren 2011.
 }
 \examples{
-\dontrun{
+\donttest{
 data(iberolacerta.clade)
 data(euro.worldclim)
 cyreni <- iberolacerta.clade$species$cyreni
 aranica <- iberolacerta.clade$species$aranica
-rangebreak.blob(cyreni, aranica, env = euro.worldclim, type = "glm",
+if(requireNamespace("fields", quietly = TRUE)) {
+    rangebreak.blob(cyreni, aranica, env = euro.worldclim, type = "glm",
 f= pres ~ bio1 + bio12, nreps = 10)
+}
 }
 }
 \keyword{barrier}

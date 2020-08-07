@@ -40,13 +40,13 @@ environmental density values.  See documentation for ecospat.grid.clim.dyn.}
 \item{bg.source}{Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.}
 }
 \value{
-results Some results, once I figure out what results to return
+A list containing the ecospat output kernel density estimates for each species and their background, as well as the results of hypothesis tests and their accompanying plots.
 }
 \description{
 enmtools.ecospat.id, Runs an ecospat identity test using enmtool.species objects.
 }
 \examples{
-\dontrun{
+\donttest{
 data(iberolacerta.clade)
 data(euro.worldclim)
 monticola <- iberolacerta.clade$species$monticola

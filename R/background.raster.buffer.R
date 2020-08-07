@@ -1,11 +1,12 @@
 #' Takes a set of points, a buffer radius, and a mask and returns
 #' a raster based on that buffer radius.
-
 #' Code modified from Elith and Hijmans SDM with R tutorial
 #'
 #' @param points A two column data frame with X and Y coordinates
 #' @param radius Radius for circular buffers to draw around points, in meters.
 #' @param mask A raster to use as a mask
+#'
+#' @return A raster object with values of 1 in every grid cell falling within the buffer.
 #'
 #' @examples
 #' data(iberolacerta.clade)

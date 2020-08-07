@@ -38,11 +38,14 @@ enmtools.bc(
 
 \item{...}{Arguments to be passed to bioclim()}
 }
+\value{
+An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
+}
 \description{
 Takes an emtools.species object with presence and background points, and builds a Bioclim model
 }
 \examples{
-\dontrun{
+\donttest{
 data(euro.worldclim)
 data(iberolacerta.clade)
 enmtools.bc(iberolacerta.clade$species$monticola, env = euro.worldclim)

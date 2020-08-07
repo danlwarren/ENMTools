@@ -12,7 +12,7 @@
 #' @keywords niche plot sdm enm overlap
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(iberolacerta.clade)
 #' ar <- iberolacerta.clade$species$aranica
 #' au <- iberolacerta.clade$species$aurelioi

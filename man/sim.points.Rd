@@ -29,6 +29,9 @@ sim.points(
 
 \item{...}{additional parameters, not currently used but included for S3 compatability}
 }
+\value{
+A data frame of simulated points from the enmtools.model object
+}
 \description{
 Function that takes an \code{enmtools.model} object and simulates points
 from it using a point process.

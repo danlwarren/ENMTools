@@ -47,6 +47,9 @@ enmtools.ppmlasso(
 
 \item{...}{Arguments to be passed to ppmlasso()}
 }
+\value{
+An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
+}
 \description{
 Takes an emtools.species object with presence and background points, and builds a Point Process Model (with Lasso penalty)
 }
@@ -55,7 +58,7 @@ This runs a \code{ppmlasso} model of a species' distribution. It is generally re
 }
 \examples{
 \dontrun{
-install.packages("ppmlasso")
+install.extras(repos='http://cran.us.r-project.org')
 data(euro.worldclim)
 data(iberolacerta.clade)
 enmtools.ppmlasso(iberolacerta.clade$species$monticola, env = euro.worldclim[[1:3]])

@@ -16,10 +16,11 @@
 #'
 #' @details This runs a \code{ppmlasso} model of a species' distribution. It is generally recommended that background points should be on a grid for this method, as the background points are considered 'quadrature' points, used to estimate an integral. If background points are not provided, the function will generate them on a grid, rather than randomly, as is more usual for other SDM methods.
 #'
+#' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
 #'
 #' @examples
 #' \dontrun{
-#' install.packages("ppmlasso")
+#' install.extras(repos='http://cran.us.r-project.org')
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
 #' enmtools.ppmlasso(iberolacerta.clade$species$monticola, env = euro.worldclim[[1:3]])
@@ -169,7 +170,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
         # Repeating analysis with scrambled pa points and then evaluating models
 
 
-        print(paste("Replicate", i, "of", rts.reps))
+        message(paste("Replicate", i, "of", rts.reps))
 
         # Repeating analysis with scrambled pa points and then evaluating models
         rep.species <- species
@@ -353,8 +354,8 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
     if(file.exists(report) & overwrite == FALSE){
       stop("Report file exists, and overwrite is set to FALSE!")
     } else {
-      # cat("\n\nGenerating html report...\n")
-print("This function not enabled yet.  Check back soon!")
+      # message("\n\nGenerating html report...\n")
+      message("This function not enabled yet.  Check back soon!")
       # makereport(output, outfile = report)
     }
   }
@@ -466,6 +467,7 @@ predict.enmtools.ppmlasso <- function(object, env, maxpts = 1000, ...){
   this.threespace = threespace.plot(object, env, maxpts)
 
   output <- list(suitability = suit.plot,
+                 raster = suitability,
                  threespace.plot = this.threespace)
   return(output)
 }

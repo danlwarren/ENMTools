@@ -20,7 +20,7 @@ raster.pca <- function(env, n){
   nas <- which(!complete.cases(env.val))
 
   # Do PCA
-  pca <- prcomp(env.val[keepers,], retx = TRUE)
+  pca <- prcomp(env.val[keepers,], retx = TRUE, center = TRUE, scale = TRUE)
 
   # Build dummy layers
   env.pca <- env[[1:n]]

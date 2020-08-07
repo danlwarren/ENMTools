@@ -9,6 +9,9 @@ combine.species(species.list)
 \arguments{
 \item{species.list}{List of enmtools.species objects that you want to combine together}
 }
+\value{
+An enmtools.species object with the occurrence data, names, and range rasters for the species list combined into one.
+}
 \description{
 Takes a list of enmtools.species objects and combines them into a single enmtools.species object
 }

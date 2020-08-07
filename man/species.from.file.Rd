@@ -11,6 +11,9 @@ species.from.file(filename, species.col = "species")
 
 \item{species.col}{Name of the column from the csv file to use for species names.  Default is "species".}
 }
+\value{
+A list containing species objects, one for each unique value in species.col.
+}
 \description{
 Takes a csv file and uses it to construct one or more enmtools.species objects. It constructs one object per unique value in the "species.col" column.
 }

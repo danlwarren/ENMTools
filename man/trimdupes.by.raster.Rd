@@ -11,6 +11,9 @@ trimdupes.by.raster(points, mask)
 
 \item{mask}{A raster to use as a mask for drawing points}
 }
+\value{
+A new data frame with one point per grid cell.
+}
 \description{
 Takes a set of points and a raster mask and returns a data frame trimmed so that only one point is returned per grid cell in the mask raster.
 }
