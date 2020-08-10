@@ -132,7 +132,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
                                            nsim = nsim,
                                            keep = TRUE)
 
-    plotdf <- melt(attr(output[["permute"]], "raw_scores"))
+    plotdf <- reshape2::melt(attr(output[["permute"]], "raw_scores"))
     colnames(plotdf) <- c("Variable", "Permutation", "Importance")
 
     output[["permute.plot"]] <- ggplot(plotdf,
