@@ -1,4 +1,4 @@
-#' Takes an emtools.model object, and performs variable importance analyses on it using methods from the vip package
+#' Takes an enmtools.model object, and performs variable importance analyses on it using methods from the vip package
 #'
 #' @param model An enmtools.model object
 #' @param metric The metric to use for measuring how variables affect model predictions

@@ -2,7 +2,7 @@
 % Please edit documentation in R/enmtools.vip.R
 \name{enmtools.vip}
 \alias{enmtools.vip}
-\title{Takes an emtools.model object, and performs variable importance analyses on it using methods from the vip package}
+\title{Takes an enmtools.model object, and performs variable importance analyses on it using methods from the vip package}
 \usage{
 enmtools.vip(model, metric = "auc", nsim = 10, method = "permute", ...)
 }
@@ -21,7 +21,7 @@ enmtools.vip(model, metric = "auc", nsim = 10, method = "permute", ...)
 An enmtools.vip object
 }
 \description{
-Takes an emtools.model object, and performs variable importance analyses on it using methods from the vip package
+Takes an enmtools.model object, and performs variable importance analyses on it using methods from the vip package
 }
 \examples{
 \dontrun{
