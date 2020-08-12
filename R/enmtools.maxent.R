@@ -339,7 +339,11 @@ plot.enmtools.maxent <- function(x, ...){
     geom_raster(aes_string(fill = "Suitability")) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
-    geom_point(data = x$analysis.df[x$analysis.df$presence ==1,],  aes_string(y = "Latitude", x = "Longitude"),
+    geom_point(data = x$analysis.df[x$analysis.df$presence == 1 &
+                                    x$analysis.df$Longitude > extent(x$suitability)[1] &
+                                    x$analysis.df$Longitude < extent(x$suitability)[2] &
+                                    x$analysis.df$Latitude > extent(x$suitability)[3] &
+                                    x$analysis.df$Latitude < extent(x$suitability)[4],],  aes_string(y = "Latitude", x = "Longitude"),
                pch = 21, fill = "white", color = "black", size = 2)
 
   if(!(all(is.na(x$test.data)))){
