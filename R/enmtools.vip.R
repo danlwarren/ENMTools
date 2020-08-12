@@ -95,8 +95,8 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
       output[["model"]] <- vip::vi_model(thismodel)
 
       output[["model.plot"]] <- ggplot(output[["model"]],
-                                       aes(x = Importance,
-                                           fill = fct_reorder(Variable, Importance, .desc = TRUE))) +
+                                       aes_string(x = "Importance",
+                                           fill = fct_reorder("Variable", "Importance", .desc = TRUE))) +
         geom_histogram(bins = 20) +
         theme_bw() +
         geom_hline(yintercept = 0, color = "grey") +
@@ -136,8 +136,8 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
     colnames(plotdf) <- c("Variable", "Permutation", "Importance")
 
     output[["permute.plot"]] <- ggplot(plotdf,
-                                       aes(x = Importance,
-                                           fill = ..x..)) +
+                                       aes_string(x = "Importance",
+                                           fill = "..x..")) +
       geom_histogram(bins = 20) +
       theme_bw() +
       geom_hline(yintercept = 0, color = "grey") +
@@ -170,8 +170,8 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
                                      nsim = nsim)
 
     output[["shap.plot"]] <- ggplot(output[["shap"]],
-                                    aes(x = Importance,
-                                        fill = fct_reorder(Variable, Importance, .desc = TRUE))) +
+                                    aes_string(x = "Importance",
+                                        fill = fct_reorder("Variable", "Importance", .desc = TRUE))) +
       geom_histogram(bins = 20) +
       theme_bw() +
       geom_hline(yintercept = 0, color = "grey") +
@@ -219,8 +219,8 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
     }
 
     output[["firm.plot"]] <- ggplot(output[["firm"]],
-                                    aes(x = Importance,
-                                        fill = fct_reorder(Variable, Importance, .desc = TRUE))) +
+                                    aes_string(x = "Importance",
+                                        fill = fct_reorder("Variable", "Importance", .desc = TRUE))) +
       geom_histogram(bins = 20) +
       theme_bw() +
       geom_hline(yintercept = 0, color = "grey") +
