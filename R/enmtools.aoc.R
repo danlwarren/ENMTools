@@ -108,7 +108,7 @@ enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  f = NULL, ov
   rownames(reps.aoc) <- c("empirical", paste("rep", 1:nreps))
 
   # Modified for two-tailed test
-  p.values <- apply(reps.aoc, 2, function(x) 2 * (1 - max(mean(x > x[1]), mean(x < x[1]))))
+  p.values <- apply(reps.aoc, 2, function(x) min(rank(x)[1], rank(-x)[1])/length(x))
 
   intercept.plot <- ggplot2::qplot(reps.aoc[2:nrow(reps.aoc),"(Intercept)"], geom = "histogram", fill = "histogram", alpha = 0.5) +
     geom_vline(xintercept = reps.aoc[1,"(Intercept)"], linetype = "longdash") +

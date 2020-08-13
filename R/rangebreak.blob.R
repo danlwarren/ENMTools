@@ -183,7 +183,7 @@ rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
   rownames(reps.overlap) <- c("empirical", paste("rep", 1:nreps))
 
-  p.values <- apply(reps.overlap, 2, function(x) 1 - mean(x > x[1]))
+  p.values <- apply(reps.overlap, 2, function(x) min(rank(x)[1], rank(-x)[1])/length(x))
 
   d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"D"], linetype = "longdash") +

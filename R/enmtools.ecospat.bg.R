@@ -103,7 +103,7 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
   empline <- c(bg$obs$D, bg$obs$I)
   names(empline) <- c("D", "I")
   reps.overlap <- rbind(empline, bg$sim)
-  p.values <- apply(reps.overlap, 2, function(x) 2 * (1 - max(mean(x > x[1]), mean(x < x[1]))))
+  p.values <- apply(reps.overlap, 2, function(x) min(rank(x)[1], rank(-x)[1])/length(x))
 
   d.plot <- qplot(bg$sim[,"D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = bg$obs$D, linetype = "longdash") +

@@ -96,7 +96,7 @@ enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = 
   empline <- c(eq$obs$D, eq$obs$I)
   names(empline) <- c("D", "I")
   reps.overlap <- rbind(empline, eq$sim)
-  p.values <- apply(reps.overlap, 2, function(x) mean(x < x[1]))
+  p.values <- apply(reps.overlap, 2, function(x) rank(x)[1]/length(x))
 
   d.plot <- qplot(eq$sim[,"D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = eq$obs$D, linetype = "longdash") +
