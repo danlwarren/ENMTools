@@ -14,6 +14,7 @@ enmtools.maxent(
   overwrite = FALSE,
   rts.reps = 0,
   bg.source = "default",
+  verbose = FALSE,
   ...
 )
 }
@@ -35,6 +36,8 @@ enmtools.maxent(
 \item{rts.reps}{The number of replicates to do for a Raes and ter Steege-style test of significance}
 
 \item{bg.source}{Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.}
+
+\item{verbose}{Controls printing of various messages progress reports.  Defaults to FALSE.}
 
 \item{...}{Arguments to be passed to maxent()}
 }

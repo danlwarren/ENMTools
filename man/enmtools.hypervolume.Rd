@@ -10,6 +10,7 @@ enmtools.hypervolume(
   samples.per.point = 10,
   reduction.factor = 0.1,
   method = "gaussian",
+  verbose = FALSE,
   ...
 )
 }
@@ -23,6 +24,8 @@ enmtools.hypervolume(
 \item{reduction.factor}{To be passed to hypervolume_project}
 
 \item{method}{Method for constructing hypervolumes, defaults to "gaussian"}
+
+\item{verbose}{Controls printing of various messages progress reports.  Defaults to FALSE.}
 
 \item{...}{Extra parameters to be passed to hypervolume_gaussian}
 }

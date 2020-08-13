@@ -6,6 +6,7 @@
 #' @param bg.source Determines whether minima and maxima of the environment space should be picked using the environment layers or the background points.
 #' @param n.background The number of background points to sample from the environment space.
 #' @param test.eval When set to "true", env.evaluate evaluates the test data stored in the model object instead of the training data.
+#' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
 #' @param ... Arguments to be passed to othfer functions
 #'
 #' @return A dismo evaluate object measuring the performance of model predictions in environment space.
@@ -19,7 +20,7 @@
 #' env.evaluate(cyreni, cyreni.glm,  euro.worldclim)
 
 
-env.evaluate <- function(species, model, env, bg.source = "background", n.background = 10000, test.eval = FALSE, ...){
+env.evaluate <- function(species, model, env, bg.source = "background", n.background = 10000, test.eval = FALSE, verbose = FALSE, ...){
 
   # If we're evaluating the test data instead of the training data, we need
   # to make sure the data exists and then stuff it into the species object if so
@@ -30,7 +31,7 @@ env.evaluate <- function(species, model, env, bg.source = "background", n.backgr
     species$presence.points <- model$test.data
   }
 
-  species <- check.bg(species, env)
+  species <- check.bg(species, env, verbose = verbose)
 
   if(!inherits(species, "enmtools.species")){
     stop("Argument species must supply an enmtools.species object!")

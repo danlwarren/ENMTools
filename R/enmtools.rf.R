@@ -11,6 +11,7 @@
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
 #' @param rts.reps The number of replicates to do for a Raes and ter Steege-style test of significance
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
+#' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
 #' @param ... Arguments to be passed to rf()
 #'
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
@@ -22,13 +23,13 @@
 #' enmtools.rf(iberolacerta.clade$species$monticola, env = euro.worldclim, nback = 500)
 #' }
 
-enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, bg.source = "default", ...){
+enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, bg.source = "default",  verbose = FALSE, ...){
 
   check.packages("randomForest")
 
   notes <- NULL
 
-  species <- check.bg(species, env, nback = nback,  bg.source = bg.source)
+  species <- check.bg(species, env, nback = nback,  bg.source = bg.source, verbose = verbose)
 
   # Builds a default formula using all env
   if(is.null(f)){
@@ -70,7 +71,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
   }
 
   ### Add env data
-  species <- add.env(species, env)
+  species <- add.env(species, env, verbose = verbose)
 
   # Recast this formula so that the response variable is named "presence"
   # regardless of what was passed.
@@ -164,7 +165,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
         # Everything else goes back to the background
         rep.species$background.points <- allpoints
 
-        rep.species <- add.env(rep.species, env, verbose = FALSE)
+        rep.species <- add.env(rep.species, env, verbose = verbose)
 
         rts.df <- rbind(rep.species$presence.points, rep.species$background.points)
         rts.df$presence <- c(rep(1, nrow(rep.species$presence.points)), rep(0, nrow(rep.species$background.points)))

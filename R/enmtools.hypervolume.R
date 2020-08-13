@@ -5,6 +5,7 @@
 #' @param samples.per.point To be passed to hypervolume_gaussian
 #' @param reduction.factor To be passed to hypervolume_project
 #' @param method Method for constructing hypervolumes, defaults to "gaussian"
+#' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
 #' @param ... Extra parameters to be passed to hypervolume_gaussian
 #'
 #' @return An enmtools hypvervolume object containing a hypervolume object, a raster of suitability scores, the species name, and the occurrence data frame.
@@ -20,7 +21,7 @@
 #' }
 #' }
 
-enmtools.hypervolume <- function(species, env, samples.per.point = 10, reduction.factor = 0.1, method = "gaussian", ...){
+enmtools.hypervolume <- function(species, env, samples.per.point = 10, reduction.factor = 0.1, method = "gaussian",  verbose = FALSE, ...){
 
   check.packages("hypervolume")
 

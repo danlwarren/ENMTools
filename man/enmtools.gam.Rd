@@ -19,6 +19,7 @@ enmtools.gam(
   gam.method = "REML",
   gam.select = TRUE,
   bg.source = "default",
+  verbose = FALSE,
   ...
 )
 }
@@ -50,6 +51,8 @@ enmtools.gam(
 \item{gam.select}{Controls whether gam algorithm attempts to optimize smoothness and reduce model complexity.  See help("gam.selection") for details.}
 
 \item{bg.source}{Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.}
+
+\item{verbose}{Controls printing of various messages progress reports.  Defaults to FALSE.}
 
 \item{...}{Arguments to be passed to gam()}
 }

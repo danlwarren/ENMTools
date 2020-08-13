@@ -9,6 +9,7 @@
 #' @param env.nback Number of points to draw from environment space for environment space discrimination metrics.
 #' @param rts.reps The number of replicates to do for a Raes and ter Steege-style test of significance
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
+#' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
 #' @param ... Arguments to be passed to bioclim()
 #'
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
@@ -20,11 +21,11 @@
 #' enmtools.bc(iberolacerta.clade$species$monticola, env = euro.worldclim)
 #' }
 
-enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwrite = FALSE, nback = 1000, env.nback = 10000, rts.reps = 0, bg.source = "default", ...){
+enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwrite = FALSE, nback = 1000, env.nback = 10000, rts.reps = 0, bg.source = "default",  verbose = FALSE, ...){
 
   notes <- NULL
 
-  species <- check.bg(species, env, nback)
+  species <- check.bg(species, env, nback, verbose = verbose)
 
   bc.precheck(species, env)
 
