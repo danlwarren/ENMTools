@@ -11,6 +11,7 @@
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param low.memory When set to TRUE, replicate models are written to disc instead of being stored in the output object.  Replicate models stored in the output object contain paths to the replicate models on disk instead of the rasters themselves.
 #' @param rep.dir Directory for storing replicate models when low.memory is set to TRUE.  If not specified, the working directory will be used.
+#' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
 #' @param ... Additional arguments to be passed to model fitting functions.
 #'
 #' @return results A list containing the replicates, models for the empirical data, and summary statistics and plots.
@@ -30,7 +31,7 @@
 #' }
 
 
-rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 99, nback = 1000, bg.source = "default", low.memory = FALSE, rep.dir = NA, ...){
+rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 99, nback = 1000, bg.source = "default", low.memory = FALSE, rep.dir = NA, verbose = FALSE, ...){
 
   check.packages("fields")
 
@@ -38,8 +39,8 @@ rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 9
   plotraster <- env[[1]]
   plotraster[!is.na(plotraster)] <- 1
 
-  species.1 <- check.bg(species.1, env, nback = nback, bg.source = bg.source)
-  species.2 <- check.bg(species.2, env, nback = nback, bg.source = bg.source)
+  species.1 <- check.bg(species.1, env, nback = nback, bg.source = bg.source, verbose = verbose)
+  species.2 <- check.bg(species.2, env, nback = nback, bg.source = bg.source, verbose = verbose)
 
   rangebreak.blob.precheck(species.1, species.2, env, type, f, nreps)
 
@@ -109,8 +110,19 @@ rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 9
   blobs <- list
 
   message("\nBuilding replicate models...\n")
+
+  if (requireNamespace("progress", quietly = TRUE)) {
+    pb <- progress::progress_bar$new(
+      format = " [:bar] :percent eta: :eta",
+      total = nreps, clear = FALSE, width= 60)
+  }
+
   for(i in 1:nreps){
-    message(paste("\nReplicate", i, "...\n"))
+    if(verbose == TRUE){message(paste("\nReplicate", i, "...\n"))}
+
+    if (requireNamespace("progress", quietly = TRUE)) {
+      pb$tick()
+    }
 
     rep.species.1 <- species.1
     rep.species.2 <- species.2
@@ -183,7 +195,7 @@ rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
   rownames(reps.overlap) <- c("empirical", paste("rep", 1:nreps))
 
-  p.values <- apply(reps.overlap, 2, function(x) 1 - mean(x > x[1]))
+  p.values <- apply(reps.overlap, 2, function(x) min(rank(x)[1], rank(-x)[1])/length(x))
 
   d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"D"], linetype = "longdash") +

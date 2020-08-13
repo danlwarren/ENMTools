@@ -12,6 +12,7 @@
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
 #' @param rts.reps The number of replicates to do for a Raes and ter Steege-style test of significance
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
+#' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
 #' @param ... Arguments to be passed to ppmlasso()
 #'
 #' @details This runs a \code{ppmlasso} model of a species' distribution. It is generally recommended that background points should be on a grid for this method, as the background points are considered 'quadrature' points, used to estimate an integral. If background points are not provided, the function will generate them on a grid, rather than randomly, as is more usual for other SDM methods.
@@ -27,13 +28,13 @@
 #' }
 
 
-enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, normalise = FALSE, report = NULL, overwrite = FALSE, rts.reps = 0, bg.source = "default", ...){
+enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, normalise = FALSE, report = NULL, overwrite = FALSE, rts.reps = 0, bg.source = "default",  verbose = FALSE, ...){
 
   check.packages("ppmlasso")
 
   notes <- NULL
 
-  species <- check.bg(species, env, nback = nback, bg.source = bg.source)
+  species <- check.bg(species, env, nback = nback, bg.source = bg.source, verbose = verbose)
 
   # Builds a default formula using all env
   if(is.null(f)){
@@ -53,7 +54,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
 
 
   ### Add env data
-  species <- add.env(species, env)
+  species <- add.env(species, env, verbose = verbose)
 
   # Code for randomly withheld test data
   if(is.numeric(test.prop)){
@@ -153,6 +154,8 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
     # Do Raes and ter Steege test for significance.  Turned off if eval == FALSE
     if(rts.reps > 0){
 
+      message("\nBuilding RTS replicate models...\n")
+
       # Die if we're not doing randomly withheld test data and RTS reps > 0
       if(!is.numeric(test.prop)){
         stop(paste("RTS test can only be conducted with randomly withheld data, and test.prop is set to", test.prop))
@@ -165,12 +168,19 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
       rts.env.training <- c()
       rts.env.test <- c()
 
+      if (requireNamespace("progress", quietly = TRUE)) {
+        pb <- progress::progress_bar$new(
+          format = " [:bar] :percent eta: :eta",
+          total = rts.reps, clear = FALSE, width= 60)
+      }
+
       for(i in 1:rts.reps){
 
-        # Repeating analysis with scrambled pa points and then evaluating models
+        if (requireNamespace("progress", quietly = TRUE)) {
+          pb$tick()
+        }
 
-
-        message(paste("Replicate", i, "of", rts.reps))
+        if(verbose == TRUE){message(paste("Replicate", i, "of", rts.reps))}
 
         # Repeating analysis with scrambled pa points and then evaluating models
         rep.species <- species
@@ -193,7 +203,7 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
         # Everything else goes back to the background
         rep.species$background.points <- allpoints
 
-        rep.species <- add.env(rep.species, env, verbose = FALSE)
+        rep.species <- add.env(rep.species, env, verbose = verbose)
 
         rts.df <- rbind(cbind(rep.species$presence.points, Pres = 1),
                              cbind(rep.species$background.points, Pres = 0))

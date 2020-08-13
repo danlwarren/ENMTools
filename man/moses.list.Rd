@@ -11,6 +11,7 @@ moses.list(
   eval = FALSE,
   nback = 1000,
   bg.source = "default",
+  verbose = FALSE,
   ...
 )
 }
@@ -26,6 +27,8 @@ moses.list(
 \item{nback}{Number of background points to generate, if any}
 
 \item{bg.source}{Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.}
+
+\item{verbose}{Controls printing of various messages progress reports.  Defaults to FALSE.}
 
 \item{...}{further arguments to be passed to enmtools.glm}
 }

@@ -29,7 +29,13 @@ install.extras <- function(repos='http://cran.us.r-project.org', ...) {
                      "caret",
                      "ResourceSelection",
                      "fields",
-                     "rJava"), repos=repos, ...)
+                     "rJava",
+                     "vip",
+                     "pdp",
+                     "fastshap",
+                     "reshape2",
+                     "viridis",
+                     "progress"), repos=repos, ...)
 }
 
 # This function checks if a package is able to be loaded and triggers an error if not

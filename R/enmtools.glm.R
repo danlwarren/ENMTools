@@ -12,6 +12,7 @@
 #' @param rts.reps The number of replicates to do for a Raes and ter Steege-style test of significance
 #' @param weights If this is set to "equal", presences and background data will be assigned weights so that the sum of all presence points weights equals the sum of all background point weights.  Otherwise, weights are not provided to the model.
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
+#' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
 #' @param ... Arguments to be passed to glm()
 #'
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
@@ -23,11 +24,11 @@
 
 
 
-enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default", ...){
+enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default",  verbose = FALSE, ...){
 
   notes <- NULL
 
-  species <- check.bg(species, env, nback = nback, bg.source = bg.source)
+  species <- check.bg(species, env, nback = nback, bg.source = bg.source, verbose = verbose)
 
   # Builds a default formula using all env
   if(is.null(f)){
@@ -75,7 +76,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
   #                          analysis.df[analysis.df$presence == 0,], 2)
 
   ### Add env data
-  species <- add.env(species, env)
+  species <- add.env(species, env, verbose = verbose)
 
   # Recast this formula so that the response variable is named "presence"
   # regardless of what was passed.
@@ -147,6 +148,8 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
     # Do Raes and ter Steege test for significance.  Turned off if eval == FALSE
     if(rts.reps > 0 & eval == TRUE){
 
+      message("\nBuilding RTS replicate models...\n")
+
       # Die if we're not doing randomly withheld test data and RTS reps > 0
       if(!is.numeric(test.prop)){
         stop(paste("RTS test can only be conducted with randomly withheld data, and test.prop is set to", test.prop))
@@ -159,9 +162,19 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
       rts.env.training <- c()
       rts.env.test <- c()
 
+      if (requireNamespace("progress", quietly = TRUE)) {
+        pb <- progress::progress_bar$new(
+          format = " [:bar] :percent eta: :eta",
+          total = rts.reps, clear = FALSE, width= 60)
+      }
+
       for(i in 1:rts.reps){
 
-        message(paste("Replicate", i, "of", rts.reps))
+        if (requireNamespace("progress", quietly = TRUE)) {
+          pb$tick()
+        }
+
+        if(verbose == TRUE){message(paste("Replicate", i, "of", rts.reps))}
 
         # Repeating analysis with scrambled pa points and then evaluating models
         rep.species <- species
@@ -184,7 +197,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
         # Everything else goes back to the background
         rep.species$background.points <- allpoints
 
-        rep.species <- add.env(rep.species, env, verbose = FALSE)
+        rep.species <- add.env(rep.species, env, verbose = verbose)
 
         rts.df <- rbind(rep.species$presence.points, rep.species$background.points)
         rts.df$presence <- c(rep(1, nrow(rep.species$presence.points)), rep(0, nrow(rep.species$background.points)))

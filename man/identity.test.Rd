@@ -15,6 +15,7 @@ identity.test(
   bg.source = "default",
   low.memory = FALSE,
   rep.dir = NA,
+  verbose = FALSE,
   ...
 )
 }
@@ -38,6 +39,8 @@ identity.test(
 \item{low.memory}{When set to TRUE, replicate models are written to disc instead of being stored in the output object.  Replicate models stored in the output object contain paths to the replicate models on disk instead of the rasters themselves.}
 
 \item{rep.dir}{Directory for storing replicate models when low.memory is set to TRUE.  If not specified, the working directory will be used.}
+
+\item{verbose}{Controls printing of various messages progress reports.  Defaults to FALSE.}
 
 \item{...}{Additional arguments to be passed to model fitting functions.}
 }

@@ -13,6 +13,7 @@
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param low.memory When set to TRUE, replicate models are written to disc instead of being stored in the output object.  Replicate models stored in the output object contain paths to the replicate models on disk instead of the rasters themselves.
 #' @param rep.dir Directory for storing replicate models when low.memory is set to TRUE.  If not specified, the working directory will be used.
+#' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
 #' @param ... Additional arguments to be passed to model fitting functions.
 #'
 #' @return results A list containing models for the replicates, models for the empirical data, and summary statistics and plots.
@@ -36,11 +37,11 @@
 #' type = "glm", f= pres ~ bio1 + bio12, nreps = 10)
 #' }
 
-rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL, width = 1, nreps = 99,  nback = 1000, bg.source = "default", low.memory = FALSE, rep.dir = NA, ...){
+rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL, width = 1, nreps = 99,  nback = 1000, bg.source = "default", low.memory = FALSE, rep.dir = NA, verbose = FALSE, ...){
 
-  species.1 <- check.bg(species.1, env, nback = nback, bg.source = bg.source)
-  species.2 <- check.bg(species.2, env, nback = nback, bg.source = bg.source)
-  ribbon <- check.bg(ribbon, env, nback = nback, bg.source = bg.source)
+  species.1 <- check.bg(species.1, env, nback = nback, bg.source = bg.source, verbose = verbose)
+  species.2 <- check.bg(species.2, env, nback = nback, bg.source = bg.source, verbose = verbose)
+  ribbon <- check.bg(ribbon, env, nback = nback, bg.source = bg.source, verbose = verbose)
 
   # Making sure species 1 always has the most presence points
   if(nrow(species.1$presence.points) < nrow(species.2$presence.points)){
@@ -150,8 +151,19 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
   # We'll use this to keep track of how many iterations were successful
   keepers <- 1
 
+  if (requireNamespace("progress", quietly = TRUE)) {
+    pb <- progress::progress_bar$new(
+      format = " [:bar] :percent eta: :eta",
+      total = nreps, clear = FALSE, width= 60)
+  }
+
+
   while(keepers <= nreps){
-    message(paste("\nReplicate", keepers, "...\n"))
+    if(verbose == TRUE){message(paste("\nReplicate", keepers, "...\n"))}
+
+    if(requireNamespace("progress", quietly = TRUE)) {
+      pb$tick()
+    }
 
     rep.species.1 <- species.1
     rep.species.2 <- species.2
@@ -310,10 +322,10 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
   rownames(reps.overlap.sp2.vs.ribbon) <- c("empirical", paste("rep", 1:nreps))
   rownames(reps.overlap.outside.vs.ribbon) <- c("empirical", paste("rep", 1:nreps))
 
-  p.values.sp1.vs.sp2 <- apply(reps.overlap.sp1.vs.sp2, 2, function(x) 2 * (1 - max(mean(x > x[1]), mean(x < x[1]))))
-  p.values.sp1.vs.ribbon <- apply(reps.overlap.sp1.vs.ribbon, 2, function(x) 2 * (1 - max(mean(x > x[1]), mean(x < x[1]))))
-  p.values.sp2.vs.ribbon <- apply(reps.overlap.sp2.vs.ribbon, 2, function(x) 2 * (1 - max(mean(x > x[1]), mean(x < x[1]))))
-  p.values.outside.vs.ribbon <- apply(reps.overlap.outside.vs.ribbon, 2, function(x) 2 * (1 - max(mean(x > x[1]), mean(x < x[1]))))
+  p.values.sp1.vs.sp2 <- apply(reps.overlap.sp1.vs.sp2, 2, function(x) min(rank(x)[1], rank(-x)[1])/length(x))
+  p.values.sp1.vs.ribbon <- apply(reps.overlap.sp1.vs.ribbon, 2, function(x) min(rank(x)[1], rank(-x)[1])/length(x))
+  p.values.sp2.vs.ribbon <- apply(reps.overlap.sp2.vs.ribbon, 2, function(x) min(rank(x)[1], rank(-x)[1])/length(x))
+  p.values.outside.vs.ribbon <- apply(reps.overlap.outside.vs.ribbon, 2, function(x) min(rank(x)[1], rank(-x)[1])/length(x))
 
 
   ### Plots for sp1 vs sp2
