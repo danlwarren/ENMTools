@@ -151,8 +151,19 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
   # We'll use this to keep track of how many iterations were successful
   keepers <- 1
 
+  if (requireNamespace("progress", quietly = TRUE)) {
+    pb <- progress::progress_bar$new(
+      format = " [:bar] :percent eta: :eta",
+      total = nreps, clear = FALSE, width= 60)
+  }
+
+
   while(keepers <= nreps){
-    message(paste("\nReplicate", keepers, "...\n"))
+    if(verbose == TRUE){message(paste("\nReplicate", keepers, "...\n"))}
+
+    if(requireNamespace("progress", quietly = TRUE)) {
+      pb$tick()
+    }
 
     rep.species.1 <- species.1
     rep.species.2 <- species.2

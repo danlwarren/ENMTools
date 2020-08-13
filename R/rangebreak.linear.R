@@ -104,8 +104,20 @@ rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps =
   lines.df <- data.frame(slope = rep(NA, nreps), intercept = rep(NA, nreps))
 
   message("\nBuilding replicate models...\n")
+
+
+  if (requireNamespace("progress", quietly = TRUE)) {
+    pb <- progress::progress_bar$new(
+      format = " [:bar] :percent eta: :eta",
+      total = nreps, clear = FALSE, width= 60)
+  }
+
   for(i in 1:nreps){
-    message(paste("\nReplicate", i, "...\n"))
+    if(verbose == TRUE){message(paste("\nReplicate", i, "...\n"))}
+
+    if (requireNamespace("progress", quietly = TRUE)) {
+      pb$tick()
+    }
 
     rep.species.1 <- species.1
     rep.species.2 <- species.2

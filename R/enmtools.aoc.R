@@ -97,7 +97,16 @@ enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  f = NULL, ov
 
   reps <- list()
 
+  if (requireNamespace("progress", quietly = TRUE)) {
+    pb <- progress::progress_bar$new(
+      format = " [:bar] :percent eta: :eta",
+      total = nreps, clear = FALSE, width= 60)
+  }
+
   for(i in 1:nreps){
+    if (requireNamespace("progress", quietly = TRUE)) {
+      pb$tick()
+    }
     this.rep <- sample(nrow(overlap))
     reps[[paste0("rep.", i)]] <- do.rep(sample(length(tree$tip.label)))$rep.lm
   }

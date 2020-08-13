@@ -154,6 +154,8 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
     # Do Raes and ter Steege test for significance.  Turned off if eval == FALSE
     if(rts.reps > 0){
 
+      message("\nBuilding RTS replicate models...\n")
+
       # Die if we're not doing randomly withheld test data and RTS reps > 0
       if(!is.numeric(test.prop)){
         stop(paste("RTS test can only be conducted with randomly withheld data, and test.prop is set to", test.prop))
@@ -166,12 +168,19 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
       rts.env.training <- c()
       rts.env.test <- c()
 
+      if (requireNamespace("progress", quietly = TRUE)) {
+        pb <- progress::progress_bar$new(
+          format = " [:bar] :percent eta: :eta",
+          total = rts.reps, clear = FALSE, width= 60)
+      }
+
       for(i in 1:rts.reps){
 
-        # Repeating analysis with scrambled pa points and then evaluating models
+        if (requireNamespace("progress", quietly = TRUE)) {
+          pb$tick()
+        }
 
-
-        message(paste("Replicate", i, "of", rts.reps))
+        if(verbose == TRUE){message(paste("Replicate", i, "of", rts.reps))}
 
         # Repeating analysis with scrambled pa points and then evaluating models
         rep.species <- species

@@ -112,11 +112,22 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
   reps.overlap <- empirical.overlap
 
   message("\nBuilding replicate models...\n")
+
+  if (requireNamespace("progress", quietly = TRUE)) {
+    pb <- progress::progress_bar$new(
+      format = " [:bar] :percent eta: :eta",
+      total = nreps, clear = FALSE, width= 60)
+  }
+
   for(i in 1:nreps){
-    message(paste("\nReplicate", i, "...\n"))
+    if(verbose == TRUE){message(paste("\nReplicate", i, "...\n"))}
 
     rep.species.1 <- species.1
     rep.species.2 <- species.2
+
+    if (requireNamespace("progress", quietly = TRUE)) {
+      pb$tick()
+    }
 
     if(test.type == "symmetric"){
 

@@ -52,4 +52,5 @@ Suggests:
 	vip,
 	pdp,
 	fastshap,
-	viridis
+	viridis,
+	progress
