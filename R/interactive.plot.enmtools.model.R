@@ -112,11 +112,5 @@ interactive.plot.enmtools.model <- function(x, map.provider = "Esri.WorldPhysica
                 labels = c("Training presences"))
   }
 
-
-
   m
-}
-
-interactive.plot <- function (x, ...) {
-  UseMethod("interactive.plot", x)
 }
