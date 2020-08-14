@@ -70,8 +70,10 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
       stop("CRS mismatch between species range raster and environmental rasters!")
     }
 
-    if(nback > sum(getValues(species$range) > -1000000000000, na.rm=TRUE)){
+    if(nback > sum(as.numeric(!is.na(values(species$range))))){
       species$background.points <- as.data.frame(rasterToPoints(species$range)[,1:2])
+      inds <- sample(1:nrow(species$background.points), size = nback, replace = TRUE)
+      species$background.points <- species$background.points[inds,]
     } else {
       species$background.points <- as.data.frame(randomPoints(species$range, nback, species$presence.points))
     }
@@ -84,7 +86,15 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
     if(!inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
       stop("bg.source set to env, but env layers were not recognized!")
     }
-    species$background.points <- as.data.frame(randomPoints(env[[1]], nback, species$presence.points))
+
+    if(nback > sum(as.numeric(!is.na(values(env[[1]]))))){
+      species$background.points <- as.data.frame(rasterToPoints(env[[1]])[,1:2])
+      inds <- sample(1:nrow(species$background.points), size = nback, replace = TRUE)
+      species$background.points <- species$background.points[inds,]
+    } else {
+      species$background.points <- as.data.frame(randomPoints(env[[1]], nback, species$presence.points))
+    }
+
     colnames(species$background.points) <- colnames(species$presence.points)
     return(species)
   }
