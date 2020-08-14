@@ -29,7 +29,8 @@ Imports:
 	sp,
 	spatstat,
 	ggpubr,
-	rgdal
+	rgdal,
+	forcats
 Depends:
 	raster,
 	dismo
@@ -47,4 +48,9 @@ Suggests:
 	ResourceSelection,
 	ppmlasso,
 	fields,
-	reshape2
+	reshape2,
+	vip,
+	pdp,
+	fastshap,
+	viridis,
+	progress

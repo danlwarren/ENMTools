@@ -12,6 +12,7 @@
 #' @param nback Number of background points to use for density calculations.
 #' @param R Resolution of the grid. See documentation for ecospat.grid.clim.dyn.
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
+#' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
 #' @param ... Further arguments to be passed to check.bg
 #'
 #' @return A list containing the ecospat output kernel density estimates for each species and their background, as well as the results of hypothesis tests and their accompanying plots.
@@ -27,12 +28,12 @@
 #' enmtools.ecospat.bg(monticola, cyreni, euro.worldclim[[1:2]], nback = 500)
 #' }
 
-enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = NULL, test.type = "asymmetric", th.sp=0, th.env=0, R=100, nback = 1000, bg.source = "default", ...){
+enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = NULL, test.type = "asymmetric", th.sp=0, th.env=0, R=100, nback = 1000, bg.source = "default", verbose = FALSE, ...){
 
   check.packages("ecospat")
 
-  species.1 <- check.bg(species.1, env, nback)
-  species.2 <- check.bg(species.2, env, nback)
+  species.1 <- check.bg(species.1, env, nback, verbose = verbose, ...)
+  species.2 <- check.bg(species.2, env, nback, verbose = verbose, ...)
 
   # Use supplied layers if there's two of them, otherwise do PCA
   if(length(names(env)) == 2){
@@ -103,7 +104,7 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
   empline <- c(bg$obs$D, bg$obs$I)
   names(empline) <- c("D", "I")
   reps.overlap <- rbind(empline, bg$sim)
-  p.values <- apply(reps.overlap, 2, function(x) 2 * (1 - max(mean(x > x[1]), mean(x < x[1]))))
+  p.values <- apply(reps.overlap, 2, function(x) min(rank(x)[1], rank(-x)[1])/length(x))
 
   d.plot <- qplot(bg$sim[,"D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = bg$obs$D, linetype = "longdash") +

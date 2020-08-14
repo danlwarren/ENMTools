@@ -11,6 +11,7 @@ env.evaluate(
   bg.source = "background",
   n.background = 10000,
   test.eval = FALSE,
+  verbose = FALSE,
   ...
 )
 }
@@ -26,6 +27,8 @@ env.evaluate(
 \item{n.background}{The number of background points to sample from the environment space.}
 
 \item{test.eval}{When set to "true", env.evaluate evaluates the test data stored in the model object instead of the training data.}
+
+\item{verbose}{Controls printing of various messages progress reports.  Defaults to FALSE.}
 
 \item{...}{Arguments to be passed to othfer functions}
 }
