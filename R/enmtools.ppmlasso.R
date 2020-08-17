@@ -476,8 +476,8 @@ predict.enmtools.ppmlasso <- function(object, env, maxpts = 1000, ...){
 
   this.threespace = threespace.plot(object, env, maxpts)
 
-  output <- list(suitability = suit.plot,
-                 raster = suitability,
+  output <- list(suitability.plot = suit.plot,
+                 suitability = suitability,
                  threespace.plot = this.threespace)
   return(output)
 }

@@ -118,9 +118,8 @@ predict.enmtools.hypervolume <- function(object, env, reduction.factor = 0.1){
     title <- paste("Hypervolume model projection for", object$species.name)
     suit.plot <- suit.plot + ggtitle(title) + theme(plot.title = element_text(hjust = 0.5))
   }
-
-  output <- list(suitability = suit.plot,
-                 raster = suitability)
+  output <- list(suitability.plot = suit.plot,
+                 suitability = suitability)
 
   return(output)
 }
