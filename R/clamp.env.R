@@ -18,13 +18,26 @@
 
 clamp.env <- function(model, env){
 
+  ### Check to make sure the data we need is there
+  if(!inherits(model, "enmtools.model")){
+    stop("Argument \'model\' must contain an enmtools.model object!")
+  }
+
+  if(!inherits(env, c("RasterLayer", "RasterStack", "raster", "RasterBrick"))){
+    stop("Argument env must be a raster, RasterLayer, or RasterStack object!")
+  }
+
+
+  # Getting the names of the layers to keep and subsetting the env layers to those
   keep.env <- names(env)[names(env) %in% colnames(model$analysis.df)]
   clamped.env <- env[[keep.env]]
 
+  # Going through env layers one at a time and clamping to min/max in analysis.df
   for(i in names(clamped.env)){
     thismin <- min(model$analysis.df[,i])
     thismax <- max(model$analysis.df[,i])
 
+    # Replacing values under min or over max with min/max respectively
     clamped.env[[i]][clamped.env[[i]] > thismax] <- thismax
     clamped.env[[i]][clamped.env[[i]] < thismin] <- thismin
   }
