@@ -394,9 +394,10 @@ predict.enmtools.maxent <- function(object, env, maxpts = 1000, clamp = TRUE, ..
   # Make a plot of habitat suitability in the new region
   suitability <- raster::predict(env, object$model)
 
+  # I'm actually not sure this is doing anything - I think maxent models are clamped by default
   if(clamp == TRUE){
     # Adding env (skipped for MX otherwise)
-    this.df <- as.data.frame(extract(env, object$analysis.df[,1:2]))
+    this.df <- as.data.frame(rbind(object$model@presence, object$model@absence))
 
     env <- clamp.env(this.df, env)
     clamped.suitability <- raster::predict(env, object$model)

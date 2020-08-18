@@ -448,6 +448,14 @@ predict.enmtools.glm <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()
 
+  clamp.points <- data.frame(rasterToPoints(clamping.strength))
+  colnames(clamp.points) <- c("Longitude", "Latitude", "Clamping")
+
+  clamp.plot <- ggplot(data = clamp.points,  aes_string(y = "Latitude", x = "Longitude")) +
+    geom_raster(aes_string(fill = "Clamping")) +
+    scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
+    coord_fixed() + theme_classic()
+
   if(!is.na(object$species.name)){
     title <- paste("GLM model projection for", object$species.name)
     suit.plot <- suit.plot + ggtitle(title) + theme(plot.title = element_text(hjust = 0.5))
@@ -458,6 +466,7 @@ predict.enmtools.glm <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
   output <- list(suitability.plot = suit.plot,
                  clamping.strength = clamping.strength,
                  suitability = suitability,
+                 clamp.plot = clamp.plot,
                  threespace.plot = this.threespace)
   return(output)
 }
