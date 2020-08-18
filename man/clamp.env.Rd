@@ -7,7 +7,7 @@
 clamp.env(model, env)
 }
 \arguments{
-\item{model}{An enmtools.model object.}
+\item{model}{An enmtools.model object.  Alternatively the analysis.df component of an enmtools.model object.}
 
 \item{env}{A raster or raster stack of environmental data.}
 }

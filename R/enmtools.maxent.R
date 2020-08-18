@@ -10,6 +10,7 @@
 #' @param rts.reps The number of replicates to do for a Raes and ter Steege-style test of significance
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
+#' @param clamp When set to TRUE, clamps the environmental layers so that predictions made outside the min/max of the training data for each predictor are set to the value for the min/max for that predictor. Prevents the model from extrapolating beyond the min/max bounds of the predictor space the model was trained in, although there could still be projections outside the multivariate training space if predictors are strongly correlated.
 #' @param ... Arguments to be passed to maxent()
 #'
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
@@ -25,7 +26,7 @@
 #' }
 
 
-enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0,  bg.source = "default", verbose = FALSE, ...){
+enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0,  bg.source = "default", verbose = FALSE, clamp = TRUE, ...){
 
   check.packages("rJava")
 
@@ -78,6 +79,19 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
 
   this.mx <- dismo::maxent(env, p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)
 
+  suitability <- predict(env, this.mx, type = "response")
+
+  # Clamping and getting a diff layer
+  clamping.strength <- NA
+  if(clamp == TRUE){
+    # Adding env (skipped for BC otherwise)
+    this.df <- as.data.frame(extract(env, species$presence.points))
+
+    env <- clamp.env(this.df, env)
+    clamped.suitability <- predict(env, this.mx, type = "response")
+    clamping.strength <- clamped.suitability - suitability
+    suitability <- clamped.suitability
+  }
 
   model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                this.mx, env)
@@ -258,9 +272,6 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
   }
 
 
-  suitability <- predict(env, this.mx, type = "response")
-
-
   output <- list(species.name = species$species.name,
                  analysis.df = analysis.df,
                  test.data = test.data,
@@ -272,6 +283,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
                  env.test.evaluation = env.test.evaluation,
                  rts.test = rts.test,
                  suitability = suitability,
+                 clamping.strength = clamping.strength,
                  call = sys.call(),
                  notes = notes)
 

@@ -10,6 +10,7 @@
 #' @param rts.reps The number of replicates to do for a Raes and ter Steege-style test of significance
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
+#' @param clamp When set to TRUE, clamps the environmental layers so that predictions made outside the min/max of the training data for each predictor are set to the value for the min/max for that predictor. Prevents the model from extrapolating beyond the min/max bounds of the predictor space the model was trained in, although there could still be projections outside the multivariate training space if predictors are strongly correlated.
 #' @param ... Arguments to be passed to bioclim()
 #'
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
@@ -21,7 +22,7 @@
 #' enmtools.bc(iberolacerta.clade$species$monticola, env = euro.worldclim)
 #' }
 
-enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwrite = FALSE, nback = 1000, env.nback = 10000, rts.reps = 0, bg.source = "default",  verbose = FALSE, ...){
+enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwrite = FALSE, nback = 1000, env.nback = 10000, rts.reps = 0, bg.source = "default",  verbose = FALSE, clamp = TRUE, ...){
 
   notes <- NULL
 
@@ -69,7 +70,19 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
 
   this.bc <- bioclim(env, species$presence.points[,1:2])
 
-  suitability <- suitability <- predict(env, this.bc, type = "response")
+  suitability <- predict(env, this.bc, type = "response")
+
+  # Clamping and getting a diff layer
+  clamping.strength <- NA
+  if(clamp == TRUE){
+    # Adding env (skipped for BC otherwise)
+    this.df <- as.data.frame(extract(env, species$presence.points))
+
+    env <- clamp.env(this.df, env)
+    clamped.suitability <- predict(env, this.bc, type = "response")
+    clamping.strength <- clamped.suitability - suitability
+    suitability <- clamped.suitability
+  }
 
   model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                this.bc, env)
@@ -256,6 +269,7 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
                  env.test.evaluation = env.test.evaluation,
                  rts.test = rts.test,
                  suitability = suitability,
+                 clamping.strength = clamping.strength,
                  call = sys.call(),
                  notes = notes)
 

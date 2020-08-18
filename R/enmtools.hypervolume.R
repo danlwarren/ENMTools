@@ -6,6 +6,7 @@
 #' @param reduction.factor To be passed to hypervolume_project
 #' @param method Method for constructing hypervolumes, defaults to "gaussian"
 #' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
+#' @param clamp When set to TRUE, clamps the environmental layers so that predictions made outside the min/max of the training data for each predictor are set to the value for the min/max for that predictor. Prevents the model from extrapolating beyond the min/max bounds of the predictor space the model was trained in, although there could still be projections outside the multivariate training space if predictors are strongly correlated.
 #' @param ... Extra parameters to be passed to hypervolume_gaussian
 #'
 #' @return An enmtools hypvervolume object containing a hypervolume object, a raster of suitability scores, the species name, and the occurrence data frame.
@@ -21,7 +22,7 @@
 #' }
 #' }
 
-enmtools.hypervolume <- function(species, env, samples.per.point = 10, reduction.factor = 0.1, method = "gaussian",  verbose = FALSE, ...){
+enmtools.hypervolume <- function(species, env, samples.per.point = 10, reduction.factor = 0.1, method = "gaussian",  verbose = FALSE, clamp = TRUE, ...){
 
   check.packages("hypervolume")
 

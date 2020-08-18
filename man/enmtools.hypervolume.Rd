@@ -11,6 +11,7 @@ enmtools.hypervolume(
   reduction.factor = 0.1,
   method = "gaussian",
   verbose = FALSE,
+  clamp = TRUE,
   ...
 )
 }
@@ -26,6 +27,8 @@ enmtools.hypervolume(
 \item{method}{Method for constructing hypervolumes, defaults to "gaussian"}
 
 \item{verbose}{Controls printing of various messages progress reports.  Defaults to FALSE.}
+
+\item{clamp}{When set to TRUE, clamps the environmental layers so that predictions made outside the min/max of the training data for each predictor are set to the value for the min/max for that predictor. Prevents the model from extrapolating beyond the min/max bounds of the predictor space the model was trained in, although there could still be projections outside the multivariate training space if predictors are strongly correlated.}
 
 \item{...}{Extra parameters to be passed to hypervolume_gaussian}
 }
