@@ -84,7 +84,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
   # Clamping and getting a diff layer
   clamping.strength <- NA
   if(clamp == TRUE){
-    # Adding env (skipped for BC otherwise)
+    # Adding env (skipped for MX otherwise)
     this.df <- as.data.frame(extract(env, species$presence.points))
 
     env <- clamp.env(this.df, env)
@@ -389,10 +389,21 @@ plot.enmtools.maxent <- function(x, ...){
 
 
 # Predict method for models of class enmtools.maxent
-predict.enmtools.maxent <- function(object, env, maxpts = 1000, ...){
+predict.enmtools.maxent <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
 
   # Make a plot of habitat suitability in the new region
   suitability <- raster::predict(env, object$model)
+
+  if(clamp == TRUE){
+    # Adding env (skipped for MX otherwise)
+    this.df <- as.data.frame(extract(env, object$analysis.df[,1:2]))
+
+    env <- clamp.env(this.df, env)
+    clamped.suitability <- raster::predict(env, object$model)
+    clamping.strength <- clamped.suitability - suitability
+    suitability <- clamped.suitability
+  }
+
   suit.points <- data.frame(rasterToPoints(suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
@@ -410,6 +421,7 @@ predict.enmtools.maxent <- function(object, env, maxpts = 1000, ...){
 
   output <- list(suitability.plot = suit.plot,
                  suitability = suitability,
+                 clamping.strength = clamping.strength,
                  threespace.plot = this.threespace)
   return(output)
 }

@@ -426,10 +426,20 @@ plot.enmtools.glm <- function(x, ...){
 
 
 # Predict method for models of class enmtools.glm
-predict.enmtools.glm <- function(object, env, maxpts = 1000, ...){
+predict.enmtools.glm <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
 
   # Make a plot of habitat suitability in the new region
   suitability <- raster::predict(env, object$model, type = "response")
+
+  # Clamping and getting a diff layer
+  clamping.strength <- NA
+  if(clamp == TRUE){
+    env <- clamp.env(object$analysis.df, env)
+    clamped.suitability <- raster::predict(env, object$model, type = "response")
+    clamping.strength <- clamped.suitability - suitability
+    suitability <- clamped.suitability
+  }
+
   suit.points <- data.frame(rasterToPoints(suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
@@ -446,6 +456,7 @@ predict.enmtools.glm <- function(object, env, maxpts = 1000, ...){
   this.threespace = threespace.plot(object, env, maxpts)
 
   output <- list(suitability.plot = suit.plot,
+                 clamping.strength = clamping.strength,
                  suitability = suitability,
                  threespace.plot = this.threespace)
   return(output)

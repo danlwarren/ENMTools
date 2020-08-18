@@ -20,7 +20,7 @@ expect_enmtools_model <- function(model){
 
   expect_true(all(names(model) %in% c("species.name", "analysis.df", "test.data", "test.prop", "model",
                                       "training.evaluation", "test.evaluation", "env.training.evaluation",
-                                      "env.test.evaluation", "rts.test",  "suitability", "call",  "notes", "response.plots",
+                                      "env.test.evaluation", "rts.test",  "suitability", "clamping.strength", "call",  "notes", "response.plots",
                                       "formula")), info = "Unexpected items in enmtools.model object!")
 
   expect_true(inherits(model$species.name, "character"),

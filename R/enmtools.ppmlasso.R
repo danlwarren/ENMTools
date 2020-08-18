@@ -463,7 +463,7 @@ plot.enmtools.ppmlasso <- function(x, trans_col = NULL, ...){
 
 
 # Predict method for models of class enmtools.ppmlasso
-predict.enmtools.ppmlasso <- function(object, env, maxpts = 1000, ...){
+predict.enmtools.ppmlasso <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
 
   env_cell_area <- prod(res(env))
 
@@ -473,6 +473,17 @@ predict.enmtools.ppmlasso <- function(object, env, maxpts = 1000, ...){
 
   # Make a plot of habitat suitability in the new region
   suitability <- predict(env, object$model, fun = p.fun)
+
+  # Clamping and getting a diff layer
+  clamping.strength <- NA
+  if(clamp == TRUE){
+    env <- clamp.env(object$analysis.df, env)
+    clamped.suitability <- predict(env, object$model, fun = p.fun)
+    clamping.strength <- clamped.suitability - suitability
+    suitability <- clamped.suitability
+  }
+
+
   suit.points <- data.frame(rasterToPoints(suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
@@ -490,6 +501,7 @@ predict.enmtools.ppmlasso <- function(object, env, maxpts = 1000, ...){
 
   output <- list(suitability.plot = suit.plot,
                  suitability = suitability,
+                 clamping.strength = clamping.strength,
                  threespace.plot = this.threespace)
   return(output)
 }

@@ -376,7 +376,7 @@ plot.enmtools.dm <- function(x, ...){
 
 
 # Predict method for models of class enmtools.dm
-predict.enmtools.dm <- function(object, env, maxpts = 1000, ...){
+predict.enmtools.dm <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
 
   # The domain predict function doesn't like having layers in the stack that aren't in
   # the presence df
@@ -384,6 +384,19 @@ predict.enmtools.dm <- function(object, env, maxpts = 1000, ...){
 
   # Make a plot of habitat suitability in the new region
   suitability <- raster::predict(env, object$model)
+
+  # Clamping and getting a diff layer
+  clamping.strength <- NA
+  if(clamp == TRUE){
+    # Adding env (skipped for BC otherwise)
+    this.df <- as.data.frame(extract(env, object$analysis.df))
+
+    env <- clamp.env(this.df, env)
+    clamped.suitability <- raster::predict(env, object$model)
+    clamping.strength <- clamped.suitability - suitability
+    suitability <- clamped.suitability
+  }
+
   suit.points <- data.frame(rasterToPoints(suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
@@ -401,6 +414,7 @@ predict.enmtools.dm <- function(object, env, maxpts = 1000, ...){
 
   output <- list(suitability.plot = suit.plot,
                  suitability = suitability,
+                 clamping.strength = clamping.strength,
                  threespace.plot = this.threespace)
   return(output)
 }

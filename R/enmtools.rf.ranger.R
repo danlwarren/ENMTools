@@ -410,7 +410,7 @@ plot.enmtools.rf.ranger <- function(x, ...){
 
 
 # Predict method for models of class enmtools.rf.ranger
-predict.enmtools.rf.ranger <- function(object, env, maxpts = 1000, ...){
+predict.enmtools.rf.ranger <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
 
   pfun <- function(object, data, ...) {
     predict(object, data, ...)$predictions[ , 2]
@@ -418,6 +418,16 @@ predict.enmtools.rf.ranger <- function(object, env, maxpts = 1000, ...){
 
   # Make a plot of habitat suitability in the new region
   suitability <- raster::predict(env, object$model, fun = pfun, type = "response")
+
+  # Clamping and getting a diff layer
+  clamping.strength <- NA
+  if(clamp == TRUE){
+    env <- clamp.env(object$analysis.df, env)
+    clamped.suitability <- raster::predict(env, object$model, fun = pfun, type = "response")
+    clamping.strength <- clamped.suitability - suitability
+    suitability <- clamped.suitability
+  }
+
   suit.points <- data.frame(rasterToPoints(suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
@@ -435,6 +445,7 @@ predict.enmtools.rf.ranger <- function(object, env, maxpts = 1000, ...){
 
   output <- list(suitability.plot = suit.plot,
                  suitability = suitability,
+                 clamping.strength = clamping.strength,
                  threespace.plot = this.threespace)
   return(output)
 }
