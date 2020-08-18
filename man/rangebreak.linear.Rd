@@ -16,6 +16,7 @@ rangebreak.linear(
   low.memory = FALSE,
   rep.dir = NA,
   verbose = FALSE,
+  clamp = TRUE,
   ...
 )
 }
@@ -41,6 +42,8 @@ rangebreak.linear(
 \item{rep.dir}{Directory for storing replicate models when low.memory is set to TRUE.  If not specified, the working directory will be used.}
 
 \item{verbose}{Controls printing of various messages progress reports.  Defaults to FALSE.}
+
+\item{clamp}{Controls whether empirical and replicate models should be clamped to the environment space used for training.}
 
 \item{...}{Additional arguments to be passed to model fitting functions.}
 }

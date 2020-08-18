@@ -12,6 +12,7 @@
 #' @param low.memory When set to TRUE, replicate models are written to disc instead of being stored in the output object.  Replicate models stored in the output object contain paths to the replicate models on disk instead of the rasters themselves.
 #' @param rep.dir Directory for storing replicate models when low.memory is set to TRUE.  If not specified, the working directory will be used.
 #' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
+#' @param clamp Controls whether empirical and replicate models should be clamped to the environment space used for training.
 #' @param ... Additional arguments to be passed to model fitting functions.
 #'
 #' @return results A list containing the replicates, models for the empirical data, and summary statistics and plots.
@@ -31,7 +32,7 @@
 #' }
 
 
-rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 99, nback = 1000, bg.source = "default", low.memory = FALSE, rep.dir = NA, verbose = FALSE, ...){
+rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 99, nback = 1000, bg.source = "default", low.memory = FALSE, rep.dir = NA, verbose = FALSE, clamp = TRUE, ...){
 
   check.packages("fields")
 
@@ -69,36 +70,45 @@ rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
   combined.presence.points <- rbind(species.1$presence.points, species.2$presence.points)
 
+  # Clamping layers here so it's not done separately for every replicate
+  # and setting replicate clmaping to FALSE
+  if(clamp == TRUE){
+    # Adding env (skipped for BC otherwise)
+    this.df <- as.data.frame(extract(env, combined.presence.points))
+
+    env <- clamp.env(this.df, env)
+  }
+
   # Build models for empirical data
   message("\nBuilding empirical models...\n")
   if(type == "glm"){
-    empirical.species.1.model <- enmtools.glm(species.1, env, f, ...)
-    empirical.species.2.model <- enmtools.glm(species.2, env, f, ...)
+    empirical.species.1.model <- enmtools.glm(species.1, env, f, clamp = FALSE, ...)
+    empirical.species.2.model <- enmtools.glm(species.2, env, f, clamp = FALSE, ...)
   }
 
   if(type == "gam"){
-    empirical.species.1.model <- enmtools.gam(species.1, env, f, ...)
-    empirical.species.2.model <- enmtools.gam(species.2, env, f, ...)
+    empirical.species.1.model <- enmtools.gam(species.1, env, f, clamp = FALSE, ...)
+    empirical.species.2.model <- enmtools.gam(species.2, env, f, clamp = FALSE, ...)
   }
 
   if(type == "mx"){
-    empirical.species.1.model <- enmtools.maxent(species.1, env, ...)
-    empirical.species.2.model <- enmtools.maxent(species.2, env, ...)
+    empirical.species.1.model <- enmtools.maxent(species.1, env, clamp = FALSE, ...)
+    empirical.species.2.model <- enmtools.maxent(species.2, env, clamp = FALSE, ...)
   }
 
   if(type == "bc"){
-    empirical.species.1.model <- enmtools.bc(species.1, env, ...)
-    empirical.species.2.model <- enmtools.bc(species.2, env, ...)
+    empirical.species.1.model <- enmtools.bc(species.1, env, clamp = FALSE, ...)
+    empirical.species.2.model <- enmtools.bc(species.2, env, clamp = FALSE, ...)
   }
 
   if(type == "dm"){
-    empirical.species.1.model <- enmtools.dm(species.1, env, ...)
-    empirical.species.2.model <- enmtools.dm(species.2, env, ...)
+    empirical.species.1.model <- enmtools.dm(species.1, env, clamp = FALSE, ...)
+    empirical.species.2.model <- enmtools.dm(species.2, env, clamp = FALSE, ...)
   }
 
   if(type == "rf"){
-    empirical.species.1.model <- enmtools.rf(species.1, env, ...)
-    empirical.species.2.model <- enmtools.rf(species.2, env, ...)
+    empirical.species.1.model <- enmtools.rf(species.1, env, clamp = FALSE, ...)
+    empirical.species.2.model <- enmtools.rf(species.2, env, clamp = FALSE, ...)
   }
 
   empirical.overlap <- c(unlist(raster.overlap(empirical.species.1.model, empirical.species.2.model)),
@@ -144,33 +154,33 @@ rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
     # Building models for reps
     if(type == "glm"){
-      rep.species.1.model <- enmtools.glm(rep.species.1, env, f, ...)
-      rep.species.2.model <- enmtools.glm(rep.species.2, env, f, ...)
+      rep.species.1.model <- enmtools.glm(rep.species.1, env, f, clamp = FALSE, ...)
+      rep.species.2.model <- enmtools.glm(rep.species.2, env, f, clamp = FALSE, ...)
     }
 
     if(type == "gam"){
-      rep.species.1.model <- enmtools.gam(rep.species.1, env, f, ...)
-      rep.species.2.model <- enmtools.gam(rep.species.2, env, f, ...)
+      rep.species.1.model <- enmtools.gam(rep.species.1, env, f, clamp = FALSE, ...)
+      rep.species.2.model <- enmtools.gam(rep.species.2, env, f, clamp = FALSE, ...)
     }
 
     if(type == "mx"){
-      rep.species.1.model <- enmtools.maxent(rep.species.1, env, ...)
-      rep.species.2.model <- enmtools.maxent(rep.species.2, env, ...)
+      rep.species.1.model <- enmtools.maxent(rep.species.1, env, clamp = FALSE, ...)
+      rep.species.2.model <- enmtools.maxent(rep.species.2, env, clamp = FALSE, ...)
     }
 
     if(type == "bc"){
-      rep.species.1.model <- enmtools.bc(rep.species.1, env, ...)
-      rep.species.2.model <- enmtools.bc(rep.species.2, env, ...)
+      rep.species.1.model <- enmtools.bc(rep.species.1, env, clamp = FALSE, ...)
+      rep.species.2.model <- enmtools.bc(rep.species.2, env, clamp = FALSE, ...)
     }
 
     if(type == "dm"){
-      rep.species.1.model <- enmtools.dm(rep.species.1, env, ...)
-      rep.species.2.model <- enmtools.dm(rep.species.2, env, ...)
+      rep.species.1.model <- enmtools.dm(rep.species.1, env, clamp = FALSE, ...)
+      rep.species.2.model <- enmtools.dm(rep.species.2, env, clamp = FALSE, ...)
     }
 
     if(type == "rf"){
-      rep.species.1.model <- enmtools.rf(rep.species.1, env, ...)
-      rep.species.2.model <- enmtools.rf(rep.species.2, env, ...)
+      rep.species.1.model <- enmtools.rf(rep.species.1, env, clamp = FALSE, ...)
+      rep.species.2.model <- enmtools.rf(rep.species.2, env, clamp = FALSE, ...)
     }
 
     # Appending models to replicates list
