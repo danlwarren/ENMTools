@@ -144,7 +144,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
       viridis::scale_fill_viridis(name = "Variable", option = "D") +
       facet_grid(rows = vars(fct_reorder(.data$Variable, .data$Importance, .desc = TRUE)), switch = "y") +
       ylab("Variable") +
-      ggtitle("Variable importance, FIRM method") +
+      ggtitle("Variable importance, permutation method") +
       theme(plot.title = element_text(hjust = 0.5),
             axis.text.y = element_blank(),
             axis.ticks.y = element_blank(),
