@@ -3,17 +3,17 @@
 #' overlap and time
 #'
 #' @param clade An enmtools.clade object containing species data and a phylogeny
-#' @param nreps A number of reps to do
+#' @param env Environmental layers for use when overlap is calculated using niche models.
 #' @param overlap.source The source of the overlaps to calculate.  Choices are "bc", "dm", "gam", "glm", "mx", "range", and "point"
+#' @param nreps A number of reps to do
 #' @param f The model to be used for GLM and GAM comparisons
 #' @param overlap.matrix A matrix of overlaps to use, for option overlap.source = "matrix"
 #' @param metric The overlap metric to use. For ENM sources, this can be any combination of "D", "I", "cor", "env.D", "env.I", and "env.cor".
 #' for range and point overlap this argument is ignored.
-#' @param env Environmental layers for use when overlap is calculated using niche models.
 #'
 #' @return A list containing a data frame of coefficients from the empirical regression of overlap on time along with the coefficients from all Monte Carlo replicates, along with plots and p values for the accompanying statistical tests.
 
-enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  f = NULL, overlap.matrix = NULL, metric = "D"){
+enmtools.aoc <- function(clade, env = NULL,  overlap.source, nreps = 100, f = NULL, overlap.matrix = NULL, metric = "D"){
 
   description <- "Age-Overlap Correlation from Monte Carlo Test"
 
@@ -137,7 +137,7 @@ enmtools.aoc <- function(clade, nreps, overlap.source, env = NULL,  f = NULL, ov
   }
   regressions.plot <- regressions.plot + geom_abline(slope = reps.aoc[1,2], intercept = reps.aoc[1,1]) +
     geom_point() + ylim(0, 1) + xlim(0, 1.1 * max(empirical.df$age)) +
-    theme(plot.title = element_text(hjust = 0.5))
+    theme(plot.title = element_text(hjust = 0.5)) + xlab("Age") + ylab("Overlap")
 
   output <- list(coefficients = reps.aoc,
                  p.values = p.values,
