@@ -14,6 +14,7 @@
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
 #' @param clamp When set to TRUE, clamps the environmental layers so that predictions made outside the min/max of the training data for each predictor are set to the value for the min/max for that predictor. Prevents the model from extrapolating beyond the min/max bounds of the predictor space the model was trained in, although there could still be projections outside the multivariate training space if predictors are strongly correlated.
+#' @param corner An integer from 1 to 4.  Selects which corner to use for "block" test data.  By default the corner is selected randomly.
 #' @param ... Arguments to be passed to ppmlasso()
 #'
 #' @details This runs a \code{ppmlasso} model of a species' distribution. It is generally recommended that background points should be on a grid for this method, as the background points are considered 'quadrature' points, used to estimate an integral. If background points are not provided, the function will generate them on a grid, rather than randomly, as is more usual for other SDM methods.
@@ -29,7 +30,7 @@
 #' }
 
 
-enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, normalise = FALSE, report = NULL, overwrite = FALSE, rts.reps = 0, bg.source = "default",  verbose = FALSE, clamp = TRUE, ...){
+enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, normalise = FALSE, report = NULL, overwrite = FALSE, rts.reps = 0, bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, ...){
 
   check.packages("ppmlasso")
 
@@ -69,8 +70,12 @@ enmtools.ppmlasso <- function(species, env, f = NULL, test.prop = 0, eval = TRUE
   # Code for spatially structured test data
   if(is.character(test.prop)){
     if(test.prop == "block"){
-      corner <- ceiling(runif(1, 0, 4))
-      test.inds <- ENMeval::get.block(species$presence.points, species$background.points)
+      if(is.na(corner)){
+        corner <- ceiling(runif(1, 0, 4))
+      } else if(corner < 1 | corner > 4){
+        stop("corner should be an integer from 1 to 4!")
+      }
+      test.inds <- get.block(species$presence.points, species$background.points)
       test.bg.inds <- which(test.inds$bg.grp == corner)
       test.inds <- which(test.inds$occ.grp == corner)
       test.data <- species$presence.points[test.inds,]

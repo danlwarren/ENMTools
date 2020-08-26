@@ -13,6 +13,7 @@
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
 #' @param clamp When set to TRUE, clamps the environmental layers so that predictions made outside the min/max of the training data for each predictor are set to the value for the min/max for that predictor. Prevents the model from extrapolating beyond the min/max bounds of the predictor space the model was trained in, although there could still be projections outside the multivariate training space if predictors are strongly correlated.
+#' @param corner An integer from 1 to 4.  Selects which corner to use for "block" test data.  By default the corner is selected randomly.
 #' @param ... Arguments to be passed to \code{\link[ranger]{ranger}}
 #'
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
@@ -24,7 +25,7 @@
 #' enmtools.rf.ranger(iberolacerta.clade$species$monticola, env = euro.worldclim, nback = 500)
 #' }
 
-enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, bg.source = "default", verbose = FALSE, clamp = TRUE, ...){
+enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, bg.source = "default", verbose = FALSE, clamp = TRUE, corner = NA, ...){
 
   notes <- NULL
 
@@ -58,7 +59,11 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
   # Code for spatially structured test data
   if(is.character(test.prop)){
     if(test.prop == "block"){
-      corner <- ceiling(runif(1, 0, 4))
+      if(is.na(corner)){
+        corner <- ceiling(runif(1, 0, 4))
+      } else if(corner < 1 | corner > 4){
+        stop("corner should be an integer from 1 to 4!")
+      }
       test.inds <- get.block(species$presence.points, species$background.points)
       test.bg.inds <- which(test.inds$bg.grp == corner)
       test.inds <- which(test.inds$occ.grp == corner)
