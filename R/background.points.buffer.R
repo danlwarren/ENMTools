@@ -2,6 +2,8 @@
 #' randomly sampled points from within that buffer radius.
 #' Code modified from Elith and Hijmans SDM with R tutorial
 #'
+#' NOTE: This function has been replaced by background.buffer.
+#'
 #' @param points A two column data frame with X and Y coordinates
 #' @param radius Radius for circular buffers to draw around points, in meters.
 #' @param n Sample size for number of background points to return
@@ -12,15 +14,7 @@
 
 background.points.buffer <- function(points, radius, n, mask){
 
-  x <- circles(points, d=radius, lonlat=TRUE)
+  return(background.buffer(points = points, buffer.width = radius,
+                           mask = mask, return.type = "points", n = n))
 
-  pol <-  gUnaryUnion(x@polygons)
-
-  buffer.raster <- mask(mask, pol)
-
-  xy <- sampleRandom(buffer.raster, size=n, xy=TRUE)
-
-  colnames(xy)[1:2] <- c(colnames(points))
-
-  return(as.data.frame(xy[,1:2]))
 }

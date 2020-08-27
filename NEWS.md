@@ -8,10 +8,9 @@ ENMTools 1.0.2
 
 -   Added a new general-purpose function for making background layers
     from point data. It can do both circular buffers and buffered convex
-    hulls, and can return points, a polygon, or a raster. We’ll probably
-    want to convert the existing background buffer functions to just
-    call this one, and eventually deprecate the single-application
-    functions.
+    hulls, and can return points, a polygon, or a raster. Converted the
+    existing background buffer functions to just call this one, and will
+    eventually deprecate the single-application functions.
 -   Added ability to select which corner you want for “block”
     validation.
 
