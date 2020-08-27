@@ -13,6 +13,11 @@ ENMTools 1.0.2
     eventually deprecate the single-application functions.
 -   Added ability to select which corner you want for “block”
     validation.
+-   Added a function called *multi.variogram* which takes a raster
+    stack, builds a variogram for each layer, and then plots the gamma
+    for each variable as a function of distance, scaled by the maximum
+    gama for that variable. This allows users to get some idea of the
+    level of spatial autocorrelation in each predictor variable.
 
 ENMTools 1.0.1
 --------------
