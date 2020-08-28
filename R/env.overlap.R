@@ -14,6 +14,7 @@
 #' @return A list of values measuring the overlap between models in environment space, as well as some plots depicting change of the estimates as a function of how many samples were used, which are included as a sort of convergence diagnostic.
 #'
 #' @examples
+#' \donttest{
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni
@@ -21,6 +22,7 @@
 #' cyreni.glm <- enmtools.glm(cyreni, euro.worldclim, f = pres ~ bio1 + bio12, nback = 500)
 #' monticola.glm <- enmtools.glm(monticola, euro.worldclim, f = pres ~ bio1 + bio12, nback = 500)
 #' env.overlap(cyreni.glm, monticola.glm, euro.worldclim)
+#' }
 
 env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, cor.method = "spearman", chunk.size = 100000, recal.model.1 = NA, recal.model.2 = NA, verbose = FALSE){
 
