@@ -37,10 +37,6 @@ ENMTools 1.0.1
 
 ### Bug fixes
 
--   Added some code to fix a bug with recalibration. Basically
-    CalibratR’s call to parallel was tanking on Mac OS, and there’s just
-    a little code snippet that needed to be added to the call to make
-    that work.
 -   Fixed interactive.plot generic and moved the function to its own
     file to make it easier to extend
 -   Temporarily suppressing some warnings coming out of *leaflet* that
