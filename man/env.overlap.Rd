@@ -45,6 +45,7 @@ A list of values measuring the overlap between models in environment space, as w
 Calculates overlap between models in environment space using latin hypercube sampling
 }
 \examples{
+\donttest{
 data(iberolacerta.clade)
 data(euro.worldclim)
 cyreni <- iberolacerta.clade$species$cyreni
@@ -52,4 +53,5 @@ monticola <- iberolacerta.clade$species$monticola
 cyreni.glm <- enmtools.glm(cyreni, euro.worldclim, f = pres ~ bio1 + bio12, nback = 500)
 monticola.glm <- enmtools.glm(monticola, euro.worldclim, f = pres ~ bio1 + bio12, nback = 500)
 env.overlap(cyreni.glm, monticola.glm, euro.worldclim)
+}
 }
