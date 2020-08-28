@@ -14,6 +14,8 @@
 #' @param gam.method Defaults to restricted maximum likelihood to facilitate predictor selection, but if you want to use another method you can pass anything here that gam's "method" argument understands.
 #' @param gam.select Controls whether gam algorithm attempts to optimize smoothness and reduce model complexity.  See help("gam.selection") for details.
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
+#' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
+#' @param clamp When set to TRUE, clamps the environmental layers so that predictions made outside the min/max of the training data for each predictor are set to the value for the min/max for that predictor. Prevents the model from extrapolating beyond the min/max bounds of the predictor space the model was trained in, although there could still be projections outside the multivariate training space if predictors are strongly correlated.
 #' @param ... Arguments to be passed to gam()
 #'
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
@@ -29,13 +31,13 @@
 
 
 
-enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", gam.method = "REML", gam.select = TRUE, bg.source = "default", ...){
+enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", gam.method = "REML", gam.select = TRUE, bg.source = "default",  verbose = FALSE, clamp = TRUE, ...){
 
   check.packages("mgcv")
 
   notes <- NULL
 
-  species <- check.bg(species, env, nback = nback, bg.source = bg.source)
+  species <- check.bg(species, env, nback = nback, bg.source = bg.source, verbose = verbose)
 
   # Builds a default formula using all env
   if(is.null(f)){
@@ -78,7 +80,7 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
   }
 
   ### Add env data
-  species <- add.env(species, env)
+  species <- add.env(species, env, verbose = verbose)
 
   # Recast this formula so that the response variable is named "presence"
   # regardless of what was passed.
@@ -98,6 +100,15 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
   this.gam <- mgcv::gam(f, analysis.df[,-c(1,2)], family="binomial", weights = weights, method = gam.method, select = gam.select, ...)
 
   suitability <- predict(env, this.gam, type = "response")
+
+  # Clamping and getting a diff layer
+  clamping.strength <- NA
+  if(clamp == TRUE){
+    env <- clamp.env(analysis.df, env)
+    clamped.suitability <- predict(env, this.gam, type = "response")
+    clamping.strength <- clamped.suitability - suitability
+    suitability <- clamped.suitability
+  }
 
   # This is a very weird hack that has to be done because dismo's evaluate function
   # fails if the stack only has one layer.
@@ -143,6 +154,8 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
   # Do Raes and ter Steege test for significance.  Turned off if eval == FALSE
   if(rts.reps > 0){
 
+    message("\nBuilding RTS replicate models...\n")
+
     # Die if we're not doing randomly withheld test data and RTS reps > 0
     if(!is.numeric(test.prop)){
       stop(paste("RTS test can only be conducted with randomly withheld data, and test.prop is set to", test.prop))
@@ -155,9 +168,19 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
     rts.env.training <- c()
     rts.env.test <- c()
 
+    if (requireNamespace("progress", quietly = TRUE)) {
+      pb <- progress::progress_bar$new(
+        format = " [:bar] :percent eta: :eta",
+        total = rts.reps, clear = FALSE, width= 60)
+    }
+
     for(i in 1:rts.reps){
 
-      message(paste("Replicate", i, "of", rts.reps))
+      if (requireNamespace("progress", quietly = TRUE)) {
+        pb$tick()
+      }
+
+      if(verbose == TRUE){message(paste("Replicate", i, "of", rts.reps))}
 
       # Repeating analysis with scrambled pa points and then evaluating models
       rep.species <- species
@@ -180,7 +203,7 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
       # Everything else goes back to the background
       rep.species$background.points <- allpoints
 
-      rep.species <- add.env(rep.species, env, verbose = FALSE)
+      rep.species <- add.env(rep.species, env, verbose = verbose)
 
       rts.df <- rbind(rep.species$presence.points, rep.species$background.points)
       rts.df$presence <- c(rep(1, nrow(rep.species$presence.points)), rep(0, nrow(rep.species$background.points)))
@@ -290,6 +313,7 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
                  env.test.evaluation = env.test.evaluation,
                  rts.test = rts.test,
                  suitability = suitability,
+                 clamping.strength = clamping.strength,
                  call = sys.call(),
                  notes = notes)
 
@@ -397,15 +421,34 @@ plot.enmtools.gam <- function(x, ...){
 
 
 # Predict method for models of class enmtools.gam
-predict.enmtools.gam <- function(object, env, maxpts = 1000, ...){
+predict.enmtools.gam <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
 
   # Make a plot of habitat suitability in the new region
   suitability <- raster::predict(env, object$model, type = "response")
+
+  # Clamping and getting a diff layer
+  clamping.strength <- NA
+  if(clamp == TRUE){
+    env <- clamp.env(object$analysis.df, env)
+    clamped.suitability <- raster::predict(env, object$model, type = "response")
+    clamping.strength <- clamped.suitability - suitability
+    suitability <- clamped.suitability
+  }
+
+
   suit.points <- data.frame(rasterToPoints(suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
   suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
     geom_raster(aes_string(fill = "Suitability")) +
+    scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
+    coord_fixed() + theme_classic()
+
+  clamp.points <- data.frame(rasterToPoints(clamping.strength))
+  colnames(clamp.points) <- c("Longitude", "Latitude", "Clamping")
+
+  clamp.plot <- ggplot(data = clamp.points,  aes_string(y = "Latitude", x = "Longitude")) +
+    geom_raster(aes_string(fill = "Clamping")) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()
 
@@ -416,8 +459,10 @@ predict.enmtools.gam <- function(object, env, maxpts = 1000, ...){
 
   this.threespace = threespace.plot(object, env, maxpts)
 
-  output <- list(suitability = suit.plot,
-                 raster = suitability,
+  output <- list(suitability.plot = suit.plot,
+                 suitability = suitability,
+                 clamping.strength = clamping.strength,
+                 clamp.plot = clamp.plot,
                  threespace.plot = this.threespace)
   return(output)
 }

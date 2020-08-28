@@ -9,6 +9,8 @@
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
 #' @param rts.reps The number of replicates to do for a Raes and ter Steege-style test of significance
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
+#' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
+#' @param clamp When set to TRUE, clamps the environmental layers so that predictions made outside the min/max of the training data for each predictor are set to the value for the min/max for that predictor. Prevents the model from extrapolating beyond the min/max bounds of the predictor space the model was trained in, although there could still be projections outside the multivariate training space if predictors are strongly correlated.
 #' @param ... Arguments to be passed to maxent()
 #'
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
@@ -24,13 +26,13 @@
 #' }
 
 
-enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0,  bg.source = "default", ...){
+enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0,  bg.source = "default", verbose = FALSE, clamp = TRUE, ...){
 
   check.packages("rJava")
 
   notes <- NULL
 
-  species <- check.bg(species, env, nback = nback, bg.source = bg.source)
+  species <- check.bg(species, env, nback = nback, bg.source = bg.source, verbose = verbose)
 
   maxent.precheck(f, species, env)
 
@@ -77,6 +79,19 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
 
   this.mx <- dismo::maxent(env, p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)
 
+  suitability <- predict(env, this.mx, type = "response")
+
+  # Clamping and getting a diff layer
+  clamping.strength <- NA
+  if(clamp == TRUE){
+    # Adding env (skipped for MX otherwise)
+    this.df <- as.data.frame(extract(env, species$presence.points))
+
+    env <- clamp.env(this.df, env)
+    clamped.suitability <- predict(env, this.mx, type = "response")
+    clamping.strength <- clamped.suitability - suitability
+    suitability <- clamped.suitability
+  }
 
   model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
                                this.mx, env)
@@ -112,6 +127,8 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
   # Do Raes and ter Steege test for significance.  Turned off if eval == FALSE
   if(rts.reps > 0){
 
+    message("\nBuilding RTS replicate models...\n")
+
     # Die if we're not doing randomly withheld test data and RTS reps > 0
     if(!is.numeric(test.prop)){
       stop(paste("RTS test can only be conducted with randomly withheld data, and test.prop is set to", test.prop))
@@ -124,8 +141,19 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
     rts.env.training <- c()
     rts.env.test <- c()
 
+    if (requireNamespace("progress", quietly = TRUE)) {
+      pb <- progress::progress_bar$new(
+        format = " [:bar] :percent eta: :eta",
+        total = rts.reps, clear = FALSE, width= 60)
+    }
+
     for(i in 1:rts.reps){
-      message(paste("Replicate", i, "of", rts.reps))
+
+      if (requireNamespace("progress", quietly = TRUE)) {
+        pb$tick()
+      }
+
+      if(verbose == TRUE){message(paste("Replicate", i, "of", rts.reps))}
 
       # Repeating analysis with scrambled pa points and then evaluating models
       rep.species <- species
@@ -148,7 +176,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
       # Everything else goes back to the background
       rep.species$background.points <- allpoints
 
-      rep.species <- add.env(rep.species, env, verbose = FALSE)
+      rep.species <- add.env(rep.species, env, verbose = verbose)
 
       rts.df <- rbind(rep.species$presence.points, rep.species$background.points)
       rts.df$presence <- c(rep(1, nrow(rep.species$presence.points)), rep(0, nrow(rep.species$background.points)))
@@ -244,9 +272,6 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
   }
 
 
-  suitability <- predict(env, this.mx, type = "response")
-
-
   output <- list(species.name = species$species.name,
                  analysis.df = analysis.df,
                  test.data = test.data,
@@ -258,6 +283,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
                  env.test.evaluation = env.test.evaluation,
                  rts.test = rts.test,
                  suitability = suitability,
+                 clamping.strength = clamping.strength,
                  call = sys.call(),
                  notes = notes)
 
@@ -339,7 +365,11 @@ plot.enmtools.maxent <- function(x, ...){
     geom_raster(aes_string(fill = "Suitability")) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
-    geom_point(data = x$analysis.df[x$analysis.df$presence ==1,],  aes_string(y = "Latitude", x = "Longitude"),
+    geom_point(data = x$analysis.df[x$analysis.df$presence == 1 &
+                                    x$analysis.df$Longitude > extent(x$suitability)[1] &
+                                    x$analysis.df$Longitude < extent(x$suitability)[2] &
+                                    x$analysis.df$Latitude > extent(x$suitability)[3] &
+                                    x$analysis.df$Latitude < extent(x$suitability)[4],],  aes_string(y = "Latitude", x = "Longitude"),
                pch = 21, fill = "white", color = "black", size = 2)
 
   if(!(all(is.na(x$test.data)))){
@@ -359,10 +389,22 @@ plot.enmtools.maxent <- function(x, ...){
 
 
 # Predict method for models of class enmtools.maxent
-predict.enmtools.maxent <- function(object, env, maxpts = 1000, ...){
+predict.enmtools.maxent <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
 
   # Make a plot of habitat suitability in the new region
   suitability <- raster::predict(env, object$model)
+
+  # I'm actually not sure this is doing anything - I think maxent models are clamped by default
+  if(clamp == TRUE){
+    # Adding env (skipped for MX otherwise)
+    this.df <- as.data.frame(rbind(object$model@presence, object$model@absence))
+
+    env <- clamp.env(this.df, env)
+    clamped.suitability <- raster::predict(env, object$model)
+    clamping.strength <- clamped.suitability - suitability
+    suitability <- clamped.suitability
+  }
+
   suit.points <- data.frame(rasterToPoints(suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
@@ -378,8 +420,9 @@ predict.enmtools.maxent <- function(object, env, maxpts = 1000, ...){
 
   this.threespace = threespace.plot(object, env, maxpts)
 
-  output <- list(suitability = suit.plot,
-                 raster = suitability,
+  output <- list(suitability.plot = suit.plot,
+                 suitability = suitability,
+                 clamping.strength = clamping.strength,
                  threespace.plot = this.threespace)
   return(output)
 }

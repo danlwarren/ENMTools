@@ -4,10 +4,11 @@
 #' @param env A raster or raster stack of environmental data.
 #' @param nback Number of background points to generate, if any
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
+#' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
 #'
 #' @return An enmtools.species object with background points.
 
-check.bg <- function(species, env = NA, nback = 1000, bg.source = "default"){
+check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", verbose = FALSE){
 
   species <- check.species(species)
 
@@ -20,7 +21,7 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default"){
   if(bg.source %in% c("points", "range", "env")){
 
     # Background source manually supplied
-    message(paste("Pulling background points from", bg.source))
+    if(verbose == TRUE){message(paste("Pulling background points from", bg.source))}
 
   } else {
 
@@ -28,18 +29,18 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default"){
     if(inherits(species$background.points, "data.frame")){
 
       bg.source = "points"
-      message("\n\nDrawing background from species background points.\n\n")
+      if(verbose == TRUE){message("\n\nDrawing background from species background points.\n\n")}
 
     } else if(inherits(species$range, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
 
       # Drawing points from range raster
       bg.source = "range"
-      message("\n\nNo background points provided, drawing background from range raster.\n\n")
+      if(verbose == TRUE){message("\n\nNo background points provided, drawing background from range raster.\n\n")}
 
     } else if(inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))) {
 
       # Drawing from env
-      message("\nNo background points or range raster, drawing background from environmental layers.\n\n")
+      if(verbose == TRUE){message("\nNo background points or range raster, drawing background from environmental layers.\n\n")}
       bg.source = "env"
 
     } else {
@@ -69,8 +70,10 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default"){
       stop("CRS mismatch between species range raster and environmental rasters!")
     }
 
-    if(nback > sum(getValues(species$range) > -1000000000000, na.rm=TRUE)){
+    if(nback > sum(as.numeric(!is.na(values(species$range))))){
       species$background.points <- as.data.frame(rasterToPoints(species$range)[,1:2])
+      inds <- sample(1:nrow(species$background.points), size = nback, replace = TRUE)
+      species$background.points <- species$background.points[inds,]
     } else {
       species$background.points <- as.data.frame(randomPoints(species$range, nback, species$presence.points))
     }
@@ -83,7 +86,15 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default"){
     if(!inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
       stop("bg.source set to env, but env layers were not recognized!")
     }
-    species$background.points <- as.data.frame(randomPoints(env[[1]], nback, species$presence.points))
+
+    if(nback > sum(as.numeric(!is.na(values(env[[1]]))))){
+      species$background.points <- as.data.frame(rasterToPoints(env[[1]])[,1:2])
+      inds <- sample(1:nrow(species$background.points), size = nback, replace = TRUE)
+      species$background.points <- species$background.points[inds,]
+    } else {
+      species$background.points <- as.data.frame(randomPoints(env[[1]], nback, species$presence.points))
+    }
+
     colnames(species$background.points) <- colnames(species$presence.points)
     return(species)
   }

@@ -13,6 +13,8 @@
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param low.memory When set to TRUE, replicate models are written to disc instead of being stored in the output object.  Replicate models stored in the output object contain paths to the replicate models on disk instead of the rasters themselves.
 #' @param rep.dir Directory for storing replicate models when low.memory is set to TRUE.  If not specified, the working directory will be used.
+#' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
+#' @param clamp Controls whether empirical and replicate models should be clamped to the environment space used for training.
 #' @param ... Additional arguments to be passed to model fitting functions.
 #'
 #' @return results A list containing models for the replicates, models for the empirical data, and summary statistics and plots.
@@ -36,11 +38,11 @@
 #' type = "glm", f= pres ~ bio1 + bio12, nreps = 10)
 #' }
 
-rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL, width = 1, nreps = 99,  nback = 1000, bg.source = "default", low.memory = FALSE, rep.dir = NA, ...){
+rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL, width = 1, nreps = 99,  nback = 1000, bg.source = "default", low.memory = FALSE, rep.dir = NA, verbose = FALSE, clamp = TRUE, ...){
 
-  species.1 <- check.bg(species.1, env, nback = nback, bg.source = bg.source)
-  species.2 <- check.bg(species.2, env, nback = nback, bg.source = bg.source)
-  ribbon <- check.bg(ribbon, env, nback = nback, bg.source = bg.source)
+  species.1 <- check.bg(species.1, env, nback = nback, bg.source = bg.source, verbose = verbose)
+  species.2 <- check.bg(species.2, env, nback = nback, bg.source = bg.source, verbose = verbose)
+  ribbon <- check.bg(ribbon, env, nback = nback, bg.source = bg.source, verbose = verbose)
 
   # Making sure species 1 always has the most presence points
   if(nrow(species.1$presence.points) < nrow(species.2$presence.points)){
@@ -83,48 +85,57 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
 
   combined.presence.points <- rbind(species.1$presence.points, species.2$presence.points, ribbon$presence.points)
 
+  # Clamping layers here so it's not done separately for every replicate
+  # and setting replicate clmaping to FALSE
+  if(clamp == TRUE){
+    # Adding env (skipped for BC otherwise)
+    this.df <- as.data.frame(extract(env, combined.presence.points))
+
+    env <- clamp.env(this.df, env)
+  }
+
   # Build models for empirical data
   message("\nBuilding empirical models...\n")
   if(type == "glm"){
-    empirical.species.1.model <- enmtools.glm(species.1, env, f, ...)
-    empirical.species.2.model <- enmtools.glm(species.2, env, f, ...)
-    empirical.ribbon.model <- enmtools.glm(ribbon, env, f, ...)
-    empirical.outside.model <- enmtools.glm(outside, env, f, ...)
+    empirical.species.1.model <- enmtools.glm(species.1, env, f, clamp = FALSE, ...)
+    empirical.species.2.model <- enmtools.glm(species.2, env, f, clamp = FALSE, ...)
+    empirical.ribbon.model <- enmtools.glm(ribbon, env, f, clamp = FALSE, ...)
+    empirical.outside.model <- enmtools.glm(outside, env, f, clamp = FALSE, ...)
   }
 
   if(type == "gam"){
-    empirical.species.1.model <- enmtools.gam(species.1, env, f, ...)
-    empirical.species.2.model <- enmtools.gam(species.2, env, f, ...)
-    empirical.ribbon.model <- enmtools.gam(ribbon, env, f, ...)
-    empirical.outside.model <- enmtools.gam(outside, env, f, ...)
+    empirical.species.1.model <- enmtools.gam(species.1, env, f, clamp = FALSE, ...)
+    empirical.species.2.model <- enmtools.gam(species.2, env, f, clamp = FALSE, ...)
+    empirical.ribbon.model <- enmtools.gam(ribbon, env, f, clamp = FALSE, ...)
+    empirical.outside.model <- enmtools.gam(outside, env, f, clamp = FALSE, ...)
   }
 
   if(type == "mx"){
-    empirical.species.1.model <- enmtools.maxent(species.1, env, ...)
-    empirical.species.2.model <- enmtools.maxent(species.2, env, ...)
-    empirical.ribbon.model <- enmtools.maxent(ribbon, env, ...)
-    empirical.outside.model <- enmtools.maxent(outside, env, ...)
+    empirical.species.1.model <- enmtools.maxent(species.1, env, clamp = FALSE, ...)
+    empirical.species.2.model <- enmtools.maxent(species.2, env, clamp = FALSE, ...)
+    empirical.ribbon.model <- enmtools.maxent(ribbon, env, clamp = FALSE, ...)
+    empirical.outside.model <- enmtools.maxent(outside, env, clamp = FALSE, ...)
   }
 
   if(type == "bc"){
-    empirical.species.1.model <- enmtools.bc(species.1, env, ...)
-    empirical.species.2.model <- enmtools.bc(species.2, env, ...)
-    empirical.ribbon.model <- enmtools.bc(ribbon, env, ...)
-    empirical.outside.model <- enmtools.bc(outside, env, ...)
+    empirical.species.1.model <- enmtools.bc(species.1, env, clamp = FALSE, ...)
+    empirical.species.2.model <- enmtools.bc(species.2, env, clamp = FALSE, ...)
+    empirical.ribbon.model <- enmtools.bc(ribbon, env, clamp = FALSE, ...)
+    empirical.outside.model <- enmtools.bc(outside, env, clamp = FALSE, ...)
   }
 
   if(type == "dm"){
-    empirical.species.1.model <- enmtools.dm(species.1, env, ...)
-    empirical.species.2.model <- enmtools.dm(species.2, env, ...)
-    empirical.ribbon.model <- enmtools.dm(ribbon, env, ...)
-    empirical.outside.model <- enmtools.dm(outside, env, ...)
+    empirical.species.1.model <- enmtools.dm(species.1, env, clamp = FALSE, ...)
+    empirical.species.2.model <- enmtools.dm(species.2, env, clamp = FALSE, ...)
+    empirical.ribbon.model <- enmtools.dm(ribbon, env, clamp = FALSE, ...)
+    empirical.outside.model <- enmtools.dm(outside, env, clamp = FALSE, ...)
   }
 
   if(type == "rf"){
-    empirical.species.1.model <- enmtools.rf(species.1, env, ...)
-    empirical.species.2.model <- enmtools.rf(species.2, env, ...)
-    empirical.ribbon.model <- enmtools.rf(ribbon, env, ...)
-    empirical.outside.model <- enmtools.rf(outside, env, ...)
+    empirical.species.1.model <- enmtools.rf(species.1, env, clamp = FALSE, ...)
+    empirical.species.2.model <- enmtools.rf(species.2, env, clamp = FALSE, ...)
+    empirical.ribbon.model <- enmtools.rf(ribbon, env, clamp = FALSE, ...)
+    empirical.outside.model <- enmtools.rf(outside, env, clamp = FALSE, ...)
   }
 
   empirical.overlap.sp1.vs.sp2 <- c(unlist(raster.overlap(empirical.species.1.model, empirical.species.2.model)),
@@ -150,8 +161,19 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
   # We'll use this to keep track of how many iterations were successful
   keepers <- 1
 
+  if (requireNamespace("progress", quietly = TRUE)) {
+    pb <- progress::progress_bar$new(
+      format = " [:bar] :percent eta: :eta",
+      total = nreps, clear = FALSE, width= 60)
+  }
+
+
   while(keepers <= nreps){
-    message(paste("\nReplicate", keepers, "...\n"))
+    if(verbose == TRUE){message(paste("\nReplicate", keepers, "...\n"))}
+
+    if(requireNamespace("progress", quietly = TRUE)) {
+      pb$tick()
+    }
 
     rep.species.1 <- species.1
     rep.species.2 <- species.2
@@ -207,45 +229,45 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
     # return(temp.list)
 
     if(type == "glm"){
-      rep.species.1.model <- enmtools.glm(rep.species.1, env, f, ...)
-      rep.species.2.model <- enmtools.glm(rep.species.2, env, f, ...)
-      rep.ribbon.model <- enmtools.glm(rep.ribbon, env, f, ...)
-      rep.outside.model <- enmtools.glm(rep.outside, env, f, ...)
+      rep.species.1.model <- enmtools.glm(rep.species.1, env, f, clamp = FALSE, ...)
+      rep.species.2.model <- enmtools.glm(rep.species.2, env, f, clamp = FALSE, ...)
+      rep.ribbon.model <- enmtools.glm(rep.ribbon, env, f, clamp = FALSE, ...)
+      rep.outside.model <- enmtools.glm(rep.outside, env, f, clamp = FALSE, ...)
     }
 
     if(type == "gam"){
-      rep.species.1.model <- enmtools.gam(rep.species.1, env, f, ...)
-      rep.species.2.model <- enmtools.gam(rep.species.2, env, f, ...)
-      rep.ribbon.model <- enmtools.gam(rep.ribbon, env, f, ...)
-      rep.outside.model <- enmtools.gam(rep.outside, env, f, ...)
+      rep.species.1.model <- enmtools.gam(rep.species.1, env, f, clamp = FALSE, ...)
+      rep.species.2.model <- enmtools.gam(rep.species.2, env, f, clamp = FALSE, ...)
+      rep.ribbon.model <- enmtools.gam(rep.ribbon, env, f, clamp = FALSE, ...)
+      rep.outside.model <- enmtools.gam(rep.outside, env, f, clamp = FALSE, ...)
     }
 
     if(type == "mx"){
-      rep.species.1.model <- enmtools.maxent(rep.species.1, env, ...)
-      rep.species.2.model <- enmtools.maxent(rep.species.2, env, ...)
-      rep.ribbon.model <- enmtools.maxent(rep.ribbon, env, ...)
-      rep.outside.model <- enmtools.maxent(rep.outside, env, ...)
+      rep.species.1.model <- enmtools.maxent(rep.species.1, env, clamp = FALSE, ...)
+      rep.species.2.model <- enmtools.maxent(rep.species.2, env, clamp = FALSE, ...)
+      rep.ribbon.model <- enmtools.maxent(rep.ribbon, env, clamp = FALSE, ...)
+      rep.outside.model <- enmtools.maxent(rep.outside, env, clamp = FALSE, ...)
     }
 
     if(type == "bc"){
-      rep.species.1.model <- enmtools.bc(rep.species.1, env, ...)
-      rep.species.2.model <- enmtools.bc(rep.species.2, env, ...)
-      rep.ribbon.model <- enmtools.bc(rep.ribbon, env, ...)
-      rep.outside.model <- enmtools.bc(rep.outside, env, ...)
+      rep.species.1.model <- enmtools.bc(rep.species.1, env, clamp = FALSE, ...)
+      rep.species.2.model <- enmtools.bc(rep.species.2, env, clamp = FALSE, ...)
+      rep.ribbon.model <- enmtools.bc(rep.ribbon, env, clamp = FALSE, ...)
+      rep.outside.model <- enmtools.bc(rep.outside, env, clamp = FALSE, ...)
     }
 
     if(type == "dm"){
-      rep.species.1.model <- enmtools.dm(rep.species.1, env, ...)
-      rep.species.2.model <- enmtools.dm(rep.species.2, env, ...)
-      rep.ribbon.model <- enmtools.dm(rep.ribbon, env, ...)
-      rep.outside.model <- enmtools.dm(rep.outside, env, ...)
+      rep.species.1.model <- enmtools.dm(rep.species.1, env, clamp = FALSE, ...)
+      rep.species.2.model <- enmtools.dm(rep.species.2, env, clamp = FALSE, ...)
+      rep.ribbon.model <- enmtools.dm(rep.ribbon, env, clamp = FALSE, ...)
+      rep.outside.model <- enmtools.dm(rep.outside, env, clamp = FALSE, ...)
     }
 
     if(type == "rf"){
-      rep.species.1.model <- enmtools.rf(rep.species.1, env, ...)
-      rep.species.2.model <- enmtools.rf(rep.species.2, env, ...)
-      rep.ribbon.model <- enmtools.rf(rep.ribbon, env, ...)
-      rep.outside.model <- enmtools.rf(rep.outside, env, ...)
+      rep.species.1.model <- enmtools.rf(rep.species.1, env, clamp = FALSE, ...)
+      rep.species.2.model <- enmtools.rf(rep.species.2, env, clamp = FALSE, ...)
+      rep.ribbon.model <- enmtools.rf(rep.ribbon, env, clamp = FALSE, ...)
+      rep.outside.model <- enmtools.rf(rep.outside, env, clamp = FALSE, ...)
     }
 
 
@@ -310,10 +332,10 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
   rownames(reps.overlap.sp2.vs.ribbon) <- c("empirical", paste("rep", 1:nreps))
   rownames(reps.overlap.outside.vs.ribbon) <- c("empirical", paste("rep", 1:nreps))
 
-  p.values.sp1.vs.sp2 <- apply(reps.overlap.sp1.vs.sp2, 2, function(x) 2 * (1 - max(mean(x > x[1]), mean(x < x[1]))))
-  p.values.sp1.vs.ribbon <- apply(reps.overlap.sp1.vs.ribbon, 2, function(x) 2 * (1 - max(mean(x > x[1]), mean(x < x[1]))))
-  p.values.sp2.vs.ribbon <- apply(reps.overlap.sp2.vs.ribbon, 2, function(x) 2 * (1 - max(mean(x > x[1]), mean(x < x[1]))))
-  p.values.outside.vs.ribbon <- apply(reps.overlap.outside.vs.ribbon, 2, function(x) 2 * (1 - max(mean(x > x[1]), mean(x < x[1]))))
+  p.values.sp1.vs.sp2 <- apply(reps.overlap.sp1.vs.sp2, 2, function(x) min(rank(x)[1], rank(-x)[1])/length(x))
+  p.values.sp1.vs.ribbon <- apply(reps.overlap.sp1.vs.ribbon, 2, function(x) min(rank(x)[1], rank(-x)[1])/length(x))
+  p.values.sp2.vs.ribbon <- apply(reps.overlap.sp2.vs.ribbon, 2, function(x) min(rank(x)[1], rank(-x)[1])/length(x))
+  p.values.outside.vs.ribbon <- apply(reps.overlap.outside.vs.ribbon, 2, function(x) min(rank(x)[1], rank(-x)[1])/length(x))
 
 
   ### Plots for sp1 vs sp2

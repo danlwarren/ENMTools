@@ -9,6 +9,7 @@
 #' @param chunk.size How many combinations of environmental variables to try at a time.  If your niche breadth in environment space is small, increasing this value may help you get a result.
 #' @param recal.model.1 Optional.  The output of enmtools.recalibrate for model 1, which needs to have been run with "recalibrate = TRUE".
 #' @param recal.model.2 Optional.  The output of enmtools.recalibrate for model 2, which needs to have been run with "recalibrate = TRUE".
+#' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
 #'
 #' @return A list of values measuring the overlap between models in environment space, as well as some plots depicting change of the estimates as a function of how many samples were used, which are included as a sort of convergence diagnostic.
 #'
@@ -21,7 +22,7 @@
 #' monticola.glm <- enmtools.glm(monticola, euro.worldclim, f = pres ~ bio1 + bio12, nback = 500)
 #' env.overlap(cyreni.glm, monticola.glm, euro.worldclim)
 
-env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, cor.method = "spearman", chunk.size = 100000, recal.model.1 = NA, recal.model.2 = NA){
+env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, cor.method = "spearman", chunk.size = 100000, recal.model.1 = NA, recal.model.2 = NA, verbose = FALSE){
 
   if(inherits(model.1, "enmtools.model")){
     model.1 <- model.1$model
@@ -102,7 +103,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
     pred1[pred1 < 0] <- 0
     pred2[pred2 < 0] <- 0
 
-    message(paste("Trying to find starting conditions, attempt", n.reps))
+    if(verbose == TRUE){message(paste("Trying to find starting conditions, attempt", n.reps))}
 
     if(sd(pred1) == 0 | sd(pred2) == 0){
       n.reps <- n.reps + 1
@@ -206,7 +207,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
     # samples (delta < tolerance).  We're going to diagnose convergence just based
     # on the main models.
 
-    message("Building replicates...")
+    if(verbose == TRUE){message("Building replicates...")}
 
     delta <- 1
 

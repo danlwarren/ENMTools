@@ -17,6 +17,8 @@ enmtools.glm(
   rts.reps = 0,
   weights = "equal",
   bg.source = "default",
+  verbose = FALSE,
+  clamp = TRUE,
   ...
 )
 }
@@ -44,6 +46,10 @@ enmtools.glm(
 \item{weights}{If this is set to "equal", presences and background data will be assigned weights so that the sum of all presence points weights equals the sum of all background point weights.  Otherwise, weights are not provided to the model.}
 
 \item{bg.source}{Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.}
+
+\item{verbose}{Controls printing of various messages progress reports.  Defaults to FALSE.}
+
+\item{clamp}{When set to TRUE, clamps the environmental layers so that predictions made outside the min/max of the training data for each predictor are set to the value for the min/max for that predictor. Prevents the model from extrapolating beyond the min/max bounds of the predictor space the model was trained in, although there could still be projections outside the multivariate training space if predictors are strongly correlated.}
 
 \item{...}{Arguments to be passed to glm()}
 }

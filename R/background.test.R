@@ -15,6 +15,8 @@
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param low.memory When set to TRUE, replicate models are written to disc instead of being stored in the output object.  Replicate models stored in the output object contain paths to the replicate models on disk instead of the rasters themselves.
 #' @param rep.dir Directory for storing replicate models when low.memory is set to TRUE.  If not specified, the working directory will be used.
+#' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
+#' @param clamp Controls whether empirical and replicate models should be clamped to the environment space used for training.
 #' @param ... Additional arguments to be passed to model fitting functions.
 #'
 #'
@@ -34,7 +36,7 @@
 #' f = pres ~ bio1 + bio12, nreps = 10)
 #' }
 
-background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99, test.type = "asymmetric", nback = 1000, bg.source = "default", low.memory = FALSE, rep.dir = NA, ...){
+background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99, test.type = "asymmetric", nback = 1000, bg.source = "default", low.memory = FALSE, rep.dir = NA, verbose = FALSE, clamp = TRUE, ...){
 
   # Build a description of the analysis to use for summaries and plot titles
   if(test.type == "symmetric"){
@@ -44,8 +46,8 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
   }
   message(paste("\n", description, "\n"))
 
-  species.1 <- check.bg(species.1, env, nback = nback, bg.source = bg.source)
-  species.2 <- check.bg(species.2, env, nback = nback, bg.source = bg.source)
+  species.1 <- check.bg(species.1, env, nback = nback, bg.source = bg.source, verbose = verbose)
+  species.2 <- check.bg(species.2, env, nback = nback, bg.source = bg.source, verbose = verbose)
 
   # Check to make sure everything's okay
   background.precheck(species.1, species.2, env, type, f, nreps, test.type)
@@ -71,39 +73,51 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
   # For starters we need to combine species background points so that each model
   # is being built with the same background
-  species.1$background.points <- rbind(species.1$background.points, species.2$background.points)
-  species.2$background.points <- rbind(species.1$background.points, species.2$background.points)
+  combined.background.points <- rbind(species.1$background.points, species.2$background.points)
+  species.1$background.points <- combined.background.points
+  species.2$background.points <- combined.background.points
+
+  # Clamping layers here so it's not done separately for every replicate
+  # and setting replicate clmaping to FALSE
+  if(clamp == TRUE){
+    combined.all.points <- rbind(species.1$presence.points, species.2$presence.points, combined.background.points)
+
+    # Adding env (skipped for BC otherwise)
+    this.df <- as.data.frame(extract(env, combined.all.points))
+
+    env <- clamp.env(this.df, env)
+  }
 
   # Building models for empirical data
   message("\nBuilding empirical models...\n")
   if(type == "glm"){
-    empirical.species.1.model <- enmtools.glm(species.1, env, f, ...)
-    empirical.species.2.model <- enmtools.glm(species.2, env, f, ...)
+    empirical.species.1.model <- enmtools.glm(species.1, env, f, clamp = FALSE, ...)
+    empirical.species.2.model <- enmtools.glm(species.2, env, f, clamp = FALSE, ...)
   }
 
   if(type == "gam"){
-    empirical.species.1.model <- enmtools.gam(species.1, env, f, ...)
-    empirical.species.2.model <- enmtools.gam(species.2, env, f, ...)
+    empirical.species.1.model <- enmtools.gam(species.1, env, f, clamp = FALSE, ...)
+    empirical.species.2.model <- enmtools.gam(species.2, env, f, clamp = FALSE, ...)
   }
 
   if(type == "mx"){
-    empirical.species.1.model <- enmtools.maxent(species.1, env, ...)
-    empirical.species.2.model <- enmtools.maxent(species.2, env, ...)
+    empirical.species.1.model <- enmtools.maxent(species.1, env, clamp = FALSE, ...)
+    empirical.species.2.model <- enmtools.maxent(species.2, env, clamp = FALSE, ...)
   }
 
   if(type == "bc"){
-    empirical.species.1.model <- enmtools.bc(species.1, env, ...)
-    empirical.species.2.model <- enmtools.bc(species.2, env, ...)
+    empirical.species.1.model <- enmtools.bc(species.1, env, clamp = FALSE, ...)
+    empirical.species.2.model <- enmtools.bc(species.2, env, clamp = FALSE, ...)
   }
 
   if(type == "dm"){
-    empirical.species.1.model <- enmtools.dm(species.1, env, ...)
-    empirical.species.2.model <- enmtools.dm(species.2, env, ...)
+    empirical.species.1.model <- enmtools.dm(species.1, env, clamp = FALSE, ...)
+    empirical.species.2.model <- enmtools.dm(species.2, env, clamp = FALSE, ...)
   }
 
   if(type == "rf"){
-    empirical.species.1.model <- enmtools.rf(species.1, env, ...)
-    empirical.species.2.model <- enmtools.rf(species.2, env, ...)
+    empirical.species.1.model <- enmtools.rf(species.1, env, clamp = FALSE, ...)
+    empirical.species.2.model <- enmtools.rf(species.2, env, clamp = FALSE, ...)
   }
 
   empirical.overlap <- c(unlist(raster.overlap(empirical.species.1.model, empirical.species.2.model)),
@@ -111,11 +125,22 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
   reps.overlap <- empirical.overlap
 
   message("\nBuilding replicate models...\n")
+
+  if (requireNamespace("progress", quietly = TRUE)) {
+    pb <- progress::progress_bar$new(
+      format = " [:bar] :percent eta: :eta",
+      total = nreps, clear = FALSE, width= 60)
+  }
+
   for(i in 1:nreps){
-    message(paste("\nReplicate", i, "...\n"))
+    if(verbose == TRUE){message(paste("\nReplicate", i, "...\n"))}
 
     rep.species.1 <- species.1
     rep.species.2 <- species.2
+
+    if (requireNamespace("progress", quietly = TRUE)) {
+      pb$tick()
+    }
 
     if(test.type == "symmetric"){
 
@@ -137,33 +162,33 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
     # Building the models for reps
     if(type == "glm"){
-      rep.species.1.model <- enmtools.glm(rep.species.1, env, f, ...)
-      rep.species.2.model <- enmtools.glm(rep.species.2, env, f, ...)
+      rep.species.1.model <- enmtools.glm(rep.species.1, env, f, clamp = FALSE, ...)
+      rep.species.2.model <- enmtools.glm(rep.species.2, env, f, clamp = FALSE, ...)
     }
 
     if(type == "gam"){
-      rep.species.1.model <- enmtools.gam(rep.species.1, env, f, ...)
-      rep.species.2.model <- enmtools.gam(rep.species.2, env, f, ...)
+      rep.species.1.model <- enmtools.gam(rep.species.1, env, f, clamp = FALSE, ...)
+      rep.species.2.model <- enmtools.gam(rep.species.2, env, f, clamp = FALSE, ...)
     }
 
     if(type == "mx"){
-      rep.species.1.model <- enmtools.maxent(rep.species.1, env, ...)
-      rep.species.2.model <- enmtools.maxent(rep.species.2, env, ...)
+      rep.species.1.model <- enmtools.maxent(rep.species.1, env, clamp = FALSE, ...)
+      rep.species.2.model <- enmtools.maxent(rep.species.2, env, clamp = FALSE, ...)
     }
 
     if(type == "bc"){
-      rep.species.1.model <- enmtools.bc(rep.species.1, env, ...)
-      rep.species.2.model <- enmtools.bc(rep.species.2, env, ...)
+      rep.species.1.model <- enmtools.bc(rep.species.1, env, clamp = FALSE, ...)
+      rep.species.2.model <- enmtools.bc(rep.species.2, env, clamp = FALSE, ...)
     }
 
     if(type == "dm"){
-      rep.species.1.model <- enmtools.dm(rep.species.1, env, ...)
-      rep.species.2.model <- enmtools.dm(rep.species.2, env, ...)
+      rep.species.1.model <- enmtools.dm(rep.species.1, env, clamp = FALSE, ...)
+      rep.species.2.model <- enmtools.dm(rep.species.2, env, clamp = FALSE, ...)
     }
 
     if(type == "rf"){
-      rep.species.1.model <- enmtools.rf(rep.species.1, env, ...)
-      rep.species.2.model <- enmtools.rf(rep.species.2, env, ...)
+      rep.species.1.model <- enmtools.rf(rep.species.1, env, clamp = FALSE, ...)
+      rep.species.2.model <- enmtools.rf(rep.species.2, env, clamp = FALSE, ...)
     }
 
     # Appending overlap to results
@@ -187,7 +212,7 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
   rownames(reps.overlap) <- c("empirical", paste("rep", 1:nreps))
   print(reps.overlap)
-  p.values <- apply(reps.overlap, 2, function(x) 2 * (1 - max(mean(x > x[1]), mean(x < x[1]))))
+  p.values <- apply(reps.overlap, 2, function(x) min(rank(x)[1], rank(-x)[1])/length(x))
 
 
   d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"D"], geom = "histogram", fill = "density", alpha = 0.5) +

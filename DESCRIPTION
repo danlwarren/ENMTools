@@ -1,8 +1,8 @@
 Package: ENMTools
 Type: Package
 Title: Analysis of Niche Evolution using Niche and Distribution Models
-Version: 1.0
-Date: 2020-07-22
+Version: 1.0.1
+Date: 2020-08-25
 Encoding: UTF-8
 Authors@R: c(person(given = "Dan", family = "Warren", role = c("aut", "cre"), email = "dan.l.warren@gmail.com", comment = c(ORCID = "0000-0002-8747-2451")),
             person(given = "Nick", family = "Matzke", role = "ctb", email = "nick.matzke@anu.edu.au"),
@@ -29,7 +29,8 @@ Imports:
 	sp,
 	spatstat,
 	ggpubr,
-	rgdal
+	rgdal,
+	forcats
 Depends:
 	raster,
 	dismo
@@ -47,4 +48,9 @@ Suggests:
 	ResourceSelection,
 	ppmlasso,
 	fields,
-	reshape2
+	reshape2,
+	vip,
+	pdp,
+	fastshap,
+	viridis,
+	progress

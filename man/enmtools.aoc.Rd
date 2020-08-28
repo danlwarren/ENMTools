@@ -8,9 +8,9 @@ overlap and time}
 \usage{
 enmtools.aoc(
   clade,
-  nreps,
-  overlap.source,
   env = NULL,
+  overlap.source,
+  nreps = 100,
   f = NULL,
   overlap.matrix = NULL,
   metric = "D"
@@ -19,11 +19,11 @@ enmtools.aoc(
 \arguments{
 \item{clade}{An enmtools.clade object containing species data and a phylogeny}
 
-\item{nreps}{A number of reps to do}
+\item{env}{Environmental layers for use when overlap is calculated using niche models.}
 
 \item{overlap.source}{The source of the overlaps to calculate.  Choices are "bc", "dm", "gam", "glm", "mx", "range", and "point"}
 
-\item{env}{Environmental layers for use when overlap is calculated using niche models.}
+\item{nreps}{A number of reps to do}
 
 \item{f}{The model to be used for GLM and GAM comparisons}
 
