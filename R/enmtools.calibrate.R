@@ -25,11 +25,6 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
 
   check.packages(c("ecospat", "CalibratR", "caret", "ResourceSelection"))
 
-  if (Sys.getenv("RSTUDIO") == "1" && !nzchar(Sys.getenv("RSTUDIO_TERM")) &&
-      Sys.info()["sysname"] == "Darwin" && getRversion() >= "4.0.0") {
-    parallel:::setDefaultClusterOptions(setup_strategy = "sequential")
-  }
-
   if(suppressWarnings(is.na(model$test.evaluation))){
     stop("No test evaluation data available, cannot measure calibration.")
   }
