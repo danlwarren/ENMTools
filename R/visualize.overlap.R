@@ -17,9 +17,9 @@
 #' ar <- iberolacerta.clade$species$aranica
 #' au <- iberolacerta.clade$species$aurelioi
 #' data(euro.worldclim)
-#' aranica.bc <- enmtools.bc(ar, euro.worldclim)
-#' aurelioi.bc <- enmtools.bc(au, euro.worldclim)
-#' visualize.overlap(aranica.bc, aurelioi.bc, euro.worldclim, layers = c("bio1", "bio9"))
+#' aranica.dm <- enmtools.dm(ar, euro.worldclim)
+#' aurelioi.dm <- enmtools.dm(au, euro.worldclim)
+#' visualize.overlap(aranica.dm, aurelioi.dm, euro.worldclim, layers = c("bio1", "bio9"))
 #' }
 
 visualize.overlap <- function(model.1, model.2, env, nbins = 100, layers, plot.points = TRUE){
