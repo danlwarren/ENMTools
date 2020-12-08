@@ -22,6 +22,13 @@ ENMTools 1.0.2
 ENMTools 1.0.1
 --------------
 
+### Bug fixes
+
+-   Minor update to fix an rgdal import that was making CRAN angry
+
+ENMTools 1.0.1
+--------------
+
 ### Enhancements
 
 -   Added variable importance tests via interface with the *vip* package
