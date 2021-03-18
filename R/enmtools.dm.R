@@ -11,7 +11,6 @@
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
 #' @param clamp When set to TRUE, clamps the environmental layers so that predictions made outside the min/max of the training data for each predictor are set to the value for the min/max for that predictor. Prevents the model from extrapolating beyond the min/max bounds of the predictor space the model was trained in, although there could still be projections outside the multivariate training space if predictors are strongly correlated.
-#' @param corner An integer from 1 to 4.  Selects which corner to use for "block" test data.  By default the corner is selected randomly.
 #' @param ... Arguments to be passed to domain()
 #'
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
@@ -24,7 +23,7 @@
 #' }
 
 
-enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback = 1000, env.nback = 10000, overwrite = FALSE, rts.reps = 0, bg.source = "default", verbose = FALSE, clamp = TRUE, corner = NA, ...){
+enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback = 1000, env.nback = 10000, overwrite = FALSE, rts.reps = 0, bg.source = "default", verbose = FALSE, clamp = TRUE, ...){
 
   notes <- NULL
 
@@ -49,11 +48,7 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
   # Code for spatially structured test data
   if(is.character(test.prop)){
     if(test.prop == "block"){
-      if(is.na(corner)){
-        corner <- ceiling(runif(1, 0, 4))
-      } else if(corner < 1 | corner > 4){
-        stop("corner should be an integer from 1 to 4!")
-      }
+      corner <- ceiling(runif(1, 0, 4))
       test.inds <- get.block(species$presence.points, species$background.points)
       test.bg.inds <- which(test.inds$bg.grp == corner)
       test.inds <- which(test.inds$occ.grp == corner)
@@ -358,7 +353,8 @@ plot.enmtools.dm <- function(x, ...){
     geom_raster(aes_string(fill = "Suitability")) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
-    geom_point(data = x$analysis.df[x$analysis.df$Longitude > extent(x$suitability)[1] &
+    geom_point(data = x$analysis.df[x$analysis.df$presence == 1 &
+                                      x$analysis.df$Longitude > extent(x$suitability)[1] &
                                       x$analysis.df$Longitude < extent(x$suitability)[2] &
                                       x$analysis.df$Latitude > extent(x$suitability)[3] &
                                       x$analysis.df$Latitude < extent(x$suitability)[4],], aes_string(y = "Latitude", x = "Longitude"),

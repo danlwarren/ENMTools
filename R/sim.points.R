@@ -113,7 +113,7 @@ raster.as.im <- function(im) {
   dm <- dim(im)[2:1]
   xx <- unname(orig[1] + cumsum(c(0, rep(r[1], dm[1] - 1))))
   yy <- unname(orig[2] + cumsum(c(0, rep(r[2], dm[2] - 1))))
-  return(spatstat::im(matrix(raster::values(im), ncol = dm[1],
+  return(spatstat.geom::im(matrix(raster::values(im), ncol = dm[1],
                              nrow = dm[2], byrow = TRUE)[dm[2]:1, ],
                       xcol = xx, yrow = yy))
 }

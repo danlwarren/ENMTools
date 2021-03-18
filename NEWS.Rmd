@@ -8,6 +8,13 @@ output:
 
 # ENMTools 1.x
 
+## ENMTools 1.0.3
+
+### Enhancements
+
+* Brought up to date for new **spatstat** changes
+
+
 ## ENMTools 1.0.2
 
 ### Enhancements

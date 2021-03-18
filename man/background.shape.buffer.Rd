@@ -17,5 +17,7 @@ background.shape.buffer(points, radius)
 A polygon shapefile.
 }
 \description{
-NOTE: This function has been replaced by background.buffer.
+Takes a set of points and a buffer radius, and returns
+a polygon.
+Code modified from Elith and Hijmans SDM with R tutorial
 }

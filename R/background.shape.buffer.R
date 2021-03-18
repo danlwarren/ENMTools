@@ -2,8 +2,6 @@
 #' a polygon.
 #' Code modified from Elith and Hijmans SDM with R tutorial
 #'
-#' NOTE: This function has been replaced by background.buffer.
-#'
 #' @param points A two column data frame with X and Y coordinates
 #' @param radius Radius for circular buffers to draw around points, in meters.
 #'
@@ -12,6 +10,9 @@
 
 background.shape.buffer <- function(points, radius){
 
-  return(background.buffer(points = points, buffer.width = radius,
-                           buffer.type = "circles", mask = NA, return.type = "polygon"))
+  x <- circles(points, d=radius, lonlat=TRUE)
+
+  pol <-  gUnaryUnion(x@polygons)
+
+  return(pol)
 }

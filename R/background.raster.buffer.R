@@ -2,8 +2,6 @@
 #' a raster based on that buffer radius.
 #' Code modified from Elith and Hijmans SDM with R tutorial
 #'
-#' NOTE: This function has been replaced by background.buffer.
-#'
 #' @param points A two column data frame with X and Y coordinates
 #' @param radius Radius for circular buffers to draw around points, in meters.
 #' @param mask A raster to use as a mask
@@ -18,6 +16,17 @@
 
 background.raster.buffer <- function(points, radius, mask){
 
-  return(background.buffer(points = points, buffer.width = radius, mask = mask,
-                           buffer.type = "circles", return.type = "raster"))
+  x <- circles(points, d=radius, lonlat=TRUE)
+
+  pol <-  gUnaryUnion(x@polygons)
+
+  if(length(names(mask)) > 1){
+    mask <- mask[[1]]
+  }
+
+  buffer.raster <- mask(mask, pol)
+
+  buffer.raster[!is.na(buffer.raster)] <- 1
+
+  return(buffer.raster)
 }

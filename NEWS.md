@@ -1,23 +1,23 @@
 ENMTools 1.x
 ============
 
+
+ENMTools 1.0.3
+--------------
+
+### Enhancements
+
+-   Brought up to date for new **spatstat** changes
+
+
 ENMTools 1.0.2
 --------------
 
 ### Enhancements
 
--   Added a new general-purpose function for making background layers
-    from point data. It can do both circular buffers and buffered convex
-    hulls, and can return points, a polygon, or a raster. Converted the
-    existing background buffer functions to just call this one, and will
-    eventually deprecate the single-application functions.
--   Added ability to select which corner you want for “block”
-    validation.
--   Added a function called *multi.variogram* which takes a raster
-    stack, builds a variogram for each layer, and then plots the gamma
-    for each variable as a function of distance, scaled by the maximum
-    gama for that variable. This allows users to get some idea of the
-    level of spatial autocorrelation in each predictor variable.
+-   Added a new general-purpose function for making background layers from point data.  It can do both circular buffers and buffered convex hulls, and can return points, a polygon, or a raster.  Converted the existing background buffer functions to just call this one, and will eventually deprecate the single-application functions.
+-   Added ability to select which corner you want for "block" validation.
+-   Added a function called *multi.variogram* which takes a raster stack, builds a variogram for each layer, and then plots the gamma for each variable as a function of distance, scaled by the maximum gama for that variable.  This allows users to get some idea of the level of spatial autocorrelation in each predictor variable.
 
 ENMTools 1.0.1
 --------------
