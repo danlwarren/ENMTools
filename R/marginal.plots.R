@@ -17,7 +17,7 @@
 #' f = pres ~ bio1 + bio12, euro.worldclim)
 #' marginal.plots(cyreni.glm, euro.worldclim, "bio1")
 
-marginal.plots <- function(model, env, layer, standardize = TRUE){
+marginal.plots <- function(model, env, layer, standardize = TRUE, verbose = FALSE){
 
   if(!layer %in% names(env)){
     stop(paste("Couldn't find layer named", layer, "in environmental rasters!"))
@@ -79,7 +79,12 @@ marginal.plots <- function(model, env, layer, standardize = TRUE){
 
 
   if(inherits(model$model, what = "DistModel")){
-    pred <- predict(model$model, x = plot.df, type = "response")
+    if(verbose){
+      pred <- predict(model$model, x = plot.df, type = "response")
+    } else {
+      invisible(capture.output(pred <- predict(model$model, x = plot.df, type = "response")))
+    }
+
   } else {
     if(inherits(model$model, "ranger")) {
       pred <- predict(model$model, data = plot.df, type = "response")$predictions[ , 2, drop = TRUE]
