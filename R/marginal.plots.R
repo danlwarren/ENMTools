@@ -5,6 +5,7 @@
 #' @param env A RasterLayer or RasterStack object containing environmental data
 #' @param layer The name of the layer to plot
 #' @param standardize Whether to set the maximum of the response function to 1, or to instead use the raw values.
+#' @param verbose Controls printing of messages
 #'
 #' @return results A plot of the marginal response of the model to the environmental variable.
 #'
