@@ -120,11 +120,20 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
     if(test.prop > 0 & test.prop < 1){
       test.check <- raster::extract(env, test.data)
       test.data <- test.data[complete.cases(test.check),]
-      test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
-                                        this.mx, env)
+
       temp.sp <- species
       temp.sp$presence.points <- test.data
-      env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)
+
+      if(verbose){
+        test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
+                                          this.mx, env)
+        env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)
+      } else {
+        invisible(capture.output(test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
+                                          this.mx, env)))
+        invisible(capture.output(env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)))
+      }
+
     }
   }
 
@@ -133,12 +142,21 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
     if(test.prop == "block"){
       test.check <- raster::extract(env, test.data)
       test.data <- test.data[complete.cases(test.check),]
-      test.evaluation <-dismo::evaluate(test.data, test.bg,
-                                        this.mx, env)
+
       temp.sp <- species
       temp.sp$presence.points <- test.data
       temp.sp$background.points <- test.bg
-      env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)
+
+      if(verbose){
+        test.evaluation <-dismo::evaluate(test.data, test.bg,
+                                          this.mx, env)
+        env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)
+      } else {
+        invisible(capture.output(test.evaluation <-dismo::evaluate(test.data, test.bg,
+                                          this.mx, env)))
+        invisible(capture.output(env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)))
+      }
+
     }
   }
 
