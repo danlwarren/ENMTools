@@ -8,6 +8,7 @@ ENMTools 1.0.3
 ### Enhancements
 
 -   Brought up to date for new **spatstat** changes
+-   Removed **ppmlasso** until it is brought back on CRAN
 
 
 ENMTools 1.0.2
