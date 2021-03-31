@@ -1,8 +1,9 @@
 Package: ENMTools
 Type: Package
 Title: Analysis of Niche Evolution using Niche and Distribution Models
-Version: 1.0.2
-Date: 2020-11-17
+Version: 1.0.3
+Date: 2021-03-28
+
 Encoding: UTF-8
 Authors@R: c(person(given = "Dan", family = "Warren", role = c("aut", "cre"), email = "dan.l.warren@gmail.com", comment = c(ORCID = "0000-0002-8747-2451")),
             person(given = "Nick", family = "Matzke", role = "ctb", email = "nick.matzke@anu.edu.au"),
@@ -18,39 +19,9 @@ Description: Description: Tools for constructing niche models and analyzing patt
 License: GPL-2
 LazyData: TRUE
 RoxygenNote: 7.1.1
-Imports:
-	rgeos,
-	knitr,
-	ggplot2,
-	gridExtra,
-	lhs,
-	magrittr,
-	ENMeval,
-	sp,
-	spatstat,
-	ggpubr,
-	rgdal,
-	forcats
-Depends:
-	raster,
-	dismo
-Suggests:
-	testthat,
-	hypervolume,
-	leaflet,
-	mgcv,
-	ecospat,
-	randomForest,
-	ranger,
-	caret,
-	CalibratR,
-	ape,
-	ResourceSelection,
-	ppmlasso,
-	fields,
-	reshape2,
-	vip,
-	pdp,
-	fastshap,
-	viridis,
-	progress
+Imports: rgeos, knitr, ggplot2, gridExtra, lhs, magrittr, ENMeval, sp,
+        spatstat.geom, spatstat.core, spatstat (>= 2.0-0), ggpubr, rgdal, forcats
+Depends: raster, dismo
+Suggests: testthat, hypervolume, leaflet, mgcv, ecospat, randomForest,
+        ranger, caret, CalibratR, ape, ResourceSelection, 
+        fields, reshape2, vip, pdp, fastshap, viridis, progress

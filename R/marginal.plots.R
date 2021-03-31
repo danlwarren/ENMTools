@@ -5,6 +5,7 @@
 #' @param env A RasterLayer or RasterStack object containing environmental data
 #' @param layer The name of the layer to plot
 #' @param standardize Whether to set the maximum of the response function to 1, or to instead use the raw values.
+#' @param verbose Controls printing of messages
 #'
 #' @return results A plot of the marginal response of the model to the environmental variable.
 #'
@@ -17,7 +18,7 @@
 #' f = pres ~ bio1 + bio12, euro.worldclim)
 #' marginal.plots(cyreni.glm, euro.worldclim, "bio1")
 
-marginal.plots <- function(model, env, layer, standardize = TRUE){
+marginal.plots <- function(model, env, layer, standardize = TRUE, verbose = FALSE){
 
   if(!layer %in% names(env)){
     stop(paste("Couldn't find layer named", layer, "in environmental rasters!"))
@@ -79,7 +80,12 @@ marginal.plots <- function(model, env, layer, standardize = TRUE){
 
 
   if(inherits(model$model, what = "DistModel")){
-    pred <- predict(model$model, x = plot.df, type = "response")
+    if(verbose){
+      pred <- predict(model$model, x = plot.df, type = "response")
+    } else {
+      invisible(capture.output(pred <- predict(model$model, x = plot.df, type = "response")))
+    }
+
   } else {
     if(inherits(model$model, "ranger")) {
       pred <- predict(model$model, data = plot.df, type = "response")$predictions[ , 2, drop = TRUE]

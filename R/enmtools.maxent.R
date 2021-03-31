@@ -77,9 +77,13 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
     notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
   }
 
-  this.mx <- dismo::maxent(env, p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)
-
-  suitability <- predict(env, this.mx, type = "response")
+  if(verbose){
+    this.mx <- dismo::maxent(env, p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)
+    suitability <- predict(env, this.mx, type = "response")
+  } else {
+    invisible(capture.output(this.mx <- dismo::maxent(env, p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)))
+    invisible(capture.output(suitability <- predict(env, this.mx, type = "response")))
+  }
 
   # Clamping and getting a diff layer
   clamping.strength <- NA
@@ -88,25 +92,48 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
     this.df <- as.data.frame(extract(env, species$presence.points))
 
     env <- clamp.env(this.df, env)
-    clamped.suitability <- predict(env, this.mx, type = "response")
+
+    if(verbose){
+      clamped.suitability <- predict(env, this.mx, type = "response")
+    } else {
+      invisible(capture.output(clamped.suitability <- predict(env, this.mx, type = "response")))
+    }
+
     clamping.strength <- clamped.suitability - suitability
     suitability <- clamped.suitability
   }
 
-  model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
-                               this.mx, env)
-  env.model.evaluation <- env.evaluate(species, this.mx, env, n.background = env.nback)
+  if(verbose){
+    model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+                                       this.mx, env)
+    env.model.evaluation <- env.evaluate(species, this.mx, env, n.background = env.nback)
+
+  } else {
+    invisible(capture.output(model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+                                       this.mx, env)))
+    invisible(capture.output(env.model.evaluation <- env.evaluate(species, this.mx, env, n.background = env.nback)))
+
+  }
 
   # Test eval for randomly withheld data
   if(is.numeric(test.prop)){
     if(test.prop > 0 & test.prop < 1){
       test.check <- raster::extract(env, test.data)
       test.data <- test.data[complete.cases(test.check),]
-      test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
-                                        this.mx, env)
+
       temp.sp <- species
       temp.sp$presence.points <- test.data
-      env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)
+
+      if(verbose){
+        test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
+                                          this.mx, env)
+        env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)
+      } else {
+        invisible(capture.output(test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
+                                          this.mx, env)))
+        invisible(capture.output(env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)))
+      }
+
     }
   }
 
@@ -115,12 +142,21 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
     if(test.prop == "block"){
       test.check <- raster::extract(env, test.data)
       test.data <- test.data[complete.cases(test.check),]
-      test.evaluation <-dismo::evaluate(test.data, test.bg,
-                                        this.mx, env)
+
       temp.sp <- species
       temp.sp$presence.points <- test.data
       temp.sp$background.points <- test.bg
-      env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)
+
+      if(verbose){
+        test.evaluation <-dismo::evaluate(test.data, test.bg,
+                                          this.mx, env)
+        env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)
+      } else {
+        invisible(capture.output(test.evaluation <-dismo::evaluate(test.data, test.bg,
+                                          this.mx, env)))
+        invisible(capture.output(env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)))
+      }
+
     }
   }
 
@@ -181,11 +217,21 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
       rts.df <- rbind(rep.species$presence.points, rep.species$background.points)
       rts.df$presence <- c(rep(1, nrow(rep.species$presence.points)), rep(0, nrow(rep.species$background.points)))
 
-      thisrep.mx <- dismo::maxent(env, p = rts.df[rts.df$presence == 1,1:2], a = rts.df[rts.df$presence == 0,1:2], ...)
+      # We have to do this to capture the "this is maxent version XXX message".
+      if(verbose){
+        thisrep.mx <- dismo::maxent(env, p = rts.df[rts.df$presence == 1,1:2], a = rts.df[rts.df$presence == 0,1:2], ...)
+        thisrep.model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+                                                   thisrep.mx, env)
+        thisrep.env.model.evaluation <- env.evaluate(species, thisrep.mx, env, n.background = env.nback)
+      } else {
+        invisible(capture.output(thisrep.mx <- dismo::maxent(env, p = rts.df[rts.df$presence == 1,1:2], a = rts.df[rts.df$presence == 0,1:2], ...)))
+        invisible(capture.output(thisrep.model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+                                                   thisrep.mx, env)))
+        invisible(capture.output(thisrep.env.model.evaluation <- env.evaluate(species, thisrep.mx, env, n.background = env.nback)))
+      }
 
-      thisrep.model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
-                                                 thisrep.mx, env)
-      thisrep.env.model.evaluation <- env.evaluate(species, thisrep.mx, env, n.background = env.nback)
+
+
 
       rts.geog.training[i] <- thisrep.model.evaluation@auc
       rts.env.training[i] <- thisrep.env.model.evaluation@auc

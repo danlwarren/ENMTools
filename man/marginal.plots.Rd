@@ -4,7 +4,7 @@
 \alias{marginal.plots}
 \title{marginal.plots Plots the marginal response of a model to an environmental variable with all other variables held at their mean in env}
 \usage{
-marginal.plots(model, env, layer, standardize = TRUE)
+marginal.plots(model, env, layer, standardize = TRUE, verbose = FALSE)
 }
 \arguments{
 \item{model}{An enmtools model object}
@@ -14,6 +14,8 @@ marginal.plots(model, env, layer, standardize = TRUE)
 \item{layer}{The name of the layer to plot}
 
 \item{standardize}{Whether to set the maximum of the response function to 1, or to instead use the raw values.}
+
+\item{verbose}{Controls printing of messages}
 }
 \value{
 results A plot of the marginal response of the model to the environmental variable.
