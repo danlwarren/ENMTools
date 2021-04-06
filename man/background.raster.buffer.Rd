@@ -19,9 +19,7 @@ background.raster.buffer(points, radius, mask)
 A raster object with values of 1 in every grid cell falling within the buffer.
 }
 \description{
-Takes a set of points, a buffer radius, and a mask and returns
-a raster based on that buffer radius.
-Code modified from Elith and Hijmans SDM with R tutorial
+NOTE: This function has been replaced by background.buffer.
 }
 \examples{
 data(iberolacerta.clade)

@@ -21,7 +21,5 @@ background.points.buffer(points, radius, n, mask)
 A data frame of points drawn at random from circular buffers around the occurrence points.
 }
 \description{
-Takes a set of points, a buffer radius, a sample size, and a mask and returns
-randomly sampled points from within that buffer radius.
-Code modified from Elith and Hijmans SDM with R tutorial
+NOTE: This function has been replaced by background.buffer.
 }
