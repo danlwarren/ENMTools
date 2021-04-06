@@ -55,7 +55,7 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
       test.data <- species$presence.points[test.inds,]
       test.bg <- species$background.points[test.bg.inds,]
       species$presence.points <- species$presence.points[-test.inds,]
-      species$background.points <- species$presence.points[-test.bg.inds,]
+      species$background.points <- species$background.points[-test.bg.inds,]
     }
   }
 
