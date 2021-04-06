@@ -18,13 +18,10 @@ A list containing a stack or brick of rasters for each input set representing th
 multistack.pca, simultaneous PCA on more than one stack of environmental rasters
 }
 \examples{
-\donttest{
-world <- raster::getData(name = "worldclim", download = TRUE, var = "bio", res = 5)
-test1 <- crop(world, extent(10, 15, 10, 15))
-test2 <- crop(world, extent(17, 22, 17, 22))
-test3 <- crop(world, extent(24, 26, 24, 26))
+test1 <- crop(euro.worldclim, extent(-10, -5, 40, 43))
+test2 <- crop(euro.worldclim, extent(-5, 5, 40, 48))
+test3 <- crop(euro.worldclim, extent(5, 15, 44, 48))
 multistack.pca(test1, test2, test3)
-}
 }
 \keyword{environment}
 \keyword{pca}
