@@ -209,7 +209,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
 
       # Do the same for test points
       if(test.prop > 0){
-        test.rows <- sample(nrow(allpoints), nrow(species$presence.points))
+        test.rows <- sample(nrow(allpoints), nrow(test.data))
         rep.test.data <- allpoints[test.rows,]
         allpoints <- allpoints[-test.rows,]
       }
@@ -225,14 +225,14 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
       # We have to do this to capture the "this is maxent version XXX message".
       if(verbose){
         thisrep.mx <- dismo::maxent(env, p = rts.df[rts.df$presence == 1,1:2], a = rts.df[rts.df$presence == 0,1:2], ...)
-        thisrep.model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+        thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points[,1:2], species$background.points[,1:2],
                                                    thisrep.mx, env)
-        thisrep.env.model.evaluation <- env.evaluate(species, thisrep.mx, env, n.background = env.nback)
+        thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.mx, env, n.background = env.nback)
       } else {
         invisible(capture.output(thisrep.mx <- dismo::maxent(env, p = rts.df[rts.df$presence == 1,1:2], a = rts.df[rts.df$presence == 0,1:2], ...)))
-        invisible(capture.output(thisrep.model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+        invisible(capture.output(thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points[,1:2], species$background.points[,1:2],
                                                    thisrep.mx, env)))
-        invisible(capture.output(thisrep.env.model.evaluation <- env.evaluate(species, thisrep.mx, env, n.background = env.nback)))
+        invisible(capture.output(thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.mx, env, n.background = env.nback)))
       }
 
       rts.geog.training[i] <- thisrep.model.evaluation@auc
@@ -240,7 +240,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
 
       if(test.prop > 0 & test.prop < 1){
         temp.sp <- rep.species
-        temp.sp$presence.points <- test.data
+        temp.sp$presence.points <- rep.test.data
 
         if(verbose){
           thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points[,1:2],
@@ -256,10 +256,10 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
         rts.env.test[i] <- thisrep.env.test.evaluation@auc
       }
       rts.models[[paste0("rep.",i)]] <- list(model = thisrep.mx,
-                                             training.evaluation = model.evaluation,
-                                             env.training.evaluation = env.model.evaluation,
-                                             test.evaluation = test.evaluation,
-                                             env.test.evaluation = env.test.evaluation)
+                                             training.evaluation = thisrep.model.evaluation,
+                                             env.training.evaluation = thisrep.env.model.evaluation,
+                                             test.evaluation = thisrep.test.evaluation,
+                                             env.test.evaluation = thisrep.env.test.evaluation)
     }
 
     # Reps are all run now, time to package it all up

@@ -204,7 +204,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
 
         # Do the same for test points
         if(test.prop > 0){
-          test.rows <- sample(nrow(allpoints), nrow(species$presence.points))
+          test.rows <- sample(nrow(allpoints), nrow(test.data))
           rep.test.data <- allpoints[test.rows,]
           allpoints <- allpoints[-test.rows,]
         }
@@ -218,9 +218,9 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
         rts.df$presence <- c(rep(1, nrow(rep.species$presence.points)), rep(0, nrow(rep.species$background.points)))
         thisrep.glm <- glm(f, rts.df[,-c(1,2)], family="binomial", ...)
 
-        thisrep.model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+        thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points[,1:2], species$background.points[,1:2],
                                                    thisrep.glm, env)
-        thisrep.env.model.evaluation <- env.evaluate(species, thisrep.glm, env, n.background = env.nback)
+        thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.glm, env, n.background = env.nback)
 
         rts.geog.training[i] <- thisrep.model.evaluation@auc
         rts.env.training[i] <- thisrep.env.model.evaluation@auc
@@ -229,17 +229,17 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
           thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points[,1:2],
                                                     thisrep.glm, env)
           temp.sp <- rep.species
-          temp.sp$presence.points <- test.data
+          temp.sp$presence.points <- rep.test.data
           thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.glm, env, n.background = env.nback)
 
           rts.geog.test[i] <- thisrep.test.evaluation@auc
           rts.env.test[i] <- thisrep.env.test.evaluation@auc
         }
         rts.models[[paste0("rep.",i)]] <- list(model = thisrep.glm,
-                                               training.evaluation = model.evaluation,
-                                               env.training.evaluation = env.model.evaluation,
-                                               test.evaluation = test.evaluation,
-                                               env.test.evaluation = env.test.evaluation)
+                                               training.evaluation = thisrep.model.evaluation,
+                                               env.training.evaluation = thisrep.env.model.evaluation,
+                                               test.evaluation = thisrep.test.evaluation,
+                                               env.test.evaluation = thisrep.env.test.evaluation)
       }
 
       # Reps are all run now, time to package it all up
