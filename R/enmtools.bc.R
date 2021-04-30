@@ -166,7 +166,7 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
 
       # Do the same for test points
       if(test.prop > 0){
-        test.rows <- sample(nrow(allpoints), nrow(species$presence.points))
+        test.rows <- sample(nrow(allpoints), nrow(test.data))
         rep.test.data <- allpoints[test.rows,]
         allpoints <- allpoints[-test.rows,]
       }
@@ -186,17 +186,17 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
       if(test.prop > 0 & test.prop < 1){
         thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points[,1:2],
                                                   thisrep.bc, env)
-        temp.sp$presence.points <- test.data
+        temp.sp$presence.points <- rep.test.data
         thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.bc, env, n.background = env.nback)
 
         rts.geog.test[i] <- thisrep.test.evaluation@auc
         rts.env.test[i] <- thisrep.env.test.evaluation@auc
       }
       rts.models[[paste0("rep.",i)]] <- list(model = thisrep.bc,
-                                             training.evaluation = model.evaluation,
-                                             env.training.evaluation = env.model.evaluation,
-                                             test.evaluation = test.evaluation,
-                                             env.test.evaluation = env.test.evaluation)
+                                             training.evaluation = thisrep.model.evaluation,
+                                             env.training.evaluation = thisrep.env.model.evaluation,
+                                             test.evaluation = thisrep.test.evaluation,
+                                             env.test.evaluation = thisrep.env.test.evaluation)
     }
 
     # Reps are all run now, time to package it all up
