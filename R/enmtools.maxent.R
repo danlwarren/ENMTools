@@ -235,18 +235,22 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
         invisible(capture.output(thisrep.env.model.evaluation <- env.evaluate(species, thisrep.mx, env, n.background = env.nback)))
       }
 
-
-
-
       rts.geog.training[i] <- thisrep.model.evaluation@auc
       rts.env.training[i] <- thisrep.env.model.evaluation@auc
 
       if(test.prop > 0 & test.prop < 1){
-        thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points[,1:2],
-                                                  thisrep.mx, env)
         temp.sp <- rep.species
         temp.sp$presence.points <- test.data
-        thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.mx, env, n.background = env.nback)
+
+        if(verbose){
+          thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points[,1:2],
+                                                    thisrep.mx, env)
+          thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.mx, env, n.background = env.nback)
+        } else {
+          invisible(capture.output(thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points[,1:2],
+                                                    thisrep.mx, env)))
+          invisible(capture.output(thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.mx, env, n.background = env.nback)))
+        }
 
         rts.geog.test[i] <- thisrep.test.evaluation@auc
         rts.env.test[i] <- thisrep.env.test.evaluation@auc
@@ -443,7 +447,7 @@ plot.enmtools.maxent <- function(x, ...){
 predict.enmtools.maxent <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
 
   # Make a plot of habitat suitability in the new region
-  suitability <- raster::predict(env, object$model)
+  suitability <- invisible(capture.output(raster::predict(env, object$model)))
 
   # I'm actually not sure this is doing anything - I think maxent models are clamped by default
   if(clamp == TRUE){
@@ -451,7 +455,7 @@ predict.enmtools.maxent <- function(object, env, maxpts = 1000, clamp = TRUE, ..
     this.df <- as.data.frame(rbind(object$model@presence, object$model@absence))
 
     env <- clamp.env(this.df, env)
-    clamped.suitability <- raster::predict(env, object$model)
+    clamped.suitability <- invisible(capture.output(raster::predict(env, object$model)))
     clamping.strength <- clamped.suitability - suitability
     suitability <- clamped.suitability
   }
