@@ -19,7 +19,7 @@ Convenience function that installs all extra packages used in ENMTools.  ENMTool
 functions from a lot of external packages, and due to CRAN best practices it doesn't install
 those packages by default.  The function install.extras() just calls install.packages with a
 list of all of the extra packages.  At present this list includes mgcv, ecospat, randomForest,
-hypervolume, ape, ppmlasso, leaflet, ranger, CalibratR, caret, and ResourceSelection.
+hypervolume, ape, leaflet, ranger, CalibratR, caret, and ResourceSelection.
 }
 \examples{
 \donttest{

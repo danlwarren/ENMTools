@@ -17,6 +17,7 @@
 #' }
 
 install.extras <- function(repos='http://cran.us.r-project.org', ...) {
+  options(install.packages.check.source = "no")
   install.packages(c("mgcv",
                      "ecospat",
                      "randomForest",
