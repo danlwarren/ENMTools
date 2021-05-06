@@ -9,7 +9,8 @@ check.bg(
   env = NA,
   nback = 1000,
   bg.source = "default",
-  verbose = FALSE
+  verbose = FALSE,
+  bias = NA
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ check.bg(
 \item{bg.source}{Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.}
 
 \item{verbose}{Controls printing of various messages progress reports.  Defaults to FALSE.}
+
+\item{bias}{A raster representing estimated relative sampling bias.  Used when bg.source is either "range" or "env".}
 }
 \value{
 An enmtools.species object with background points.
