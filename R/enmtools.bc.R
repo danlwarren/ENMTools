@@ -12,6 +12,7 @@
 #' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
 #' @param clamp When set to TRUE, clamps the environmental layers so that predictions made outside the min/max of the training data for each predictor are set to the value for the min/max for that predictor. Prevents the model from extrapolating beyond the min/max bounds of the predictor space the model was trained in, although there could still be projections outside the multivariate training space if predictors are strongly correlated.
 #' @param corner An integer from 1 to 4.  Selects which corner to use for "block" test data.  By default the corner is selected randomly.
+#' @param bias An optional raster estimating relative sampling effort per grid cell.  Will be used for drawing background data.
 #' @param ... Arguments to be passed to bioclim()
 #'
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
@@ -23,11 +24,11 @@
 #' enmtools.bc(iberolacerta.clade$species$monticola, env = euro.worldclim)
 #' }
 
-enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwrite = FALSE, nback = 1000, env.nback = 10000, rts.reps = 0, bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, ...){
+enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwrite = FALSE, nback = 1000, env.nback = 10000, rts.reps = 0, bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, ...){
 
   notes <- NULL
 
-  species <- check.bg(species, env, nback, verbose = verbose)
+  species <- check.bg(species, env, nback, verbose = verbose, bias = bias)
 
   bc.precheck(species, env)
 

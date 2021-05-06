@@ -17,6 +17,7 @@ enmtools.dm(
   verbose = FALSE,
   clamp = TRUE,
   corner = NA,
+  bias = NA,
   ...
 )
 }
@@ -44,6 +45,8 @@ enmtools.dm(
 \item{clamp}{When set to TRUE, clamps the environmental layers so that predictions made outside the min/max of the training data for each predictor are set to the value for the min/max for that predictor. Prevents the model from extrapolating beyond the min/max bounds of the predictor space the model was trained in, although there could still be projections outside the multivariate training space if predictors are strongly correlated.}
 
 \item{corner}{An integer from 1 to 4.  Selects which corner to use for "block" test data.  By default the corner is selected randomly.}
+
+\item{bias}{An optional raster estimating relative sampling effort per grid cell.  Will be used for drawing background data.}
 
 \item{...}{Arguments to be passed to domain()}
 }
