@@ -12,14 +12,14 @@
 
 check.env <- function(env, verbose = FALSE){
 
-  # Checking classes of input args.  The isTRUE stuff is needed because R doesn't
-  # know how to do is.na on raster data, so it was barfing and error when a raster
-  # was passed in.
+  # Checking classes of input args
 
   if(!inherits(env, c("raster", "RasterLayer", "RasterBrick", "RasterStack"))){
     stop("Argument env requires an object of class raster or RasterLayer")
   }
 
+  # Checking to make sure all rasters in the stack have the same extent.
+  # Actually raster::stack shouldn't allow that to be false but it doesn't hurt to double check.
   if(verbose == TRUE){
     cat("Checking to make sure rasters have the same extent... \n")
   }
@@ -37,6 +37,7 @@ check.env <- function(env, verbose = FALSE){
     stop("Some environmental rasters have different extents, indicated by FALSE in the table above")
   }
 
+  # As above, but for resolution
   if(verbose == TRUE){
     cat("Checking to make sure rasters have the same resolution... \n")
   }
@@ -54,14 +55,12 @@ check.env <- function(env, verbose = FALSE){
     stop("Some environmental rasters have different resolutions, indicated by FALSE in the table above")
   }
 
-
   if(verbose == TRUE){
     cat("Making NAs consistent across layers... \n")
   }
 
-  namask = sum(env)
-
-  env = raster::mask(env, namask)
+  # Here we're just exploiting the fact that sum will by default return NA when any layer has an NA
+  env = raster::mask(env, sum(env))
 
   # Return the formatted raster stack
   return(env)
