@@ -5,15 +5,22 @@
 #' @param nback Number of background points to generate, if any
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
+#' @param bias A raster representing estimated relative sampling bias.  Used when bg.source is either "range" or "env".
 #'
 #' @return An enmtools.species object with background points.
 
-check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", verbose = FALSE){
+check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", verbose = FALSE, bias = NA){
 
   species <- check.species(species)
 
   if(!inherits(species$presence.points, "data.frame")){
     stop("Species presence.points do not appear to be an object of class data.frame")
+  }
+
+  # Doing this in a weird way because is.na on a bias layer doesn't work
+  with.bias <- FALSE
+  if(inherits(bias, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
+    with.bias <- TRUE
   }
 
 
@@ -61,7 +68,7 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
   }
 
   if(bg.source == "range"){
-    # Drawing background points from range raster
+
     if(!inherits(species$range, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
       stop("bg.source set to range, but species does not have a recognizable range raster!")
     }
@@ -70,12 +77,33 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
       stop("CRS mismatch between species range raster and environmental rasters!")
     }
 
-    if(nback > sum(as.numeric(!is.na(values(species$range))))){
+    if(with.bias == FALSE){
+      # Drawing background points from range raster
       species$background.points <- as.data.frame(rasterToPoints(species$range)[,1:2])
       inds <- sample(1:nrow(species$background.points), size = nback, replace = TRUE)
       species$background.points <- species$background.points[inds,]
+
     } else {
-      species$background.points <- as.data.frame(randomPoints(species$range, nback, species$presence.points))
+      # There is a bias layer
+      if(!inherits(bias, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
+        stop("Bias layer was provided, but it is not a raster!")
+      }
+
+      if(!raster::compareCRS(bias, crs(species$range))){
+        stop("CRS mismatch between species range raster and bias raster!")
+      }
+
+      # Creating a raster that intersects the species range and the bias layer
+      # using the fact that sum will return NA if either layer is NA
+      sample.raster = raster::mask(bias, bias + species$range)
+
+      # Drawing background points from sample raster
+      species$background.points <- as.data.frame(rasterToPoints(sample.raster))
+      inds <- sample(1:nrow(species$background.points),
+                     size = nback,
+                     prob = species$background.points[,3],
+                     replace = TRUE)
+      species$background.points <- species$background.points[inds,1:2]
     }
 
     colnames(species$background.points) <- colnames(species$presence.points)
@@ -87,12 +115,33 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
       stop("bg.source set to env, but env layers were not recognized!")
     }
 
-    if(nback > sum(as.numeric(!is.na(values(env[[1]]))))){
+    if(with.bias == FALSE){
+      # Drawing background points from range raster
       species$background.points <- as.data.frame(rasterToPoints(env[[1]])[,1:2])
       inds <- sample(1:nrow(species$background.points), size = nback, replace = TRUE)
       species$background.points <- species$background.points[inds,]
+
     } else {
-      species$background.points <- as.data.frame(randomPoints(env[[1]], nback, species$presence.points))
+      # There is a bias layer
+      if(!inherits(bias, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
+        stop("Bias layer was provided, but it is not a raster!")
+      }
+
+      if(!raster::compareCRS(bias, crs(env))){
+        stop("CRS mismatch between species range raster and bias raster!")
+      }
+
+      # Creating a raster that intersects the species range and the bias layer
+      # using the fact that sum will return NA if either layer is NA
+      sample.raster = raster::mask(bias, bias + env)
+
+      # Drawing background points from sample raster
+      species$background.points <- as.data.frame(rasterToPoints(sample.raster))
+      inds <- sample(1:nrow(species$background.points),
+                     size = nback,
+                     prob = species$background.points[,3],
+                     replace = TRUE)
+      species$background.points <- species$background.points[inds,1:2]
     }
 
     colnames(species$background.points) <- colnames(species$presence.points)
