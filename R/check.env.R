@@ -38,6 +38,24 @@ check.env <- function(env, verbose = FALSE){
   }
 
   if(verbose == TRUE){
+    cat("Checking to make sure rasters have the same resolution... \n")
+  }
+
+  resolution.check <- data.frame(matrix(ncol = length(names(env))))
+  colnames(resolution.check) <- names(env)
+  for(i in 1:length(names(env))){
+    for(j in i:length(names(env))){
+      resolution.check[i,j] <- all(res(env[[i]]) == res(env[[j]]))
+    }
+  }
+  rownames(resolution.check) <- names(env)
+  if(any(isFALSE(resolution.check))){
+    print(resolution.check)
+    stop("Some environmental rasters have different resolutions, indicated by FALSE in the table above")
+  }
+
+
+  if(verbose == TRUE){
     cat("Making NAs consistent across layers... \n")
   }
 
