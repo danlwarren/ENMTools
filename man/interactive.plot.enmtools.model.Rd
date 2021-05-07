@@ -9,6 +9,7 @@
   map.provider = "Esri.WorldPhysical",
   cluster.points = FALSE,
   raster.opacity = 1,
+  max.bytes = 4194304,
   ...
 )
 }
@@ -23,6 +24,8 @@ preview of all map provider options can be viewed at \url{http://leaflet-extras.
 will be grouped into clusters that can be interactively expanded by clicking on them.}
 
 \item{raster.opacity}{Specifies the opacity level of the suitability raster.}
+
+\item{max.bytes}{Maximum size of raster image to plot.  Defaults to 4MB (4194304 bytes) but can be overridden if you have a large raster.  Be aware that the image will be knitted into an output file if you're working in R Markdown, causing your output file to be huge if the raster is huge.}
 
 \item{...}{other arguments (not used currently)}
 }
