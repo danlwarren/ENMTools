@@ -21,6 +21,7 @@
 #'
 #' @examples
 #' \donttest{
+#' install.extras(repos='http://cran.us.r-project.org')
 #' data(iberolacerta.clade)
 #' data(euro.worldclim)
 #' monticola <- iberolacerta.clade$species$monticola

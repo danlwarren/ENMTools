@@ -12,11 +12,12 @@
 #' @param cluster.points Should points be clustered? If TRUE, points close together
 #' will be grouped into clusters that can be interactively expanded by clicking
 #' on them.
+#' @param max.bytes Maximum size of range raster image to plot.  Defaults to 4MB (4194304 bytes) but can be overridden if you have a large range raster.  Be aware that the image will be knitted into an output file if you're working in R Markdown, causing your output file to be huge if the raster is huge.
 #' @param ... other arguments (not used currently)
 #'
 #' @return An interactive leaflet plot visualizing the data present in the species object.
 
-interactive.plot.enmtools.species <- function(x, map.provider = "Esri.WorldPhysical", cluster.points = FALSE, ...) {
+interactive.plot.enmtools.species <- function(x, map.provider = "Esri.WorldPhysical", cluster.points = FALSE, max.bytes = 4194304, ...) {
 
   check.packages("leaflet")
 
@@ -30,7 +31,7 @@ interactive.plot.enmtools.species <- function(x, map.provider = "Esri.WorldPhysi
   if(class(x$range) == "RasterLayer"){
     m <- m %>%
       leaflet::addRasterImage(x$range, function(y) ifelse(is.na(y), "#00000000", "#00000090"),
-                     group = "Range")
+                     group = "Range", maxBytes = max.bytes)
     overlays <- c(overlays, "Range")
     labels <- c(labels, "Range raster")
     colors <- c(colors, "black")

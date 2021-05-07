@@ -34,7 +34,7 @@ expect_enmtools_model <- function(model){
 
   expect_true(all(class(model$model) %in% c("MaxEnt", "Domain", "Bioclim",
                                             "randomForest.formula", "randomForest",
-                                            "ppmlasso", "list", "glm", "lm", "gam", "ranger")),
+                                            "list", "glm", "lm", "gam", "ranger")),
               info = "Class of model is not recognized")
 
   # Evaluation on training data happens unless it's bypassed (GLM only I think)
@@ -138,11 +138,11 @@ test_that("ranger model objects work", {
   expect_enmtools_model(cyreni.rf.ranger)
 })
 
-test_that("ppm model objects work", {
-  skip_if_not_installed("ppmlasso")
-  cyreni.ppm <- enmtools.ppmlasso(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
-  expect_enmtools_model(cyreni.ppm)
-})
+# test_that("ppm model objects work", {
+#   skip_if_not_installed("ppmlasso")
+#   cyreni.ppm <- enmtools.ppmlasso(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
+#   expect_enmtools_model(cyreni.ppm)
+# })
 
 test_that("gam model objects work", {
   skip_if_not_installed("mgcv")

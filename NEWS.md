@@ -2,12 +2,28 @@ ENMTools 1.x
 ============
 
 
+ENMTools 1.0.4
+--------------
+
+### Bug Fixes
+
+-   Raes and ter Steege-style tests were returning incorrect evaluate objects, although plots and p values were correct
+-   test.prop = "block" wasn't working correctly
+
+### Enhancements
+
+-   Suppressing maxent startup messages by default
+-   Added support for bias layers to modeling functions
+-   Added check.env function to homogenize raster stacks so NAs propagate across layers
+
+
 ENMTools 1.0.3
 --------------
 
 ### Enhancements
 
 -   Brought up to date for new **spatstat** changes
+-   Removed **ppmlasso** until it is brought back on CRAN
 
 
 ENMTools 1.0.2
@@ -18,6 +34,13 @@ ENMTools 1.0.2
 -   Added a new general-purpose function for making background layers from point data.  It can do both circular buffers and buffered convex hulls, and can return points, a polygon, or a raster.  Converted the existing background buffer functions to just call this one, and will eventually deprecate the single-application functions.
 -   Added ability to select which corner you want for "block" validation.
 -   Added a function called *multi.variogram* which takes a raster stack, builds a variogram for each layer, and then plots the gamma for each variable as a function of distance, scaled by the maximum gama for that variable.  This allows users to get some idea of the level of spatial autocorrelation in each predictor variable.
+
+ENMTools 1.0.1
+--------------
+
+### Bug fixes
+
+-   Minor update to fix an rgdal import that was making CRAN angry
 
 ENMTools 1.0.1
 --------------

@@ -25,7 +25,7 @@ background.buffer <- function(points, buffer.width, buffer.type = "circles", mas
   }
 
   if(buffer.type == "convhull"){
-    x <- convHull(points)
+    x <- dismo::convHull(points)
     pol <- rgeos::gUnaryUnion(x@polygons)
     pol <- raster::buffer(pol, width = buffer.width)
   }

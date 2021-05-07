@@ -14,6 +14,8 @@
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
 #' @param clamp When set to TRUE, clamps the environmental layers so that predictions made outside the min/max of the training data for each predictor are set to the value for the min/max for that predictor. Prevents the model from extrapolating beyond the min/max bounds of the predictor space the model was trained in, although there could still be projections outside the multivariate training space if predictors are strongly correlated.
+#' @param corner An integer from 1 to 4.  Selects which corner to use for "block" test data.  By default the corner is selected randomly.
+#' @param bias An optional raster estimating relative sampling effort per grid cell.  Will be used for drawing background data.
 #' @param ... Arguments to be passed to glm()
 #'
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
@@ -25,11 +27,11 @@
 
 
 
-enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default",  verbose = FALSE, clamp = TRUE, ...){
+enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, ...){
 
   notes <- NULL
 
-  species <- check.bg(species, env, nback = nback, bg.source = bg.source, verbose = verbose)
+  species <- check.bg(species, env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias)
 
   # Builds a default formula using all env
   if(is.null(f)){
@@ -59,14 +61,18 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
   # Code for spatially structured test data
   if(is.character(test.prop)){
     if(test.prop == "block"){
-      corner <- ceiling(runif(1, 0, 4))
+      if(is.na(corner)){
+        corner <- ceiling(runif(1, 0, 4))
+      } else if(corner < 1 | corner > 4){
+        stop("corner should be an integer from 1 to 4!")
+      }
       test.inds <- get.block(species$presence.points, species$background.points)
       test.bg.inds <- which(test.inds$bg.grp == corner)
       test.inds <- which(test.inds$occ.grp == corner)
       test.data <- species$presence.points[test.inds,]
       test.bg <- species$background.points[test.bg.inds,]
       species$presence.points <- species$presence.points[-test.inds,]
-      species$background.points <- species$presence.points[-test.bg.inds,]
+      species$background.points <- species$background.points[-test.bg.inds,]
     }
   }
 
@@ -199,7 +205,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
 
         # Do the same for test points
         if(test.prop > 0){
-          test.rows <- sample(nrow(allpoints), nrow(species$presence.points))
+          test.rows <- sample(nrow(allpoints), nrow(test.data))
           rep.test.data <- allpoints[test.rows,]
           allpoints <- allpoints[-test.rows,]
         }
@@ -213,9 +219,9 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
         rts.df$presence <- c(rep(1, nrow(rep.species$presence.points)), rep(0, nrow(rep.species$background.points)))
         thisrep.glm <- glm(f, rts.df[,-c(1,2)], family="binomial", ...)
 
-        thisrep.model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+        thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points[,1:2], species$background.points[,1:2],
                                                    thisrep.glm, env)
-        thisrep.env.model.evaluation <- env.evaluate(species, thisrep.glm, env, n.background = env.nback)
+        thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.glm, env, n.background = env.nback)
 
         rts.geog.training[i] <- thisrep.model.evaluation@auc
         rts.env.training[i] <- thisrep.env.model.evaluation@auc
@@ -224,17 +230,17 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
           thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points[,1:2],
                                                     thisrep.glm, env)
           temp.sp <- rep.species
-          temp.sp$presence.points <- test.data
+          temp.sp$presence.points <- rep.test.data
           thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.glm, env, n.background = env.nback)
 
           rts.geog.test[i] <- thisrep.test.evaluation@auc
           rts.env.test[i] <- thisrep.env.test.evaluation@auc
         }
         rts.models[[paste0("rep.",i)]] <- list(model = thisrep.glm,
-                                               training.evaluation = model.evaluation,
-                                               env.training.evaluation = env.model.evaluation,
-                                               test.evaluation = test.evaluation,
-                                               env.test.evaluation = env.test.evaluation)
+                                               training.evaluation = thisrep.model.evaluation,
+                                               env.training.evaluation = thisrep.env.model.evaluation,
+                                               test.evaluation = thisrep.test.evaluation,
+                                               env.test.evaluation = thisrep.env.test.evaluation)
       }
 
       # Reps are all run now, time to package it all up

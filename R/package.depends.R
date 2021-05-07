@@ -4,7 +4,7 @@
 #' functions from a lot of external packages, and due to CRAN best practices it doesn't install
 #' those packages by default.  The function install.extras() just calls install.packages with a
 #' list of all of the extra packages.  At present this list includes mgcv, ecospat, randomForest,
-#' hypervolume, ape, ppmlasso, leaflet, ranger, CalibratR, caret, and ResourceSelection.
+#' hypervolume, ape, leaflet, ranger, CalibratR, caret, and ResourceSelection.
 #'
 #' @param repos URL for the repository to use for installing R packages
 #' @param ... Other parameters to be passed to \code{install.packages}
@@ -17,12 +17,12 @@
 #' }
 
 install.extras <- function(repos='http://cran.us.r-project.org', ...) {
+  options(install.packages.check.source = "no")
   install.packages(c("mgcv",
                      "ecospat",
                      "randomForest",
                      "hypervolume",
                      "ape",
-                     "ppmlasso",
                      "leaflet",
                      "ranger",
                      "CalibratR",

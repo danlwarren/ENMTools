@@ -1,27 +1,27 @@
 # ENMTools
 
-<!-- badges: start -->
-
-[![R build
-status](https://github.com/danlwarren/ENMTools/workflows/R-CMD-check/badge.svg)](https://github.com/danlwarren/ENMTools/actions)
-<!-- badges: end -->
-
 This package implements various tests, visualizations, and metrics for
 use with environmental niche models (ENMs) and species distribution
 models (SDMs).
 
 ### Citation
 
-Warren, D.L., N. Matzke, M. Cardillo, J. Baumgartner, L. Beaumont, N.
-Huron, M. Simões, Teresa L. Iglesias, and R. Dinnage. 2019. ENMTools
-(Software Package). URL: <https://github.com/danlwarren/ENMTools>.
-<doi:10.5281/zenodo.3268814>
+Warren, D.L., Matzke, N.J., Cardillo, M., Baumgartner, J.B., Beaumont,
+L.J., Turelli, M., Glor, R.E., Huron, N.A., Simões, M., Iglesias, T.L.
+and Piquet, J.C., 2021. ENMTools 1.0: an R package for comparative
+ecological biogeography. Ecography, 44(4), pp.504-511.
 
 -----
 
 # Installation
 
-At present, ENMTools is downloadable from
+ENMTools is available on CRAN, and can be installed by simply typing:
+
+``` r
+install.packages("ENMTools")
+```
+
+You can also install the newest version from
 <https://github.com/danlwarren/ENMTools>. There are multiple ways to
 download it. The easiest is to use devtools and install from GitHub.
 
@@ -33,6 +33,15 @@ Run the following code from your R console:
 install.packages("devtools")
 library(devtools)
 install_github("danlwarren/ENMTools")
+library(ENMTools)
+```
+
+If you want the absolute newest version you’ll want to install from the
+“develop” branch, but be aware that sometimes things get broken on
+there and it may take us a little while to notice.
+
+``` r
+install_github("danlwarren/ENMTools", ref = "develop")
 library(ENMTools)
 ```
 
@@ -94,6 +103,15 @@ plot(env[[1]])
 
 ![](Readme_files/figure-gfm/getdata-1.png)<!-- -->
 
+Regardless of where you get your environmental data from, it’s a good
+idea to call the check.env() function on it. This makes sure that an NA
+in an environmental layer propagates to the other layers, which can
+avoid issues with some of the modeling functions.
+
+``` r
+env <- check.env(env)
+```
+
 ENMTools is primarily designed to examine patterns of similarity and
 difference between ENMs for different species. In order to simplify
 interactions with the functions in ENMTools, you need to put your data
@@ -144,13 +162,13 @@ enmtools.species object after you build or modify it.
 monticola <- check.species(monticola)
 ```
 
-And now we can take a look at our species\! The following code is
-currently not working in the GitHub vignette due to compatibility issues
-with GitHub markdown, but if you try it locally it’s pretty cool:
+And now we can take a look at our species\!
 
 ``` r
 interactive.plot.enmtools.species(monticola)
 ```
+
+![](Readme_files/figure-gfm/interactive_plot-1.png)<!-- -->
 
 However, ENMTools also contains some sample data. It contains an
 enmtools.clade object called “iberolacerta.clade”, which holds several
@@ -317,47 +335,29 @@ enmtools.glm will build a formula automatically.
 
 ``` r
 monticola.glm <- enmtools.glm(species = monticola, env = env, f = pres ~ bio1 + bio12 + bio7, test.prop = 0.2)
-```
-
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## Adding environmental data to species monticola 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-
-``` r
 monticola.glm
 ```
 
     ## 
     ## 
     ## Formula:  presence ~ bio1 + bio12 + bio7
-    ## <environment: 0x7fea2984b818>
+    ## <environment: 0x7fd6f683dee0>
     ## 
     ## 
     ## Data table (top ten lines): 
     ## 
-    ##       Longitude   Latitude   bio1   bio12   bio7   presence
-    ## ---  ----------  ---------  -----  ------  -----  ---------
-    ## 1     -5.171215   43.06957     78     917    249          1
-    ## 2     -6.036635   43.02531     76    1012    246          1
-    ## 3     -7.679727   40.38852    137    1143    247          1
-    ## 4     -7.790437   40.30959    129    1231    242          1
-    ## 5     -7.473340   43.78935    140     931    179          1
-    ## 7     -5.132756   43.49572    133     822    190          1
-    ## 8     -7.787378   40.39362    137    1143    247          1
-    ## 9     -4.941888   43.35310    128     843    194          1
-    ## 10    -7.621731   40.34170    101    1514    229          1
-    ## 11    -7.645674   40.36543    101    1514    229          1
+    ## |   | Longitude| Latitude| bio1| bio12| bio7| presence|
+    ## |:--|---------:|--------:|----:|-----:|----:|--------:|
+    ## |1  | -5.171215| 43.06957|   78|   917|  249|        1|
+    ## |2  | -6.036635| 43.02531|   76|  1012|  246|        1|
+    ## |3  | -7.679727| 40.38852|  137|  1143|  247|        1|
+    ## |6  | -6.575039| 42.91070|   84|  1012|  247|        1|
+    ## |7  | -5.132756| 43.49572|  133|   822|  190|        1|
+    ## |8  | -7.787378| 40.39362|  137|  1143|  247|        1|
+    ## |10 | -7.621731| 40.34170|  101|  1514|  229|        1|
+    ## |11 | -7.645674| 40.36543|  101|  1514|  229|        1|
+    ## |12 | -7.642539| 40.36317|  101|  1514|  229|        1|
+    ## |13 | -6.990000| 42.57000|  107|   893|  253|        1|
     ## 
     ## 
     ## Model:  
@@ -367,22 +367,22 @@ monticola.glm
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -1.6527  -0.7811  -0.5097   0.8047   2.2145  
+    ## -1.1566  -0.5808  -0.4083  -0.2757   2.1502  
     ## 
     ## Coefficients:
     ##               Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept)  8.2122653  2.2013429   3.731 0.000191 ***
-    ## bio1        -0.0353661  0.0064408  -5.491    4e-08 ***
-    ## bio12        0.0002369  0.0007165   0.331 0.740929    
-    ## bio7        -0.0192589  0.0049933  -3.857 0.000115 ***
+    ## (Intercept)  8.1543035  2.2070857   3.695  0.00022 ***
+    ## bio1        -0.0337186  0.0064839  -5.200 1.99e-07 ***
+    ## bio12        0.0002393  0.0007157   0.334  0.73812    
+    ## bio7        -0.0198610  0.0050117  -3.963 7.40e-05 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
-    ##     Null deviance: 576.70  on 719  degrees of freedom
-    ## Residual deviance: 509.73  on 716  degrees of freedom
-    ## AIC: 251.17
+    ##     Null deviance: 576.7  on 1207  degrees of freedom
+    ## Residual deviance: 512.1  on 1204  degrees of freedom
+    ## AIC: 247.53
     ## 
     ## Number of Fisher Scoring iterations: 4
     ## 
@@ -390,36 +390,36 @@ monticola.glm
     ## 
     ## Model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 208 
-    ## n absences     : 512 
-    ## AUC            : 0.7429575 
-    ## cor            : 0.3173725 
-    ## max TPR+TNR at : 0.03411238 
+    ## n absences     : 1000 
+    ## AUC            : 0.73275 
+    ## cor            : 0.2443314 
+    ## max TPR+TNR at : -0.0046217 
     ## 
     ## 
     ## Environment space model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 208 
     ## n absences     : 10000 
-    ## AUC            : 0.4229404 
-    ## cor            : -0.01636811 
-    ## max TPR+TNR at : 0.3778779 
+    ## AUC            : 0.4247808 
+    ## cor            : -0.01581099 
+    ## max TPR+TNR at : 0.3544996 
     ## 
     ## 
     ## Proportion of data wittheld for model fitting:  0.2
     ## 
     ## Model fit (test data):  class          : ModelEvaluation 
     ## n presences    : 52 
-    ## n absences     : 512 
-    ## AUC            : 0.7113882 
-    ## cor            : 0.1686447 
-    ## max TPR+TNR at : -0.02975727 
+    ## n absences     : 1000 
+    ## AUC            : 0.6735096 
+    ## cor            : 0.1014417 
+    ## max TPR+TNR at : 0.06513212 
     ## 
     ## 
     ## Environment space model fit (test data):  class          : ModelEvaluation 
     ## n presences    : 52 
     ## n absences     : 10000 
-    ## AUC            : 0.4041673 
-    ## cor            : -0.01417595 
-    ## max TPR+TNR at : 0.360269 
+    ## AUC            : 0.3990019 
+    ## cor            : -0.01678566 
+    ## max TPR+TNR at : 0.505841 
     ## 
     ## 
     ## Suitability:  
@@ -430,7 +430,7 @@ monticola.glm
     ## crs        : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
     ## source     : memory
     ## names      : layer 
-    ## values     : 0.02620772, 0.9971873  (min, max)
+    ## values     : 0.03228213, 0.9795559  (min, max)
     ## 
     ## 
     ## 
@@ -442,47 +442,29 @@ Notice this produces the same formula as:
 
 ``` r
 monticola.glm <- enmtools.glm(species = monticola, env = env, test.prop = 0.2)
-```
-
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## Adding environmental data to species monticola 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-
-``` r
 monticola.glm
 ```
 
     ## 
     ## 
     ## Formula:  presence ~ bio1 + bio12 + bio7
-    ## <environment: 0x7fea28a69a10>
+    ## <environment: 0x7fd70e36a270>
     ## 
     ## 
     ## Data table (top ten lines): 
     ## 
-    ##       Longitude   Latitude   bio1   bio12   bio7   presence
-    ## ---  ----------  ---------  -----  ------  -----  ---------
-    ## 1     -5.171215   43.06957     78     917    249          1
-    ## 2     -6.036635   43.02531     76    1012    246          1
-    ## 4     -7.790437   40.30959    129    1231    242          1
-    ## 5     -7.473340   43.78935    140     931    179          1
-    ## 6     -6.575039   42.91070     84    1012    247          1
-    ## 7     -5.132756   43.49572    133     822    190          1
-    ## 8     -7.787378   40.39362    137    1143    247          1
-    ## 9     -4.941888   43.35310    128     843    194          1
-    ## 10    -7.621731   40.34170    101    1514    229          1
-    ## 11    -7.645674   40.36543    101    1514    229          1
+    ## |   | Longitude| Latitude| bio1| bio12| bio7| presence|
+    ## |:--|---------:|--------:|----:|-----:|----:|--------:|
+    ## |1  | -5.171215| 43.06957|   78|   917|  249|        1|
+    ## |2  | -6.036635| 43.02531|   76|  1012|  246|        1|
+    ## |3  | -7.679727| 40.38852|  137|  1143|  247|        1|
+    ## |6  | -6.575039| 42.91070|   84|  1012|  247|        1|
+    ## |7  | -5.132756| 43.49572|  133|   822|  190|        1|
+    ## |8  | -7.787378| 40.39362|  137|  1143|  247|        1|
+    ## |9  | -4.941888| 43.35310|  128|   843|  194|        1|
+    ## |11 | -7.645674| 40.36543|  101|  1514|  229|        1|
+    ## |13 | -6.990000| 42.57000|  107|   893|  253|        1|
+    ## |14 | -7.950000| 43.30000|  120|  1200|  194|        1|
     ## 
     ## 
     ## Model:  
@@ -492,22 +474,22 @@ monticola.glm
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -1.6464  -0.7919  -0.4889   0.8096   2.2365  
+    ## -1.0974  -0.5811  -0.4223  -0.2669   2.0921  
     ## 
     ## Coefficients:
     ##               Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept)  9.114e+00  2.282e+00   3.994 6.50e-05 ***
-    ## bio1        -3.606e-02  6.580e-03  -5.480 4.25e-08 ***
-    ## bio12       -2.198e-05  7.503e-04  -0.029    0.977    
-    ## bio7        -2.177e-02  5.163e-03  -4.216 2.48e-05 ***
+    ## (Intercept)  9.6843347  2.2346929   4.334 1.47e-05 ***
+    ## bio1        -0.0334937  0.0062460  -5.362 8.21e-08 ***
+    ## bio12       -0.0006618  0.0007460  -0.887    0.375    
+    ## bio7        -0.0228508  0.0050865  -4.492 7.04e-06 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
-    ##     Null deviance: 576.70  on 719  degrees of freedom
-    ## Residual deviance: 508.11  on 716  degrees of freedom
-    ## AIC: 249.64
+    ##     Null deviance: 576.7  on 1207  degrees of freedom
+    ## Residual deviance: 517.2  on 1204  degrees of freedom
+    ## AIC: 255.15
     ## 
     ## Number of Fisher Scoring iterations: 4
     ## 
@@ -515,36 +497,36 @@ monticola.glm
     ## 
     ## Model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 208 
-    ## n absences     : 512 
-    ## AUC            : 0.7402625 
-    ## cor            : 0.3195048 
-    ## max TPR+TNR at : 0.00282174 
+    ## n absences     : 1000 
+    ## AUC            : 0.721149 
+    ## cor            : 0.2409479 
+    ## max TPR+TNR at : 0.1148882 
     ## 
     ## 
     ## Environment space model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 208 
     ## n absences     : 10000 
-    ## AUC            : 0.4236447 
-    ## cor            : -0.0150564 
-    ## max TPR+TNR at : 0.3845752 
+    ## AUC            : 0.4175822 
+    ## cor            : -0.01827867 
+    ## max TPR+TNR at : 0.4182398 
     ## 
     ## 
     ## Proportion of data wittheld for model fitting:  0.2
     ## 
     ## Model fit (test data):  class          : ModelEvaluation 
     ## n presences    : 52 
-    ## n absences     : 512 
-    ## AUC            : 0.6979041 
-    ## cor            : 0.1666565 
-    ## max TPR+TNR at : 0.00282174 
+    ## n absences     : 1000 
+    ## AUC            : 0.719625 
+    ## cor            : 0.1366649 
+    ## max TPR+TNR at : 0.06658128 
     ## 
     ## 
     ## Environment space model fit (test data):  class          : ModelEvaluation 
     ## n presences    : 52 
     ## n absences     : 10000 
-    ## AUC            : 0.404225 
-    ## cor            : -0.01389759 
-    ## max TPR+TNR at : 0.5006304 
+    ## AUC            : 0.4194154 
+    ## cor            : -0.008870791 
+    ## max TPR+TNR at : 0.3942703 
     ## 
     ## 
     ## Suitability:  
@@ -555,7 +537,7 @@ monticola.glm
     ## crs        : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
     ## source     : memory
     ## names      : layer 
-    ## values     : 0.02322096, 0.9968632  (min, max)
+    ## values     : 0.03942948, 0.972577  (min, max)
     ## 
     ## 
     ## 
@@ -568,24 +550,6 @@ or polynomial effects), you’ll need to supply that manually.
 
 ``` r
 monticola.glm <- enmtools.glm(species = monticola, env = env, f = pres ~ poly(bio1, 2) + poly(bio7, 2) * poly(bio12, 2), test.prop = 0.2)
-```
-
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## Adding environmental data to species monticola 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-
-``` r
 monticola.glm
 ```
 
@@ -593,23 +557,23 @@ monticola.glm
     ## 
     ## Formula:  presence ~ poly(bio1, 2) + poly(bio7, 2) + poly(bio12, 2) + poly(bio7, 
     ##     2):poly(bio12, 2)
-    ## <environment: 0x7fea30bdf618>
+    ## <environment: 0x7fd6f8f25568>
     ## 
     ## 
     ## Data table (top ten lines): 
     ## 
-    ##       Longitude   Latitude   bio1   bio12   bio7   presence
-    ## ---  ----------  ---------  -----  ------  -----  ---------
-    ## 1     -5.171215   43.06957     78     917    249          1
-    ## 2     -6.036635   43.02531     76    1012    246          1
-    ## 3     -7.679727   40.38852    137    1143    247          1
-    ## 4     -7.790437   40.30959    129    1231    242          1
-    ## 6     -6.575039   42.91070     84    1012    247          1
-    ## 7     -5.132756   43.49572    133     822    190          1
-    ## 8     -7.787378   40.39362    137    1143    247          1
-    ## 9     -4.941888   43.35310    128     843    194          1
-    ## 10    -7.621731   40.34170    101    1514    229          1
-    ## 11    -7.645674   40.36543    101    1514    229          1
+    ## |   | Longitude| Latitude| bio1| bio12| bio7| presence|
+    ## |:--|---------:|--------:|----:|-----:|----:|--------:|
+    ## |1  | -5.171215| 43.06957|   78|   917|  249|        1|
+    ## |2  | -6.036635| 43.02531|   76|  1012|  246|        1|
+    ## |3  | -7.679727| 40.38852|  137|  1143|  247|        1|
+    ## |4  | -7.790437| 40.30959|  129|  1231|  242|        1|
+    ## |6  | -6.575039| 42.91070|   84|  1012|  247|        1|
+    ## |7  | -5.132756| 43.49572|  133|   822|  190|        1|
+    ## |8  | -7.787378| 40.39362|  137|  1143|  247|        1|
+    ## |9  | -4.941888| 43.35310|  128|   843|  194|        1|
+    ## |10 | -7.621731| 40.34170|  101|  1514|  229|        1|
+    ## |11 | -7.645674| 40.36543|  101|  1514|  229|        1|
     ## 
     ## 
     ## Model:  
@@ -619,29 +583,29 @@ monticola.glm
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -1.3180  -0.7152  -0.3802   0.6370   2.7671  
+    ## -0.9247  -0.5692  -0.3727  -0.1157   2.4503  
     ## 
     ## Coefficients:
     ##                                 Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept)                      -0.7662     0.3916  -1.957   0.0504 .  
-    ## poly(bio1, 2)1                  -32.7436     5.9817  -5.474  4.4e-08 ***
-    ## poly(bio1, 2)2                  -34.6319     6.7837  -5.105  3.3e-07 ***
-    ## poly(bio7, 2)1                  -22.9120    12.2787  -1.866   0.0620 .  
-    ## poly(bio7, 2)2                   13.9627    10.5439   1.324   0.1854    
-    ## poly(bio12, 2)1                  28.3536    11.9317   2.376   0.0175 *  
-    ## poly(bio12, 2)2                  -7.1273     9.4148  -0.757   0.4490    
-    ## poly(bio7, 2)1:poly(bio12, 2)1   41.7648   416.1367   0.100   0.9201    
-    ## poly(bio7, 2)2:poly(bio12, 2)1 -235.6388   285.0767  -0.827   0.4085    
-    ## poly(bio7, 2)1:poly(bio12, 2)2  409.1193   272.5473   1.501   0.1333    
-    ## poly(bio7, 2)2:poly(bio12, 2)2  165.9995   171.8864   0.966   0.3342    
+    ## (Intercept)                      -0.8103     0.4411  -1.837   0.0662 .  
+    ## poly(bio1, 2)1                  -38.8586     7.6004  -5.113 3.18e-07 ***
+    ## poly(bio1, 2)2                  -43.0261     8.6676  -4.964 6.90e-07 ***
+    ## poly(bio7, 2)1                  -32.6977    18.0781  -1.809   0.0705 .  
+    ## poly(bio7, 2)2                    9.3912    14.9287   0.629   0.5293    
+    ## poly(bio12, 2)1                  25.1021    16.6830   1.505   0.1324    
+    ## poly(bio12, 2)2                  -2.5362    12.1665  -0.208   0.8349    
+    ## poly(bio7, 2)1:poly(bio12, 2)1   60.6967   795.5182   0.076   0.9392    
+    ## poly(bio7, 2)2:poly(bio12, 2)1 -298.8446   518.5966  -0.576   0.5644    
+    ## poly(bio7, 2)1:poly(bio12, 2)2  547.0637   450.8549   1.213   0.2250    
+    ## poly(bio7, 2)2:poly(bio12, 2)2  205.2986   297.8178   0.689   0.4906    
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
-    ##     Null deviance: 576.70  on 719  degrees of freedom
-    ## Residual deviance: 449.53  on 709  degrees of freedom
-    ## AIC: 240.4
+    ##     Null deviance: 576.7  on 1207  degrees of freedom
+    ## Residual deviance: 459.0  on 1197  degrees of freedom
+    ## AIC: 246
     ## 
     ## Number of Fisher Scoring iterations: 5
     ## 
@@ -649,36 +613,36 @@ monticola.glm
     ## 
     ## Model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 208 
-    ## n absences     : 512 
-    ## AUC            : 0.796706 
-    ## cor            : 0.4137759 
-    ## max TPR+TNR at : 0.04030547 
+    ## n absences     : 1000 
+    ## AUC            : 0.786899 
+    ## cor            : 0.3243645 
+    ## max TPR+TNR at : 0.0691403 
     ## 
     ## 
     ## Environment space model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 208 
     ## n absences     : 10000 
-    ## AUC            : 0.6928058 
-    ## cor            : 0.09893607 
-    ## max TPR+TNR at : 0.4410304 
+    ## AUC            : 0.6848082 
+    ## cor            : 0.09382039 
+    ## max TPR+TNR at : 0.4804031 
     ## 
     ## 
     ## Proportion of data wittheld for model fitting:  0.2
     ## 
     ## Model fit (test data):  class          : ModelEvaluation 
     ## n presences    : 52 
-    ## n absences     : 512 
-    ## AUC            : 0.7625075 
-    ## cor            : 0.2327113 
-    ## max TPR+TNR at : 0.231778 
+    ## n absences     : 1000 
+    ## AUC            : 0.7705385 
+    ## cor            : 0.1759922 
+    ## max TPR+TNR at : -0.1972286 
     ## 
     ## 
     ## Environment space model fit (test data):  class          : ModelEvaluation 
     ## n presences    : 52 
     ## n absences     : 10000 
-    ## AUC            : 0.6702365 
-    ## cor            : 0.04219867 
-    ## max TPR+TNR at : 0.311183 
+    ## AUC            : 0.6822115 
+    ## cor            : 0.04606411 
+    ## max TPR+TNR at : 0.3291081 
     ## 
     ## 
     ## Suitability:  
@@ -689,7 +653,7 @@ monticola.glm
     ## crs        : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
     ## source     : memory
     ## names      : layer 
-    ## values     : 2.220446e-16, 0.9865399  (min, max)
+    ## values     : 8.409171e-05, 0.9692986  (min, max)
     ## 
     ## 
     ## 
@@ -786,10 +750,10 @@ raster.breadth(monticola.glm)
 ```
 
     ## $B1
-    ## [1] 0.9448153
+    ## [1] 0.9485566
     ## 
     ## $B2
-    ## [1] 0.5399201
+    ## [1] 0.5587834
 
 ENMTools also provides metrics for measuring similarity between ENMs.
 These include Schoener’s D (Schoener 1968), I (Warren et al. 2008), and
@@ -801,54 +765,18 @@ contains a great deal of habitat that is unsuitable for both).
 
 ``` r
 monticola.glm <- enmtools.glm(species = monticola, env = env, f = pres ~ poly(bio1, 2) + poly(bio7, 2) + poly(bio12, 2), test.prop = 0.2)
-```
-
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## Adding environmental data to species monticola 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-
-``` r
 cyreni.glm <- enmtools.glm(species = cyreni, env = env, f = pres ~ poly(bio1, 2) + poly(bio7, 2) + poly(bio12, 2), test.prop = 0.2)
-```
-
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## Adding environmental data to species cyreni 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-
-``` r
 raster.overlap(monticola.glm, cyreni.glm)
 ```
 
     ## $D
-    ## [1] 0.6886992
+    ## [1] 0.7478775
     ## 
     ## $I
-    ## [1] 0.8962556
+    ## [1] 0.932791
     ## 
     ## $rank.cor
-    ## [1] 0.3095624
+    ## [1] 0.5275103
 
 A new feature of the R version of ENMTools is that you can now use these
 same metrics in the n-dimensional space of all combinations of
@@ -863,57 +791,18 @@ precise estimates of overlap, but can take much longer to calculate.
 
 ``` r
 monticola.glm <- enmtools.glm(species = monticola, env = env, f = pres ~ poly(bio1, 2) + poly(bio7, 2) + poly(bio12, 2), test.prop = 0.2)
-```
-
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## Adding environmental data to species monticola 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-
-``` r
 cyreni.glm <- enmtools.glm(species = monticola, env = env, f = pres ~ poly(bio1, 2) + poly(bio7, 2) + poly(bio12, 2), test.prop = 0.2)
-```
-
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## Adding environmental data to species monticola 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-
-``` r
 env.overlap(monticola.glm, cyreni.glm, env, tolerance = .001)
 ```
 
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-
     ## $env.D
-    ## [1] 0.9720725
+    ## [1] 0.897097
     ## 
     ## $env.I
-    ## [1] 0.9988971
+    ## [1] 0.9859751
     ## 
     ## $env.cor
-    ## [1] 0.9988582
+    ## [1] 0.9865452
     ## 
     ## $env.D.plot
 
@@ -975,7 +864,7 @@ id.glm
     ## 
     ## Identity test monticola vs. cyreni
     ## 
-    ## objectentity test p-values:
+    ## Identity test p-values:
     ##        D        I rank.cor    env.D    env.I  env.cor 
     ##      0.2      0.2      0.2      0.2      0.2      0.2 
     ## 
@@ -983,13 +872,13 @@ id.glm
     ## Replicates:
     ## 
     ## 
-    ##                      D           I    rank.cor       env.D       env.I     env.cor
-    ## ----------  ----------  ----------  ----------  ----------  ----------  ----------
-    ## empirical    0.3244487   0.5929443   0.1049357   0.3682927   0.6161923   0.1360666
-    ## rep 1        0.9765794   0.9994436   0.9940210   0.9715600   0.9990031   0.9940687
-    ## rep 2        0.8827986   0.9873842   0.9758915   0.9144146   0.9853457   0.9779154
-    ## rep 3        0.8840139   0.9870933   0.9232828   0.9217613   0.9888025   0.9291080
-    ## rep 4        0.9857272   0.9997983   0.9993446   0.9882608   0.9996803   0.9994138
+    ## |          |         D|         I|  rank.cor|     env.D|     env.I|    env.cor|
+    ## |:---------|---------:|---------:|---------:|---------:|---------:|----------:|
+    ## |empirical | 0.3875398| 0.6646106| 0.0595331| 0.2449816| 0.5105820| -0.4061833|
+    ## |rep 1     | 0.9422911| 0.9959473| 0.9859512| 0.9561114| 0.9978446|  0.9648898|
+    ## |rep 2     | 0.9087039| 0.9913237| 0.9852638| 0.9384133| 0.9935937|  0.9697489|
+    ## |rep 3     | 0.9791252| 0.9995183| 0.9984504| 0.9811351| 0.9997007|  0.9971318|
+    ## |rep 4     | 0.9289314| 0.9939631| 0.9729151| 0.9392022| 0.9957229|  0.9272778|
 
 ![](Readme_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
@@ -1031,28 +920,17 @@ bg.bc.asym <- background.test(species.1 = monticola, species.2 = cyreni, env = e
 bg.bc.asym
 ```
 
-    ## 
-    ## 
-    ##  
-    ## 
-    ## Asymmetric background test
-    ##  monticola vs. cyreni background
-    ## 
-    ## background test p-values:
     ##        D        I rank.cor    env.D    env.I  env.cor 
-    ##      0.4      0.4      0.4      0.4      0.4      0.4 
+    ##      0.2      0.2      0.2      0.2      0.2      0.2 
     ## 
     ## 
-    ## Replicates:
-    ## 
-    ## 
-    ##                      D           I     rank.cor       env.D       env.I     env.cor
-    ## ----------  ----------  ----------  -----------  ----------  ----------  ----------
-    ## empirical    0.0242365   0.1455829   -0.0450249   0.0140446   0.1112266   0.1604221
-    ## rep 1        0.6133528   0.8642002    0.6526089   0.5203400   0.7861611   0.7647684
-    ## rep 2        0.6279082   0.8708753    0.6924823   0.5105405   0.7654790   0.6538866
-    ## rep 3        0.6357870   0.8785414    0.6904330   0.5461624   0.7899489   0.6814220
-    ## rep 4        0.6193478   0.8676220    0.6700723   0.5088732   0.7699090   0.6837504
+    ## |          |         D|         I|   rank.cor|     env.D|     env.I|   env.cor|
+    ## |:---------|---------:|---------:|----------:|---------:|---------:|---------:|
+    ## |empirical | 0.0242361| 0.1455816| -0.0450252| 0.0131219| 0.1081208| 0.1019750|
+    ## |rep 1     | 0.5619686| 0.8119675|  0.4785116| 0.4646805| 0.7238274| 0.5475314|
+    ## |rep 2     | 0.5470379| 0.8063909|  0.4982629| 0.4108920| 0.6905606| 0.5238803|
+    ## |rep 3     | 0.5624673| 0.8120506|  0.5129404| 0.4435050| 0.7020514| 0.5163875|
+    ## |rep 4     | 0.5647117| 0.8294455|  0.5672455| 0.4575679| 0.7249441| 0.5452493|
 
 ![](Readme_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
@@ -1066,28 +944,17 @@ bg.dm.sym <- background.test(species.1 = monticola, species.2 = cyreni, env = en
 bg.dm.sym
 ```
 
-    ## 
-    ## 
-    ##  
-    ## 
-    ## Symmetric background test
-    ##  monticola background vs. cyreni background
-    ## 
-    ## background test p-values:
     ##        D        I rank.cor    env.D    env.I  env.cor 
-    ##      0.4      0.4      0.4      0.4      0.4      0.4 
+    ##      0.2      0.2      0.2      0.2      0.2      0.2 
     ## 
     ## 
-    ## Replicates:
-    ## 
-    ## 
-    ##                      D           I     rank.cor       env.D       env.I     env.cor
-    ## ----------  ----------  ----------  -----------  ----------  ----------  ----------
-    ## empirical    0.1974048   0.4272913   -0.1020590   0.0788000   0.2671629   0.2229175
-    ## rep 1        0.9501028   0.9974058    0.7029178   0.8690309   0.9681439   0.9354426
-    ## rep 2        0.9689530   0.9979032    0.8998751   0.8601197   0.9566349   0.9760561
-    ## rep 3        0.9448187   0.9945018    0.7764072   0.7856842   0.9193155   0.9488629
-    ## rep 4        0.9388375   0.9957586    0.5661593   0.8083104   0.9421562   0.8913642
+    ## |          |         D|         I|   rank.cor|     env.D|     env.I|   env.cor|
+    ## |:---------|---------:|---------:|----------:|---------:|---------:|---------:|
+    ## |empirical | 0.1964649| 0.4261889| -0.1024491| 0.1113382| 0.3182506| 0.0429413|
+    ## |rep 1     | 0.9792803| 0.9995115|  0.9551221| 0.9632928| 0.9986264| 0.9576250|
+    ## |rep 2     | 0.9305978| 0.9915371|  0.9584368| 0.8564836| 0.9758468| 0.9865889|
+    ## |rep 3     | 0.9758020| 0.9993212|  0.9847157| 0.9600547| 0.9985082| 0.9857853|
+    ## |rep 4     | 0.9310147| 0.9907188|  0.9236047| 0.8602047| 0.9774277| 0.9671379|
 
 ![](Readme_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
@@ -1109,17 +976,6 @@ bio2). Here’s an equivalency/identity test:
 
 ``` r
 esp.id <- enmtools.ecospat.id(monticola, cyreni, env[[c("bio1", "bio12")]])
-```
-
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-
-``` r
 esp.id
 ```
 
@@ -1131,16 +987,16 @@ esp.id
     ## 
     ## ecospat.id test empirical overlaps:
     ## $D
-    ## [1] 0.0477392
+    ## [1] 0.05087628
     ## 
     ## $I
-    ## [1] 0.2097866
+    ## [1] 0.2142646
     ## 
     ## 
     ## 
     ## ecospat.id test p-values:
-    ## D I 
-    ## 0 0
+    ##    D    I 
+    ## 0.01 0.01
 
 ![](Readme_files/figure-gfm/ecospat_identity-1.png)<!-- -->![](Readme_files/figure-gfm/ecospat_identity-2.png)<!-- -->
 
@@ -1152,17 +1008,6 @@ presented above.
 
 ``` r
 esp.bg.sym <- enmtools.ecospat.bg(monticola, cyreni, env[[c("bio1", "bio12")]], test.type = "symmetric")
-```
-
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-
-``` r
 esp.bg.sym
 ```
 
@@ -1174,16 +1019,16 @@ esp.bg.sym
     ## 
     ## ecospat.bg test empirical overlaps:
     ## $D
-    ## [1] 0.0477392
+    ## [1] 0.04386459
     ## 
     ## $I
-    ## [1] 0.2097866
+    ## [1] 0.2013268
     ## 
     ## 
     ## 
     ## ecospat.bg test p-values:
     ##    D    I 
-    ## 0.48 0.42
+    ## 0.28 0.24
 
 ![](Readme_files/figure-gfm/ecospat_background-1.png)<!-- -->![](Readme_files/figure-gfm/ecospat_background-2.png)<!-- -->
 
@@ -1195,19 +1040,6 @@ measure overlaps on the first two axes of that PCA space.
 
 ``` r
 esp.bg.sym <- enmtools.ecospat.bg(monticola, cyreni, env, test.type = "symmetric")
-```
-
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## [1] "More than two layers in environment stack and no layers argument passed, performing PCA..."
-
-``` r
 esp.bg.sym
 ```
 
@@ -1219,16 +1051,16 @@ esp.bg.sym
     ## 
     ## ecospat.bg test empirical overlaps:
     ## $D
-    ## [1] 0.01293428
+    ## [1] 0.01940262
     ## 
     ## $I
-    ## [1] 0.109648
+    ## [1] 0.1352965
     ## 
     ## 
     ## 
     ## ecospat.bg test p-values:
     ##    D    I 
-    ## 0.56 0.50
+    ## 0.27 0.24
 
 ![](Readme_files/figure-gfm/ecospat_background2-1.png)<!-- -->![](Readme_files/figure-gfm/ecospat_background2-2.png)<!-- -->
 
@@ -1249,150 +1081,6 @@ the identity and background tests. Here’s a linear one using GLM models:
 
 ``` r
 rbl.glm <- rangebreak.linear(monticola, cyreni, env, type = "glm", nreps = 4)
-```
-
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## 
-    ## Building empirical models...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species monticola 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species cyreni 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## 
-    ## Building replicate models...
-    ## 
-    ## Replicate 1 ...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species monticola 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species cyreni 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## 
-    ## Replicate 2 ...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species monticola 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species cyreni 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## 
-    ## Replicate 3 ...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species monticola 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species cyreni 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## 
-    ## Replicate 4 ...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species monticola 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species cyreni 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-
-``` r
 rbl.glm
 ```
 
@@ -1404,140 +1092,26 @@ rbl.glm
     ## 
     ## rangebreak test p-values:
     ##        D        I rank.cor    env.D    env.I  env.cor 
-    ##      0.2      0.2      0.4      0.2      0.4      0.8 
+    ##      0.2      0.2      0.6      0.2      0.2      0.6 
     ## 
     ## 
     ## Replicates:
     ## 
     ## 
-    ##                      D           I    rank.cor       env.D       env.I      env.cor
-    ## ----------  ----------  ----------  ----------  ----------  ----------  -----------
-    ## empirical    0.3244487   0.5929443   0.1049357   0.3681019   0.6158336    0.1340129
-    ## rep 1        0.5971889   0.8541483   0.1981989   0.5649468   0.7668103   -0.2832184
-    ## rep 2        0.4164302   0.6969905   0.2230349   0.4454763   0.6986642    0.3859231
-    ## rep 3        0.7279909   0.9329203   0.3193344   0.6256573   0.8363120   -0.2135940
-    ## rep 4        0.4917095   0.7111988   0.0023427   0.4141336   0.5950910   -0.3483040
+    ## |          |         D|         I|   rank.cor|     env.D|     env.I|    env.cor|
+    ## |:---------|---------:|---------:|----------:|---------:|---------:|----------:|
+    ## |empirical | 0.3522012| 0.6324035| -0.0233797| 0.2262277| 0.4876775| -0.4763836|
+    ## |rep 1     | 0.4745117| 0.6965579| -0.0827780| 0.2621979| 0.4989804| -0.6629787|
+    ## |rep 2     | 0.4156049| 0.7008724|  0.0889224| 0.5704781| 0.7915851| -0.0025339|
+    ## |rep 3     | 0.4745117| 0.6965579| -0.0827780| 0.2625301| 0.4989265| -0.6614652|
+    ## |rep 4     | 0.4638508| 0.7359583|  0.1223530| 0.3185485| 0.6112774| -0.2595020|
 
 ![](Readme_files/figure-gfm/rangebreak_linear-1.png)<!-- -->![](Readme_files/figure-gfm/rangebreak_linear-2.png)<!-- -->
 
-And here’s a blob test using Bioclim:
+And here’s a blob test using GAM:
 
 ``` r
-rbb.bc <- rangebreak.blob(monticola, cyreni, env, type = "bc", nreps = 4)
-```
-
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## 
-    ## Building empirical models...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## 
-    ## Building replicate models...
-    ## 
-    ## Replicate 1 ...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## 
-    ## Replicate 2 ...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## 
-    ## Replicate 3 ...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## 
-    ## Replicate 4 ...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-
-``` r
+rbb.bc <- rangebreak.blob(monticola, cyreni, env, type = "gam", nreps = 4)
 rbb.bc
 ```
 
@@ -1549,19 +1123,19 @@ rbb.bc
     ## 
     ## rangebreak test p-values:
     ##        D        I rank.cor    env.D    env.I  env.cor 
-    ##      0.6      0.6      0.4      0.4      0.4      0.4 
+    ##      0.4      0.4      0.4      0.2      0.2      0.2 
     ## 
     ## 
     ## Replicates:
     ## 
     ## 
-    ##                      D           I     rank.cor       env.D       env.I     env.cor
-    ## ----------  ----------  ----------  -----------  ----------  ----------  ----------
-    ## empirical    0.0242365   0.1455829   -0.0450249   0.0136553   0.1102247   0.1604765
-    ## rep 1        0.0037397   0.0333060   -0.2084307   0.0024187   0.0271124   0.0312522
-    ## rep 2        0.0172571   0.0983554   -0.0222236   0.0373351   0.1576568   0.2103904
-    ## rep 3        0.3272086   0.5455610    0.4582136   0.2503312   0.4675411   0.3636188
-    ## rep 4        0.6752625   0.8550095    0.6797352   0.4985722   0.7324030   0.7461211
+    ## |          |         D|         I|   rank.cor|     env.D|     env.I|    env.cor|
+    ## |:---------|---------:|---------:|----------:|---------:|---------:|----------:|
+    ## |empirical | 0.3458688| 0.6349588|  0.0148935| 0.2266968| 0.4859108| -0.3827760|
+    ## |rep 1     | 0.2219639| 0.5055039|  0.3300917| 0.3297764| 0.6060251|  0.2450558|
+    ## |rep 2     | 0.4587150| 0.7232480|  0.1300365| 0.3186436| 0.5639580| -0.1586443|
+    ## |rep 3     | 0.4848734| 0.7479590|  0.2988036| 0.4531232| 0.7054955|  0.1436093|
+    ## |rep 4     | 0.4106084| 0.7283237| -0.0471308| 0.6007318| 0.8275819| -0.0016637|
 
 ![](Readme_files/figure-gfm/rangebreak_blob-1.png)<!-- -->
 
@@ -1576,23 +1150,23 @@ rbl.glm$replicate.models$monticola.rep.1
     ## 
     ## 
     ## Formula:  presence ~ bio1 + bio12 + bio7
-    ## <environment: 0x7fea31568448>
+    ## <environment: 0x7fd6fd6c8a50>
     ## 
     ## 
     ## Data table (top ten lines): 
     ## 
-    ##  Longitude   Latitude   bio1   bio12   bio7   presence
-    ## ----------  ---------  -----  ------  -----  ---------
-    ##       0.13      42.64     61    1053    238          1
-    ##      -0.02      42.59     62    1027    240          1
-    ##      -2.45      42.46    126     512    265          1
-    ##      -3.65      41.05     93     569    284          1
-    ##      -3.65      41.05     93     569    284          1
-    ##      -3.65      41.05     93     569    284          1
-    ##      -3.77      40.78    114     491    287          1
-    ##      -3.77      40.78    114     491    287          1
-    ##      -3.77      40.78    114     491    287          1
-    ##      -3.77      40.96     94     558    283          1
+    ## | Longitude| Latitude| bio1| bio12| bio7| presence|
+    ## |---------:|--------:|----:|-----:|----:|--------:|
+    ## |  0.130000| 42.64000|   61|  1053|  238|        1|
+    ## | -0.020000| 42.59000|   62|  1027|  240|        1|
+    ## | -5.132756| 43.49572|  133|   822|  190|        1|
+    ## | -5.160000| 43.47000|  133|   822|  190|        1|
+    ## | -5.160000| 43.47000|  133|   822|  190|        1|
+    ## | -5.290000| 43.47000|  130|   829|  193|        1|
+    ## | -5.290000| 43.47000|  130|   829|  193|        1|
+    ## | -4.941888| 43.35310|  128|   843|  194|        1|
+    ## | -4.790000| 43.29000|   90|   958|  223|        1|
+    ## | -4.790000| 43.29000|   90|   958|  223|        1|
     ## 
     ## 
     ## Model:  
@@ -1601,42 +1175,42 @@ rbl.glm$replicate.models$monticola.rep.1
     ##     2)], weights = weights)
     ## 
     ## Deviance Residuals: 
-    ##     Min       1Q   Median       3Q      Max  
-    ## -1.7194  -0.7133  -0.5149   0.7256   1.8994  
+    ##      Min        1Q    Median        3Q       Max  
+    ## -1.00454  -0.35016  -0.17979  -0.06991   2.07398  
     ## 
     ## Coefficients:
-    ##              Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept) 11.339919   2.474542   4.583 4.59e-06 ***
-    ## bio1        -0.052827   0.006398  -8.256  < 2e-16 ***
-    ## bio12       -0.002136   0.000832  -2.567  0.01026 *  
-    ## bio7        -0.015994   0.005546  -2.884  0.00393 ** 
+    ##               Estimate Std. Error z value Pr(>|z|)    
+    ## (Intercept) 19.6497534  3.2329053   6.078 1.22e-09 ***
+    ## bio1        -0.0671343  0.0092279  -7.275 3.46e-13 ***
+    ## bio12       -0.0006927  0.0009520  -0.728    0.467    
+    ## bio7        -0.0476769  0.0071865  -6.634 3.26e-11 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
-    ##     Null deviance: 720.87  on 901  degrees of freedom
-    ## Residual deviance: 618.19  on 898  degrees of freedom
-    ## AIC: 301.75
+    ##     Null deviance: 720.87  on 2259  degrees of freedom
+    ## Residual deviance: 467.04  on 2256  degrees of freedom
+    ## AIC: 208.35
     ## 
-    ## Number of Fisher Scoring iterations: 4
+    ## Number of Fisher Scoring iterations: 5
     ## 
     ## 
     ## 
     ## Model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 260 
-    ## n absences     : 642 
-    ## AUC            : 0.7594566 
-    ## cor            : 0.3596942 
-    ## max TPR+TNR at : -0.09265008 
+    ## n absences     : 2000 
+    ## AUC            : 0.8567519 
+    ## cor            : 0.3874038 
+    ## max TPR+TNR at : -0.2357435 
     ## 
     ## 
     ## Environment space model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 260 
     ## n absences     : 10000 
-    ## AUC            : 0.4533877 
-    ## cor            : 0.0001488125 
-    ## max TPR+TNR at : 0.3586391 
+    ## AUC            : 0.4842738 
+    ## cor            : 0.03326035 
+    ## max TPR+TNR at : 0.6114186 
     ## 
     ## 
     ## Proportion of data wittheld for model fitting:  0
@@ -1655,7 +1229,7 @@ rbl.glm$replicate.models$monticola.rep.1
     ## crs        : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
     ## source     : memory
     ## names      : layer 
-    ## values     : 0.02993972, 0.9987319  (min, max)
+    ## values     : 0.008560703, 0.9954375  (min, max)
     ## 
     ## 
     ## 
@@ -1670,23 +1244,23 @@ rbl.glm$replicate.models$cyreni.rep.1
     ## 
     ## 
     ## Formula:  presence ~ bio1 + bio12 + bio7
-    ## <environment: 0x7fea1c8c3498>
+    ## <environment: 0x7fd6fd458c68>
     ## 
     ## 
     ## Data table (top ten lines): 
     ## 
-    ##  Longitude   Latitude   bio1   bio12   bio7   presence
-    ## ----------  ---------  -----  ------  -----  ---------
-    ##      -7.09      43.11    110     994    227          1
-    ##      -7.09      43.11    110     994    227          1
-    ##      -7.10      43.02    110     994    227          1
-    ##      -7.09      43.20    111    1015    219          1
-    ##      -7.09      43.20    111    1015    219          1
-    ##      -7.09      43.29    111    1015    219          1
-    ##      -7.09      43.29    111    1015    219          1
-    ##      -7.08      43.47    128     927    204          1
-    ##      -7.08      43.47    128     927    204          1
-    ##      -7.09      43.38    128     927    204          1
+    ## | Longitude| Latitude| bio1| bio12| bio7| presence|
+    ## |---------:|--------:|----:|-----:|----:|--------:|
+    ## | -4.010000|  40.7800|   91|   555|  284|        1|
+    ## | -4.010000|  40.7800|   91|   555|  284|        1|
+    ## | -4.010000|  40.7800|   91|   555|  284|        1|
+    ## | -3.860000|  40.7200|   94|   568|  284|        1|
+    ## | -4.130000|  40.7800|   91|   555|  284|        1|
+    ## | -4.130000|  40.7800|   91|   555|  284|        1|
+    ## | -4.130000|  40.7800|   91|   555|  284|        1|
+    ## | -4.014862|  40.7364|   91|   555|  284|        1|
+    ## | -4.010000|  40.7300|   91|   555|  284|        1|
+    ## | -3.890000|  40.6900|   94|   568|  284|        1|
     ## 
     ## 
     ## Model:  
@@ -1695,23 +1269,23 @@ rbl.glm$replicate.models$cyreni.rep.1
     ##     2)], weights = weights)
     ## 
     ## Deviance Residuals: 
-    ##      Min        1Q    Median        3Q       Max  
-    ## -0.89458  -0.29042  -0.05284  -0.03554   1.17010  
+    ##     Min       1Q   Median       3Q      Max  
+    ## -0.3862  -0.1711  -0.1360  -0.0985   1.6913  
     ## 
     ## Coefficients:
-    ##              Estimate Std. Error z value Pr(>|z|)    
-    ## (Intercept) -0.481421   4.436111  -0.109 0.913581    
-    ## bio1         0.009131   0.014623   0.624 0.532352    
-    ## bio12        0.005892   0.001743   3.381 0.000723 ***
-    ## bio7        -0.028004   0.010090  -2.775 0.005513 ** 
+    ##               Estimate Std. Error z value Pr(>|z|)    
+    ## (Intercept) -45.227339  10.441063  -4.332 1.48e-05 ***
+    ## bio1         -0.036128   0.011031  -3.275  0.00106 ** 
+    ## bio12         0.010928   0.002415   4.525 6.05e-06 ***
+    ## bio7          0.149245   0.032269   4.625 3.74e-06 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
-    ##     Null deviance: 210.72  on 847  degrees of freedom
-    ## Residual deviance: 107.55  on 844  degrees of freedom
-    ## AIC: 49.111
+    ##     Null deviance: 210.72  on 3075  degrees of freedom
+    ## Residual deviance: 152.31  on 3072  degrees of freedom
+    ## AIC: 81.735
     ## 
     ## Number of Fisher Scoring iterations: 6
     ## 
@@ -1719,18 +1293,18 @@ rbl.glm$replicate.models$cyreni.rep.1
     ## 
     ## Model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 76 
-    ## n absences     : 772 
-    ## AUC            : 0.8972934 
-    ## cor            : 0.4254139 
-    ## max TPR+TNR at : 0.01714139 
+    ## n absences     : 3000 
+    ## AUC            : 0.8397982 
+    ## cor            : 0.1292867 
+    ## max TPR+TNR at : -0.06440258 
     ## 
     ## 
     ## Environment space model fit (training data):  class          : ModelEvaluation 
     ## n presences    : 76 
     ## n absences     : 10000 
-    ## AUC            : 0.7779447 
-    ## cor            : 0.08950445 
-    ## max TPR+TNR at : 0.5042102 
+    ## AUC            : 0.7236855 
+    ## cor            : 0.07118827 
+    ## max TPR+TNR at : 0.2391586 
     ## 
     ## 
     ## Proportion of data wittheld for model fitting:  0
@@ -1749,7 +1323,7 @@ rbl.glm$replicate.models$cyreni.rep.1
     ## crs        : +proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0 
     ## source     : memory
     ## names      : layer 
-    ## values     : 0.002519097, 0.9979295  (min, max)
+    ## values     : 3.59063e-09, 0.9999948  (min, max)
     ## 
     ## 
     ## 
@@ -1797,18 +1371,18 @@ ribbon
     ## 
     ## Presence points (first ten only): 
     ## 
-    ##   Longitude   Latitude
-    ## -----------  ---------
-    ##  -1.8665925   41.58785
-    ##  -0.0836034   41.32046
-    ##  -3.2149914   40.50337
-    ##  -0.4705731   41.13235
-    ##  -1.5143153   41.64996
-    ##  -1.5581139   41.13326
-    ##  -7.8220046   40.83394
-    ##  -8.6325728   41.72766
-    ##  -8.9118011   41.89424
-    ##  -5.8346455   41.50144
+    ## |  Longitude| Latitude|
+    ## |----------:|--------:|
+    ## | -2.6519202| 41.37311|
+    ## | -8.5270937| 41.24908|
+    ## | -5.8000696| 40.85987|
+    ## | -0.1800194| 40.64132|
+    ## | -6.9244996| 41.66348|
+    ## | -0.0595189| 41.72689|
+    ## | -5.3885862| 41.54300|
+    ## | -5.6233251| 41.00533|
+    ## | -5.1841986| 40.57310|
+    ## | -1.9574529| 40.92425|
     ## 
     ## 
     ## Background points not defined.
@@ -1823,294 +1397,6 @@ degrees you should supply the width of the barrier in decimal degrees.
 
 ``` r
 rbr.glm <- rangebreak.ribbon(monticola, cyreni, ribbon, env, type = "glm", f = pres ~ poly(bio1, 2) + poly(bio12, 2) + poly(bio7, 2), width = 0.5, nreps = 4)
-```
-
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## 
-    ## Building empirical models...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species monticola 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species cyreni 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species ribbon 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species outside 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## 
-    ## Building replicate models...
-    ## 
-    ## Replicate 1 ...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species monticola 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species cyreni 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species ribbon 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species outside 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## 
-    ## Replicate 2 ...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species monticola 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species cyreni 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species ribbon 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species outside 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## 
-    ## Replicate 3 ...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species monticola 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species cyreni 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species ribbon 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species outside 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## 
-    ## Replicate 4 ...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species monticola 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species cyreni 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species ribbon 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## Adding environmental data to species outside 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-    ## [1] "Trying to find starting conditions, attempt 1"
-    ## [1] "Building replicates..."
-
-``` r
 rbr.glm
 ```
 
@@ -2124,54 +1410,54 @@ rbr.glm
     ## 
     ## Species 1 vs. Species 2:
     ##        D        I rank.cor    env.D    env.I  env.cor 
-    ##      0.4      0.4      1.2      0.4      0.4      0.4 
+    ##      0.4      0.4      0.2      0.2      0.2      0.6 
     ## 
     ## Species 1 vs. Ribbon:
     ##        D        I rank.cor    env.D    env.I  env.cor 
-    ##      0.8      0.8      0.8      0.8      0.8      0.4 
+    ##      0.4      0.4      0.6      0.4      0.4      0.6 
     ## 
     ## Species 2 vs. Ribbon:
     ##        D        I rank.cor    env.D    env.I  env.cor 
-    ##      0.8      0.8      0.8      0.4      0.4      0.4 
+    ##      0.4      0.4      0.4      0.2      0.4      0.2 
     ## 
     ## Outside vs. Ribbon:
     ##        D        I rank.cor    env.D    env.I  env.cor 
-    ##      0.8      0.8      0.4      0.8      0.8      0.4 
+    ##      0.4      0.4      0.2      0.4      0.4      0.4 
     ## 
     ## 
     ## Replicates:
     ## 
     ## Species 1 vs. Species 2:
-    ##                   D         I    rank.cor     env.D     env.I     env.cor
-    ## empirical 0.1035467 0.2963885 -0.09445049 0.1788367 0.3101216  0.10834269
-    ## rep 1     0.3327560 0.5523501 -0.32545779 0.2265204 0.3442903 -0.22696830
-    ## rep 2     0.4365708 0.6975324  0.30479501 0.1898505 0.3815130  0.07852734
-    ## rep 3     0.1954782 0.4040600 -0.36433991 0.2230447 0.3653639 -0.07347805
-    ## rep 4     0.3282535 0.6026923 -0.07826871 0.2083030 0.3492703 -0.16756854
+    ##                   D         I   rank.cor     env.D     env.I     env.cor
+    ## empirical 0.2021069 0.4495400 -0.3562523 0.3204084 0.5707701  0.06271708
+    ## rep 1     0.3649448 0.6146074 -0.2576063 0.3754065 0.6016363 -0.38678468
+    ## rep 2     0.3509206 0.6266415 -0.1835489 0.3490055 0.5802495 -0.56649915
+    ## rep 3     0.2088029 0.4544945 -0.3438376 0.3550483 0.6038650  0.13714567
+    ## rep 4     0.1712745 0.4159323  0.1758420 0.3532411 0.6078651  0.10138674
     ## 
     ## Species 1 vs. Ribbon:
-    ##                   D         I     rank.cor     env.D     env.I      env.cor
-    ## empirical 0.3016786 0.5909455  0.062315768 0.3082952 0.5309906 -0.005506514
-    ## rep 1     0.3483526 0.6181835  0.118160322 0.2146811 0.3501626  0.009770182
-    ## rep 2     0.5640303 0.7990713  0.537349936 0.2880312 0.5469291  0.687281018
-    ## rep 3     0.2434021 0.4455656  0.220427938 0.3548411 0.4587706  0.249918436
-    ## rep 4     0.4478438 0.7319591 -0.006386414 0.3023550 0.4789191  0.004916438
+    ##                   D         I    rank.cor     env.D     env.I    env.cor
+    ## empirical 0.6323933 0.8527614  0.05475308 0.6067405 0.8495954 -0.2677432
+    ## rep 1     0.3688295 0.6258757 -0.17120387 0.3865318 0.6119773 -0.3463293
+    ## rep 2     0.7074714 0.9072103  0.66944428 0.7996702 0.9373036  0.7010125
+    ## rep 3     0.4189465 0.6680862 -0.05738790 0.2328567 0.4545361 -0.6636294
+    ## rep 4     0.3818182 0.6565639  0.51841020 0.4182780 0.6808915  0.3848613
     ## 
     ## Species 2 vs. Ribbon:
-    ##                   D         I   rank.cor     env.D     env.I    env.cor
-    ## empirical 0.1931953 0.3574360 -0.1041608 0.1015229 0.1932719 -0.7245471
-    ## rep 1     0.6591174 0.8574106  0.8279234 0.7080712 0.8750649  0.9415926
-    ## rep 2     0.6412057 0.8351158  0.7786542 0.3666512 0.5664658  0.4248406
-    ## rep 3     0.1535903 0.2383875 -0.1317132 0.1597406 0.2302568 -0.1468643
-    ## rep 4     0.8581289 0.9747570  0.9856240 0.8678402 0.9502162  0.9627926
+    ##                   D         I    rank.cor     env.D     env.I     env.cor
+    ## empirical 0.3088607 0.5900439 -0.03845932 0.1774563 0.3756062 -0.69748029
+    ## rep 1     0.9312011 0.9939774  0.99385863 0.9817306 0.9984304  0.99869213
+    ## rep 2     0.6031606 0.8094029  0.46240384 0.5297230 0.7498778  0.01412892
+    ## rep 3     0.2861057 0.5103840 -0.08680813 0.2214730 0.3189927 -0.31138457
+    ## rep 4     0.5592220 0.8090926  0.88200107 0.8378459 0.9290328  0.89099276
     ## 
     ## Outside vs. Ribbon:
     ##                   D         I    rank.cor     env.D     env.I     env.cor
-    ## empirical 0.3096498 0.5933247 -0.12344160 0.3383000 0.5484379 -0.05243294
-    ## rep 1     0.3939746 0.6684162  0.27686117 0.3046983 0.4702084  0.18906668
-    ## rep 2     0.5763671 0.7948884  0.51647872 0.2392333 0.4813640  0.18605427
-    ## rep 3     0.1560634 0.3737797 -0.06710502 0.2376977 0.3946395  0.02381567
-    ## rep 4     0.5662873 0.8325162  0.34573934 0.5076678 0.7125416  0.47955824
+    ## empirical 0.6551669 0.8721819 -0.09147012 0.6167421 0.8623859 -0.37730768
+    ## rep 1     0.4023451 0.6616597 -0.02913726 0.4459692 0.6755114 -0.05826128
+    ## rep 2     0.7693195 0.9339830  0.80621933 0.8429629 0.9602767  0.69527996
+    ## rep 3     0.5169369 0.7522324  0.18099865 0.3126748 0.5426152 -0.47148475
+    ## rep 4     0.3736786 0.6503553  0.51616993 0.4268829 0.6883124  0.48972746
 
 ![](Readme_files/figure-gfm/rangebreak_ribbon-1.png)<!-- -->![](Readme_files/figure-gfm/rangebreak_ribbon-2.png)<!-- -->![](Readme_files/figure-gfm/rangebreak_ribbon-3.png)<!-- -->![](Readme_files/figure-gfm/rangebreak_ribbon-4.png)<!-- -->
 
@@ -2182,11 +1468,11 @@ offset.
 rbr.glm$lines.df
 ```
 
-    ##       slope intercept    offset
-    ## 1 -1.499359  34.87621 0.4505606
-    ## 2 -4.508562  11.18973 1.1545326
-    ## 3  1.394952  47.68929 0.4290899
-    ## 4 -1.070391  34.89399 0.3662084
+    ##        slope intercept    offset
+    ## 1 -2.0354472  32.46446 0.5669571
+    ## 2 -0.4279309  39.02535 0.2719289
+    ## 3  0.1616337  41.49875 0.2532446
+    ## 4 -0.0792137  42.74416 0.2507831
 
 The intercept denotes the intercept corresponding to the CENTER of each
 ribbon. To get the lines denoting the edges of the ribbons (for example
@@ -2285,7 +1571,7 @@ check.clade(brev.clade)
     ## Phylogenetic tree with 5 tips and 4 internal nodes.
     ## 
     ## Tip labels:
-    ## [1] "brevirostris" "caudalis"     "distichus"    "marron"       "websteri"    
+    ##   brevirostris, caudalis, distichus, marron, websteri
     ## 
     ## Rooted; includes branch lengths.
     ## 
@@ -2293,13 +1579,13 @@ check.clade(brev.clade)
     ## Data Summary: 
     ## 
     ## 
-    ##                species.names   in.tree   presence   background   range   
-    ## -------------  --------------  --------  ---------  -----------  --------
-    ## brevirostris   brevirostris    TRUE      200        0            present 
-    ## caudalis       caudalis        TRUE      26         0            present 
-    ## distichus      distichus       TRUE      834        0            present 
-    ## marron         marron          TRUE      14         0            present 
-    ## websteri       websteri        TRUE      21         0            present
+    ## |             |species.names |in.tree |presence |background |range   |
+    ## |:------------|:-------------|:-------|:--------|:----------|:-------|
+    ## |brevirostris |brevirostris  |TRUE    |203      |0          |present |
+    ## |caudalis     |caudalis      |TRUE    |26       |0          |present |
+    ## |distichus    |distichus     |TRUE    |905      |0          |present |
+    ## |marron       |marron        |TRUE    |14       |0          |present |
+    ## |websteri     |websteri      |TRUE    |21       |0          |present |
 
 That’s one way to build a clade object by hand, but there’s already one
 built into ENMTools to experiment with so we’ll just use that.
@@ -2349,7 +1635,7 @@ summary(range.aoc)
     ## 
     ## p values:
     ##      (Intercept) empirical.df$age 
-    ##       0.03921569       0.03921569
+    ##       0.01960784       0.01960784
 
 ![](Readme_files/figure-gfm/range_aoc-1.png)<!-- -->![](Readme_files/figure-gfm/range_aoc-2.png)<!-- -->
 
@@ -2371,7 +1657,7 @@ summary(point.aoc)
     ## 
     ## p values:
     ##      (Intercept) empirical.df$age 
-    ##        0.2745098        0.3529412
+    ##       0.07843137       0.07843137
 
 ![](Readme_files/figure-gfm/point_aoc-1.png)<!-- -->![](Readme_files/figure-gfm/point_aoc-2.png)<!-- -->
 
@@ -2382,86 +1668,6 @@ use GLM models:
 
 ``` r
 glm.aoc <- enmtools.aoc(clade = iberolacerta.clade,  env = env, nreps = 50, overlap.source = "glm", f = pres ~ poly(bio1, 2) + poly(bio12, 2))
-```
-
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## Adding environmental data to species monticola 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## Adding environmental data to species martinezricai 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## Adding environmental data to species cyreni 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## Adding environmental data to species horvathi 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## Adding environmental data to species aurelioi 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## Adding environmental data to species aranica 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-    ## 
-    ## 
-    ## 
-    ## No background points provided, drawing background from range raster.
-    ## 
-    ## Adding environmental data to species bonnali 
-    ##  Processing presence points...
-    ##  Processing background points...
-    ## 
-    ## 
-    ## Drawing background from species background points.
-
-``` r
 summary(glm.aoc)
 ```
 
@@ -2473,7 +1679,7 @@ summary(glm.aoc)
     ## 
     ## p values:
     ##      (Intercept) empirical.df$age 
-    ##        0.1960784        0.2352941
+    ##        0.1372549        0.1960784
 
 ![](Readme_files/figure-gfm/enm_aoc-1.png)<!-- -->![](Readme_files/figure-gfm/enm_aoc-2.png)<!-- -->
 

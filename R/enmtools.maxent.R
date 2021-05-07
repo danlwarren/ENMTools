@@ -11,6 +11,8 @@
 #' @param bg.source Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.
 #' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
 #' @param clamp When set to TRUE, clamps the environmental layers so that predictions made outside the min/max of the training data for each predictor are set to the value for the min/max for that predictor. Prevents the model from extrapolating beyond the min/max bounds of the predictor space the model was trained in, although there could still be projections outside the multivariate training space if predictors are strongly correlated.
+#' @param corner An integer from 1 to 4.  Selects which corner to use for "block" test data.  By default the corner is selected randomly.
+#' @param bias An optional raster estimating relative sampling effort per grid cell.  Will be used for drawing background data.
 #' @param ... Arguments to be passed to maxent()
 #'
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
@@ -26,13 +28,13 @@
 #' }
 
 
-enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0,  bg.source = "default", verbose = FALSE, clamp = TRUE, ...){
+enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0,  bg.source = "default", verbose = FALSE, clamp = TRUE,  corner = NA, bias = NA, ...){
 
   check.packages("rJava")
 
   notes <- NULL
 
-  species <- check.bg(species, env, nback = nback, bg.source = bg.source, verbose = verbose)
+  species <- check.bg(species, env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias)
 
   maxent.precheck(f, species, env)
 
@@ -53,14 +55,18 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
   # Code for spatially structured test data
   if(is.character(test.prop)){
     if(test.prop == "block"){
-      corner <- ceiling(runif(1, 0, 4))
+      if(is.na(corner)){
+        corner <- ceiling(runif(1, 0, 4))
+      } else if(corner < 1 | corner > 4){
+        stop("corner should be an integer from 1 to 4!")
+      }
       test.inds <- get.block(species$presence.points, species$background.points)
       test.bg.inds <- which(test.inds$bg.grp == corner)
       test.inds <- which(test.inds$occ.grp == corner)
       test.data <- species$presence.points[test.inds,]
       test.bg <- species$background.points[test.bg.inds,]
       species$presence.points <- species$presence.points[-test.inds,]
-      species$background.points <- species$presence.points[-test.bg.inds,]
+      species$background.points <- species$background.points[-test.bg.inds,]
     }
   }
 
@@ -120,11 +126,20 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
     if(test.prop > 0 & test.prop < 1){
       test.check <- raster::extract(env, test.data)
       test.data <- test.data[complete.cases(test.check),]
-      test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
-                                        this.mx, env)
+
       temp.sp <- species
       temp.sp$presence.points <- test.data
-      env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)
+
+      if(verbose){
+        test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
+                                          this.mx, env)
+        env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)
+      } else {
+        invisible(capture.output(test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
+                                          this.mx, env)))
+        invisible(capture.output(env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)))
+      }
+
     }
   }
 
@@ -133,12 +148,21 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
     if(test.prop == "block"){
       test.check <- raster::extract(env, test.data)
       test.data <- test.data[complete.cases(test.check),]
-      test.evaluation <-dismo::evaluate(test.data, test.bg,
-                                        this.mx, env)
+
       temp.sp <- species
       temp.sp$presence.points <- test.data
       temp.sp$background.points <- test.bg
-      env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)
+
+      if(verbose){
+        test.evaluation <-dismo::evaluate(test.data, test.bg,
+                                          this.mx, env)
+        env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)
+      } else {
+        invisible(capture.output(test.evaluation <-dismo::evaluate(test.data, test.bg,
+                                          this.mx, env)))
+        invisible(capture.output(env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)))
+      }
+
     }
   }
 
@@ -186,7 +210,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
 
       # Do the same for test points
       if(test.prop > 0){
-        test.rows <- sample(nrow(allpoints), nrow(species$presence.points))
+        test.rows <- sample(nrow(allpoints), nrow(test.data))
         rep.test.data <- allpoints[test.rows,]
         allpoints <- allpoints[-test.rows,]
       }
@@ -202,37 +226,41 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
       # We have to do this to capture the "this is maxent version XXX message".
       if(verbose){
         thisrep.mx <- dismo::maxent(env, p = rts.df[rts.df$presence == 1,1:2], a = rts.df[rts.df$presence == 0,1:2], ...)
-        thisrep.model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+        thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points[,1:2], species$background.points[,1:2],
                                                    thisrep.mx, env)
-        thisrep.env.model.evaluation <- env.evaluate(species, thisrep.mx, env, n.background = env.nback)
+        thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.mx, env, n.background = env.nback)
       } else {
         invisible(capture.output(thisrep.mx <- dismo::maxent(env, p = rts.df[rts.df$presence == 1,1:2], a = rts.df[rts.df$presence == 0,1:2], ...)))
-        invisible(capture.output(thisrep.model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+        invisible(capture.output(thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points[,1:2], species$background.points[,1:2],
                                                    thisrep.mx, env)))
-        invisible(capture.output(thisrep.env.model.evaluation <- env.evaluate(species, thisrep.mx, env, n.background = env.nback)))
+        invisible(capture.output(thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.mx, env, n.background = env.nback)))
       }
-
-
-
 
       rts.geog.training[i] <- thisrep.model.evaluation@auc
       rts.env.training[i] <- thisrep.env.model.evaluation@auc
 
       if(test.prop > 0 & test.prop < 1){
-        thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points[,1:2],
-                                                  thisrep.mx, env)
         temp.sp <- rep.species
-        temp.sp$presence.points <- test.data
-        thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.mx, env, n.background = env.nback)
+        temp.sp$presence.points <- rep.test.data
+
+        if(verbose){
+          thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points[,1:2],
+                                                    thisrep.mx, env)
+          thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.mx, env, n.background = env.nback)
+        } else {
+          invisible(capture.output(thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points[,1:2],
+                                                    thisrep.mx, env)))
+          invisible(capture.output(thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.mx, env, n.background = env.nback)))
+        }
 
         rts.geog.test[i] <- thisrep.test.evaluation@auc
         rts.env.test[i] <- thisrep.env.test.evaluation@auc
       }
       rts.models[[paste0("rep.",i)]] <- list(model = thisrep.mx,
-                                             training.evaluation = model.evaluation,
-                                             env.training.evaluation = env.model.evaluation,
-                                             test.evaluation = test.evaluation,
-                                             env.test.evaluation = env.test.evaluation)
+                                             training.evaluation = thisrep.model.evaluation,
+                                             env.training.evaluation = thisrep.env.model.evaluation,
+                                             test.evaluation = thisrep.test.evaluation,
+                                             env.test.evaluation = thisrep.env.test.evaluation)
     }
 
     # Reps are all run now, time to package it all up
@@ -420,7 +448,7 @@ plot.enmtools.maxent <- function(x, ...){
 predict.enmtools.maxent <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
 
   # Make a plot of habitat suitability in the new region
-  suitability <- raster::predict(env, object$model)
+  suitability <- invisible(capture.output(raster::predict(env, object$model)))
 
   # I'm actually not sure this is doing anything - I think maxent models are clamped by default
   if(clamp == TRUE){
@@ -428,7 +456,7 @@ predict.enmtools.maxent <- function(object, env, maxpts = 1000, clamp = TRUE, ..
     this.df <- as.data.frame(rbind(object$model@presence, object$model@absence))
 
     env <- clamp.env(this.df, env)
-    clamped.suitability <- raster::predict(env, object$model)
+    clamped.suitability <- invisible(capture.output(raster::predict(env, object$model)))
     clamping.strength <- clamped.suitability - suitability
     suitability <- clamped.suitability
   }
