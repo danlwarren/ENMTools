@@ -40,6 +40,10 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@master
 
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
       - name: Query dependencies
         run: |
           install.packages('remotes')
@@ -64,6 +68,7 @@ jobs:
           Rscript -e "remotes::install_github('r-hub/sysreqs')"
           sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
           sudo -s eval "$sysreqs"
+          sudo apt-get install libgdal1-dev libproj-dev
 
       - name: Install dependencies
         run: |
