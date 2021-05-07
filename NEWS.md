@@ -2,6 +2,21 @@ ENMTools 1.x
 ============
 
 
+ENMTools 1.0.4
+--------------
+
+### Bug Fixes
+
+-   Raes and ter Steege-style tests were returning incorrect evaluate objects, although plots and p values were correct
+-   test.prop = "block" wasn't working correctly
+
+### Enhancements
+
+-   Suppressing maxent startup messages by default
+-   Added support for bias layers to modeling functions
+-   Added check.env function to homogenize raster stacks so NAs propagate across layers
+
+
 ENMTools 1.0.3
 --------------
 
