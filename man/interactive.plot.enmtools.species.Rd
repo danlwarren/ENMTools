@@ -8,6 +8,7 @@
   x,
   map.provider = "Esri.WorldPhysical",
   cluster.points = FALSE,
+  max.bytes = 4194304,
   ...
 )
 }
@@ -21,6 +22,8 @@ preview of all map provider options can be viewed at \url{http://leaflet-extras.
 \item{cluster.points}{Should points be clustered? If TRUE, points close together
 will be grouped into clusters that can be interactively expanded by clicking
 on them.}
+
+\item{max.bytes}{Maximum size of range raster image to plot.  Defaults to 4MB (4194304 bytes) but can be overridden if you have a large range raster.  Be aware that the image will be knitted into an output file if you're working in R Markdown, causing your output file to be huge if the raster is huge.}
 
 \item{...}{other arguments (not used currently)}
 }
