@@ -39,6 +39,10 @@ clamp.env <- function(model, env){
 
   # Going through env layers one at a time and clamping to min/max in analysis.df
   for(i in names(clamped.env)){
+
+    # Skipping factors since clamping makes no sense
+    if(is.factor(df[,i])){next}
+
     thismin <- min(df[,i])
     thismax <- max(df[,i])
 

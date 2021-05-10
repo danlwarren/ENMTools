@@ -3,6 +3,7 @@
 #' @param species An enmtools.species object
 #' @param env A raster or raster stack of environmental data.
 #' @param f Standard GLM formula
+#' @param factors Vector of variable names to treat as factors in model formula
 #' @param test.prop Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.
 #' @param eval Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.
 #' @param nback Number of background points to draw from range or env, if background points aren't provided
@@ -27,7 +28,7 @@
 
 
 
-enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, ...){
+enmtools.glm <- function(species, env, f = NULL, factors = c(), test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, ...){
 
   notes <- NULL
 
@@ -37,6 +38,14 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
   if(is.null(f)){
     f <- as.formula(paste("presence", paste(c(names(env)), collapse = " + "), sep = " ~ "))
     notes <- c(notes, "No formula was provided, so a GLM formula was built automatically.")
+  }
+
+  if(length(factors) > 0){
+    if(!all(factors %in% names(env))){
+      missing <- factors[!factors %in% names(env)]
+      stop(paste("Variables passed as factors were not found in the raster stack:", missing))
+    }
+    env[[factors]] <- as.factor(env[[factors]])
   }
 
   glm.precheck(f, species, env)
@@ -91,6 +100,10 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
 
   analysis.df <- rbind(species$presence.points, species$background.points)
   analysis.df$presence <- c(rep(1, nrow(species$presence.points)), rep(0, nrow(species$background.points)))
+
+  if(length(factors) > 0){
+    analysis.df[,factors] <- as.factor(analysis.df[,factors])
+  }
 
   if(weights == "equal"){
     weights <- c(rep(1, nrow(species$presence.points)),

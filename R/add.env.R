@@ -21,6 +21,8 @@ add.env <- function(species, env, verbose = TRUE){
       message(paste("Adding environmental data to species", species$species.name, "\n"))
     }
 
+    which.factors <- names(env)[is.factor(env)]
+
     if(class(species$presence.points) %in% c("data.frame", "matrix")){
       if(verbose == TRUE){
         message("\tProcessing presence points...\n")
@@ -31,6 +33,7 @@ add.env <- function(species, env, verbose = TRUE){
       species$presence.points <- cbind(species$presence.points, extract(env, species$presence.points[,1:2]))
       colnames(species$presence.points) <- names
       species$presence.points <- species$presence.points[complete.cases(species$presence.points),]
+      species$presence.points[,which.factors] <- as.factor(species$presence.points[,which.factors])
     } else {
       message("No presence points, skipping...\n")
     }
@@ -44,6 +47,7 @@ add.env <- function(species, env, verbose = TRUE){
       species$background.points <- cbind(species$background.points, extract(env, species$background.points[,1:2]))
       colnames(species$background.points) <- names
       species$background.points <- species$background.points[complete.cases(species$background.points),]
+      species$background.points[,which.factors] <- as.factor(species$background.points[,which.factors])
     } else {
       message("No background points, skipping...\n")
     }
