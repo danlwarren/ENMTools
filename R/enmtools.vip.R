@@ -74,11 +74,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
     train$presence <- c(rep(1, nrow(attr(thismodel, "presence"))),
                         rep(0, nrow(attr(thismodel, "absence"))))
     target <- "presence"
-    if(verbose){
-      pred_wrapper <- function(object, newdata) predict(object, newdata)
-    } else {
-      pred_wrapper <- function(object, newdata) invisible(capture.output(predict(object, newdata)))
-    }
+    pred_wrapper <- function(object, newdata) predict(object, newdata)
 
     reference_class <- "1"
   }
@@ -102,7 +98,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
 
       output[["model.plot"]] <- ggplot(output[["model"]],
                                        aes_string(x = "Importance",
-                                           fill = fct_reorder("Variable", "Importance", .desc = TRUE))) +
+                                                  fill = fct_reorder("Variable", "Importance", .desc = TRUE))) +
         geom_histogram(bins = 20) +
         theme_bw() +
         geom_hline(yintercept = 0, color = "grey") +
@@ -128,7 +124,9 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
   }
 
   if("permute" %in% method){
-    output[["permute"]] <- vip::vi_permute(thismodel,
+
+    if(inherits(model, c("enmtools.maxent")) & verbose == FALSE){
+    invisible(capture.output(output[["permute"]] <- vip::vi_permute(thismodel,
                                            feature_names = feature_names,
                                            train = train,
                                            target = target,
@@ -136,14 +134,24 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
                                            pred_wrapper = pred_wrapper,
                                            reference_class = "1",
                                            nsim = nsim,
-                                           keep = TRUE)
-
+                                           keep = TRUE)))
+    } else {
+      output[["permute"]] <- vip::vi_permute(thismodel,
+                                             feature_names = feature_names,
+                                             train = train,
+                                             target = target,
+                                             metric = metric,
+                                             pred_wrapper = pred_wrapper,
+                                             reference_class = "1",
+                                             nsim = nsim,
+                                             keep = TRUE)
+    }
     plotdf <- reshape2::melt(attr(output[["permute"]], "raw_scores"))
     colnames(plotdf) <- c("Variable", "Permutation", "Importance")
 
     output[["permute.plot"]] <- ggplot(plotdf,
                                        aes_string(x = "Importance",
-                                           fill = "..x..")) +
+                                                  fill = "..x..")) +
       geom_histogram(bins = 20) +
       theme_bw() +
       geom_hline(yintercept = 0, color = "grey") +
@@ -177,7 +185,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
 
     output[["shap.plot"]] <- ggplot(output[["shap"]],
                                     aes_string(x = "Importance",
-                                        fill = fct_reorder("Variable", "Importance", .desc = TRUE))) +
+                                               fill = fct_reorder("Variable", "Importance", .desc = TRUE))) +
       geom_histogram(bins = 20) +
       theme_bw() +
       geom_hline(yintercept = 0, color = "grey") +
@@ -226,7 +234,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
 
     output[["firm.plot"]] <- ggplot(output[["firm"]],
                                     aes_string(x = "Importance",
-                                        fill = fct_reorder("Variable", "Importance", .desc = TRUE))) +
+                                               fill = fct_reorder("Variable", "Importance", .desc = TRUE))) +
       geom_histogram(bins = 20) +
       theme_bw() +
       geom_hline(yintercept = 0, color = "grey") +
