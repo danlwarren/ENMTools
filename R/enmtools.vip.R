@@ -4,6 +4,7 @@
 #' @param metric The metric to use for measuring how variables affect model predictions
 #' @param nsim The number of simulations to be run for method "permute"
 #' @param method A character string or vector containing any combination of "model", "permute", "shap", or "firm".  For details on what these mean, see the vip package help.
+#' @param verbose Controls printing of messages
 #' @param ... Further arguments to be passed to vip's "vi" functions.
 #'
 #' @return An enmtools.vip object
@@ -19,7 +20,7 @@
 #' enmtools.vip(monticola.glm)
 #' }
 
-enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", ...){
+enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", verbose = FALSE, ...){
 
   check.packages(c("vip", "pdp", "fastshap", "reshape2", "viridis"))
 
@@ -73,7 +74,12 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", .
     train$presence <- c(rep(1, nrow(attr(thismodel, "presence"))),
                         rep(0, nrow(attr(thismodel, "absence"))))
     target <- "presence"
-    pred_wrapper <- function(object, newdata) predict(object, newdata)
+    if(verbose){
+      pred_wrapper <- function(object, newdata) predict(object, newdata)
+    } else {
+      pred_wrapper <- function(object, newdata) invisible(capture.output(predict(object, newdata)))
+    }
+
     reference_class <- "1"
   }
 
