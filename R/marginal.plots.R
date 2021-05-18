@@ -43,7 +43,7 @@ marginal.plots <- function(model, env, layer, standardize = TRUE, verbose = FALS
   for(i in names(env)){
     if(i != layer){
       layer.values <- extract(env[[i]], points)
-      plot.df <- cbind(plot.df, rep(mean(layer.values), 100))
+      plot.df <- cbind(plot.df, rep(mean(layer.values, na.rm = TRUE), 100))
       names <- c(names, i)
     }
   }
