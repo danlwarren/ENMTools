@@ -74,6 +74,8 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
   # For starters we need to combine species background points so that each model
   # is being built with the same background
   combined.background.points <- rbind(species.1$background.points, species.2$background.points)
+  species.1.original.background <- species.1$background.points
+  species.2.original.background <- species.2$background.points
   species.1$background.points <- combined.background.points
   species.2$background.points <- combined.background.points
 
@@ -101,8 +103,8 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
   }
 
   if(type == "mx"){
-    empirical.species.1.model <- enmtools.maxent(species.1, env, clamp = FALSE, ...)
-    empirical.species.2.model <- enmtools.maxent(species.2, env, clamp = FALSE, ...)
+    empirical.species.1.model <- enmtools.maxent(species.1, env, clamp = FALSE, verbose = verbose, ...)
+    empirical.species.2.model <- enmtools.maxent(species.2, env, clamp = FALSE, verbose = verbose, ...)
   }
 
   if(type == "bc"){
@@ -145,20 +147,20 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
     if(test.type == "symmetric"){
 
       #background sampling for species 1, only run when we're doing a symmetric test
-      combined.points <- rbind(rep.species.1$presence.points, rep.species.1$background.points)
+      combined.points <- rbind(rep.species.1$presence.points, species.1.original.background)
       sample.vector <- sample(nrow(combined.points))
       combined.points <- combined.points[sample.vector,]
       rep.species.1$presence.points <- combined.points[1:nrow(species.1$presence.points),]
-      rep.species.1$background.points <- combined.points[(nrow(species.1$presence.points) + 1):nrow(combined.points),]
+      rep.species.1$background.points <- combined.background.points[(nrow(species.1$presence.points) + 1):nrow(combined.background.points),]
 
     }
 
     # Background sampling for species 2, run regardless of the type of test
-    combined.points <- rbind(rep.species.2$presence.points, rep.species.2$background.points)
+    combined.points <- rbind(rep.species.2$presence.points, species.2.original.background)
     sample.vector <- sample(nrow(combined.points))
     combined.points <- combined.points[sample.vector,]
     rep.species.2$presence.points <- combined.points[1:nrow(species.2$presence.points),]
-    rep.species.2$background.points <- combined.points[(nrow(species.2$presence.points) + 1):nrow(combined.points),]
+    rep.species.2$background.points <- background.points <- combined.background.points[(nrow(species.2$presence.points) + 1):nrow(combined.background.points),]
 
     # Building the models for reps
     if(type == "glm"){
@@ -172,8 +174,8 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
     }
 
     if(type == "mx"){
-      rep.species.1.model <- enmtools.maxent(rep.species.1, env, clamp = FALSE, ...)
-      rep.species.2.model <- enmtools.maxent(rep.species.2, env, clamp = FALSE, ...)
+      rep.species.1.model <- enmtools.maxent(rep.species.1, env, clamp = FALSE, verbose = verbose, ...)
+      rep.species.2.model <- enmtools.maxent(rep.species.2, env, clamp = FALSE, verbose = verbose, ...)
     }
 
     if(type == "bc"){
