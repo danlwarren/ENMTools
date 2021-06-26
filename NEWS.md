@@ -2,6 +2,14 @@ ENMTools 1.x
 ============
 
 
+ENMTools 1.0.5
+--------------
+
+### Bug Fixes
+
+-   Permutations for background tests were selecting presences from both species' ranges, leading to incorrect values for hypothesis tests.  
+
+
 ENMTools 1.0.4
 --------------
 
