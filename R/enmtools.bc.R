@@ -56,7 +56,7 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
       }
       test.inds <- get.block(species$presence.points, species$background.points)
       test.bg.inds <- which(test.inds$bg.grp == corner)
-      test.inds <- which(test.inds$occ.grp == corner)
+      test.inds <- which(test.inds$occs.grp == corner)
       test.data <- species$presence.points[test.inds,]
       test.bg <- species$background.points[test.bg.inds,]
       species$presence.points <- species$presence.points[-test.inds,]

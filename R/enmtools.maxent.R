@@ -62,7 +62,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
       }
       test.inds <- get.block(species$presence.points, species$background.points)
       test.bg.inds <- which(test.inds$bg.grp == corner)
-      test.inds <- which(test.inds$occ.grp == corner)
+      test.inds <- which(test.inds$occs.grp == corner)
       test.data <- species$presence.points[test.inds,]
       test.bg <- species$background.points[test.bg.inds,]
       species$presence.points <- species$presence.points[-test.inds,]
