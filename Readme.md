@@ -8,7 +8,7 @@ models (SDMs).
 
 Warren, D.L., Matzke, N.J., Cardillo, M., Baumgartner, J.B., Beaumont,
 L.J., Turelli, M., Glor, R.E., Huron, N.A., Simões, M., Iglesias, T.L.
-and Piquet, J.C., 2021. ENMTools 1.0: an R package for comparative
+Piquet, J.C., and Dinnage, R. 2021. ENMTools 1.0: an R package for comparative
 ecological biogeography. Ecography, 44(4), pp.504-511.
 
 -----
