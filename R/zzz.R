@@ -5,3 +5,4 @@ globalVariables(c("f", "predict", "value"))
 .onLoad <- function(libname, pkgname){
   # options("rgdal_show_exportToProj4_warnings"="none")
 }
+
