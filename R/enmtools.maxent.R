@@ -85,10 +85,10 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
 
   if(verbose){
     this.mx <- dismo::maxent(env, p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)
-    suitability <- predict(env, this.mx, type = "response")
+    suitability <- predict(env, this.mx, type = "response", ...)
   } else {
     invisible(capture.output(this.mx <- dismo::maxent(env, p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)))
-    invisible(capture.output(suitability <- predict(env, this.mx, type = "response")))
+    invisible(capture.output(suitability <- predict(env, this.mx, type = "response", ...)))
   }
 
   # Clamping and getting a diff layer
@@ -100,9 +100,9 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
     env <- clamp.env(this.df, env)
 
     if(verbose){
-      clamped.suitability <- predict(env, this.mx, type = "response")
+      clamped.suitability <- predict(env, this.mx, type = "response", ...)
     } else {
-      invisible(capture.output(clamped.suitability <- predict(env, this.mx, type = "response")))
+      invisible(capture.output(clamped.suitability <- predict(env, this.mx, type = "response", ...)))
     }
 
     clamping.strength <- clamped.suitability - suitability
@@ -448,7 +448,7 @@ plot.enmtools.maxent <- function(x, ...){
 predict.enmtools.maxent <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
 
   # Make a plot of habitat suitability in the new region
-  suitability <- invisible(capture.output(raster::predict(env, object$model)))
+  suitability <- invisible(capture.output(raster::predict(env, object$model, ...)))
 
   # I'm actually not sure this is doing anything - I think maxent models are clamped by default
   if(clamp == TRUE){
@@ -456,7 +456,7 @@ predict.enmtools.maxent <- function(object, env, maxpts = 1000, clamp = TRUE, ..
     this.df <- as.data.frame(rbind(object$model@presence, object$model@absence))
 
     env <- clamp.env(this.df, env)
-    clamped.suitability <- invisible(capture.output(raster::predict(env, object$model)))
+    clamped.suitability <- invisible(capture.output(raster::predict(env, object$model, ...)))
     clamping.strength <- clamped.suitability - suitability
     suitability <- clamped.suitability
   }
