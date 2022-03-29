@@ -90,10 +90,10 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
   continuous.boyce <- NA
   if("presence" %in% colnames(model$analysis.df)){
     continuous.boyce <- ecospat::ecospat.boyce(model$suitability,
-                                      model$test.data, PEplot = FALSE)
+                                               model$test.data, PEplot = FALSE)
   } else {
     continuous.boyce <- ecospat::ecospat.boyce(model$suitability,
-                                      model$test.data, PEplot = FALSE)
+                                               model$test.data, PEplot = FALSE)
   }
 
   # Recalibrating as needed
@@ -197,10 +197,10 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
       recalibrated.metrics[[i]][["continuous.boyce"]] <- NA
       if("presence" %in% colnames(model$analysis.df)){
         recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat::ecospat.boyce(calibrated.suitabilities[[i]],
-                                          model$test.data, PEplot = FALSE)
+                                                                                   model$test.data, PEplot = FALSE)
       } else {
         recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat::ecospat.boyce(calibrated.suitabilities[[i]],
-                                          model$test.data, PEplot = FALSE)
+                                                                                   model$test.data, PEplot = FALSE)
       }
 
     }
@@ -228,10 +228,10 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
       recalibrated.metrics[[i]][["continuous.boyce"]] <- NA
       if("presence" %in% colnames(model$analysis.df)){
         recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat::ecospat.boyce(calibrated.suitabilities[[i]],
-                                                                          model$test.data, PEplot = FALSE)
+                                                                                   model$test.data, PEplot = FALSE)
       } else {
         recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat::ecospat.boyce(calibrated.suitabilities[[i]],
-                                                                          model$test.data, PEplot = FALSE)
+                                                                                   model$test.data, PEplot = FALSE)
       }
     }
   }
@@ -344,7 +344,7 @@ summary.enmtools.calibrate <- function(object, ...){
                          MCE = object$MCE,
                          ECE.equal.width = object$ECE.equal.width,
                          MCE.equal.width = object$MCE.equal.width,
-                         boyce.index = object$continuous.boyce$Spearman.cor)
+                         boyce.index = object$continuous.boyce$cor)
   print(knitr::kable(stats.df))
 
   print(object$hoslem)
@@ -355,7 +355,7 @@ summary.enmtools.calibrate <- function(object, ...){
                              MCE = unlist(lapply(object$recalibrated.metrics, function(x) x$MCE)),
                              ECE.equal.width = unlist(lapply(object$recalibrated.metrics, function(x) x$ECE.equal.width)),
                              MCE.equal.width = unlist(lapply(object$recalibrated.metrics, function(x) x$MCE.equal.width)),
-                             boyce.index = unlist(lapply(object$recalibrated.metrics, function(x) x$continuous.boyce$Spearman.cor)))
+                             boyce.index = unlist(lapply(object$recalibrated.metrics, function(x) x$continuous.boyce$cor)))
     print(knitr::kable(metrics.df))
 
 
@@ -383,7 +383,7 @@ plot.enmtools.calibrate <- function(x, ...){
                                        x$recalibrated.metrics[[modname]]$MCE,
                                        x$recalibrated.metrics[[modname]]$ECE.equal.width,
                                        x$recalibrated.metrics[[modname]]$MCE.equal.width,
-                                       x$recalibrated.metrics[[modname]]$continuous.boyce$Spearman.cor))
+                                       x$recalibrated.metrics[[modname]]$continuous.boyce$cor))
 
       # Format data table to make it pretty
       stats.df <- ggpubr::ggtexttable(stats.df, rows = NULL)
@@ -411,7 +411,7 @@ plot.enmtools.calibrate <- function(x, ...){
 
     # Pack up summary stats
     stats.df <- data.frame(Metric = c("ECE", "MCE", "ECE.equal.width", "MCE.equal.width", "boyce.index"),
-                           Value = c(x$ECE, x$MCE, x$ECE.equal.width, x$MCE.equal.width, x$continuous.boyce$Spearman.cor))
+                           Value = c(x$ECE, x$MCE, x$ECE.equal.width, x$MCE.equal.width, x$continuous.boyce$cor))
 
     # Format data table to make it pretty
     stats.df <- ggpubr::ggtexttable(stats.df, rows = NULL)

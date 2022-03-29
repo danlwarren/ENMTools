@@ -4,7 +4,14 @@
 \alias{enmtools.vip}
 \title{Takes an enmtools.model object, and performs variable importance analyses on it using methods from the vip package}
 \usage{
-enmtools.vip(model, metric = "auc", nsim = 10, method = "permute", ...)
+enmtools.vip(
+  model,
+  metric = "auc",
+  nsim = 10,
+  method = "permute",
+  verbose = FALSE,
+  ...
+)
 }
 \arguments{
 \item{model}{An enmtools.model object}
@@ -14,6 +21,8 @@ enmtools.vip(model, metric = "auc", nsim = 10, method = "permute", ...)
 \item{nsim}{The number of simulations to be run for method "permute"}
 
 \item{method}{A character string or vector containing any combination of "model", "permute", "shap", or "firm".  For details on what these mean, see the vip package help.}
+
+\item{verbose}{Controls printing of messages}
 
 \item{...}{Further arguments to be passed to vip's "vi" functions.}
 }
