@@ -19,5 +19,7 @@ trimdupes.by.raster <- function(points, mask){
 
   colnames(new.points) <- c("Longitude", "Latitude")
 
+  new.points <- as.data.frame(new.points)
+
   return(new.points)
 }
