@@ -27,7 +27,7 @@
 
 
 
-enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, ...){
+enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, step = FALSE, ...){
 
   notes <- NULL
 
@@ -101,6 +101,9 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
   }
 
   this.glm <- glm(f, analysis.df[,-c(1,2)], family="binomial", weights = weights, ...)
+  if(step == TRUE){
+    this.glm <- step(this.glm)
+  }
 
 
   if(as.integer(this.glm$aic) == 2 * length(this.glm$coefficients)){
@@ -218,6 +221,9 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
         rts.df <- rbind(rep.species$presence.points, rep.species$background.points)
         rts.df$presence <- c(rep(1, nrow(rep.species$presence.points)), rep(0, nrow(rep.species$background.points)))
         thisrep.glm <- glm(f, rts.df[,-c(1,2)], family="binomial", ...)
+        if(step == TRUE){
+          thisrep.glm <- step(thisrep.glm)
+        }
 
         thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points[,1:2], species$background.points[,1:2],
                                                    thisrep.glm, env)
