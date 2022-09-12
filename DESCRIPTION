@@ -19,7 +19,7 @@ License: GPL-2
 LazyData: TRUE
 RoxygenNote: 7.2.1
 Imports: rgeos, knitr, ggplot2, gridExtra, lhs, magrittr, ENMeval, sp,
-        spatstat.geom, spatstat.random, ggpubr, rgdal, forcats, MuMIn
+        spatstat.geom, spatstat.random, ggpubr, rgdal, forcats
 Depends: raster, dismo
 Suggests: testthat, hypervolume, leaflet, mgcv, ecospat (>= 3.2.1), randomForest,
         ranger, caret, CalibratR, ape, ResourceSelection, 
