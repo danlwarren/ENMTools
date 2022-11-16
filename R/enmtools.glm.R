@@ -28,7 +28,7 @@
 
 
 
-enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, step = FALSE, ...){
+enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, step = FALSE, factors = NA, ...){
 
   notes <- NULL
 
@@ -36,7 +36,18 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
 
   # Builds a default formula using all env
   if(is.null(f)){
-    f <- as.formula(paste("presence", paste(c(names(env)), collapse = " + "), sep = " ~ "))
+    if(is.na(factors)){
+      f <- as.formula(paste("presence", paste(c(names(env)), collapse = " + "), sep = " ~ "))
+    } else {
+      if(any(!factors %in% names(env))){
+        stop(paste("Factors", factors, "provided, but some names were not found in environmental rasters:", names(env)))
+      } else {
+        cont <- names(env)[!names(env) %in% factors]
+        fact <- paste0("as.factor(", factors, ")")
+        f <- as.formula(paste("presence", paste(c(cont, fact), collapse = " + "), sep = " ~ "))
+      }
+    }
+
     notes <- c(notes, "No formula was provided, so a GLM formula was built automatically.")
   }
 
