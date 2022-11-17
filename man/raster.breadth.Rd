@@ -16,7 +16,10 @@ results A vector containing the two metrics B1 and B2 for niche breadth.
 }
 \description{
 This function measures the spatial heterogeneity of the distribution of suitability
-scores from an ENM.  It returns Levins' two metrics of niche breadth.
+scores from an ENM.  It returns Levins' (1968) two metrics of niche breadth.
+}
+\details{
+Levins, R. 1968. Evolution in changing environments: some theoretical explorations. Princeton University Press.
 }
 \examples{
 data(iberolacerta)
