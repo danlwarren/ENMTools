@@ -59,7 +59,7 @@ enmtools.species <- function(range = NA, presence.points = NA, background.points
 summary.enmtools.species <- function(object, ...){
   stopifnot(inherits(object, "enmtools.species"))
 
-  if(class(object$range) == "RasterLayer"){
+  if(inherits(object$range,  "RasterLayer")){
     cat("\n\nRange raster: \n")
     print(object$range)
   } else {
@@ -86,7 +86,7 @@ summary.enmtools.species <- function(object, ...){
     }
   }
 
-  if(class(object$species.name) == "character"){
+  if(inherits(object$species.name, "character")){
     cat(paste("\n\nSpecies name: ", object$species.name))
   } else {
     cat("\n\nSpecies name not defined.")
@@ -100,7 +100,7 @@ summary.enmtools.species <- function(object, ...){
 plot.enmtools.species <- function(x, ...){
   stopifnot(inherits(x, "enmtools.species"))
 
-  if(class(x$range) == "RasterLayer"){
+  if(inherits(x$range, "RasterLayer")){
     raster::plot(x$range)
   }
 
@@ -112,7 +112,7 @@ plot.enmtools.species <- function(x, ...){
     points(x$presence.points[,1:2], pch = 16, col = "black")
   }
 
-  if(class(x$species.name) == "character"){
+  if(inherits(x$species.name, "character")){
     title(x$species.name)
   }
 

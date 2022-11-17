@@ -1,7 +1,7 @@
 ENMTools 1.x
 ============
 
-ENMTools 1.0.6
+ENMTools 1.0.7
 --------------
 
 ### Bug Fixes
