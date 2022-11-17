@@ -59,6 +59,9 @@ background.buffer <- function(points, buffer.width, buffer.type = "circles", mas
     colnames(xy)[1:2] <- c(colnames(points))
 
     # If we didn't get as many points as we wanted
+    if(nrow(xy) < 1){
+      stop("No points produced.  Check to make sure mask and points overlap!")
+    }
     if(nrow(xy) < n){
       xy <- xy[sample(1:nrow(xy), n, replace = TRUE),]
     }

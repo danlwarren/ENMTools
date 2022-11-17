@@ -1,6 +1,13 @@
 ENMTools 1.x
 ============
 
+ENMTools 1.0.6
+--------------
+
+### Bug Fixes
+
+-   Fixed issues with background buffer when mask and points didn't overlap
+-   Added citation for breadth measurements
 
 ENMTools 1.0.5
 --------------
