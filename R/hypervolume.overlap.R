@@ -9,7 +9,7 @@
 #' @return A list containing a set of hypervolume objects and the overlap that was measured between them.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' install.extras(repos='http://cran.us.r-project.org')
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
