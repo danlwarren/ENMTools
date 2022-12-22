@@ -22,6 +22,7 @@ enmtools.glm(
   corner = NA,
   bias = NA,
   step = FALSE,
+  factors = NA,
   ...
 )
 }
