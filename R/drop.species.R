@@ -6,7 +6,7 @@
 #' @return An enmtools.clade object with the provided species dropped both from the tree and from the set of enmtools.species objects.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' data(iberolacerta.clade)
 #' if(requireNamespace("ape", quietly = TRUE)) {
 #'     new.clade <- drop.species(iberolacerta.clade, c("cyreni", "monticola"))

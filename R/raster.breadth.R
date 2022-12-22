@@ -1,7 +1,9 @@
 #' raster.breadth, applies measures of niche breadth to an ENM
 #'
 #' This function measures the spatial heterogeneity of the distribution of suitability
-#' scores from an ENM.  It returns Levins' two metrics of niche breadth.
+#' scores from an ENM.  It returns Levins' (1968) two metrics of niche breadth.
+#'
+#' Levins, R. 1968. Evolution in changing environments: some theoretical explorations. Princeton University Press.
 #'
 #' @param x An object of class raster or RasterLayer, or an ENMTools model object containing a suitability raster.
 #' @param verbose Controls printing of diagnostic messages

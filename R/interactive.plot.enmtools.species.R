@@ -28,7 +28,7 @@ interactive.plot.enmtools.species <- function(x, map.provider = "Esri.WorldPhysi
   labels <- NULL
   colors <- NULL
 
-  if(class(x$range) == "RasterLayer"){
+  if(inherits(x$range, "RasterLayer")){
     m <- m %>%
       leaflet::addRasterImage(x$range, function(y) ifelse(is.na(y), "#00000000", "#00000090"),
                      group = "Range", maxBytes = max.bytes)
