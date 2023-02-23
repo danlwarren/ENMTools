@@ -17,6 +17,7 @@
 #' @param corner An integer from 1 to 4.  Selects which corner to use for "block" test data.  By default the corner is selected randomly.
 #' @param bias An optional raster estimating relative sampling effort per grid cell.  Will be used for drawing background data.
 #' @param step Logical determining whether to do stepwise model selection or not
+#' @param factors Character vector specifying which predictors are categorical
 #' @param ... Arguments to be passed to glm()
 #'
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
@@ -261,12 +262,20 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
 
           rts.geog.test[i] <- thisrep.test.evaluation@auc
           rts.env.test[i] <- thisrep.env.test.evaluation@auc
+
+          rts.models[[paste0("rep.",i)]] <- list(model = thisrep.glm,
+                                                 training.evaluation = thisrep.model.evaluation,
+                                                 env.training.evaluation = thisrep.env.model.evaluation,
+                                                 test.evaluation = thisrep.test.evaluation,
+                                                 env.test.evaluation = thisrep.env.test.evaluation)
+        } else {
+          rts.models[[paste0("rep.",i)]] <- list(model = thisrep.glm,
+                                                 training.evaluation = thisrep.model.evaluation,
+                                                 env.training.evaluation = thisrep.env.model.evaluation,
+                                                 test.evaluation = NA,
+                                                 env.test.evaluation = NA)
         }
-        rts.models[[paste0("rep.",i)]] <- list(model = thisrep.glm,
-                                               training.evaluation = thisrep.model.evaluation,
-                                               env.training.evaluation = thisrep.env.model.evaluation,
-                                               test.evaluation = thisrep.test.evaluation,
-                                               env.test.evaluation = thisrep.env.test.evaluation)
+
       }
 
       # Reps are all run now, time to package it all up

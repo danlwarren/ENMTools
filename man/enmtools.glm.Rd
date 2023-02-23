@@ -61,6 +61,8 @@ enmtools.glm(
 
 \item{step}{Logical determining whether to do stepwise model selection or not}
 
+\item{factors}{Character vector specifying which predictors are categorical}
+
 \item{...}{Arguments to be passed to glm()}
 }
 \value{

@@ -23,7 +23,7 @@ combine.species <- function(species.list){
       combined$background.points <- rbind(combined$background.points, species.list[[i]][["background.points"]])
     }
 
-    if(is.na(combined$range) | is.na(species.list[[i]]$range)){
+    if(!inherits(combined$range, "Raster") | !inherits(species.list[[i]]$range, "Raster")){
       combined$range <- NA
     } else if(inherits(combined$range, "RasterLayer") & inherits(species.list[[i]]$range, "RasterLayer")){
       combined$range <-  raster::merge(combined$range, species.list[[i]][["range"]])
