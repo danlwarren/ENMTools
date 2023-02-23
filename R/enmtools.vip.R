@@ -33,6 +33,8 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
   if(inherits(model, "enmtools.glm")){
     thismodel <- model$model
     feature_names <- labels(terms(thismodel))
+    feature_names <- gsub("poly\\(", "", feature_names)
+    feature_names <- gsub(",.*", "", feature_names)
     train <- model$analysis.df[,-c(1,2)]
     target <- "presence"
     pred_wrapper <- predict

@@ -2,7 +2,7 @@
 % Please edit documentation in R/geog.range.overlap.R
 \name{geog.range.overlap}
 \alias{geog.range.overlap}
-\title{Takes two emtools.species objects with range rasters, calculates overlap between them as in Fitzpatrick and Turelli 2006}
+\title{Takes two emtools.species objects with range rasters, calculates overlap between them as in Fitzpatrick and Turelli 2006.  This metric divides the area of overlap between two species ranges by the smaller of the two areas of the species' individual ranges.  It therefore ranges from 0 (no overlap) to 1 (ranges are the same or the smaller species' range is contained entirely within the larger).}
 \usage{
 geog.range.overlap(x, y)
 }
@@ -15,7 +15,7 @@ geog.range.overlap(x, y)
 A numeric value measuring range overlap.
 }
 \description{
-Takes two emtools.species objects with range rasters, calculates overlap between them as in Fitzpatrick and Turelli 2006
+Takes two emtools.species objects with range rasters, calculates overlap between them as in Fitzpatrick and Turelli 2006.  This metric divides the area of overlap between two species ranges by the smaller of the two areas of the species' individual ranges.  It therefore ranges from 0 (no overlap) to 1 (ranges are the same or the smaller species' range is contained entirely within the larger).
 }
 \examples{
 data(iberolacerta.clade)

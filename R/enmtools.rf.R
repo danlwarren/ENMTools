@@ -217,12 +217,19 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
 
           rts.geog.test[i] <- thisrep.test.evaluation@auc
           rts.env.test[i] <- thisrep.env.test.evaluation@auc
+
+          rts.models[[paste0("rep.",i)]] <- list(model = thisrep.rf,
+                                                 training.evaluation = thisrep.model.evaluation,
+                                                 env.training.evaluation = thisrep.env.model.evaluation,
+                                                 test.evaluation = thisrep.test.evaluation,
+                                                 env.test.evaluation = thisrep.env.test.evaluation)
+        } else {
+          rts.models[[paste0("rep.",i)]] <- list(model = thisrep.rf,
+                                                 training.evaluation = thisrep.model.evaluation,
+                                                 env.training.evaluation = thisrep.env.model.evaluation,
+                                                 test.evaluation = NA,
+                                                 env.test.evaluation = NA)
         }
-        rts.models[[paste0("rep.",i)]] <- list(model = thisrep.rf,
-                                               training.evaluation = thisrep.model.evaluation,
-                                               env.training.evaluation = thisrep.env.model.evaluation,
-                                               test.evaluation = thisrep.test.evaluation,
-                                               env.test.evaluation = thisrep.env.test.evaluation)
       }
 
       # Reps are all run now, time to package it all up

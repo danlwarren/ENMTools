@@ -16,6 +16,8 @@
 #' @param clamp When set to TRUE, clamps the environmental layers so that predictions made outside the min/max of the training data for each predictor are set to the value for the min/max for that predictor. Prevents the model from extrapolating beyond the min/max bounds of the predictor space the model was trained in, although there could still be projections outside the multivariate training space if predictors are strongly correlated.
 #' @param corner An integer from 1 to 4.  Selects which corner to use for "block" test data.  By default the corner is selected randomly.
 #' @param bias An optional raster estimating relative sampling effort per grid cell.  Will be used for drawing background data.
+#' @param step Logical determining whether to do stepwise model selection or not
+#' @param factors Character vector specifying which predictors are categorical
 #' @param ... Arguments to be passed to glm()
 #'
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
@@ -27,7 +29,7 @@
 
 
 
-enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, ...){
+enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, step = FALSE, factors = NA, ...){
 
   notes <- NULL
 
@@ -35,7 +37,18 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
 
   # Builds a default formula using all env
   if(is.null(f)){
-    f <- as.formula(paste("presence", paste(c(names(env)), collapse = " + "), sep = " ~ "))
+    if(is.na(factors)){
+      f <- as.formula(paste("presence", paste(c(names(env)), collapse = " + "), sep = " ~ "))
+    } else {
+      if(any(!factors %in% names(env))){
+        stop(paste("Factors", factors, "provided, but some names were not found in environmental rasters:", names(env)))
+      } else {
+        cont <- names(env)[!names(env) %in% factors]
+        fact <- paste0("as.factor(", factors, ")")
+        f <- as.formula(paste("presence", paste(c(cont, fact), collapse = " + "), sep = " ~ "))
+      }
+    }
+
     notes <- c(notes, "No formula was provided, so a GLM formula was built automatically.")
   }
 
@@ -100,7 +113,14 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
     weights <- rep(1, nrow(species$presence.points) + nrow(species$background.points))
   }
 
-  this.glm <- glm(f, analysis.df[,-c(1,2)], family="binomial", weights = weights, ...)
+  this.glm <- glm(f, analysis.df[,-c(1,2)], family="binomial", weights = weights)
+  if(step == TRUE){
+    if(verbose == TRUE){
+      this.glm <- step(this.glm)
+    } else {
+      invisible(capture.output(this.glm <- step(this.glm)))
+    }
+  }
 
 
   if(as.integer(this.glm$aic) == 2 * length(this.glm$coefficients)){
@@ -218,6 +238,13 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
         rts.df <- rbind(rep.species$presence.points, rep.species$background.points)
         rts.df$presence <- c(rep(1, nrow(rep.species$presence.points)), rep(0, nrow(rep.species$background.points)))
         thisrep.glm <- glm(f, rts.df[,-c(1,2)], family="binomial", ...)
+        if(step == TRUE){
+          if(verbose == TRUE){
+            this.glm <- step(this.glm)
+          } else {
+            invisible(capture.output(this.glm <- step(this.glm)))
+          }
+        }
 
         thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points[,1:2], species$background.points[,1:2],
                                                    thisrep.glm, env)
@@ -235,12 +262,20 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
 
           rts.geog.test[i] <- thisrep.test.evaluation@auc
           rts.env.test[i] <- thisrep.env.test.evaluation@auc
+
+          rts.models[[paste0("rep.",i)]] <- list(model = thisrep.glm,
+                                                 training.evaluation = thisrep.model.evaluation,
+                                                 env.training.evaluation = thisrep.env.model.evaluation,
+                                                 test.evaluation = thisrep.test.evaluation,
+                                                 env.test.evaluation = thisrep.env.test.evaluation)
+        } else {
+          rts.models[[paste0("rep.",i)]] <- list(model = thisrep.glm,
+                                                 training.evaluation = thisrep.model.evaluation,
+                                                 env.training.evaluation = thisrep.env.model.evaluation,
+                                                 test.evaluation = NA,
+                                                 env.test.evaluation = NA)
         }
-        rts.models[[paste0("rep.",i)]] <- list(model = thisrep.glm,
-                                               training.evaluation = thisrep.model.evaluation,
-                                               env.training.evaluation = thisrep.env.model.evaluation,
-                                               test.evaluation = thisrep.test.evaluation,
-                                               env.test.evaluation = thisrep.env.test.evaluation)
+
       }
 
       # Reps are all run now, time to package it all up

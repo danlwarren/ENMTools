@@ -21,6 +21,8 @@ enmtools.glm(
   clamp = TRUE,
   corner = NA,
   bias = NA,
+  step = FALSE,
+  factors = NA,
   ...
 )
 }
@@ -56,6 +58,10 @@ enmtools.glm(
 \item{corner}{An integer from 1 to 4.  Selects which corner to use for "block" test data.  By default the corner is selected randomly.}
 
 \item{bias}{An optional raster estimating relative sampling effort per grid cell.  Will be used for drawing background data.}
+
+\item{step}{Logical determining whether to do stepwise model selection or not}
+
+\item{factors}{Character vector specifying which predictors are categorical}
 
 \item{...}{Arguments to be passed to glm()}
 }
