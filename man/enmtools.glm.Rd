@@ -22,7 +22,6 @@ enmtools.glm(
   corner = NA,
   bias = NA,
   step = FALSE,
-  factors = NA,
   ...
 )
 }
@@ -60,8 +59,6 @@ enmtools.glm(
 \item{bias}{An optional raster estimating relative sampling effort per grid cell.  Will be used for drawing background data.}
 
 \item{step}{Logical determining whether to do stepwise model selection or not}
-
-\item{factors}{Character vector specifying which predictors are categorical}
 
 \item{...}{Arguments to be passed to glm()}
 }
