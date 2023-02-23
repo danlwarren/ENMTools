@@ -27,7 +27,7 @@ background.buffer <- function(points, buffer.width, buffer.type = "circles", mas
   if(buffer.type == "convhull"){
     x <- dismo::convHull(points)
     pol <- rgeos::gUnaryUnion(x@polygons)
-    pol <- raster::buffer(pol, width = buffer.width)
+    pol <- terra::buffer(pol, width = buffer.width)
   }
 
   # if return.type = shape, just return from here

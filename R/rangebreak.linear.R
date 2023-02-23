@@ -363,7 +363,7 @@ plot.enmtools.rangebreak.linear <- function(x, ...){
   x.raster <- x$empirical.species.1.model$suitability
   x.raster[!is.na(x.raster)] <- 1
   #print(x.raster)
-  raster::plot(x.raster)
+  terra::plot(x.raster)
   for(i in 1:nrow(x$lines.df)){
     abline(x$lines.df[i,2], x$lines.df[i,1])
   }

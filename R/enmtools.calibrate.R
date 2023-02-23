@@ -106,7 +106,7 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
 
   if(recalibrate == TRUE){
     recalibrated.model <- CalibratR::calibrate(this.pa, pred.df$prob, evaluate_no_CV_error = FALSE, ...)
-    preds <- raster::rasterToPoints(model$suitability)
+    preds <- as.matrix(terra::as.data.frame(model$suitability, xy = TRUE))
     cal.preds <- CalibratR::predict_calibratR(recalibrated.model$calibration_models, preds[,"layer"])
 
     # The Phillips and Elith recalibration should be done here for presence only models
@@ -130,7 +130,7 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
     if(inherits(env, c("raster", "RasterBrick", "RasterStack"))){
 
       allpoints <- rbind(model$analysis.df[,1:2], model$test.data)
-      values <- raster::extract(env, allpoints)
+      values <- terra::extract(env, allpoints)
       maxes <- apply(values, 2, function(x) max(x, na.rm = TRUE))
       mins <- apply(values, 2, function(x) min(x, na.rm = TRUE))
 
@@ -138,8 +138,8 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
       bg.table <- t(t(this.lhs) * (maxes  - mins) + mins)
       colnames(bg.table) <- names(env)
 
-      p.table <- raster::extract(env, model$analysis.df[model$analysis.df$presence == 1,1:2])
-      test.table <- raster::extract(env, model$test.data)
+      p.table <- terra::extract(env, model$analysis.df[model$analysis.df$presence == 1,1:2])
+      test.table <- terra::extract(env, model$test.data)
 
       # Having to do this for now because the dismo models don't like "newdata"
       # Unfortunately I think we finally have to use an if statement because ranger predict is really different

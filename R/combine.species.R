@@ -26,7 +26,7 @@ combine.species <- function(species.list){
     if(!inherits(combined$range, "Raster") | !inherits(species.list[[i]]$range, "Raster")){
       combined$range <- NA
     } else if(inherits(combined$range, "RasterLayer") & inherits(species.list[[i]]$range, "RasterLayer")){
-      combined$range <-  raster::merge(combined$range, species.list[[i]][["range"]])
+      combined$range <-  terra::merge(combined$range, species.list[[i]][["range"]])
     } else if(is.data.frame(combined$range) & is.data.frame(species.list[[i]]$range)){
       combined$range <- species.list[[i]]$range
     } else {

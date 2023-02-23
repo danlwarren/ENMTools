@@ -73,7 +73,7 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
       stop("bg.source set to range, but species does not have a recognizable range raster!")
     }
 
-    if(!raster::compareCRS(crs(env), crs(species$range))){
+    if(!terra::compareGeom(env, species$range)){
       stop("CRS mismatch between species range raster and environmental rasters!")
     }
 
@@ -86,16 +86,16 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
     } else {
       # There is a bias layer
       if(!inherits(bias, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
-        stop("Bias layer was provided, but it is not a raster!")
+        stop("Bias layer was provided, but it is not a raster, ext = FALSE, rowcol = FALSE!")
       }
 
-      if(!raster::compareCRS(bias, crs(species$range))){
+      if(!terra::compareGeom(bias, species$range, ext = FALSE, rowcol = FALSE)){
         stop("CRS mismatch between species range raster and bias raster!")
       }
 
       # Creating a raster that intersects the species range and the bias layer
       # using the fact that sum will return NA if either layer is NA
-      sample.raster = raster::mask(bias, bias + species$range)
+      sample.raster = terra::mask(bias, bias + species$range)
 
       # Drawing background points from sample raster
       species$background.points <- as.data.frame(rasterToPoints(sample.raster))
@@ -127,13 +127,13 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
         stop("Bias layer was provided, but it is not a raster!")
       }
 
-      if(!raster::compareCRS(bias, crs(env))){
+      if(!terra::compareGeom(bias, env, ext = FALSE, rowcol = FALSE)){
         stop("CRS mismatch between species range raster and bias raster!")
       }
 
       # Creating a raster that intersects the species range and the bias layer
       # using the fact that sum will return NA if either layer is NA
-      sample.raster = raster::mask(bias, bias + env)
+      sample.raster = terra::mask(bias, bias + env)
 
       # Drawing background points from sample raster
       species$background.points <- as.data.frame(rasterToPoints(sample.raster))

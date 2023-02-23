@@ -19,7 +19,7 @@ check.env <- function(env, verbose = FALSE){
   }
 
   # Checking to make sure all rasters in the stack have the same extent.
-  # Actually raster::stack shouldn't allow that to be false but it doesn't hurt to double check.
+  # Actually terra::rast shouldn't allow that to be false but it doesn't hurt to double check.
   if(verbose == TRUE){
     cat("Checking to make sure rasters have the same extent... \n")
   }
@@ -60,7 +60,7 @@ check.env <- function(env, verbose = FALSE){
   }
 
   # Here we're just exploiting the fact that sum will by default return NA when any layer has an NA
-  env = raster::mask(env, sum(env))
+  env = terra::mask(env, sum(env))
 
   # Return the formatted raster stack
   return(env)
