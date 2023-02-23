@@ -25,16 +25,10 @@
 #' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni
 #' aranica <- iberolacerta.clade$species$aranica
-#' if(requireNamespace("fields", quietly = TRUE)) {
-#'     rangebreak.blob(cyreni, aranica, env = euro.worldclim, type = "glm",
-#' f= pres ~ bio1 + bio12, nreps = 10)
-#' }
 #' }
 
 
 rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 99, nback = 1000, bg.source = "default", low.memory = FALSE, rep.dir = NA, verbose = FALSE, clamp = TRUE, ...){
-
-  check.packages("fields")
 
   # Just for visualization
   plotraster <- env[[1]]
@@ -137,10 +131,13 @@ rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 9
     rep.species.1 <- species.1
     rep.species.2 <- species.2
 
-    start.point <- combined.presence.points[runif(1, 1, nrow(combined.presence.points)),]
+    start.point <- terra::vect(as.matrix(combined.presence.points[runif(1, 1, nrow(combined.presence.points)),]),
+                               crs="+proj=longlat +datum=WGS84")
 
     # Get Euclidean distance from part.points
-    part.points <- cbind(combined.presence.points, as.vector(fields::rdist(start.point, combined.presence.points)))
+    euc.distance <-  as.vector(terra::distance(start.point,
+                                            terra::vect(as.matrix(combined.presence.points), crs="+proj=longlat +datum=WGS84")))
+    part.points <- cbind(combined.presence.points, euc.distance)
 
     # Flip a coin to decide whether we're going from top to bottom or other way around
     if(rbinom(1,1,0.5) == 0){

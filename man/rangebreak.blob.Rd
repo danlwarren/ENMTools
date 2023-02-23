@@ -59,10 +59,6 @@ data(iberolacerta.clade)
 data(euro.worldclim)
 cyreni <- iberolacerta.clade$species$cyreni
 aranica <- iberolacerta.clade$species$aranica
-if(requireNamespace("fields", quietly = TRUE)) {
-    rangebreak.blob(cyreni, aranica, env = euro.worldclim, type = "glm",
-f= pres ~ bio1 + bio12, nreps = 10)
-}
 }
 }
 \keyword{barrier}

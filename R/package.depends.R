@@ -28,7 +28,6 @@ install.extras <- function(...) {
                 "CalibratR",
                 "caret",
                 "ResourceSelection",
-                "fields",
                 "rJava",
                 "vip",
                 "pdp",
