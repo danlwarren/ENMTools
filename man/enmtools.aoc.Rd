@@ -13,7 +13,8 @@ enmtools.aoc(
   nreps = 100,
   f = NULL,
   overlap.matrix = NULL,
-  metric = "D"
+  metric = "D",
+  ...
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ enmtools.aoc(
 
 \item{metric}{The overlap metric to use. For ENM sources, this can be any combination of "D", "I", "cor", "env.D", "env.I", and "env.cor".
 for range and point overlap this argument is ignored.}
+
+\item{...}{Arguments to be passed to modeling functions for ENM-based overlaps.}
 }
 \value{
 A list containing a data frame of coefficients from the empirical regression of overlap on time along with the coefficients from all Monte Carlo replicates, along with plots and p values for the accompanying statistical tests.

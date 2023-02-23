@@ -10,10 +10,11 @@
 #' @param overlap.matrix A matrix of overlaps to use, for option overlap.source = "matrix"
 #' @param metric The overlap metric to use. For ENM sources, this can be any combination of "D", "I", "cor", "env.D", "env.I", and "env.cor".
 #' for range and point overlap this argument is ignored.
+#' @param ... Arguments to be passed to modeling functions for ENM-based overlaps.
 #'
 #' @return A list containing a data frame of coefficients from the empirical regression of overlap on time along with the coefficients from all Monte Carlo replicates, along with plots and p values for the accompanying statistical tests.
 
-enmtools.aoc <- function(clade, env = NULL,  overlap.source, nreps = 100, f = NULL, overlap.matrix = NULL, metric = "D"){
+enmtools.aoc <- function(clade, env = NULL,  overlap.source, nreps = 100, f = NULL, overlap.matrix = NULL, metric = "D", ...){
 
   description <- "Age-Overlap Correlation from Monte Carlo Test"
 
@@ -26,27 +27,27 @@ enmtools.aoc <- function(clade, env = NULL,  overlap.source, nreps = 100, f = NU
 
   # Bioclim models
   if(overlap.source == "bc"){
-    empirical.models <- lapply(clade$species, function(x) enmtools.bc(x, env = env))
+    empirical.models <- lapply(clade$species, function(x) enmtools.bc(x, env = env, ...))
   }
 
   # Domain models
   if(overlap.source == "dm"){
-    empirical.models <- lapply(clade$species, function(x) enmtools.dm(x, env = env))
+    empirical.models <- lapply(clade$species, function(x) enmtools.dm(x, env = env, ...))
   }
 
   # GAM models
   if(overlap.source == "gam"){
-    empirical.models <- lapply(clade$species, function(x) enmtools.gam(x, env = env, f = f))
+    empirical.models <- lapply(clade$species, function(x) enmtools.gam(x, env = env, f = f, ...))
   }
 
   # GLM models
   if(overlap.source == "glm"){
-    empirical.models <- lapply(clade$species, function(x) enmtools.glm(x, env = env, f = f))
+    empirical.models <- lapply(clade$species, function(x) enmtools.glm(x, env = env, f = f, ...))
   }
 
   # Maxent models
   if(overlap.source == "mx"){
-    empirical.models <- lapply(clade$species, function(x) enmtools.maxent(x, env = env))
+    empirical.models <- lapply(clade$species, function(x) enmtools.maxent(x, env = env), ...)
   }
 
   if(is.na(match(overlap.source, c("range", "points", "matrix")))){

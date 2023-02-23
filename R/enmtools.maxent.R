@@ -240,27 +240,27 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
       rts.env.training[i] <- thisrep.env.model.evaluation@auc
 
       if(test.prop > 0 & test.prop < 1){
+        thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points[,1:2],
+                                                  thisrep.mx, env)
         temp.sp <- rep.species
         temp.sp$presence.points <- rep.test.data
-
-        if(verbose){
-          thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points[,1:2],
-                                                    thisrep.mx, env)
-          thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.mx, env, n.background = env.nback)
-        } else {
-          invisible(capture.output(thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points[,1:2],
-                                                    thisrep.mx, env)))
-          invisible(capture.output(thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.mx, env, n.background = env.nback)))
-        }
+        thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.mx, env, n.background = env.nback)
 
         rts.geog.test[i] <- thisrep.test.evaluation@auc
         rts.env.test[i] <- thisrep.env.test.evaluation@auc
+
+        rts.models[[paste0("rep.",i)]] <- list(model = thisrep.mx,
+                                               training.evaluation = thisrep.model.evaluation,
+                                               env.training.evaluation = thisrep.env.model.evaluation,
+                                               test.evaluation = thisrep.test.evaluation,
+                                               env.test.evaluation = thisrep.env.test.evaluation)
+      } else {
+        rts.models[[paste0("rep.",i)]] <- list(model = thisrep.mx,
+                                               training.evaluation = thisrep.model.evaluation,
+                                               env.training.evaluation = thisrep.env.model.evaluation,
+                                               test.evaluation = NA,
+                                               env.test.evaluation = NA)
       }
-      rts.models[[paste0("rep.",i)]] <- list(model = thisrep.mx,
-                                             training.evaluation = thisrep.model.evaluation,
-                                             env.training.evaluation = thisrep.env.model.evaluation,
-                                             test.evaluation = thisrep.test.evaluation,
-                                             env.test.evaluation = thisrep.env.test.evaluation)
     }
 
     # Reps are all run now, time to package it all up

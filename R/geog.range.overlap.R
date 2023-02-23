@@ -1,4 +1,4 @@
-#' Takes two emtools.species objects with range rasters, calculates overlap between them as in Fitzpatrick and Turelli 2006
+#' Takes two emtools.species objects with range rasters, calculates overlap between them as in Fitzpatrick and Turelli 2006.  This metric divides the area of overlap between two species ranges by the smaller of the two areas of the species' individual ranges.  It therefore ranges from 0 (no overlap) to 1 (ranges are the same or the smaller species' range is contained entirely within the larger).
 #'
 #' @param x An enmtools.species object containing a range raster
 #' @param y An enmtools.species object containing a range raster
