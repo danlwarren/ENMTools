@@ -4,10 +4,14 @@
 \alias{check.species}
 \title{Checking compliance for an object of class enmtools.species.}
 \usage{
-check.species(this.species)
+check.species(this.species, env = NA, trim.dupes = FALSE)
 }
 \arguments{
 \item{this.species}{An enmtools.species object to be checked.}
+
+\item{env}{Environmental rasters that will be used for modeling.  If provided to check.species, ENMTools will remove occurrence points that have NA values for any layer in env.}
+
+\item{trim.dupes}{Controls whether to trim duplicate occurrence points from the presence data.  Defaults to FALSE, which leaves duplicates in place.  Alternatives are "exact", which will remove points with the same lat/long as another point, or "grid", which will trim data so that there is at most one point per grid cell for the rasters in env, and centers those points in the cells.}
 }
 \value{
 An enmtools.species object with appropriate formatting.

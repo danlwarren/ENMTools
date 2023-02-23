@@ -1,6 +1,8 @@
 #' Checking compliance for an object of class enmtools.species.
 #'
 #' @param this.species An enmtools.species object to be checked.
+#' @param env Environmental rasters that will be used for modeling.  If provided to check.species, ENMTools will remove occurrence points that have NA values for any layer in env.
+#' @param trim.dupes Controls whether to trim duplicate occurrence points from the presence data.  Defaults to FALSE, which leaves duplicates in place.  Alternatives are "exact", which will remove points with the same lat/long as another point, or "grid", which will trim data so that there is at most one point per grid cell for the rasters in env, and centers those points in the cells.
 #'
 #' @return An enmtools.species object with appropriate formatting.
 #'
@@ -9,7 +11,7 @@
 #' check.species(iberolacerta.clade$species$monticola)
 
 
-check.species <- function(this.species){
+check.species <- function(this.species, env = NA, trim.dupes = FALSE){
 
   # Checking classes of input args.  The isTRUE stuff is needed because R doesn't
   # know how to do is.na on raster data, so it was barfing and error when a raster
@@ -62,6 +64,26 @@ check.species <- function(this.species){
     if(!inherits(this.species$species.name, "character")){
       stop("Argument species.name requires an object of class character")
     }
+  }
+
+  # Extracts data from env at presence points, uses that to remove points that have NA in any layer
+  if(inherits(env, "SpatRaster")){
+    temp.df <- terra::extract(env, this.species$presence.points)
+    this.species$presence.points <- as.data.frame(this.species$presence.points[complete.cases(temp.df),])
+  }
+
+  # Removing duplicates
+  if(trim.dupes == "exact"){
+    this.species$presence.points <- unique(this.species$presence.points)
+  }
+
+  if(trim.dupes == "grid"){
+    if(inherits(env, "SpatRaster")){
+      this.species$presence.points <- trimdupes.by.raster(this.species$presence.points, env)
+    } else {
+      stop("Trim dupes by grid specified but env was either not supplied or was not a SpatRaster object!")
+    }
+
   }
 
   # Return the formatted species object
