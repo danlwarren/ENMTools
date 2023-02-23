@@ -17,7 +17,6 @@
 #' @param corner An integer from 1 to 4.  Selects which corner to use for "block" test data.  By default the corner is selected randomly.
 #' @param bias An optional raster estimating relative sampling effort per grid cell.  Will be used for drawing background data.
 #' @param step Logical determining whether to do stepwise model selection or not
-#' @param factors Character vector specifying which predictors are categorical
 #' @param ... Arguments to be passed to glm()
 #'
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
@@ -29,7 +28,7 @@
 
 
 
-enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, step = FALSE, factors = NA, ...){
+enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, step = FALSE, ...){
 
   notes <- NULL
 
@@ -37,18 +36,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
 
   # Builds a default formula using all env
   if(is.null(f)){
-    if(is.na(factors)){
-      f <- as.formula(paste("presence", paste(c(names(env)), collapse = " + "), sep = " ~ "))
-    } else {
-      if(any(!factors %in% names(env))){
-        stop(paste("Factors", factors, "provided, but some names were not found in environmental rasters:", names(env)))
-      } else {
-        cont <- names(env)[!names(env) %in% factors]
-        fact <- paste0("as.factor(", factors, ")")
-        f <- as.formula(paste("presence", paste(c(cont, fact), collapse = " + "), sep = " ~ "))
-      }
-    }
-
+    f <- as.formula(paste("presence", paste(c(names(env)), collapse = " + "), sep = " ~ "))
     notes <- c(notes, "No formula was provided, so a GLM formula was built automatically.")
   }
 
@@ -382,7 +370,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
       stop("Report file exists, and overwrite is set to FALSE!")
     } else {
       # message("\n\nGenerating html report...\n")
-message("This function not enabled yet.  Check back soon!")
+      message("This function not enabled yet.  Check back soon!")
       # makereport(output, outfile = report)
     }
   }
