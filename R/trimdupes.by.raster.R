@@ -13,9 +13,15 @@
 
 trimdupes.by.raster <- function(points, mask){
 
-  pa <- rasterize(points, mask, field=1)
+  if(inherits(mask, "Raster")){
+    mask <- terra::rast(mask)
+  }
 
-  new.points <- rasterToPoints(pa)[,1:2]
+  pa <- terra::rasterize(as.matrix(points), mask[[1]])
+
+  new.points <- terra::as.points(pa)
+
+  new.points <- terra::crds(new.points)
 
   colnames(new.points) <- c("Longitude", "Latitude")
 

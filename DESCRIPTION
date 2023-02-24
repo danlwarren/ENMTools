@@ -28,4 +28,4 @@ Imports:
 Depends: raster, dismo
 Suggests: testthat, hypervolume, leaflet, mgcv, ecospat (>= 3.2.1), randomForest,
         ranger, caret, CalibratR, ape, ResourceSelection, 
-        fields, reshape2, vip, pdp, fastshap, viridis, progress
+        reshape2, vip, pdp, fastshap, viridis, progress
