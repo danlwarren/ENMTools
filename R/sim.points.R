@@ -21,7 +21,7 @@ sim.points <- function(object, n.points = 1000, seed = NA, sample.type = "ppp", 
 
   ## check if the model outputs predictions as probabilities (otherwise assume densities)
   suit <- object$suitability
-  # if(all(na.omit(values(suit)) < 1 | na.omit(values(suit)) > 0)) {
+  # if(all(na.omit(terra::values(suit)) < 1 | na.omit(values(suit)) > 0)) {
   #   probs <- TRUE
   # } else {
   #   probs <- FALSE
@@ -31,7 +31,7 @@ sim.points <- function(object, n.points = 1000, seed = NA, sample.type = "ppp", 
 
   if(sample.type == "ppp"){
     # Standardize suitability scores
-    total.dens <- sum(na.omit(values(suit)))
+    total.dens <- sum(na.omit(terra::values(suit)))
 
     suit <- suit * (n.points / total.dens) * (1 / prod(res(suit)))
     suit.im <- raster.as.im(suit)
@@ -59,9 +59,9 @@ sim.points <- function(object, n.points = 1000, seed = NA, sample.type = "ppp", 
 
   if(sample.type %in% c("binomial", "thresh.pa", "thresh.con")){
 
-    suit <- suit/max(getValues(suit), na.rm = TRUE)
+    suit <- suit/max(terra::values(suit), na.rm = TRUE)
     # Get lat, lon, and suitability
-    sample.df <- rasterToPoints(suit)
+    sample.df <- rasterToPoints2(suit)
 
     # Randomize order
     sample.df <- sample.df[sample(1:nrow(sample.df)),]

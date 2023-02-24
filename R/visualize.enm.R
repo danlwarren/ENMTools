@@ -42,10 +42,10 @@ visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plo
 
   # Setting it up so we can handle either a set of rasters or a list of minima and maxima
 
-  layer1.min <- min(getValues(env[[layers[1]]]), na.rm=TRUE)
-  layer2.min <- min(getValues(env[[layers[2]]]), na.rm=TRUE)
-  layer1.max <- max(getValues(env[[layers[1]]]), na.rm=TRUE)
-  layer2.max <- max(getValues(env[[layers[2]]]), na.rm=TRUE)
+  layer1.min <- min(terra::values(env[[layers[1]]]), na.rm=TRUE)
+  layer2.min <- min(terra::values(env[[layers[2]]]), na.rm=TRUE)
+  layer1.max <- max(terra::values(env[[layers[1]]]), na.rm=TRUE)
+  layer2.max <- max(terra::values(env[[layers[2]]]), na.rm=TRUE)
 
   # Allow a different set of minima and maxima from those set by env layers
   if(!all(is.na(minmax))){

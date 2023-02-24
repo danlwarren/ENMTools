@@ -79,7 +79,7 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
 
     if(with.bias == FALSE){
       # Drawing background points from range raster
-      species$background.points <- as.data.frame(rasterToPoints(species$range)[,1:2])
+      species$background.points <- as.data.frame(rasterToPoints2(species$range)[,1:2])
       inds <- sample(1:nrow(species$background.points), size = nback, replace = TRUE)
       species$background.points <- species$background.points[inds,]
 
@@ -98,7 +98,7 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
       sample.raster = terra::mask(bias, bias + species$range)
 
       # Drawing background points from sample raster
-      species$background.points <- as.data.frame(rasterToPoints(sample.raster))
+      species$background.points <- as.data.frame(rasterToPoints2(sample.raster))
       inds <- sample(1:nrow(species$background.points),
                      size = nback,
                      prob = species$background.points[,3],
@@ -117,7 +117,7 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
 
     if(with.bias == FALSE){
       # Drawing background points from range raster
-      species$background.points <- as.data.frame(rasterToPoints(env[[1]])[,1:2])
+      species$background.points <- as.data.frame(rasterToPoints2(env[[1]])[,1:2])
       inds <- sample(1:nrow(species$background.points), size = nback, replace = TRUE)
       species$background.points <- species$background.points[inds,]
 
@@ -136,7 +136,7 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
       sample.raster = terra::mask(bias, bias + env)
 
       # Drawing background points from sample raster
-      species$background.points <- as.data.frame(rasterToPoints(sample.raster))
+      species$background.points <- as.data.frame(rasterToPoints2(sample.raster))
       inds <- sample(1:nrow(species$background.points),
                      size = nback,
                      prob = species$background.points[,3],

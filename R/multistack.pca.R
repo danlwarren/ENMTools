@@ -46,7 +46,7 @@ multistack.pca <- function(..., n = 2){
   if(mismatch){stop("Layer mismatch!")}
 
   # Get all values
-  env.val <- lapply(stacks, function(x) getValues(x))
+  env.val <- lapply(stacks, function(x) terra::values(x))
 
   # Figure out which cells have complete cases and which have at least one NA
   keepers <- lapply(env.val, function(x) which(complete.cases(x)))

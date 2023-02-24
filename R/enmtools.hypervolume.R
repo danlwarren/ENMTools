@@ -76,7 +76,7 @@ print.enmtools.hypervolume <- function(x, ...){
 # Plot method for objects of class enmtools.hypervolume
 plot.enmtools.hypervolume <- function(x, ...){
 
-  suit.points <- data.frame(rasterToPoints(x$suitability))
+  suit.points <- data.frame(rasterToPoints2(x$suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
   suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
@@ -107,7 +107,7 @@ predict.enmtools.hypervolume <- function(object, env, reduction.factor = 0.1){
 
   # Make a plot of habitat suitability in the new region
   suitability <- hypervolume::hypervolume_project(object$hv, env, reduction.factor = reduction.factor)
-  suit.points <- data.frame(rasterToPoints(suitability))
+  suit.points <- data.frame(rasterToPoints2(suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
   suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +

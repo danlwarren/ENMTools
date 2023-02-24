@@ -13,7 +13,7 @@
 raster.pca <- function(env, n){
 
   # Get all values
-  env.val <- getValues(env)
+  env.val <- terra::values(env)
 
   # Figure out which cells have complete cases and which have at least one NA
   keepers <- which(complete.cases(env.val))

@@ -27,8 +27,8 @@ raster.resid <- function(x, y){
 
   resid.raster <- y
 
-  x <- getValues(x)
-  y <- getValues(y)
+  x <- terra::values(x)
+  y <- terra::values(y)
   this.lm <- lm(x ~ y)
   resids <- this.lm$residuals/this.lm$fitted.values
 

@@ -43,7 +43,7 @@ background.buffer <- function(points, buffer.width, buffer.type = "circles", mas
     mask <- mask[[1]]
   }
 
-  buffer.raster <- mask(mask, pol)
+  buffer.raster <- terra::mask(mask, pol)
 
   # if return.type = "raster", just return from here
   if(return.type == "raster"){
@@ -53,7 +53,7 @@ background.buffer <- function(points, buffer.width, buffer.type = "circles", mas
 
   # sample points
   if(return.type == "points"){
-    xy <- sampleRandom(buffer.raster, size=n, xy=TRUE)
+    xy <- terra::spatSample(buffer.raster, size=n, xy=TRUE, na.rm=TRUE)
 
     colnames(xy)[1:2] <- c(colnames(points))
 
