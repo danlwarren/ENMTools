@@ -20,13 +20,12 @@ background.buffer <- function(points, buffer.width, buffer.type = "circles", mas
   pol <- NA
 
   if(buffer.type == "circles"){
-    x <- circles(points, d=buffer.width, lonlat=TRUE)
-    pol <- rgeos::gUnaryUnion(x@polygons)
+    x <- terra::buffer(points, width = buffer.width)
+    pol <- terra::aggregate(x)
   }
 
   if(buffer.type == "convhull"){
-    x <- dismo::convHull(points)
-    pol <- rgeos::gUnaryUnion(x@polygons)
+    x <- terra::convHull(points)
     pol <- terra::buffer(pol, width = buffer.width)
   }
 

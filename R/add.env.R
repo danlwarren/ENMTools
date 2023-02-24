@@ -28,7 +28,7 @@ add.env <- function(species, env, verbose = TRUE){
 
       # Have to assign names manually because otherwise it fails when there's only one env layer
       names <- c(colnames(species$presence.points), names(env))
-      species$presence.points <- cbind(species$presence.points, cextract(env, species$presence.points[,1:2]))
+      species$presence.points <- cbind(species$presence.points, extract(env, species$presence.points[,1:2]))
       colnames(species$presence.points) <- names
       species$presence.points <- species$presence.points[complete.cases(species$presence.points),]
     } else {

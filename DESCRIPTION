@@ -12,7 +12,6 @@ License: GPL-2
 LazyData: FALSE
 RoxygenNote: 7.2.1
 Imports: 
-    rgeos,
     knitr,
     ggplot2,
     gridExtra,
