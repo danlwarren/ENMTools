@@ -6,6 +6,9 @@
 \usage{
 rasterToPoints2(rast)
 }
+\arguments{
+\item{rast}{A SpatRaster object}
+}
 \description{
 get terra to produce same output as raster::rasterToPoints
 }
