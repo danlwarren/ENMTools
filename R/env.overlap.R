@@ -69,6 +69,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
 
     # Setting it up so we can handle either a set of rasters or a list of minima and maxima
     if(inherits(env, c("raster", "RasterStack", "RasterBrick", "RasterLayer"))){
+      minmax <- terra::minmax(env)
       mins <- minValue(env)
       maxes <- maxValue(env)
     } else if (inherits(env, "list")){

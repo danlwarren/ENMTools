@@ -112,7 +112,7 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
     # The Phillips and Elith recalibration should be done here for presence only models
     # Should make it optional with a flag that defaults to TRUE
     # transformation is (mean untransformed suitability * suitability in grid cell)/(prevalence * (1 - suitability in grid cell))
-    calibrated.suitabilities <- lapply(cal.preds, function(x) rasterize(preds[,1:2], model$suitability, field = x))
+    calibrated.suitabilities <- lapply(cal.preds, function(x) terra::rasterize(preds[,1:2], model$suitability, field = x))
 
     class.plots.1 <- lapply(names(recalibrated.model$summary_CV$models$uncalibrated), function(x) class.plot(recalibrated.model$predictions[[x]], pred.df$obs, x, cuts = cuts))
     class.plots.2 <- lapply(names(recalibrated.model$summary_CV$models$calibrated), function(x) class.plot(recalibrated.model$predictions[[x]], pred.df$obs, x, cuts = cuts))

@@ -29,7 +29,7 @@ enmtools.hypervolume <- function(species, env, samples.per.point = 10, reduction
   hypervolume.precheck(species, env)
 
   for(i in 1:length(names(env))){
-    env[[i]] <- (env[[i]] - cellStats(env[[i]], "mean"))/cellStats(env[[i]], "sd")
+    env[[i]] <- (env[[i]] - terra::global(env[[i]], "mean", na.rm = TRUE))/terra::global(env[[i]], "sd", na.rm = TRUE)
   }
 
   climate <- terra::extract(env, species$presence.points)

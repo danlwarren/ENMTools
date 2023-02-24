@@ -33,7 +33,7 @@ sim.points <- function(object, n.points = 1000, seed = NA, sample.type = "ppp", 
     # Standardize suitability scores
     total.dens <- sum(na.omit(terra::values(suit)))
 
-    suit <- suit * (n.points / total.dens) * (1 / prod(res(suit)))
+    suit <- suit * (n.points / total.dens) * (1 / prod(terra::res(suit)))
     suit.im <- raster.as.im(suit)
     pnts <- rpoispp(suit.im)
     pres.points <- data.frame(x = pnts$x, y = pnts$y)

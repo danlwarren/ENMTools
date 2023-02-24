@@ -77,7 +77,7 @@ multistack.pca <- function(..., n = 2){
     offset <- offset + length(keepers[[i]])
     # Rename layers and ship it out
     names(env.pca[[i]]) <- paste0("PC", 1:n)
-    env.pca[[i]] <- setMinMax(env.pca[[i]])
+    env.pca[[i]] <- terra::setMinMax(env.pca[[i]])
   }
 
   # Now we'll make some plots of the distribution of each PC in each stack

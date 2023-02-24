@@ -46,7 +46,7 @@ check.env <- function(env, verbose = FALSE){
   colnames(resolution.check) <- names(env)
   for(i in 1:length(names(env))){
     for(j in i:length(names(env))){
-      resolution.check[i,j] <- all(res(env[[i]]) == res(env[[j]]))
+      resolution.check[i,j] <- terra::compareGeom(env[[i]], env[[j]], res = TRUE, crs = FALSE, ext = FALSE, rowcol = FALSE)
     }
   }
   rownames(resolution.check) <- names(env)
