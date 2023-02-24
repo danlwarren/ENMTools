@@ -8,5 +8,5 @@
 #' @name iberolacerta.clade
 #' @usage data(iberolacerta.clade)
 #' @format An enmtools.clade object with seven species and a phylogeny.
-
-"iberolacerta.clade"
+#' @export
+NULL

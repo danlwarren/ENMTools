@@ -68,7 +68,7 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
   # fail if the stack only has one layer.
   if(length(names(env)) == 1){
     oldname <- names(env)
-    env <- terra::c(env, env)
+    env <- c(env, env)
     env[[2]][!is.na(env[[2]])] <- 0
     names(env) <- c(oldname, "dummyvar")
     notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")

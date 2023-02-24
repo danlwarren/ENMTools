@@ -7,3 +7,4 @@
 ^Readme_files$
 ^testdata$
 ^\.travis.yml
+^data-raw$
