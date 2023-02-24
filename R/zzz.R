@@ -8,7 +8,7 @@ globalVariables(c("f", "predict", "value"))
   #             envir = parent.env(environment()))
   # utils::data(iberolacerta.clade, package = pkgname,
   #             envir = parent.env(environment()))
-  euro.worldclim <- terra::rast(euro.worldclim)
+  euro.worldclim <<- terra::rast(euro.worldclim)
   y <<- iberolacerta.clade
   y$species <- lapply(iberolacerta.clade$species,
                       function(x) {
