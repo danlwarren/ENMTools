@@ -20,20 +20,20 @@ enmtools.species <- function(range = NA, presence.points = NA, background.points
   # was passed in.
 
   if(!isTRUE(is.na(range))){
-    if(!any(c("raster", "RasterLayer", "SpatialPolygons") %in% class(range))){
-      stop("Argument range requires an object of class raster or SpatialPolygons")
+    if(!inherits(range, "SpatRaster")){
+      stop("Argument range requires an object of class SpatRaster")
     }
   }
 
   if(!isTRUE(is.na(presence.points))){
-    if(!any(c("data.frame") %in% class(presence.points))){
-      stop("Argument presence.points requires an object of class data.frame")
+    if(!any(c("SpatVector") %in% class(presence.points))){
+      stop("Argument presence.points requires an object of class SpatVector")
     }
   }
 
   if(!isTRUE(is.na(background.points))){
-    if(!any("data.frame" %in% class(background.points))){
-      stop("Argument background.points requires an object of class data.frame")
+    if(!any("SpatVector" %in% class(background.points))){
+      stop("Argument background.points requires an object of class SpatVector")
     }
   }
 
@@ -59,23 +59,23 @@ enmtools.species <- function(range = NA, presence.points = NA, background.points
 summary.enmtools.species <- function(object, ...){
   stopifnot(inherits(object, "enmtools.species"))
 
-  if(inherits(object$range,  "RasterLayer")){
+  if(inherits(object$range,  "SpatRaster")){
     cat("\n\nRange raster: \n")
     print(object$range)
   } else {
     cat("\n\nRange raster not defined.")
   }
 
-  if(class(object$presence.points) %in% c("data.frame", "matrix")){
+  if(class(object$presence.points) %in% c("SpatVector")){
     cat("\n\nPresence points (first ten only): ")
-    print(knitr::kable(head(object$presence.points, 10)))
+    print(knitr::kable(head(crds(object$presence.points), 10)))
   } else{
     cat("\n\nPresence points not defined.")
   }
 
-  if(class(object$background.points)  %in% c("data.frame", "matrix")){
+  if(class(object$background.points)  %in% c("SpatVector")){
     cat("\n\nBackground points (first ten only): ")
-    print(knitr::kable(head(object$background.points, 10)))
+    print(knitr::kable(head(crds(object$background.points, 10))))
   } else{
     cat("\n\nBackground points not defined.")
   }
@@ -100,16 +100,16 @@ summary.enmtools.species <- function(object, ...){
 plot.enmtools.species <- function(x, ...){
   stopifnot(inherits(x, "enmtools.species"))
 
-  if(inherits(x$range, "RasterLayer")){
-    terra::plot(x$range)
+  if(inherits(x$range, "SpatRaster")){
+    terra::plot(x$range, col = "orange")
   }
 
-  if(class(x$background.points)  %in% c("data.frame", "matrix")){
-    points(x$background.points[,1:2], pch = 4, col = "red")
+  if(class(x$background.points)  %in% c("SpatVector")){
+    points(crds(x$background.points)[,1:2], pch = 4, col = "red")
   }
 
-  if(class(x$presence.points) %in% c("data.frame", "matrix")){
-    points(x$presence.points[,1:2], pch = 16, col = "black")
+  if(class(x$presence.points) %in% c("SpatVector")){
+    points(crds(x$presence.points)[,1:2], pch = 16, col = "black")
   }
 
   if(inherits(x$species.name, "character")){

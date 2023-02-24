@@ -11,8 +11,6 @@
 #' @return A raster object with values of 1 in every grid cell falling within the buffer.
 #'
 #' @examples
-#' data(iberolacerta.clade)
-#' data(euro.worldclim)
 #' background.raster.buffer(iberolacerta.clade$species$cyreni$presence.points, 100000, euro.worldclim)
 
 
