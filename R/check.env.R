@@ -28,7 +28,7 @@ check.env <- function(env, verbose = FALSE){
   colnames(extent.check) <- names(env)
   for(i in 1:length(names(env))){
     for(j in i:length(names(env))){
-      extent.check[i,j] <- extent(env[[i]]) == extent(env[[j]])
+      extent.check[i,j] <- terra::compareGeom(env[[i]], env[[j]], crs = FALSE, rowcol = FALSE)
     }
   }
   rownames(extent.check) <- names(env)
