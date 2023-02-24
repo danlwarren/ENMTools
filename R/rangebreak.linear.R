@@ -69,7 +69,7 @@ rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps =
   # and setting replicate clmaping to FALSE
   if(clamp == TRUE){
     # Adding env (skipped for BC otherwise)
-    this.df <- as.data.frame(extract(env, combined.presence.points))
+    this.df <- as.data.frame(terra::extract(env, combined.presence.points))
 
     env <- clamp.env(this.df, env)
   }
@@ -363,7 +363,7 @@ plot.enmtools.rangebreak.linear <- function(x, ...){
   x.raster <- x$empirical.species.1.model$suitability
   x.raster[!is.na(x.raster)] <- 1
   #print(x.raster)
-  raster::plot(x.raster)
+  terra::plot(x.raster)
   for(i in 1:nrow(x$lines.df)){
     abline(x$lines.df[i,2], x$lines.df[i,1])
   }

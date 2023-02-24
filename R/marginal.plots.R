@@ -42,7 +42,7 @@ marginal.plots <- function(model, env, layer, standardize = TRUE, verbose = FALS
 
   for(i in names(env)){
     if(i != layer){
-      layer.values <- extract(env[[i]], points)
+      layer.values <- terra::extract(env[[i]], points)
       plot.df <- cbind(plot.df, rep(mean(layer.values, na.rm = TRUE), 100))
       names <- c(names, i)
     }
@@ -61,17 +61,17 @@ marginal.plots <- function(model, env, layer, standardize = TRUE, verbose = FALS
   # Also grabbing background directly from analysis df for models that
   # have that info, but sampling random bg for those that don't
   if(inherits(model, c("enmtools.bc", "enmtools.dm"))){
-    pres.env <- extract(env[[layer]], model$analysis.df)
+    pres.env <- terra::extract(env[[layer]], model$analysis.df)
     pres.dens <- density(pres.env, from = minValue(env[[layer]]), to = maxValue(env[[layer]]), n = 100, na.rm = TRUE)$y
     pres.dens <- pres.dens/max(pres.dens)
-    bg.env <- extract(env[[layer]], randomPoints(mask = env[[layer]], n = 1000))
+    bg.env <- terra::extract(env[[layer]], randomPoints(mask = env[[layer]], n = 1000))
     bg.dens <- density(bg.env, from = minValue(env[[layer]]), to = maxValue(env[[layer]]), n = 100, na.rm = TRUE)$y
     bg.dens <- bg.dens/max(bg.dens)
   } else {
-    pres.env <- extract(env[[layer]], model$analysis.df[model$analysis.df$presence == 1,c(1,2)])
+    pres.env <- terra::extract(env[[layer]], model$analysis.df[model$analysis.df$presence == 1,c(1,2)])
     pres.dens <- density(pres.env, from = minValue(env[[layer]]), to = maxValue(env[[layer]]), n = 100, na.rm = TRUE)$y
     pres.dens <- pres.dens/max(pres.dens)
-    bg.env <- extract(env[[layer]], model$analysis.df[model$analysis.df$presence == 0,c(1,2)])
+    bg.env <- terra::extract(env[[layer]], model$analysis.df[model$analysis.df$presence == 0,c(1,2)])
     bg.dens <- density(bg.env, from = minValue(env[[layer]]), to = maxValue(env[[layer]]), n = 100, na.rm = TRUE)$y
     bg.dens <- bg.dens/max(bg.dens)
   }

@@ -32,7 +32,7 @@ enmtools.hypervolume <- function(species, env, samples.per.point = 10, reduction
     env[[i]] <- (env[[i]] - cellStats(env[[i]], "mean"))/cellStats(env[[i]], "sd")
   }
 
-  climate <- extract(env, species$presence.points)
+  climate <- terra::extract(env, species$presence.points)
 
   this.hv = NA
 

@@ -118,7 +118,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
     # Test eval for randomly withheld data
     if(is.numeric(test.prop)){
       if(test.prop > 0 & test.prop < 1){
-        test.check <- raster::extract(env, test.data)
+        test.check <- terra::extract(env, test.data)
         test.data <- test.data[complete.cases(test.check),]
         test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
                                           this.rf, env)
@@ -131,7 +131,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
     # Test eval for spatially structured data
     if(is.character(test.prop)){
       if(test.prop == "block"){
-        test.check <- raster::extract(env, test.data)
+        test.check <- terra::extract(env, test.data)
         test.data <- test.data[complete.cases(test.check),]
         test.evaluation <-dismo::evaluate(test.data, test.bg,
                                           this.rf, env)
@@ -422,13 +422,13 @@ plot.enmtools.rf <- function(x, ...){
 predict.enmtools.rf <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
 
   # Make a plot of habitat suitability in the new region
-  suitability <- raster::predict(env, object$model)
+  suitability <- terra::predict(env, object$model)
 
   # Clamping and getting a diff layer
   clamping.strength <- NA
   if(clamp == TRUE){
     env <- clamp.env(object$analysis.df, env)
-    clamped.suitability <- raster::predict(env, object$model)
+    clamped.suitability <- terra::predict(env, object$model)
     clamping.strength <- clamped.suitability - suitability
     suitability <- clamped.suitability
   }

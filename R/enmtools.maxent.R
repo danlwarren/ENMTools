@@ -95,7 +95,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
   clamping.strength <- NA
   if(clamp == TRUE){
     # Adding env (skipped for MX otherwise)
-    this.df <- as.data.frame(extract(env, species$presence.points))
+    this.df <- as.data.frame(terra::extract(env, species$presence.points))
 
     env <- clamp.env(this.df, env)
 
@@ -124,7 +124,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
   # Test eval for randomly withheld data
   if(is.numeric(test.prop)){
     if(test.prop > 0 & test.prop < 1){
-      test.check <- raster::extract(env, test.data)
+      test.check <- terra::extract(env, test.data)
       test.data <- test.data[complete.cases(test.check),]
 
       temp.sp <- species
@@ -146,7 +146,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
   # Test eval for spatially structured data
   if(is.character(test.prop)){
     if(test.prop == "block"){
-      test.check <- raster::extract(env, test.data)
+      test.check <- terra::extract(env, test.data)
       test.data <- test.data[complete.cases(test.check),]
 
       temp.sp <- species
@@ -448,7 +448,7 @@ plot.enmtools.maxent <- function(x, ...){
 predict.enmtools.maxent <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
 
   # Make a plot of habitat suitability in the new region
-  suitability <- invisible(capture.output(raster::predict(env, object$model, ...)))
+  suitability <- invisible(capture.output(terra::predict(env, object$model, ...)))
 
   # I'm actually not sure this is doing anything - I think maxent models are clamped by default
   if(clamp == TRUE){
@@ -456,7 +456,7 @@ predict.enmtools.maxent <- function(object, env, maxpts = 1000, clamp = TRUE, ..
     this.df <- as.data.frame(rbind(object$model@presence, object$model@absence))
 
     env <- clamp.env(this.df, env)
-    clamped.suitability <- invisible(capture.output(raster::predict(env, object$model, ...)))
+    clamped.suitability <- invisible(capture.output(terra::predict(env, object$model, ...)))
     clamping.strength <- clamped.suitability - suitability
     suitability <- clamped.suitability
   }

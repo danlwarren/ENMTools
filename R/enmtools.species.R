@@ -101,7 +101,7 @@ plot.enmtools.species <- function(x, ...){
   stopifnot(inherits(x, "enmtools.species"))
 
   if(inherits(x$range, "RasterLayer")){
-    raster::plot(x$range)
+    terra::plot(x$range)
   }
 
   if(class(x$background.points)  %in% c("data.frame", "matrix")){
