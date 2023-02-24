@@ -8,9 +8,9 @@
 #' @keywords raster pca environment
 #'
 #' @examples
-#' test1 <- crop(euro.worldclim, extent(-10, -5, 40, 43))
-#' test2 <- crop(euro.worldclim, extent(-5, 5, 40, 48))
-#' test3 <- crop(euro.worldclim, extent(5, 15, 44, 48))
+#' test1 <- terra::crop(euro.worldclim, terra::ext(-10, -5, 40, 43))
+#' test2 <- terra::crop(euro.worldclim, terra::ext(-5, 5, 40, 48))
+#' test3 <- terra::crop(euro.worldclim, terra::ext(5, 15, 44, 48))
 #' multistack.pca(test1, test2, test3)
 
 multistack.pca <- function(..., n = 2){
