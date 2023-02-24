@@ -68,14 +68,14 @@ summary.enmtools.species <- function(object, ...){
 
   if(class(object$presence.points) %in% c("SpatVector")){
     cat("\n\nPresence points (first ten only): ")
-    print(knitr::kable(head(crds(object$presence.points), 10)))
+    print(knitr::kable(head(terra::crds(object$presence.points), 10)))
   } else{
     cat("\n\nPresence points not defined.")
   }
 
   if(class(object$background.points)  %in% c("SpatVector")){
     cat("\n\nBackground points (first ten only): ")
-    print(knitr::kable(head(crds(object$background.points, 10))))
+    print(knitr::kable(head(terra::crds(object$background.points, 10))))
   } else{
     cat("\n\nBackground points not defined.")
   }
@@ -105,11 +105,11 @@ plot.enmtools.species <- function(x, ...){
   }
 
   if(class(x$background.points)  %in% c("SpatVector")){
-    points(crds(x$background.points)[,1:2], pch = 4, col = "red")
+    points(terra::crds(x$background.points)[,1:2], pch = 4, col = "red")
   }
 
   if(class(x$presence.points) %in% c("SpatVector")){
-    points(crds(x$presence.points)[,1:2], pch = 16, col = "black")
+    points(terra::crds(x$presence.points)[,1:2], pch = 16, col = "black")
   }
 
   if(inherits(x$species.name, "character")){

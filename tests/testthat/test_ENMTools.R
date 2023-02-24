@@ -5,12 +5,12 @@ data(iberolacerta.clade)
 data(euro.worldclim)
 
 expect_species <- function(species){
-  expect_true(inherits(monticola, c("list", "enmtools.species")))
-  expect_equal(names(monticola), c("range", "presence.points", "background.points",
+  expect_true(inherits(species, c("list", "enmtools.species")))
+  expect_equal(names(species), c("range", "presence.points", "background.points",
                                    "models", "species.name"))
-  expect_true(inherits(monticola$range, "RasterLayer"))
-  expect_true(inherits(monticola$presence.points, "data.frame"))
-  expect_true(inherits(monticola$species.name, "character"))
+  expect_true(inherits(species$range, "SpatRaster"))
+  expect_true(inherits(species$presence.points, "SpatVector"))
+  expect_true(inherits(species$species.name, "character"))
 }
 
 
@@ -57,7 +57,7 @@ expect_enmtools_model <- function(model){
     expect_true(inherits(model$test.data, "logical"))
   }
 
-  expect_true(inherits(model$suitability, "RasterLayer"))
+  expect_true(inherits(model$suitability, "SpatRaster"))
 
   expect_true(inherits(model$response.plots, "list"))
 
