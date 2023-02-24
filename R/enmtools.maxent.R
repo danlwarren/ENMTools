@@ -95,7 +95,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
   clamping.strength <- NA
   if(clamp == TRUE){
     # Adding env (skipped for MX otherwise)
-    this.df <- as.data.frame(extract(env, species$presence.points))
+    this.df <- as.data.frame(terra::extract(env, species$presence.points))
 
     env <- clamp.env(this.df, env)
 

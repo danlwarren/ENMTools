@@ -124,8 +124,8 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
         test.check <- terra::extract(env, test.data)
         test.data <- test.data[complete.cases(test.check),]
 
-        test.evaluation <- dismo::evaluate(predict(this.rf, data = extract(env, test.data))$predictions[ , 2, drop = TRUE],
-                                           predict(this.rf, data = extract(env, species$background.points[,1:2]))$predictions[ , 2, drop = TRUE])
+        test.evaluation <- dismo::evaluate(predict(this.rf, data = terra::extract(env, test.data))$predictions[ , 2, drop = TRUE],
+                                           predict(this.rf, data = terra::extract(env, species$background.points[,1:2]))$predictions[ , 2, drop = TRUE])
         temp.sp <- species
         temp.sp$presence.points <- test.data
         env.test.evaluation <- env.evaluate(temp.sp, this.rf, env, n.background = env.nback)
@@ -137,8 +137,8 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
       if(test.prop == "block"){
         test.check <- terra::extract(env, test.data)
         test.data <- test.data[complete.cases(test.check),]
-        test.evaluation <- dismo::evaluate(predict(this.rf, data = extract(env, test.data))$predictions[ , 2, drop = TRUE],
-                                           predict(this.rf, data = extract(env, test.bg))$predictions[ , 2, drop = TRUE])
+        test.evaluation <- dismo::evaluate(predict(this.rf, data = terra::extract(env, test.data))$predictions[ , 2, drop = TRUE],
+                                           predict(this.rf, data = terra::extract(env, test.bg))$predictions[ , 2, drop = TRUE])
         temp.sp <- species
         temp.sp$presence.points <- test.data
         temp.sp$background.points <- test.bg

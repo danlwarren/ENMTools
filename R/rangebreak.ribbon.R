@@ -89,7 +89,7 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
   # and setting replicate clmaping to FALSE
   if(clamp == TRUE){
     # Adding env (skipped for BC otherwise)
-    this.df <- as.data.frame(extract(env, combined.presence.points))
+    this.df <- as.data.frame(terra::extract(env, combined.presence.points))
 
     env <- clamp.env(this.df, env)
   }

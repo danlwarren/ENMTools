@@ -82,7 +82,7 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
   clamping.strength <- NA
   if(clamp == TRUE){
     # Adding env (skipped for BC otherwise)
-    this.df <- as.data.frame(extract(env, species$presence.points))
+    this.df <- as.data.frame(terra::extract(env, species$presence.points))
 
     env <- clamp.env(this.df, env)
     clamped.suitability <- predict(env, this.bc, type = "response")
@@ -399,7 +399,7 @@ predict.enmtools.bc <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
   clamping.strength <- NA
   if(clamp == TRUE){
     # Adding env (skipped for BC otherwise)
-    this.df <- as.data.frame(extract(env, object$analysis.df))
+    this.df <- as.data.frame(terra::extract(env, object$analysis.df))
 
     env <- clamp.env(this.df, env)
     clamped.suitability <- terra::predict(env, object$model)
