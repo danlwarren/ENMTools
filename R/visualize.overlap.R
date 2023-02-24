@@ -53,10 +53,10 @@ visualize.overlap <- function(model.1, model.2, env, nbins = 100, layers, plot.p
   }
 
 
-  layer1.min <- min(getValues(env[[layers[1]]]), na.rm=TRUE)
-  layer2.min <- min(getValues(env[[layers[2]]]), na.rm=TRUE)
-  layer1.max <- max(getValues(env[[layers[1]]]), na.rm=TRUE)
-  layer2.max <- max(getValues(env[[layers[2]]]), na.rm=TRUE)
+  layer1.min <- min(terra::values(env[[layers[1]]]), na.rm=TRUE)
+  layer2.min <- min(terra::values(env[[layers[2]]]), na.rm=TRUE)
+  layer1.max <- max(terra::values(env[[layers[1]]]), na.rm=TRUE)
+  layer2.max <- max(terra::values(env[[layers[2]]]), na.rm=TRUE)
 
   # Build plot df
   plot.df <- cbind(rep(seq(layer1.min, layer1.max, length = nbins), nbins),

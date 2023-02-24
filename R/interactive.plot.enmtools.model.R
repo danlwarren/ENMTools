@@ -68,9 +68,9 @@ interactive.plot.enmtools.model <- function(x, map.provider = "Esri.WorldPhysica
   }
 
   m <- m %>%
-    leaflet::addLegend(pal = leaflet::colorNumeric("inferno", c(min(values(x$suitability), na.rm = TRUE),
-                                                       max(values(x$suitability), na.rm = TRUE))), values = c(min(values(x$suitability), na.rm = TRUE),
-                                                                                                              max(values(x$suitability), na.rm = TRUE)))
+    leaflet::addLegend(pal = leaflet::colorNumeric("inferno", c(min(terra::values(x$suitability), na.rm = TRUE),
+                                                       max(terra::values(x$suitability), na.rm = TRUE))), values = c(min(values(x$suitability), na.rm = TRUE),
+                                                                                                              max(terra::values(x$suitability), na.rm = TRUE)))
 
 
   if(is.data.frame(x$test.data) & is.data.frame(background.points)){

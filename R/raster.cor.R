@@ -22,7 +22,7 @@ raster.cor <- function(x, y, method="spearman"){
   }
 
 
-  df <- cbind(getValues(x), getValues(y))
+  df <- cbind(terra::values(x), terra::values(y))
 
   df <- df[complete.cases(df),]
 

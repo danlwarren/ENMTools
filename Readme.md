@@ -86,7 +86,7 @@ local rasters, like so:
 
 ``` r
 env.files <- list.files(path = "./env_pca/", pattern = "pc", full.names = TRUE)
-env <- stack(env.files)
+env <- terra::rast(env.files)
 names(env) <- c("pc1", "pc2", "pc3", "pc4")
 env <- setMinMax(env)
 ```

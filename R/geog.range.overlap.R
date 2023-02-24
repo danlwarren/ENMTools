@@ -24,8 +24,8 @@ geog.range.overlap <- function(x, y){
     stop(paste("Species", y$species.name, "does not have a range raster!"))
   }
 
-  overlap.cells <- sum(getValues(x$range * y$range) == 1, na.rm = TRUE)
-  min.cells <- min(sum(getValues(x$range) == 1, na.rm = TRUE), sum(getValues(y$range) == 1, na.rm = TRUE))
+  overlap.cells <- sum(terra::values(x$range * y$range) == 1, na.rm = TRUE)
+  min.cells <- min(sum(terra::values(x$range) == 1, na.rm = TRUE), sum(terra::values(y$range) == 1, na.rm = TRUE))
   return(overlap.cells/min.cells)
 
 }

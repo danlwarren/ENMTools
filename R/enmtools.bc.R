@@ -68,7 +68,7 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
   # fail if the stack only has one layer.
   if(length(names(env)) == 1){
     oldname <- names(env)
-    env <- stack(env, env)
+    env <- terra::c(env, env)
     env[[2]][!is.na(env[[2]])] <- 0
     names(env) <- c(oldname, "dummyvar")
     notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
@@ -361,7 +361,7 @@ print.enmtools.bc <- function(x, ...){
 plot.enmtools.bc <- function(x, ...){
 
 
-  suit.points <- data.frame(rasterToPoints(x$suitability))
+  suit.points <- data.frame(rasterToPoints2(x$suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
   suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
@@ -407,7 +407,7 @@ predict.enmtools.bc <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
     suitability <- clamped.suitability
   }
 
-  suit.points <- data.frame(rasterToPoints(suitability))
+  suit.points <- data.frame(rasterToPoints2(suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
   suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
@@ -415,7 +415,7 @@ predict.enmtools.bc <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()
 
-  clamp.points <- data.frame(rasterToPoints(clamping.strength))
+  clamp.points <- data.frame(rasterToPoints2(clamping.strength))
   colnames(clamp.points) <- c("Longitude", "Latitude", "Clamping")
 
   clamp.plot <- ggplot(data = clamp.points,  aes_string(y = "Latitude", x = "Longitude")) +

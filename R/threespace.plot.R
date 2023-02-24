@@ -51,7 +51,7 @@ threespace.plot <- function(model, env, maxpts = NA){
 
 
   # Extract data from env layers
-  allpoints <- as.data.frame(rasterToPoints(env))
+  allpoints <- as.data.frame(rasterToPoints2(env))
   allpoints$presence <- rep(2, nrow(allpoints))
   allpoints <- allpoints[,-c(1,2)]
   if(!is.na(maxpts)){

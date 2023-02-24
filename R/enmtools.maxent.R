@@ -77,7 +77,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
   # fail if the stack only has one layer.
   if(length(names(env)) == 1){
     oldname <- names(env)
-    env <- stack(env, env)
+    env <- terra::c(env, env)
     env[[2]][!is.na(env[[2]])] <- 0
     names(env) <- c(oldname, "dummyvar")
     notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
@@ -414,7 +414,7 @@ print.enmtools.maxent <- function(x, ...){
 plot.enmtools.maxent <- function(x, ...){
 
 
-  suit.points <- data.frame(rasterToPoints(x$suitability))
+  suit.points <- data.frame(rasterToPoints2(x$suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
   suit.plot <- ggplot(data = suit.points, aes_string(y = "Latitude", x = "Longitude")) +
@@ -461,7 +461,7 @@ predict.enmtools.maxent <- function(object, env, maxpts = 1000, clamp = TRUE, ..
     suitability <- clamped.suitability
   }
 
-  suit.points <- data.frame(rasterToPoints(suitability))
+  suit.points <- data.frame(rasterToPoints2(suitability))
   colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
 
   suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
