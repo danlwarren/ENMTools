@@ -22,7 +22,6 @@ A raster object with values of 1 in every grid cell falling within the buffer.
 NOTE: This function has been replaced by background.buffer.
 }
 \examples{
-data(iberolacerta.clade)
-data(euro.worldclim)
+library(ENMTools)
 background.raster.buffer(iberolacerta.clade$species$cyreni$presence.points, 100000, euro.worldclim)
 }

@@ -30,15 +30,17 @@ marginal.plots <- function(model, env, layer, standardize = TRUE, verbose = FALS
     points <- model$analysis.df[model$analysis.df$presence == 1,1:2]
   }
 
-  if(any(is.na(minValue(env))) | any(is.na(maxValue(env)))){
-    env <- setMinMax(env)
+  minmax <- terra::minmax(env)
+  if(any(is.na(minmax))){
+    env <- terra::setMinMax(env)
     message("\n\nSetting min and max for environment layers...\n\n")
   }
 
   # Create a vector of names in the right order for plot.df
   names <- layer
 
-  plot.df <- seq(minValue(env[[layer]]), maxValue(env[[layer]]), length = 100)
+  minmax <- terra::minmax(env[[layer]])
+  plot.df <- seq(minmax[1,], minmax[2, ], length = 100)
 
   for(i in names(env)){
     if(i != layer){
@@ -60,19 +62,20 @@ marginal.plots <- function(model, env, layer, standardize = TRUE, verbose = FALS
   # their presence data.
   # Also grabbing background directly from analysis df for models that
   # have that info, but sampling random bg for those that don't
+  minmax <- terra::minmax(env[[layer]])
   if(inherits(model, c("enmtools.bc", "enmtools.dm"))){
     pres.env <- terra::extract(env[[layer]], model$analysis.df)
-    pres.dens <- density(pres.env, from = minValue(env[[layer]]), to = maxValue(env[[layer]]), n = 100, na.rm = TRUE)$y
+    pres.dens <- density(pres.env, from = minmax[1, ], to = minmax[2, ], n = 100, na.rm = TRUE)$y
     pres.dens <- pres.dens/max(pres.dens)
     bg.env <- terra::extract(env[[layer]], randomPoints(mask = env[[layer]], n = 1000))
-    bg.dens <- density(bg.env, from = minValue(env[[layer]]), to = maxValue(env[[layer]]), n = 100, na.rm = TRUE)$y
+    bg.dens <- density(bg.env, from = minmax[1, ], to = minmax[2, ], n = 100, na.rm = TRUE)$y
     bg.dens <- bg.dens/max(bg.dens)
   } else {
     pres.env <- terra::extract(env[[layer]], model$analysis.df[model$analysis.df$presence == 1,c(1,2)])
-    pres.dens <- density(pres.env, from = minValue(env[[layer]]), to = maxValue(env[[layer]]), n = 100, na.rm = TRUE)$y
+    pres.dens <- density(pres.env, from = minmax[1, ], to = minmax[2, ], n = 100, na.rm = TRUE)$y
     pres.dens <- pres.dens/max(pres.dens)
     bg.env <- terra::extract(env[[layer]], model$analysis.df[model$analysis.df$presence == 0,c(1,2)])
-    bg.dens <- density(bg.env, from = minValue(env[[layer]]), to = maxValue(env[[layer]]), n = 100, na.rm = TRUE)$y
+    bg.dens <- density(bg.env, from = minmax[1, ], to = minmax[2, ], n = 100, na.rm = TRUE)$y
     bg.dens <- bg.dens/max(bg.dens)
   }
 

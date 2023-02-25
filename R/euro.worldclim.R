@@ -8,5 +8,5 @@
 #' @name euro.worldclim
 #' @usage data(euro.worldclim)
 #' @format A raster brick with 19 worldclim layers.
-
-"euro.worldclim"
+#' @export
+NULL

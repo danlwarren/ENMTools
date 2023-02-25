@@ -109,7 +109,7 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
     # fails if the stack only has one layer.
     if(length(names(env)) == 1){
       oldname <- names(env)
-      env <- terra::c(env, env)
+      env <- c(env, env)
       names(env) <- c(oldname, "dummyvar")
       notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
     }

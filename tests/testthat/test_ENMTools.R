@@ -1,8 +1,8 @@
 library(testthat)
 library(ENMTools)
 
-data(iberolacerta.clade)
-data(euro.worldclim)
+#data(iberolacerta.clade)
+#data(euro.worldclim)
 
 expect_species <- function(species){
   expect_true(inherits(species, c("list", "enmtools.species")))

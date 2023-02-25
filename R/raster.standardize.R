@@ -26,5 +26,5 @@ raster.standardize <- function(x, verbose=FALSE){
     print(paste("Starting standardize on", x, "at", Sys.time()))
   }
 
-  return(x/cellStats(x, stat=sum))
+  return(x/terra::global(x, "sum", na.rm = TRUE))
 }

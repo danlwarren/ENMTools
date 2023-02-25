@@ -54,8 +54,9 @@ env.evaluate <- function(species, model, env, bg.source = "background", n.backgr
   }
 
   if(bg.source == "env") {
-    maxes <- maxValue(env)
-    mins <- minValue(env)
+    minmax <- terra::minmax(env)
+    maxes <- minmax[1, ]
+    mins <- minmax[2, ]
   }
 
 

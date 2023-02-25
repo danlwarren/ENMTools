@@ -38,7 +38,7 @@ raster.pca <- function(env, n){
   # Rename layers and ship it out
   names(env.pca) <- paste0("PC", 1:n)
 
-  env.pca <- setMinMax(env.pca)
+  env.pca <- terra::setMinMax(env.pca)
 
   output <- list(rasters = env.pca,
                  pca.object = pca)
