@@ -28,8 +28,8 @@ check.species <- function(this.species, env = NA, trim.dupes = FALSE){
   }
 
   if(!isTRUE(is.na(this.species$range))){
-    if(!inherits(this.species$range, c("raster", "RasterLayer", "RasterBrick", "RasterStack"))){
-      stop("Argument range requires an object of class raster or RasterLayer")
+    if(!inherits(this.species$range, c("SpatRaster"))){
+      stop("Argument range requires an object of class SpatRaster")
     }
     if(is.na(terra::crs(this.species$range))){
       warning("Species range raster does not have a CRS set")

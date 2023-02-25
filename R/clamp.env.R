@@ -23,8 +23,8 @@ clamp.env <- function(model, env){
     stop("Argument \'model\' must contain an enmtools.model object or analysis.df data frame!")
   }
 
-  if(!inherits(env, c("RasterLayer", "RasterStack", "raster", "RasterBrick"))){
-    stop("Argument env must be a raster, RasterLayer, or RasterStack object!")
+  if(!inherits(env, c("SpatRaster"))){
+    stop("Argument env must be SpatRaster object!")
   }
 
   if(inherits(model, "enmtools.model")){
