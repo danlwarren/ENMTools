@@ -14,11 +14,11 @@
 
 geog.range.overlap <- function(x, y){
 
-  if(!inherits(x$range, c("raster", "RasterLayer"))){
+  if(!inherits(x$range, c("SpatRaster"))){
     stop(paste("Species", x$species.name, "does not have a range raster!"))
   }
 
-  if(!inherits(y$range, c("raster", "RasterLayer"))){
+  if(!inherits(y$range, c("SpatRaster"))){
     stop(paste("Species", y$species.name, "does not have a range raster!"))
   }
 

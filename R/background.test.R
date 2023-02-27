@@ -322,14 +322,6 @@ background.precheck <- function(species.1, species.2, env, type, f, nreps, test.
     stop("Species 2 background.points do not appear to be an object of class SpatVector")
   }
 
-  if(any(!colnames(species.1$background.points) %in% colnames(species.2$background.points))){
-    stop("Column names for species background points do not match!")
-  }
-
-  if(any(!colnames(species.1$presence.points) %in% colnames(species.2$presence.points))){
-    stop("Column names for species presence points do not match!")
-  }
-
   if(is.na(species.1$species.name)){
     stop("Species 1 does not have a species.name set!")
   }
