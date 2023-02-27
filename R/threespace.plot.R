@@ -20,7 +20,7 @@ threespace.plot <- function(model, env, maxpts = NA){
   if(!inherits(model, "enmtools.model")){
     stop("The supplied model is not an enmtools.model object!")
   }
-  if(!inherits(env, c("raster", "RasterBrick", "RasterStack"))){
+  if(!inherits(env, c("raster", "RasterBrick", "SpatRaster"))){
     stop("The supplied environmental layers were not recognized as raster objects!")
   }
 

@@ -29,7 +29,7 @@ rangebreak.ribbon(
 
 \item{ribbon}{An enmtools.species object representing the region of marginal habtiat in the overlap between the species' ranges}
 
-\item{env}{A RasterLayer or RasterStack object containing environmental data}
+\item{env}{A SpatRaster object containing environmental data}
 
 \item{type}{The type of model to construct, currently accepts "glm", "mx", "bc", or "dm"}
 

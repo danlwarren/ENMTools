@@ -26,7 +26,7 @@ enmtools.rf(
 \arguments{
 \item{species}{An enmtools.species object}
 
-\item{env}{A raster or raster stack of environmental data.}
+\item{env}{A SpatRaster of environmental data.}
 
 \item{f}{A formula for fitting the model}
 

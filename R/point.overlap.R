@@ -9,6 +9,7 @@
 #' \donttest{
 #' cyreni <- iberolacerta.clade$species$cyreni
 #' monticola <- iberolacerta.clade$species$monticola
+#' point.overlap(cyreni, monticola)
 #' }
 
 point.overlap <- function(x, y){
@@ -22,10 +23,6 @@ point.overlap <- function(x, y){
   }
 
   # Get distance matrices for within and between species
-
-  x$presence.points <- terra::vect(as.matrix(x$presence.points), crs="+proj=longlat +datum=WGS84")
-  y$presence.points <- terra::vect(as.matrix(y$presence.points), crs="+proj=longlat +datum=WGS84")
-
   within1 <- terra::distance(x$presence.points, x$presence.points)
   within2 <- terra::distance(y$presence.points, y$presence.points)
   between <- terra::distance(x$presence.points, y$presence.points)

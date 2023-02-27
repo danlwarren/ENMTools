@@ -10,7 +10,7 @@
 #
 # expect_equal(class(ib.tree), "phylo")
 # expect_equal(length(names(euro.worldclim)), 19)
-# expect_true(inherits(euro.worldclim, "RasterStack"))
+# expect_true(inherits(euro.worldclim, "SpatRaster"))
 
 #' Make enmtools.species objects
 #'

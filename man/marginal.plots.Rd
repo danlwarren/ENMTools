@@ -9,7 +9,7 @@ marginal.plots(model, env, layer, standardize = TRUE, verbose = FALSE)
 \arguments{
 \item{model}{An enmtools model object}
 
-\item{env}{A RasterLayer or RasterStack object containing environmental data}
+\item{env}{A SpatRaster object containing environmental data}
 
 \item{layer}{The name of the layer to plot}
 

@@ -9,7 +9,7 @@ clamp.env(model, env)
 \arguments{
 \item{model}{An enmtools.model object.  Alternatively the analysis.df component of an enmtools.model object.}
 
-\item{env}{A raster or raster stack of environmental data.}
+\item{env}{A SpatRaster of environmental data.}
 }
 \value{
 An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.

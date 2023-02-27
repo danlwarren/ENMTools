@@ -10,8 +10,8 @@
 
 add.env <- function(species, env, verbose = TRUE){
 
-  if(!inherits(env, c("SpatRaster"))){
-    stop("Argument env must be an object of class SpatRaster")
+  if(!"SpatRaster" %in% class(env)){
+    stop("Argument env must be a SpatRaster object!")
   }
 
   if("enmtools.species" %in% class(species)){
@@ -27,10 +27,12 @@ add.env <- function(species, env, verbose = TRUE){
       }
 
       # Have to assign names manually because otherwise it fails when there's only one env layer
+
       #names <- c(colnames(species$presence.points), names(env))
       species$presence.points <- cbind(species$presence.points, terra::extract(env, species$presence.points))
       #colnames(species$presence.points) <- names
       species$presence.points <- species$presence.points[complete.cases(terra::values(species$presence.points)),]
+
     } else {
       message("No presence points, skipping...\n")
     }

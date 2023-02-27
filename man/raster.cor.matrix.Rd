@@ -8,7 +8,7 @@ between the included rasters}
 raster.cor.matrix(env, method = "pearson")
 }
 \arguments{
-\item{env}{A RasterStack object containing two or more rasters}
+\item{env}{A SpatRaster object containing two or more rasters}
 
 \item{method}{Type of correlation to measure.  Can do "pearson", "kendall", or "spearman"}
 }

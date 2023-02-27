@@ -1,7 +1,7 @@
 #' Takes an emtools.species object with presence and background points, and builds a Bioclim model
 #'
 #' @param species An enmtools.species object
-#' @param env A raster or raster stack of environmental data.
+#' @param env A SpatRaster of environmental data.
 #' @param test.prop Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.
 #' @param report Optional name of an html file for generating reports
 #' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists

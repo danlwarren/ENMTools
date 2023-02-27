@@ -19,7 +19,7 @@ moses.list(
 \arguments{
 \item{species.list}{A list of enmtools.species objects, or an enmtools.clade object.}
 
-\item{env}{A raster or raster stack of environmental data.}
+\item{env}{A SpatRaster of environmental data.}
 
 \item{f}{A GLM-style function for model fitting}
 

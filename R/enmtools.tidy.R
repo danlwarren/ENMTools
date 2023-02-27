@@ -2,7 +2,7 @@
 #' a `tidymodels` model.
 #'
 #' @param species An enmtools.species object
-#' @param env A raster or raster stack of environmental data.
+#' @param env A SpatRaster of environmental data.
 #' @param f A formula
 #' @param model A character string specifying the desired model. Default is "glm"
 #' @param test.prop Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.

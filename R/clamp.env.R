@@ -1,7 +1,7 @@
 #' Takes an emtools.model object and a set of environment layers and clamps the environment layers so that no variable falls outside of the range available in the training data.
 #'
 #' @param model An enmtools.model object.  Alternatively the analysis.df component of an enmtools.model object.
-#' @param env A raster or raster stack of environmental data.
+#' @param env A SpatRaster of environmental data.
 #'
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
 #'

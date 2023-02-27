@@ -4,7 +4,7 @@
 #' @param species.1 An emtools.species object
 #' @param species.2 An enmtools.species object
 #' @param ribbon An enmtools.species object representing the region of marginal habtiat in the overlap between the species' ranges
-#' @param env A RasterLayer or RasterStack object containing environmental data
+#' @param env A SpatRaster object containing environmental data
 #' @param type The type of model to construct, currently accepts "glm", "mx", "bc", or "dm"
 #' @param f A function to use for model fitting.  Only required for GLM models at the moment.
 #' @param width Width of the ribbon, in the same units as the occurrence points (e.g, decimal degrees)
