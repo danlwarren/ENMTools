@@ -25,14 +25,14 @@ hypervolume.overlap <- function(species.1, species.2, env = NA, reduction.factor
 
   # Turn species into hypervolumes, if they're not already
   if(inherits(species.1, "enmtools.species")){
-    if(!inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
+    if(!inherits(env, c("SpatRaster"))){
       stop("Environmental rasters must be supplied when enmtools.species objects are passed to hypervolume.overlap.")
     }
     species.1 <- enmtools.hypervolume(species.1, env, ...)
   }
 
   if(inherits(species.2, "enmtools.species")){
-    if(!inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
+    if(!inherits(env, c("SpatRaster"))){
       stop("Environmental rasters must be supplied when enmtools.species objects are passed to hypervolume.overlap.")
     }
     species.2 <- enmtools.hypervolume(species.2, env, ...)

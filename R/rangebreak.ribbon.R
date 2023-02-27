@@ -549,7 +549,7 @@ rangebreak.ribbon.precheck <- function(species.1, species.2, ribbon, env, type, 
     stop("Ribbon is not an enmtools.species object!")
   }
 
-  if(!inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
+  if(!inherits(env, c("SpatRaster"))){
     stop("Environmental layers are not a RasterLayer or RasterStack object!")
   }
 
