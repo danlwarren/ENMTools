@@ -6,6 +6,9 @@
 \usage{
 wrap_list(l)
 }
+\arguments{
+\item{l}{A list object that includes SpatVector or SpatRaster objects to wrap or unwrap}
+}
 \description{
 export
 }
