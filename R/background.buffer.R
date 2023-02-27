@@ -35,8 +35,8 @@ background.buffer <- function(points, buffer.width, buffer.type = "circles", mas
   # From here we're either returning points or a raster
 
   # Trim to raster
-  if(!inherits(mask, c("raster", "RasterLayer", "RasterBrick", "RasterStack"))){
-    stop("Mask needs to be a raster object!")
+  if(!inherits(mask, c("SpatRaster"))){
+    stop("Mask needs to be a SpatRaster object!")
   }
 
   if(length(names(mask)) > 1){

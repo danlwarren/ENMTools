@@ -6,7 +6,7 @@
 #' @docType data
 #' @keywords datasets
 #' @name euro.worldclim
-#' @usage data(euro.worldclim)
-#' @format A raster brick with 19 worldclim layers.
+#' @usage euro.worldclim
+#' @format A SpatRaster object with 19 worldclim layers.
 #' @export
 NULL

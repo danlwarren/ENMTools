@@ -57,7 +57,7 @@ check.moses <- function(species.list, env, f){
 
   lapply(species.list, function(x) check.species(x))
 
-  if(!inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
+  if(!inherits(env, c("SpatRaster"))){
     stop("No environmental rasters were supplied!")
   }
 

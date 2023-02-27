@@ -21,8 +21,6 @@
 #'
 #' @examples
 #' \donttest{
-#' data(euro.worldclim)
-#' data(iberolacerta.clade)
 #' enmtools.rf.ranger(iberolacerta.clade$species$monticola, env = euro.worldclim, nback = 500)
 #' }
 
@@ -496,7 +494,7 @@ rf.ranger.precheck <- function(f, species, env){
     stop("Species background.points do not appear to be an object of class data.frame")
   }
 
-  if(!inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
+  if(!inherits(env, c("SpatRaster"))){
     stop("No environmental rasters were supplied!")
   }
 

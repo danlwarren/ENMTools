@@ -14,8 +14,6 @@
 #' @examples
 #' \donttest{
 #' install.extras(repos='http://cran.us.r-project.org')
-#' data(euro.worldclim)
-#' data(iberolacerta.clade)
 #' env <- euro.worldclim[[c(1,8,12,17)]]
 #' if(requireNamespace("hypervolume", quietly = TRUE)) {
 #'     monticola.hv <- enmtools.hypervolume(iberolacerta.clade$species$monticola, env = env)
@@ -140,7 +138,7 @@ hypervolume.precheck <- function(species, env){
     stop("Species presence.points do not appear to be an object of class data.frame")
   }
 
-  if(!inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
+  if(!inherits(env, c("SpatRaster"))){
     stop("No environmental rasters were supplied!")
   }
 

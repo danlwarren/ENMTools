@@ -12,8 +12,6 @@
 #' @examples
 #' \donttest{
 #' install.extras(repos='http://cran.us.r-project.org')
-#' data(euro.worldclim)
-#' data(iberolacerta.clade)
 #' monticola.glm <- enmtools.glm(iberolacerta.clade$species$monticola,
 #'                               env = euro.worldclim,
 #'                               test.prop = 0.3)

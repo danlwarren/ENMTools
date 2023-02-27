@@ -13,8 +13,6 @@
 #'
 #' @examples
 #' \donttest{
-#' data(iberolacerta.clade)
-#' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni
 #' cyreni.glm <- enmtools.glm(cyreni, euro.worldclim, test.prop = 0.2,
 #' f = pres ~ bio1 + bio12, nback = 500)

@@ -58,8 +58,6 @@ Takes an emtools.species object with presence and background points, and builds 
 }
 \examples{
 \donttest{
-data(euro.worldclim)
-data(iberolacerta.clade)
 enmtools.dm(iberolacerta.clade$species$monticola, env = euro.worldclim)
 }
 }

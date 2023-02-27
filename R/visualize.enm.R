@@ -13,8 +13,6 @@
 #' @keywords niche plot sdm enm
 #'
 #' @examples
-#' data(iberolacerta.clade)
-#' data(euro.worldclim)
 #' aurelioi.glm <- enmtools.glm(iberolacerta.clade$species$aurelioi, euro.worldclim,
 #' f = pres ~ poly(bio1, 4) + poly(bio12, 4))
 #' visualize.enm(aurelioi.glm, euro.worldclim, layers = c("bio1", "bio12"))

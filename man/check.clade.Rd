@@ -16,6 +16,5 @@ An enmtools.clade object with appropriate formatting.
 Checking for complians of an enmtools.clade object
 }
 \examples{
-data(iberolacerta.clade)
 check.clade(iberolacerta.clade)
 }

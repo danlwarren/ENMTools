@@ -55,8 +55,6 @@ rangebreak.blob Conduct a blob rangebreak test as described in Glor and Warren 2
 }
 \examples{
 \donttest{
-data(iberolacerta.clade)
-data(euro.worldclim)
 cyreni <- iberolacerta.clade$species$cyreni
 aranica <- iberolacerta.clade$species$aranica
 }

@@ -5,10 +5,10 @@
 \alias{euro.worldclim}
 \title{Worldclim data for Europe}
 \format{
-A raster brick with 19 worldclim layers.
+A SpatRaster object with 19 worldclim layers.
 }
 \usage{
-data(euro.worldclim)
+euro.worldclim
 }
 \description{
 This is a fairly low-resolution set of Worldclim layers for Europe to be used in demonstrating ENMTools functions.

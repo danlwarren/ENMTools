@@ -21,8 +21,6 @@
 #'
 #' @examples
 #' \donttest{
-#' data(iberolacerta.clade)
-#' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni
 #' aranica <- iberolacerta.clade$species$aranica
 #' }
@@ -270,7 +268,7 @@ rangebreak.blob.precheck <- function(species.1, species.2, env, type, f, nreps){
     stop("Species.2 is not an enmtools.species object!")
   }
 
-  if(!inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
+  if(!inherits(env, c("SpatRaster"))){
     stop("Environmental layers are not a RasterLayer or RasterStack object!")
   }
 

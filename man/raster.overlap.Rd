@@ -22,8 +22,6 @@ from two ENMs.  It returns two metrics, I and D.  These metrics are described in
 Warren et al. 2008.
 }
 \examples{
-data(iberolacerta.clade)
-data(euro.worldclim)
 aurelioi.glm <- enmtools.glm(iberolacerta.clade$species$aurelioi,
 euro.worldclim, f = pres ~ bio1 + bio12)
 aranica.glm <- enmtools.glm(iberolacerta.clade$species$aranica,

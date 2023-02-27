@@ -34,10 +34,8 @@ visualize.overlap, Makes a contour map of suitability of habitat in environment 
 }
 \examples{
 \donttest{
-data(iberolacerta.clade)
 ar <- iberolacerta.clade$species$aranica
 au <- iberolacerta.clade$species$aurelioi
-data(euro.worldclim)
 aranica.dm <- enmtools.dm(ar, euro.worldclim)
 aurelioi.dm <- enmtools.dm(au, euro.worldclim)
 visualize.overlap(aranica.dm, aurelioi.dm, euro.worldclim, layers = c("bio1", "bio9"))

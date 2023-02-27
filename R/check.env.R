@@ -6,7 +6,6 @@
 #' @return A raster stack.
 #'
 #' @examples
-#' data(euro.worldclim)
 #' check.env(euro.worldclim)
 
 
@@ -14,8 +13,8 @@ check.env <- function(env, verbose = FALSE){
 
   # Checking classes of input args
 
-  if(!inherits(env, c("raster", "RasterLayer", "RasterBrick", "RasterStack"))){
-    stop("Argument env requires an object of class raster or RasterLayer")
+  if(!inherits(env, c("SpatRaster"))){
+    stop("Argument env requires an object of class SpatRaster")
   }
 
   # Checking to make sure all rasters in the stack have the same extent.

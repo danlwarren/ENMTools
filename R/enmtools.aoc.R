@@ -196,7 +196,7 @@ enmtools.aoc.precheck <- function(clade, nreps, overlap.source, env,  model, ove
 
   # Check to make sure env data is good
   if(!is.na(match(overlap.source, c("bc", "dm", "mx", "glm", "gam")))){
-    if(!inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
+    if(!inherits(env, c("SpatRaster"))){
       stop("No environmental rasters were supplied!")
     }
   }

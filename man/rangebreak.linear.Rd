@@ -55,8 +55,6 @@ rangebreak.linear Conduct a linear rangebreak test as described in Glor and Warr
 }
 \examples{
 \donttest{
-data(iberolacerta.clade)
-data(euro.worldclim)
 cyreni <- iberolacerta.clade$species$cyreni
 aranica <- iberolacerta.clade$species$aranica
 rangebreak.linear(cyreni, aranica, env = euro.worldclim, type = "glm",

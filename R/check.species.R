@@ -7,7 +7,6 @@
 #' @return An enmtools.species object with appropriate formatting.
 #'
 #' @examples
-#' data(iberolacerta.clade)
 #' check.species(iberolacerta.clade$species$monticola)
 
 
@@ -27,32 +26,27 @@ check.species <- function(this.species, env = NA, trim.dupes = FALSE){
     this.species[[i]] <- NA
   }
 
-  if(!isTRUE(is.na(this.species$range))){
-    if(!inherits(this.species$range, c("SpatRaster"))){
-      stop("Argument range requires an object of class SpatRaster")
-    }
-    if(is.na(terra::crs(this.species$range))){
-      warning("Species range raster does not have a CRS set")
-    }
+  if(!inherits(this.species$range, c("SpatRaster"))){
+    stop("Argument range requires an object of class SpatRaster")
+  }
+  if(is.na(terra::crs(this.species$range))){
+    warning("Species range raster does not have a CRS set")
   }
 
-  if(!isTRUE(is.na(this.species$presence.points))){
-    if(!inherits(this.species$presence.points, "SpatVector")){
-      "Species presence points require an object of class SpatVector"
-    }
+
+  if(!inherits(this.species$presence.points, "SpatVector")){
+    "Species presence points require an object of class SpatVector"
   }
 
-  if(!isTRUE(is.na(this.species$background.points))){
-    if(!inherits(this.species$background.points, "SpatVector")){
-      "Species background points require an object of class SpatVector"
-    }
+  if(!inherits(this.species$background.points, "SpatVector")){
+    "Species background points require an object of class SpatVector"
   }
 
-  if(!isTRUE(is.na(this.species$species.name))){
-    if(!inherits(this.species$species.name, "character")){
-      stop("Argument species.name requires an object of class character")
-    }
+
+  if(!inherits(this.species$species.name, "character")){
+    stop("Argument species.name requires an object of class character")
   }
+
 
   # Extracts data from env at presence points, uses that to remove points that have NA in any layer
   if(inherits(env, "SpatRaster")){

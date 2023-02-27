@@ -20,6 +20,5 @@ An enmtools.species object with appropriate formatting.
 Checking compliance for an object of class enmtools.species.
 }
 \examples{
-data(iberolacerta.clade)
 check.species(iberolacerta.clade$species$monticola)
 }

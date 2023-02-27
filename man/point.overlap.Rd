@@ -19,8 +19,6 @@ Takes two emtools.species objects with range rasters, calculates overlap between
 }
 \examples{
 \donttest{
-data(iberolacerta.clade)
-data(euro.worldclim)
 cyreni <- iberolacerta.clade$species$cyreni
 monticola <- iberolacerta.clade$species$monticola
 }

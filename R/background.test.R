@@ -26,8 +26,6 @@
 #'
 #' @examples
 #' \donttest{
-#' data(iberolacerta.clade)
-#' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni
 #' monticola <- iberolacerta.clade$species$monticola
 #' cyreni$range <- background.raster.buffer(cyreni$presence.points, 100000, euro.worldclim)
@@ -280,8 +278,8 @@ background.precheck <- function(species.1, species.2, env, type, f, nreps, test.
     stop("Species.2 is not an enmtools.species object!")
   }
 
-  if(!inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
-    stop("Environmental layers are not a RasterLayer or RasterStack object!")
+  if(!inherits(env, c("SpatRaster"))){
+    stop("Environmental layers are not a SpatRaster object!")
   }
 
   if(type == "glm"){
@@ -306,22 +304,22 @@ background.precheck <- function(species.1, species.2, env, type, f, nreps, test.
 
   check.species(species.1)
 
-  if(!inherits(species.1$presence.points, "data.frame")){
-    stop("Species 1 presence.points do not appear to be an object of class data.frame")
+  if(!inherits(species.1$presence.points, "SpatVector")){
+    stop("Species 1 presence.points do not appear to be an object of class SpatVector")
   }
 
-  if(!inherits(species.1$background.points, "data.frame")){
-    stop("Species 1 background.points do not appear to be an object of class data.frame")
+  if(!inherits(species.1$background.points, "SpatVector")){
+    stop("Species 1 background.points do not appear to be an object of class SpatVector")
   }
 
   check.species(species.2)
 
-  if(!inherits(species.2$presence.points, "data.frame")){
-    stop("Species 2 presence.points do not appear to be an object of class data.frame")
+  if(!inherits(species.2$presence.points, "SpatVector")){
+    stop("Species 2 presence.points do not appear to be an object of class SpatVector")
   }
 
-  if(!inherits(species.2$background.points, "data.frame")){
-    stop("Species 2 background.points do not appear to be an object of class data.frame")
+  if(!inherits(species.2$background.points, "SpatVector")){
+    stop("Species 2 background.points do not appear to be an object of class SpatVector")
   }
 
   if(any(!colnames(species.1$background.points) %in% colnames(species.2$background.points))){

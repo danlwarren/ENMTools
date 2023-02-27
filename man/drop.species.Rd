@@ -19,7 +19,6 @@ Takes a an ENMTools clade object and a vector of species names.  Drops the speci
 }
 \examples{
 \donttest{
-data(iberolacerta.clade)
 if(requireNamespace("ape", quietly = TRUE)) {
     new.clade <- drop.species(iberolacerta.clade, c("cyreni", "monticola"))
 }

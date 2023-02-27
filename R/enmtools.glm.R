@@ -22,8 +22,6 @@
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
 #'
 #' @examples
-#' data(euro.worldclim)
-#' data(iberolacerta.clade)
 #' enmtools.glm(iberolacerta.clade$species$monticola, env = euro.worldclim, f = pres ~ bio1 + bio9)
 
 
@@ -524,7 +522,7 @@ glm.precheck <- function(f, species, env){
     stop("Species background.points do not appear to be an object of class data.frame")
   }
 
-  if(!inherits(env, c("raster", "RasterLayer", "RasterStack", "RasterBrick"))){
+  if(!inherits(env, c("SpatRaster"))){
     stop("No environmental rasters were supplied!")
   }
 
