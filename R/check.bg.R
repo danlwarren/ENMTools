@@ -79,7 +79,7 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
 
     if(with.bias == FALSE){
       # Drawing background points from range raster
-      species$background.points <- terra::spatSample(terra::as.points(species$range),
+      species$background.points <- terra::spatSample(species$range,
                                                      size = nback, replace = TRUE,
                                                      as.points = TRUE)
 
@@ -98,7 +98,7 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
       sample.raster = terra::mask(bias, bias + species$range)
 
       # Drawing background points from sample raster
-      species$background.points <- terra::spatSample(terra::as.points(sample.raster),
+      species$background.points <- terra::spatSample(sample.raster,
                                                      size = nback, replace = TRUE,
                                                      method = "weights", as.points = TRUE)
     }
@@ -114,7 +114,7 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
 
     if(with.bias == FALSE){
       # Drawing background points from env raster
-      species$background.points <- terra::spatSample(terra::as.points(species$range),
+      species$background.points <- terra::spatSample(species$range,
                                                      size = nback, replace = TRUE,
                                                      as.points = TRUE)
 
@@ -133,7 +133,7 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
       sample.raster = terra::mask(bias, bias + env)
 
       # Drawing background points from sample raster
-      species$background.points <- terra::spatSample(terra::as.points(sample.raster),
+      species$background.points <- terra::spatSample(sample.raster,
                                                      size = nback, replace = TRUE,
                                                      method = "weights", as.points = TRUE)
     }
