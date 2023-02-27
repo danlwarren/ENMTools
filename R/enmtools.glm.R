@@ -1,4 +1,4 @@
-#' Takes an emtools.species object with presence and background points, and builds a GLM
+#' Takes an enmtools.species object with presence and background points, and builds a GLM
 #'
 #' @param species An enmtools.species object
 #' @param env A raster or raster stack of environmental data.

@@ -28,6 +28,23 @@ Depends:
     raster,
     dismo,
     R (>= 2.10)
-Suggests: testthat, hypervolume, leaflet, mgcv, ecospat (>= 3.2.1), randomForest,
-        ranger, caret, CalibratR, ape, ResourceSelection, 
-        reshape2, vip, pdp, fastshap, viridis, progress
+Suggests: 
+    testthat,
+    hypervolume,
+    leaflet,
+    mgcv,
+    ecospat (>= 3.2.1),
+    randomForest,
+    ranger,
+    caret,
+    CalibratR,
+    ape,
+    ResourceSelection,
+    reshape2,
+    vip,
+    pdp,
+    fastshap,
+    viridis,
+    progress,
+    rmarkdown
+VignetteBuilder: knitr
