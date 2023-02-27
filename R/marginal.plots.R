@@ -42,8 +42,8 @@ marginal.plots <- function(model, env, layer, standardize = TRUE, verbose = FALS
 
   for(i in names(env)){
     if(i != layer){
-      layer.values <- terra::extract(env[[i]], points)
-      plot.df <- cbind(plot.df, rep(mean(layer.values, na.rm = TRUE), 100))
+      layer.values <- terra::extract(env[[i]], points, ID = FALSE)
+      plot.df <- cbind(plot.df, rep(mean(unlist(layer.values), na.rm = TRUE), 100))
       names <- c(names, i)
     }
   }
@@ -70,10 +70,10 @@ marginal.plots <- function(model, env, layer, standardize = TRUE, verbose = FALS
     bg.dens <- density(bg.env[,2], from = minmax[1, ], to = minmax[2, ], n = 100, na.rm = TRUE)$y
     bg.dens <- bg.dens/max(bg.dens)
   } else {
-    pres.env <- terra::extract(env[[layer]], model$analysis.df[model$analysis.df$presence == 1,c(1,2)])
+    pres.env <- unlist(terra::extract(env[[layer]], model$analysis.df[model$analysis.df$presence == 1,c(1,2)], ID = FALSE))
     pres.dens <- density(pres.env, from = minmax[1, ], to = minmax[2, ], n = 100, na.rm = TRUE)$y
     pres.dens <- pres.dens/max(pres.dens)
-    bg.env <- terra::extract(env[[layer]], model$analysis.df[model$analysis.df$presence == 0,c(1,2)])
+    bg.env <- unlist(terra::extract(env[[layer]], model$analysis.df[model$analysis.df$presence == 0,c(1,2)], ID = FALSE))
     bg.dens <- density(bg.env, from = minmax[1, ], to = minmax[2, ], n = 100, na.rm = TRUE)$y
     bg.dens <- bg.dens/max(bg.dens)
   }
