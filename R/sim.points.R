@@ -109,10 +109,11 @@ sim.points <- function(object, n.points = 1000, seed = NA, sample.type = "ppp", 
 # https://gis.stackexchange.com/questions/115159/converting-raster-to-im-object-for-point-process-model-covariate-in-r
 raster.as.im <- function(im) {
   r <- terra::res(im)
-  orig <- sp::bbox(im)[, 1] + 0.5 * r
+  x.orig <- terra::ext(im)[1] + 0.5 * r
+  y.orig <- terra::ext(im)[3] + 0.5 * r
   dm <- dim(im)[2:1]
-  xx <- unname(orig[1] + cumsum(c(0, rep(r[1], dm[1] - 1))))
-  yy <- unname(orig[2] + cumsum(c(0, rep(r[2], dm[2] - 1))))
+  xx <- unname(x.orig + cumsum(c(0, rep(r[1], dm[1] - 1))))
+  yy <- unname(y.orig + cumsum(c(0, rep(r[2], dm[2] - 1))))
   return(spatstat.geom::im(matrix(terra::values(im), ncol = dm[1],
                              nrow = dm[2], byrow = TRUE)[dm[2]:1, ],
                       xcol = xx, yrow = yy))
