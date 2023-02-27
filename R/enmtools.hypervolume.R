@@ -142,8 +142,4 @@ hypervolume.precheck <- function(species, env){
     stop("No environmental rasters were supplied!")
   }
 
-  if(ncol(species$presence.points) != 2){
-    stop("Species presence points do not contain longitude and latitude data!")
-  }
-
 }

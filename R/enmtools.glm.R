@@ -525,4 +525,5 @@ glm.precheck <- function(f, species, env){
   if(!inherits(env, c("SpatRaster"))){
     stop("No environmental rasters were supplied!")
   }
+
 }

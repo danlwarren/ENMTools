@@ -509,13 +509,5 @@ maxent.precheck <- function(f, species, env){
   if(!inherits(env, c("SpatRaster"))){
     stop("No environmental rasters were supplied!")
   }
-
-  if(ncol(species$presence.points) != 2){
-    stop("Species presence points do not contain longitude and latitude data!")
-  }
-
-  if(ncol(species$background.points) != 2){
-    stop("Species background points do not contain longitude and latitude data!")
-  }
 }
 

@@ -457,10 +457,6 @@ dm.precheck <- function(species, env, f){
   if(!inherits(env, c("SpatRaster"))){
     stop("No environmental rasters were supplied!")
   }
-
-  if(ncol(species$presence.points) != 2){
-    stop("Species presence points do not contain longitude and latitude data!")
-  }
 }
 
 

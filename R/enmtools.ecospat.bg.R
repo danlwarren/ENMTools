@@ -217,35 +217,27 @@ ecospat.bg.precheck <- function(species.1, species.2, env, nreps, layers){
   }
 
   if(!inherits(env, c("SpatRaster"))){
-    stop("Environmental layers are not a RasterLayer or RasterStack object!")
+    stop("Environmental layers are not a SpatRaster object!")
   }
 
   check.species(species.1)
 
-  if(!inherits(species.1$presence.points, "data.frame")){
+  if(!inherits(species.1$presence.points, "SpatVector")){
     stop("Species 1 presence.points do not appear to be an object of class SpatVector")
   }
 
-  if(!inherits(species.1$background.points, "data.frame")){
+  if(!inherits(species.1$background.points, "SpatVector")){
     stop("Species 1 background.points do not appear to be an object of class SpatVector")
   }
 
   check.species(species.2)
 
-  if(!inherits(species.2$presence.points, "data.frame")){
+  if(!inherits(species.2$presence.points, "SpatVector")){
     stop("Species 2 presence.points do not appear to be an object of class SpatVector")
   }
 
-  if(!inherits(species.2$background.points, "data.frame")){
+  if(!inherits(species.2$background.points, "SpatVector")){
     stop("Species 2 background.points do not appear to be an object of class SpatVector")
-  }
-
-  if(any(!colnames(species.1$background.points) %in% colnames(species.2$background.points))){
-    stop("Column names for species background points do not match!")
-  }
-
-  if(any(!colnames(species.1$presence.points) %in% colnames(species.2$presence.points))){
-    stop("Column names for species presence points do not match!")
   }
 
   if(is.na(species.1$species.name)){
