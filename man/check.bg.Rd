@@ -16,7 +16,7 @@ check.bg(
 \arguments{
 \item{species}{An enmtools.species object}
 
-\item{env}{A raster or raster stack of environmental data.}
+\item{env}{A SpatRaster containing environmental data.}
 
 \item{nback}{Number of background points to generate, if any}
 
@@ -24,7 +24,7 @@ check.bg(
 
 \item{verbose}{Controls printing of various messages progress reports.  Defaults to FALSE.}
 
-\item{bias}{A raster representing estimated relative sampling bias.  Used when bg.source is either "range" or "env".}
+\item{bias}{A SpatRaster representing estimated relative sampling bias.  Used when bg.source is either "range" or "env".}
 }
 \value{
 An enmtools.species object with background points.

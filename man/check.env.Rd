@@ -18,6 +18,5 @@ A raster stack.
 Automating some basic tasks for using a raster stack for modeling.  Checks rasters for same extent and resolution, and sets values in each layer to NA if there is an NA in any other layer.
 }
 \examples{
-data(euro.worldclim)
 check.env(euro.worldclim)
 }
