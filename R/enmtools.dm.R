@@ -450,8 +450,8 @@ dm.precheck <- function(species, env, f){
 
   check.species(species)
 
-  if(!inherits(species$presence.points, "data.frame")){
-    stop("Species presence.points do not appear to be an object of class data.frame")
+  if(!inherits(species$presence.points, "SpatVector")){
+    stop("Species presence.points do not appear to be an object of class SpatVector")
   }
 
   if(!inherits(env, c("SpatRaster"))){

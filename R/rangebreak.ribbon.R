@@ -576,31 +576,31 @@ rangebreak.ribbon.precheck <- function(species.1, species.2, ribbon, env, type, 
   check.species(species.1)
 
   if(!inherits(species.1$presence.points, "data.frame")){
-    stop("Species 1 presence.points do not appear to be an object of class data.frame")
+    stop("Species 1 presence.points do not appear to be an object of class SpatVector")
   }
 
   if(!inherits(species.1$background.points, "data.frame")){
-    stop("Species 1 background.points do not appear to be an object of class data.frame")
+    stop("Species 1 background.points do not appear to be an object of class SpatVector")
   }
 
   check.species(species.2)
 
   if(!inherits(species.2$presence.points, "data.frame")){
-    stop("Species 2 presence.points do not appear to be an object of class data.frame")
+    stop("Species 2 presence.points do not appear to be an object of class SpatVector")
   }
 
   if(!inherits(species.2$background.points, "data.frame")){
-    stop("Species 2 background.points do not appear to be an object of class data.frame")
+    stop("Species 2 background.points do not appear to be an object of class SpatVector")
   }
 
   check.species(ribbon)
 
   if(!inherits(ribbon$presence.points, "data.frame")){
-    stop("Species 1 presence.points do not appear to be an object of class data.frame")
+    stop("Species 1 presence.points do not appear to be an object of class SpatVector")
   }
 
   if(!inherits(ribbon$background.points, "data.frame")){
-    stop("Species 1 background.points do not appear to be an object of class data.frame")
+    stop("Species 1 background.points do not appear to be an object of class SpatVector")
   }
 
 
