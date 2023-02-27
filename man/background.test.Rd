@@ -30,7 +30,7 @@ background.test(
 
 \item{species.2}{An enmtools.species object from which background will be sampled.}
 
-\item{env}{A RasterLayer or RasterStack object containing environmental data}
+\item{env}{A SpatRaster object containing environmental data}
 
 \item{type}{The type of model to construct, currently accepts "glm", "mx", "bc", "gam", or "dm"}
 

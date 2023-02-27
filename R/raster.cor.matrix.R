@@ -1,7 +1,7 @@
 #' Takes a raster stack and returns a data frame containing Pearson correlation coefficients
 #' between the included rasters
 #'
-#' @param env A RasterStack object containing two or more rasters
+#' @param env A SpatRaster object containing two or more rasters
 #' @param method Type of correlation to measure.  Can do "pearson", "kendall", or "spearman"
 #'
 #' @return A data frame of correlation coefficients for a set of rasters.

@@ -21,5 +21,6 @@ Takes two emtools.species objects with range rasters, calculates overlap between
 \donttest{
 cyreni <- iberolacerta.clade$species$cyreni
 monticola <- iberolacerta.clade$species$monticola
+point.overlap(cyreni, monticola)
 }
 }

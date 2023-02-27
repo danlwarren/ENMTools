@@ -20,7 +20,7 @@ env.evaluate(
 
 \item{model}{An enmtools.model object or a model that can be projected using the predict() function of dismo}
 
-\item{env}{A raster or raster stack of environmental data.}
+\item{env}{A SpatRaster of environmental data.}
 
 \item{bg.source}{Determines whether minima and maxima of the environment space should be picked using the environment layers or the background points.}
 

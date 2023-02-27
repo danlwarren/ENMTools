@@ -2,7 +2,7 @@
 #'
 #' @param species An enmtools.species object
 #' @param model An enmtools.model object or a model that can be projected using the predict() function of dismo
-#' @param env A raster or raster stack of environmental data.
+#' @param env A SpatRaster of environmental data.
 #' @param bg.source Determines whether minima and maxima of the environment space should be picked using the environment layers or the background points.
 #' @param n.background The number of background points to sample from the environment space.
 #' @param test.eval When set to "true", env.evaluate evaluates the test data stored in the model object instead of the training data.

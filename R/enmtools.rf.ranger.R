@@ -1,7 +1,7 @@
 #' Takes an emtools.species object with presence and background points, and builds a random forest model using the 'probability mode' in package `ranger`
 #'
 #' @param species An enmtools.species object
-#' @param env A raster or raster stack of environmental data.
+#' @param env A SpatRaster of environmental data.
 #' @param f A formula for fitting the model
 #' @param test.prop Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.
 #' @param eval Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.

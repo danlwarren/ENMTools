@@ -1,7 +1,7 @@
 #' Takes an emtools.species object with presence and background points, and builds a maxent model
 #'
 #' @param species An enmtools.species object
-#' @param env A raster or raster stack of environmental data.
+#' @param env A SpatRaster of environmental data.
 #' @param test.prop Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.
 #' @param nback Number of background points to draw from range or env, if background points aren't provided
 #' @param env.nback Number of points to draw from environment space for environment space discrimination metrics.

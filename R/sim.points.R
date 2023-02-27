@@ -21,7 +21,7 @@ sim.points <- function(object, n.points = 1000, seed = NA, sample.type = "ppp", 
 
   ## check if the model outputs predictions as probabilities (otherwise assume densities)
   suit <- object$suitability
-  # if(all(na.omit(terra::values(suit)) < 1 | na.omit(values(suit)) > 0)) {
+  # if(all(na.omit(terra::values(suit)) < 1 | na.omit(terra::values(suit)) > 0)) {
   #   probs <- TRUE
   # } else {
   #   probs <- FALSE

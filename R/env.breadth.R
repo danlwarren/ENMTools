@@ -23,7 +23,7 @@ env.breadth <- function(model, env, tolerance = .0001, max.reps = 10, chunk.size
   }
 
   # Setting it up so we can handle either a set of rasters or a list of minima and maxima
-  if(inherits(env, c("raster", "RasterStack", "RasterBrick", "RasterLayer"))){
+  if(inherits(env, c("SpatRaster"))){
     minmax <- terra::minmax(env)
     mins <- minmax[1, ]
     maxes <- minmax[2, ]

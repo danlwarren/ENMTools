@@ -25,7 +25,6 @@ Imports:
     forcats,
     terra
 Depends: 
-    raster,
     dismo,
     R (>= 2.10)
 Suggests: 

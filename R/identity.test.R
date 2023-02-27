@@ -3,7 +3,7 @@
 #'
 #' @param species.1 An emtools.species object
 #' @param species.2 An enmtools.species object
-#' @param env A RasterLayer or RasterStack object containing environmental data
+#' @param env A SpatRaster object containing environmental data
 #' @param type The type of model to construct, currently accepts "glm", "mx", "bc", "gam", "rf", or "dm"
 #' @param f A function to use for model fitting.  Only required for GLM models at the moment.
 #' @param nreps Number of replicates to perform

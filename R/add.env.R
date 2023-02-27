@@ -10,8 +10,8 @@
 
 add.env <- function(species, env, verbose = TRUE){
 
-  if(!any(c("RasterLayer", "RasterStack", "raster", "RasterBrick") %in% class(env))){
-    stop("Argument env must be a raster, RasterLayer, or RasterStack object!")
+  if(!"SpatRaster" %in% class(env)){
+    stop("Argument env must be a SpatRaster object!")
   }
 
   if("enmtools.species" %in% class(species)){
@@ -28,7 +28,7 @@ add.env <- function(species, env, verbose = TRUE){
 
       # Have to assign names manually because otherwise it fails when there's only one env layer
       names <- c(colnames(species$presence.points), names(env))
-      species$presence.points <- cbind(species$presence.points, extract(env, species$presence.points[,1:2]))
+      species$presence.points <- cbind(species$presence.points, terra::extract(env, species$presence.points[,1:2]))
       colnames(species$presence.points) <- names
       species$presence.points <- species$presence.points[complete.cases(species$presence.points),]
     } else {

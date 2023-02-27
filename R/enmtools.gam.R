@@ -2,7 +2,7 @@
 #'
 #' @param species An enmtools.species object
 #' @param f Standard gam formula
-#' @param env A raster or raster stack of environmental data.
+#' @param env A SpatRaster of environmental data.
 #' @param test.prop Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.
 #' @param k Dimension of the basis used to represent the smooth term.  See documentation for s() for details.
 #' @param nback Number of background points to draw from range or env, if background points aren't provided

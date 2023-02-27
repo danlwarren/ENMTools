@@ -66,10 +66,10 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
     this.lhs <- randomLHS(chunk.size, length(names(env)))
 
     # Setting it up so we can handle either a set of rasters or a list of minima and maxima
-    if(inherits(env, c("raster", "RasterStack", "RasterBrick", "RasterLayer"))){
+    if(inherits(env, c("SpatRaster"))){
       minmax <- terra::minmax(env)
-      mins <- minValue(env)
-      maxes <- maxValue(env)
+      mins <- minmax[1,]
+      maxes <- minmax[2,]
     } else if (inherits(env, "list")){
       mins <- unlist(lapply(env, min))
       maxes <- unlist(lapply(env, max))

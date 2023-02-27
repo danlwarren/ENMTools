@@ -1,7 +1,7 @@
 #' Takes a raster stack and returns a data frame containing Pearson correlation coefficients
 #' between the included rasters
 #'
-#' @param env A RasterStack object containing two or more rasters
+#' @param env A SpatRaster object containing two or more rasters
 #' @param method Type of correlation to measure.  Can do "pearson", "kendall", or "spearman"
 #'
 #' @return A list of two plots.  The first maps the correlations between rasters into an MDS space, so that predictors that fall close together in that space are more correlated.  The second plot is a heatmap depicting the correlations between pairs of layers.

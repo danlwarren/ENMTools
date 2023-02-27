@@ -125,7 +125,7 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
     recalibrated.plots[["calibration.plots"]] <- c(calib.plots.1, calib.plots.2)
 
     # Do env space discrim metrics
-    if(inherits(env, c("raster", "RasterBrick", "RasterStack"))){
+    if(inherits(env, c("SpatRaster"))){
 
       allpoints <- rbind(model$analysis.df[,1:2], model$test.data)
       values <- terra::extract(env, allpoints)
