@@ -88,8 +88,12 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
   # regardless of what was passed.
   f <- reformulate(attr(delete.response(terms(f)), "term.labels"), response = "presence")
 
-  analysis.df <- rbind(species$presence.points, species$background.points)
-  analysis.df$presence <- c(rep(1, nrow(species$presence.points)), rep(0, nrow(species$background.points)))
+  pres <- species$presence.points
+  abs <- species$background.points
+  pres$presence <- 1
+  abs$presence <- 0
+  analysis.df <- terra::as.data.frame(rbind(pres, abs), geom = "XY")
+  analysis.df <- analysis.df[ , c("x", "y", colnames(analysis.df)[!colnames(analysis.df) %in% c("x", "y")])]
 
   if(weights == "equal"){
     weights <- c(rep(1, nrow(species$presence.points)),
