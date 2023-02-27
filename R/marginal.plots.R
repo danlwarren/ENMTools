@@ -65,8 +65,9 @@ marginal.plots <- function(model, env, layer, standardize = TRUE, verbose = FALS
     pres.env <- terra::extract(env[[layer]], model$analysis.df)
     pres.dens <- density(pres.env, from = minmax[1, ], to = minmax[2, ], n = 100, na.rm = TRUE)$y
     pres.dens <- pres.dens/max(pres.dens)
-    bg.env <- terra::extract(env[[layer]], randomPoints(mask = env[[layer]], n = 1000))
-    bg.dens <- density(bg.env, from = minmax[1, ], to = minmax[2, ], n = 100, na.rm = TRUE)$y
+    bg.env <- terra::extract(env[[layer]],
+                             terra::spatSample(env[[layer]], size = 1000, as.points = TRUE, na.rm = TRUE))
+    bg.dens <- density(bg.env[,2], from = minmax[1, ], to = minmax[2, ], n = 100, na.rm = TRUE)$y
     bg.dens <- bg.dens/max(bg.dens)
   } else {
     pres.env <- terra::extract(env[[layer]], model$analysis.df[model$analysis.df$presence == 1,c(1,2)])
