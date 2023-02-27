@@ -20,8 +20,6 @@
 #' @examples
 #' \dontrun{
 #' install.extras(repos='http://cran.us.r-project.org')
-#' data(euro.worldclim)
-#' data(iberolacerta.clade)
 #' if(requireNamespace("rJava", quietly = TRUE)) {
 #'     enmtools.maxent(iberolacerta.clade$species$monticola, env = euro.worldclim)
 #' }

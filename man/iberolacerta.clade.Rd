@@ -8,7 +8,7 @@
 An enmtools.clade object with seven species and a phylogeny.
 }
 \usage{
-data(iberolacerta.clade)
+iberolacerta.clade
 }
 \description{
 This is some sample data downloaded from GBIF for the purposes of demonstrating ENMTools functionality.

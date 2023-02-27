@@ -18,8 +18,6 @@ A numeric value measuring range overlap.
 Takes two emtools.species objects with range rasters, calculates overlap between them as in Fitzpatrick and Turelli 2006.  This metric divides the area of overlap between two species ranges by the smaller of the two areas of the species' individual ranges.  It therefore ranges from 0 (no overlap) to 1 (ranges are the same or the smaller species' range is contained entirely within the larger).
 }
 \examples{
-data(iberolacerta.clade)
-data(euro.worldclim)
 cyreni <- iberolacerta.clade$species$cyreni
 monticola <- iberolacerta.clade$species$monticola
 cyreni$range <- background.raster.buffer(cyreni$presence.points, 100000, euro.worldclim)

@@ -7,8 +7,6 @@
 #'
 #' @examples
 #' \donttest{
-#' data(euro.worldclim)
-#' data(iberolacerta.clade)
 #' monticola.gam <- enmtools.gam(iberolacerta.clade$species$monticola, euro.worldclim[[c(1,5,9,13)]])
 #' euro.clamped <- clamp.env(monticola.gam, euro.worldclim)
 #' clamped.prediction <- predict(monticola.gam, euro.clamped)

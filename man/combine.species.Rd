@@ -16,6 +16,5 @@ An enmtools.species object with the occurrence data, names, and range rasters fo
 Takes a list of enmtools.species objects and combines them into a single enmtools.species object
 }
 \examples{
-data(iberolacerta.clade)
 combine.species(iberolacerta.clade$species)
 }

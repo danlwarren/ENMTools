@@ -22,8 +22,6 @@ scores from an ENM.  It returns Levins' (1968) two metrics of niche breadth.
 Levins, R. 1968. Evolution in changing environments: some theoretical explorations. Princeton University Press.
 }
 \examples{
-data(iberolacerta)
-data(euro.worldclim)
 aurelioi.glm <- enmtools.glm(iberolacerta.clade$species$aurelioi, euro.worldclim,
 f = pres ~ bio1 + bio12)
 raster.breadth(aurelioi.glm)

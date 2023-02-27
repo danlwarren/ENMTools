@@ -19,8 +19,6 @@
 #'
 #' @examples
 #' \donttest{
-#' data(euro.worldclim)
-#' data(iberolacerta.clade)
 #' enmtools.dm(iberolacerta.clade$species$monticola, env = euro.worldclim)
 #' }
 

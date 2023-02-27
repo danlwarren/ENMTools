@@ -26,8 +26,6 @@
 #'
 #' @examples
 #' \donttest{
-#' data(iberolacerta.clade)
-#' data(euro.worldclim)
 #' cyreni <- iberolacerta.clade$species$cyreni
 #' monticola <- iberolacerta.clade$species$monticola
 #' cyreni$range <- background.raster.buffer(cyreni$presence.points, 100000, euro.worldclim)

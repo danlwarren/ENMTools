@@ -6,8 +6,6 @@
 #' @return A new data frame with one point per grid cell.
 #'
 #' @examples
-#' data(iberolacerta.clade)
-#' data(euro.worldclim)
 #' pts <- iberolacerta.clade$species$monticola$presence.points
 #' trimdupes.by.raster(pts, euro.worldclim)
 

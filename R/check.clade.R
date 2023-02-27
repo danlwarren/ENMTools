@@ -4,7 +4,6 @@
 #' @return An enmtools.clade object with appropriate formatting.
 #'
 #' @examples
-#' data(iberolacerta.clade)
 #' check.clade(iberolacerta.clade)
 
 

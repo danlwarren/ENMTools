@@ -57,8 +57,6 @@ enmtools.ecospat.bg, Runs an ecospat background/similarity test using enmtool.sp
 \examples{
 \donttest{
 install.extras(repos='http://cran.us.r-project.org')
-data(iberolacerta.clade)
-data(euro.worldclim)
 monticola <- iberolacerta.clade$species$monticola
 cyreni <- iberolacerta.clade$species$cyreni
 enmtools.ecospat.bg(monticola, cyreni, euro.worldclim[[1:2]], nback = 500)

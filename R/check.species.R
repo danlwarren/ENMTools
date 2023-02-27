@@ -7,7 +7,6 @@
 #' @return An enmtools.species object with appropriate formatting.
 #'
 #' @examples
-#' data(iberolacerta.clade)
 #' check.species(iberolacerta.clade$species$monticola)
 
 

@@ -5,7 +5,6 @@
 #' @return An enmtools.species object with the occurrence data, names, and range rasters for the species list combined into one.
 #'
 #' @examples
-#' data(iberolacerta.clade)
 #' combine.species(iberolacerta.clade$species)
 
 

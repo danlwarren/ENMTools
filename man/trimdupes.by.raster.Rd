@@ -18,8 +18,6 @@ A new data frame with one point per grid cell.
 Takes a set of points and a raster mask and returns a data frame trimmed so that only one point is returned per grid cell in the mask raster.
 }
 \examples{
-data(iberolacerta.clade)
-data(euro.worldclim)
 pts <- iberolacerta.clade$species$monticola$presence.points
 trimdupes.by.raster(pts, euro.worldclim)
 }

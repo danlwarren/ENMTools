@@ -21,8 +21,6 @@
 #'
 #' @examples
 #' \donttest{
-#' data(euro.worldclim)
-#' data(iberolacerta.clade)
 #' enmtools.rf.ranger(iberolacerta.clade$species$monticola, env = euro.worldclim, nback = 500)
 #' }
 

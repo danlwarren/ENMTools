@@ -46,8 +46,6 @@ Calculates overlap between models in environment space using latin hypercube sam
 }
 \examples{
 \donttest{
-data(iberolacerta.clade)
-data(euro.worldclim)
 cyreni <- iberolacerta.clade$species$cyreni
 monticola <- iberolacerta.clade$species$monticola
 cyreni.glm <- enmtools.glm(cyreni, euro.worldclim, f = pres ~ bio1 + bio12, nback = 500)
