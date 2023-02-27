@@ -37,26 +37,14 @@ check.species <- function(this.species, env = NA, trim.dupes = FALSE){
   }
 
   if(!isTRUE(is.na(this.species$presence.points))){
-    if(!inherits(this.species$presence.points, "data.frame")){
-      this.species$presence.points <- as.data.frame(this.species$presence.points)
+    if(!inherits(this.species$presence.points, "SpatVector")){
+      "Species presence points require an object of class SpatVector"
     }
-
-    # Presence points exist, and are a data frame
-    this.species$presence.points <- format.latlon(this.species$presence.points)
   }
 
   if(!isTRUE(is.na(this.species$background.points))){
-    if(!inherits(this.species$background.points, "data.frame")){
-      this.species$background.points <- as.data.frame(this.species$background.points)
-    }
-
-    # Background points exist, and are a data frame
-    this.species$background.points <- format.latlon(this.species$background.points)
-  }
-
-  if(!isTRUE(is.na(this.species$background.points)) & !isTRUE(is.na(this.species$presence.points))){
-    if(any(!colnames(this.species$presence.points) %in% colnames(this.species$background.points))){
-      stop("Column names for presence and background points do not match")
+    if(!inherits(this.species$background.points, "SpatVector")){
+      "Species background points require an object of class SpatVector"
     }
   }
 
@@ -68,8 +56,8 @@ check.species <- function(this.species, env = NA, trim.dupes = FALSE){
 
   # Extracts data from env at presence points, uses that to remove points that have NA in any layer
   if(inherits(env, "SpatRaster")){
-    temp.df <- terra::extract(env, this.species$presence.points)
-    this.species$presence.points <- as.data.frame(this.species$presence.points[complete.cases(temp.df),])
+    temp.df <- terra::extract(env, terra::crds(this.species$presence.points))
+    this.species$presence.points <- terra::vect(this.species$presence.points[complete.cases(temp.df),])
   }
 
   # Removing duplicates
@@ -79,11 +67,10 @@ check.species <- function(this.species, env = NA, trim.dupes = FALSE){
 
   if(trim.dupes == "grid"){
     if(inherits(env, "SpatRaster")){
-      this.species$presence.points <- trimdupes.by.raster(this.species$presence.points, env)
+      this.species$presence.points <- trimdupes.by.raster(terra::crds(this.species$presence.points, env))
     } else {
       stop("Trim dupes by grid specified but env was either not supplied or was not a SpatRaster object!")
     }
-
   }
 
   # Return the formatted species object

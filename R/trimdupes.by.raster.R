@@ -13,13 +13,9 @@
 
 trimdupes.by.raster <- function(points, mask){
 
-  pa <- terra::rasterize(as.matrix(points), mask[[1]])
+  pa <- terra::rasterize(as.matrix(terra::crds(points)), mask[[1]])
 
   new.points <- terra::as.points(pa)
-
-  new.points <- terra::crds(new.points)
-
-  new.points <- new.points
 
   return(new.points)
 }
