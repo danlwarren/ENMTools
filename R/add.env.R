@@ -10,8 +10,8 @@
 
 add.env <- function(species, env, verbose = TRUE){
 
-  if(!any(c("RasterLayer", "RasterStack", "raster", "RasterBrick") %in% class(env))){
-    stop("Argument env must be a raster, RasterLayer, or RasterStack object!")
+  if(!inherits(env, c("SpatRaster"))){
+    stop("Argument env must be an object of class SpatRaster")
   }
 
   if("enmtools.species" %in% class(species)){
@@ -21,29 +21,29 @@ add.env <- function(species, env, verbose = TRUE){
       message(paste("Adding environmental data to species", species$species.name, "\n"))
     }
 
-    if(class(species$presence.points) %in% c("data.frame", "matrix")){
+    if(class(species$presence.points) %in% c("SpatVector")){
       if(verbose == TRUE){
         message("\tProcessing presence points...\n")
       }
 
       # Have to assign names manually because otherwise it fails when there's only one env layer
-      names <- c(colnames(species$presence.points), names(env))
-      species$presence.points <- cbind(species$presence.points, extract(env, species$presence.points[,1:2]))
-      colnames(species$presence.points) <- names
-      species$presence.points <- species$presence.points[complete.cases(species$presence.points),]
+      #names <- c(colnames(species$presence.points), names(env))
+      species$presence.points <- cbind(species$presence.points, terra::extract(env, species$presence.points))
+      #colnames(species$presence.points) <- names
+      species$presence.points <- species$presence.points[complete.cases(terra::values(species$presence.points)),]
     } else {
       message("No presence points, skipping...\n")
     }
 
-    if(class(species$background.points) %in% c("data.frame", "matrix")){
+    if(class(species$background.points) %in% c("SpatVector")){
       if(verbose == TRUE){
         message("\tProcessing background points...\n")
       }
 
-      names <- c(colnames(species$background.points), names(env))
-      species$background.points <- cbind(species$background.points, terra::extract(env, species$background.points[,1:2]))
-      colnames(species$background.points) <- names
-      species$background.points <- species$background.points[complete.cases(species$background.points),]
+      #names <- c(colnames(species$background.points), names(env))
+      species$background.points <- cbind(species$background.points, terra::extract(env, species$background.points))
+      #colnames(species$background.points) <- names
+      species$background.points <- species$background.points[complete.cases(terra::values(species$background.points)),]
     } else {
       message("No background points, skipping...\n")
     }
