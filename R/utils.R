@@ -10,7 +10,7 @@ wrap_list <- function(l) {
 
 #' export
 unwrap_list <- function(l) {
-  rapply(l, terra::wrap, classes = c("SpatVector", SpatRaster))
+  rapply(l, terra::wrap, classes = c("SpatVector", "SpatRaster"))
 }
 
 make_analysis.df <- function(species) {

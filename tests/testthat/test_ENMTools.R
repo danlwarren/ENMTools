@@ -103,10 +103,11 @@ check.clade(iberolacerta.clade)
 #'
 #'
 
-cyreni.dm <- enmtools.dm(cyreni, euro.worldclim, test.prop = 0.2)
-cyreni.bc <- enmtools.bc(cyreni, euro.worldclim, test.prop = 0)
 
 test_that("enmtools.model objects work for core methods", {
+
+  cyreni.dm <- enmtools.dm(cyreni, euro.worldclim, test.prop = 0.2)
+  cyreni.bc <- enmtools.bc(cyreni, euro.worldclim, test.prop = 0)
 
   expect_enmtools_model(cyreni.dm)
   expect_enmtools_model(cyreni.bc)
@@ -127,8 +128,11 @@ test_that("enmtools.model objects work for core methods", {
 
 test_that("rf model objects work", {
   skip_if_not_installed("randomForest")
-  cyreni.rf <- enmtools.rf(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
+  expect_warning(cyreni.rf <- enmtools.rf(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2))
   expect_enmtools_model(cyreni.rf)
+  p <- plot(cyreni.rf)
+  expect_s3_class(p, "ggplot")
+  expect_snapshot(print(cyreni.rf))
 })
 
 
@@ -162,6 +166,7 @@ test_that("interactive.plot produces correct object", {
   expect_match(sapply(m_dm_cluster$x$calls, function(x) x$method), "addRasterImage", all = FALSE)
   expect_match(sapply(m_dm$x$calls, function(x) x$method), "addRasterImage", all = FALSE)
 })
+
 
 #' Geographic space metrics and visualization
 #'

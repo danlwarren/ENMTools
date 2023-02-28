@@ -68,8 +68,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
     }
   }
 
-  analysis.df <- rbind(species$presence.points, species$background.points)
-  analysis.df$presence <- c(rep(1, nrow(species$presence.points)), rep(0, nrow(species$background.points)))
+  analysis.df <- make_analysis.df(species)
 
   # This is a very weird hack that has to be done because dismo's evaluate and maxent function
   # fail if the stack only has one layer.
@@ -414,6 +413,7 @@ plot.enmtools.maxent <- function(x, ...){
 
   suit.points <- data.frame(rasterToPoints2(x$suitability))
   colnames(suit.points) <- c("x", "y", "Suitability")
+  test <- terra::as.data.frame(x$test.data, geom = "XY")
 
   suit.plot <- ggplot(data = suit.points, aes_string(y = "y", x = "x")) +
     geom_raster(aes_string(fill = "Suitability")) +
@@ -427,7 +427,7 @@ plot.enmtools.maxent <- function(x, ...){
                pch = 21, fill = "white", color = "black", size = 2)
 
   if(!(all(is.na(x$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = x$test.data,  aes_string(y = "y", x = "x"),
+    suit.plot <- suit.plot + geom_point(data = test,  aes_string(y = "y", x = "x"),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
 

@@ -27,7 +27,7 @@ enmtools.hypervolume <- function(species, env, samples.per.point = 10, reduction
   hypervolume.precheck(species, env)
 
   for(i in 1:length(names(env))){
-    env[[i]] <- (env[[i]] - terra::global(env[[i]], "mean", na.rm = TRUE))/terra::global(env[[i]], "sd", na.rm = TRUE)
+    env[[i]] <- (env[[i]] - as.numeric(terra::global(env[[i]], "mean", na.rm = TRUE)))/as.numeric(terra::global(env[[i]], "sd", na.rm = TRUE))
   }
 
   climate <- terra::extract(env, species$presence.points, ID = FALSE)
@@ -76,6 +76,7 @@ plot.enmtools.hypervolume <- function(x, ...){
 
   suit.points <- data.frame(rasterToPoints2(x$suitability))
   colnames(suit.points) <- c("x", "y", "Suitability")
+  test <- terra::as.data.frame(x$test.data, geom = "XY")
 
   suit.plot <- ggplot(data = suit.points,  aes_string(y = "y", x = "x")) +
     geom_raster(aes_string(fill = "Suitability")) +
@@ -85,7 +86,7 @@ plot.enmtools.hypervolume <- function(x, ...){
                pch = 21, fill = "white", color = "black", size = 2)
 
   if(!(all(is.na(x$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = x$test.data,  aes_string(y = "y", x = "x"),
+    suit.plot <- suit.plot + geom_point(data = test,  aes_string(y = "y", x = "x"),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
 
