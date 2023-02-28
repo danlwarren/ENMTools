@@ -4,11 +4,13 @@ on:
       - master
       - develop
       - vip
+      - v2-develop
   pull_request:
     branches:
       - master
       - develop
       - vip
+      - v2-develop
 
 name: R-CMD-check
 
