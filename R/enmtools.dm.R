@@ -378,11 +378,9 @@ plot.enmtools.dm <- function(x, ...){
                                       x$analysis.df$y < terra::ext(x$suitability)[4],], aes(y = .data$y, x = .data$x),
                pch = 21, fill = "white", color = "black", size = 2)
 
-  if(!is.na(x$test.data)){
-    if(!(all(is.na(terra::values(x$test.data))))){
-      suit.plot <- suit.plot + geom_point(data = test,  aes(y = .data$y, x = .data$x),
-                                          pch = 21, fill = "green", color = "black", size = 2)
-    }
+  if(inherits(x$test.data, "SpatVector")){
+    suit.plot <- suit.plot + geom_point(data = test,  aes(y = .data$y, x = .data$x),
+                                        pch = 21, fill = "green", color = "black", size = 2)
   }
 
   if(!is.na(x$species.name)){
