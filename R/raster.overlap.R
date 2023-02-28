@@ -36,8 +36,8 @@ raster.overlap <- function(x, y, verbose=FALSE){
   x <- raster.standardize(x)
   y <- raster.standardize(y)
 
-  D <- 1 - terra::global(abs(x - y), "sum", na.rm = TRUE)/2
-  I <- 1 - terra::global((sqrt(x) - sqrt(y))^2, "sum", na.rm = TRUE)/2
+  D <- 1 - as.numeric(terra::global(abs(x - y), "sum", na.rm = TRUE)/2)
+  I <- 1 - as.numeric(terra::global((sqrt(x) - sqrt(y))^2, "sum", na.rm = TRUE)/2)
   rank.cor <- raster.cor(x, y)
 
   results <- list(D = D, I = I, rank.cor = rank.cor)

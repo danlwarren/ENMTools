@@ -94,7 +94,7 @@ multistack.pca <- function(..., n = 2){
       i <- i
       p1 <- qplot(pca$x[,i], fill = data.source,
                     color = data.source, geom = "density",
-                    alpha = 0.3) + xlab(pc.name) + guides(alpha = FALSE) +
+                    alpha = 0.3) + xlab(pc.name) + guides(alpha = "none") +
         labs(fill = "Data source", color = "Data source")
       print(p1)
     })

@@ -80,8 +80,12 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
     if(with.bias == FALSE){
       # Drawing background points from range raster
       species$background.points <- terra::spatSample(species$range,
-                                                     size = nback, replace = TRUE,
-                                                     as.points = TRUE)
+                                                     size = min(length(terra::cells(species$range)), nback), replace = TRUE,
+                                                     as.points = TRUE, na.rm = TRUE)
+      # Becase terra doesn't actually sample with replacement
+      if(nrow(species$background.points) < nback){
+        species$background.points <- sample(species$background.points, nback, replace = TRUE)
+      }
 
     } else {
       # There is a bias layer
@@ -99,8 +103,13 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
 
       # Drawing background points from sample raster
       species$background.points <- terra::spatSample(sample.raster,
-                                                     size = nback, replace = TRUE,
-                                                     method = "weights", as.points = TRUE)
+                                                     size = min(length(terra::cells(sample.raster)), nback), replace = TRUE,
+                                                     method = "weights", as.points = TRUE,
+                                                     na.rm = TRUE)
+      # Becase terra doesn't actually sample with replacement
+      if(nrow(species$background.points) < nback){
+        species$background.points <- sample(species$background.points, nback, replace = TRUE)
+      }
     }
 
     colnames(species$background.points) <- colnames(species$presence.points)
@@ -114,9 +123,13 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
 
     if(with.bias == FALSE){
       # Drawing background points from env raster
-      species$background.points <- terra::spatSample(species$range,
-                                                     size = nback, replace = TRUE,
-                                                     as.points = TRUE)
+      species$background.points <- terra::spatSample(env,
+                                                     size = min(length(terra::cells(env)), nback), replace = TRUE,
+                                                     as.points = TRUE, na.rm = TRUE)
+      # Becase terra doesn't actually sample with replacement
+      if(nrow(species$background.points) < nback){
+        species$background.points <- sample(species$background.points, nback, replace = TRUE)
+      }
 
     } else {
       # There is a bias layer
@@ -134,8 +147,13 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
 
       # Drawing background points from sample raster
       species$background.points <- terra::spatSample(sample.raster,
-                                                     size = nback, replace = TRUE,
-                                                     method = "weights", as.points = TRUE)
+                                                     size = min(length(terra::cells(sample.raster)), nback), replace = TRUE,
+                                                     method = "weights", as.points = TRUE,
+                                                     na.rm = TRUE)
+      # Becase terra doesn't actually sample with replacement
+      if(nrow(species$background.points) < nback){
+        species$background.points <- sample(species$background.points, nback, replace = TRUE)
+      }
     }
 
     colnames(species$background.points) <- colnames(species$presence.points)

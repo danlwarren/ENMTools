@@ -146,6 +146,7 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
       #background sampling for species 1, only run when we're doing a symmetric test
       combined.points <- rbind(rep.species.1$presence.points, species.1.original.background)
+      terra::values(combined.points) <- NULL
       sample.vector <- sample(nrow(combined.points))
       combined.points <- combined.points[sample.vector,]
       rep.species.1$presence.points <- combined.points[1:nrow(species.1$presence.points),]
@@ -155,6 +156,7 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
     # Background sampling for species 2, run regardless of the type of test
     combined.points <- rbind(rep.species.2$presence.points, species.2.original.background)
+    terra::values(combined.points) <- NULL
     sample.vector <- sample(nrow(combined.points))
     combined.points <- combined.points[sample.vector,]
     rep.species.2$presence.points <- combined.points[1:nrow(species.2$presence.points),]
@@ -162,8 +164,8 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
     # Building the models for reps
     if(type == "glm"){
-      rep.species.1.model <- enmtools.glm(rep.species.1, env, f, clamp = FALSE, ...)
-      rep.species.2.model <- enmtools.glm(rep.species.2, env, f, clamp = FALSE, ...)
+      rep.species.1.model <- enmtools.glm(rep.species.1, env, f, clamp = FALSE)
+      rep.species.2.model <- enmtools.glm(rep.species.2, env, f, clamp = FALSE)
     }
 
     if(type == "gam"){
@@ -217,34 +219,34 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
   d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"D"], linetype = "longdash") +
-    xlim(-.05,1.05) + guides(fill = "none", alpha = FALSE) + xlab("D") + ggtitle(description) +
+    xlim(-.05,1.05) + guides(fill = "none", alpha = "none") + xlab("D") + ggtitle(description) +
     theme(plot.title = element_text(hjust = 0.5))
 
   i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"I"], linetype = "longdash") +
-    xlim(-.05,1.05) + guides(fill = "none", alpha = FALSE) + xlab("I") + ggtitle(description) +
+    xlim(-.05,1.05) + guides(fill = "none", alpha = "none") + xlab("I") + ggtitle(description) +
     theme(plot.title = element_text(hjust = 0.5))
 
   cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"rank.cor"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"rank.cor"], linetype = "longdash") +
-    xlim(-1.05,1.05) + guides(fill = "none", alpha = FALSE) + xlab("Rank Correlation") + ggtitle(description) +
+    xlim(-1.05,1.05) + guides(fill = "none", alpha = "none") + xlab("Rank Correlation") + ggtitle(description) +
     theme(plot.title = element_text(hjust = 0.5))
 
   env.d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.D"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.D"], linetype = "longdash") +
-    xlim(-.05,1.05) + guides(fill = "none", alpha = FALSE) + xlab("D, Environmental Space") +
+    xlim(-.05,1.05) + guides(fill = "none", alpha = "none") + xlab("D, Environmental Space") +
     ggtitle(description) +
     theme(plot.title = element_text(hjust = 0.5))
 
   env.i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.I"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.I"], linetype = "longdash") +
-    xlim(-.05,1.05) + guides(fill = "none", alpha = FALSE) + xlab("I, Environmental Space") +
+    xlim(-.05,1.05) + guides(fill = "none", alpha = "none") + xlab("I, Environmental Space") +
     ggtitle(description) +
     theme(plot.title = element_text(hjust = 0.5))
 
   env.cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.cor"], geom = "histogram", fill = "density", alpha = 0.5) +
     geom_vline(xintercept = reps.overlap[1,"env.cor"], linetype = "longdash") +
-    xlim(-1.05,1.05) + guides(fill = "none", alpha = FALSE) + xlab("Rank Correlation, Environmental Space") +
+    xlim(-1.05,1.05) + guides(fill = "none", alpha = "none") + xlab("Rank Correlation, Environmental Space") +
     ggtitle(description) +
     theme(plot.title = element_text(hjust = 0.5))
 
