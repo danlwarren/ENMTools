@@ -86,13 +86,11 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
 
   # Testing to see whether models are presence only or presence/background
   continuous.boyce <- NA
-  if("presence" %in% colnames(model$analysis.df)){
-    continuous.boyce <- ecospat::ecospat.boyce(model$suitability,
-                                               model$test.data, PEplot = FALSE)
-  } else {
-    continuous.boyce <- ecospat::ecospat.boyce(model$suitability,
-                                               model$test.data, PEplot = FALSE)
-  }
+
+  pred.all <- terra::values(model$suitability, na.rm = TRUE)
+  pred.test <- as.matrix(terra::extract(model$suitability, model$test.data, ID = FALSE))
+
+  continuous.boyce <- ecospat::ecospat.boyce(pred.all, pred.test, PEplot = FALSE)
 
   # Recalibrating as needed
   recalibrated.model <- NA
