@@ -103,14 +103,14 @@ marginal.plots <- function(model, env, layer, standardize = TRUE, verbose = FALS
                                         rep("Presence", 100),
                                         rep("Background", 100)))
 
-  response.plot <- qplot(layer, value, geom = "line", data = plot.df.long,
-                         xlab = layer, ylab = "Value", colour = source, linetype = source) +
-                          theme_bw() + scale_color_manual(values = c("green4", "red", "blue")) +
-                          scale_linetype_manual(values = c( "dashed", "twodash", "solid")) +
-                          theme(plot.title = element_text(hjust = 0.5)) +
-                          theme(plot.title = element_text(hjust = 0.5)) +
-                          theme(legend.title=element_blank())
-
+  response.plot <- ggplot(data = plot.df.long, aes(x = layer, y = value)) +
+    geom_line(aes(colour = source, linetype = source)) +
+    xlab(layer) + ylab("Value") +
+    theme_bw() + scale_color_manual(values = c("green4", "red", "blue")) +
+    scale_linetype_manual(values = c( "dashed", "twodash", "solid")) +
+    theme(plot.title = element_text(hjust = 0.5)) +
+    theme(plot.title = element_text(hjust = 0.5)) +
+    theme(legend.title=element_blank())
 
   return(response.plot)
 
