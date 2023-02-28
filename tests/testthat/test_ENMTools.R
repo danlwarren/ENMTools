@@ -49,8 +49,8 @@ expect_enmtools_model <- function(model){
     expect_true(inherits(model$env.test.evaluation, "ModelEvaluation"),
                 info = "Test proportion greater than 0 but env.test.evaluation is not a ModelEvaluation object")
 
-    expect_true(inherits(model$test.data, "data.frame"),
-                info = "Test proportion is greater than 0 but test.data is not a data frame")
+    expect_true(inherits(model$test.data, "SpatVector"),
+                info = "Test proportion is greater than 0 but test.data is not a SpatVector")
   } else {
     expect_true(inherits(model$test.evaluation, "logical"))
 

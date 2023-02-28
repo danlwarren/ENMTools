@@ -7,7 +7,7 @@
 rasterToPoints2(rast)
 }
 \arguments{
-\item{rast}{A SpatRaster object}
+\item{rast}{A raster to convert to points}
 }
 \description{
 get terra to produce same output as raster::rasterToPoints

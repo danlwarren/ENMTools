@@ -7,7 +7,7 @@
 wrap_list(l)
 }
 \arguments{
-\item{l}{A list object that includes SpatVector or SpatRaster objects to wrap or unwrap}
+\item{l}{A list containing species objects that need to be converted}
 }
 \description{
 export
