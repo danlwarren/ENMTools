@@ -128,7 +128,7 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
     if(inherits(env, c("SpatRaster"))){
 
       allpoints <- rbind(model$analysis.df[,1:2], model$test.data)
-      values <- terra::extract(env, allpoints)
+      values <- terra::extract(env, allpoints, ID = FALSE)
       maxes <- apply(values, 2, function(x) max(x, na.rm = TRUE))
       mins <- apply(values, 2, function(x) min(x, na.rm = TRUE))
 
@@ -136,8 +136,8 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
       bg.table <- t(t(this.lhs) * (maxes  - mins) + mins)
       colnames(bg.table) <- names(env)
 
-      p.table <- terra::extract(env, model$analysis.df[model$analysis.df$presence == 1,1:2])
-      test.table <- terra::extract(env, model$test.data)
+      p.table <- terra::extract(env, model$analysis.df[model$analysis.df$presence == 1,1:2], ID = FALSE)
+      test.table <- terra::extract(env, model$test.data, ID = FALSE)
 
       # Having to do this for now because the dismo models don't like "newdata"
       # Unfortunately I think we finally have to use an if statement because ranger predict is really different

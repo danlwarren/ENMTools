@@ -82,7 +82,7 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
   clamping.strength <- NA
   if(clamp == TRUE){
     # Adding env (skipped for BC otherwise)
-    this.df <- as.data.frame(terra::extract(env, species$presence.points))
+    this.df <- as.data.frame(terra::extract(env, species$presence.points, ID = FALSE))
 
     env <- clamp.env(this.df, env)
     clamped.suitability <- predict(env, this.dm, type = "response")
@@ -97,7 +97,7 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
   # Test eval for randomly withheld data
   if(is.numeric(test.prop)){
     if(test.prop > 0 & test.prop < 1){
-      test.check <- terra::extract(env, test.data)
+      test.check <- terra::extract(env, test.data, ID = FALSE)
       test.data <- test.data[complete.cases(test.check),]
       test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
                                         this.dm, env)
@@ -110,7 +110,7 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
   # Test eval for spatially structured data
   if(is.character(test.prop)){
     if(test.prop == "block"){
-      test.check <- terra::extract(env, test.data)
+      test.check <- terra::extract(env, test.data, ID = FALSE)
       test.data <- test.data[complete.cases(test.check),]
       test.evaluation <-dismo::evaluate(test.data, test.bg,
                                         this.dm, env)
@@ -358,21 +358,21 @@ print.enmtools.dm <- function(x, ...){
 plot.enmtools.dm <- function(x, ...){
 
   suit.points <- data.frame(rasterToPoints2(x$suitability))
-  colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
+  colnames(suit.points) <- c("x", "y", "Suitability")
 
-  suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
+  suit.plot <- ggplot(data = suit.points,  aes_string(y = "y", x = "x")) +
     geom_raster(aes_string(fill = "Suitability")) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
     geom_point(data = x$analysis.df[x$analysis.df$presence == 1 &
-                                      x$analysis.df$Longitude > terra::ext(x$suitability)[1] &
-                                      x$analysis.df$Longitude < terra::ext(x$suitability)[2] &
-                                      x$analysis.df$Latitude > terra::ext(x$suitability)[3] &
-                                      x$analysis.df$Latitude < terra::ext(x$suitability)[4],], aes_string(y = "Latitude", x = "Longitude"),
+                                      x$analysis.df$x > terra::ext(x$suitability)[1] &
+                                      x$analysis.df$x < terra::ext(x$suitability)[2] &
+                                      x$analysis.df$y > terra::ext(x$suitability)[3] &
+                                      x$analysis.df$y < terra::ext(x$suitability)[4],], aes_string(y = "y", x = "x"),
                pch = 21, fill = "white", color = "black", size = 2)
 
   if(!(all(is.na(x$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = x$test.data,  aes_string(y = "Latitude", x = "Longitude"),
+    suit.plot <- suit.plot + geom_point(data = x$test.data,  aes_string(y = "y", x = "x"),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
 
@@ -400,7 +400,7 @@ predict.enmtools.dm <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
   clamping.strength <- NA
   if(clamp == TRUE){
     # Adding env (skipped for BC otherwise)
-    this.df <- as.data.frame(terra::extract(env, object$analysis.df))
+    this.df <- as.data.frame(terra::extract(env, object$analysis.df, ID = FALSE))
 
     env <- clamp.env(this.df, env)
     clamped.suitability <- terra::predict(env, object$model)
@@ -409,17 +409,17 @@ predict.enmtools.dm <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
   }
 
   suit.points <- data.frame(rasterToPoints2(suitability))
-  colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
+  colnames(suit.points) <- c("x", "y", "Suitability")
 
-  suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
+  suit.plot <- ggplot(data = suit.points,  aes_string(y = "y", x = "x")) +
     geom_raster(aes_string(fill = "Suitability")) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()
 
   clamp.points <- data.frame(rasterToPoints2(clamping.strength))
-  colnames(clamp.points) <- c("Longitude", "Latitude", "Clamping")
+  colnames(clamp.points) <- c("x", "y", "Clamping")
 
-  clamp.plot <- ggplot(data = clamp.points,  aes_string(y = "Latitude", x = "Longitude")) +
+  clamp.plot <- ggplot(data = clamp.points,  aes_string(y = "y", x = "x")) +
     geom_raster(aes_string(fill = "Clamping")) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()

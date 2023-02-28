@@ -62,7 +62,7 @@ visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plo
 
   for(i in names(env)){
     if(!(i %in% layers)){
-      layer.values <- terra::extract(env[[i]], points)
+      layer.values <- terra::extract(env[[i]], points, ID = FALSE)
       plot.df <- cbind(plot.df, rep(mean(layer.values, na.rm=TRUE), nrow(plot.df)))
       names <- c(names, i)
     }
@@ -70,7 +70,7 @@ visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plo
 
   # Get data for plotting training points
   if(plot.points == TRUE){
-    pointdata <- as.data.frame(terra::extract(env[[layers]], points))
+    pointdata <- as.data.frame(terra::extract(env[[layers]], points, ID = FALSE))
   }
 
   # Grab test points
@@ -78,7 +78,7 @@ visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plo
     if(!is.data.frame(model$test.data)){
       stop("Test data is not present, but plot.test.data was set to TRUE")
     }
-    test.points <- as.data.frame(cbind(terra::extract(env[[layers]], model$test.data)))
+    test.points <- as.data.frame(cbind(terra::extract(env[[layers]], model$test.data, ID = FALSE)))
   }
 
   colnames(plot.df) <- names
@@ -119,7 +119,7 @@ visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plo
     background.plot <- NA
   } else {
     bgpoints <- model$analysis.df[model$analysis.df$presence == 0,1:2]
-    bgdata <- as.data.frame(terra::extract(env[[layers]], bgpoints))
+    bgdata <- as.data.frame(terra::extract(env[[layers]], bgpoints, ID = FALSE))
     background.plot <- ggplot(bgdata, aes_string(y = names[2], x = names[1])) +
       stat_density_2d(aes_string(fill = "..density.."), geom = "raster", contour = FALSE) +
       xlim(layer1.min, layer1.max) + ylim(layer2.min, layer2.max) +

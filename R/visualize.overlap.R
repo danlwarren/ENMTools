@@ -66,14 +66,14 @@ visualize.overlap <- function(model.1, model.2, env, nbins = 100, layers, plot.p
   # Set value to mean for all non-target vars
   for(i in names(env)){
     if(!(i %in% layers)){
-      layer.values <- terra::extract(env[[i]], rbind(points.1, points.2))
+      layer.values <- terra::extract(env[[i]], rbind(points.1, points.2), ID = FALSE)
       plot.df <- cbind(plot.df, rep(mean(layer.values, na.rm=TRUE), nrow(plot.df)))
       names <- c(names, i)
     }
   }
 
-  pointdata.1 <- as.data.frame(terra::extract(env[[layers]], points.1))
-  pointdata.2 <- as.data.frame(terra::extract(env[[layers]], points.2))
+  pointdata.1 <- as.data.frame(terra::extract(env[[layers]], points.1, ID = FALSE))
+  pointdata.2 <- as.data.frame(terra::extract(env[[layers]], points.2, ID = FALSE))
 
   colnames(plot.df) <- names
 

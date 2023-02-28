@@ -41,7 +41,7 @@ interactive.plot.enmtools.species <- function(x, map.provider = "Esri.WorldPhysi
   if(class(x$background.points)  %in% c("data.frame", "matrix")){
     background.points <- x$background.points
     m <- m %>%
-      leaflet::addCircleMarkers(~Longitude, ~Latitude, color = "red",
+      leaflet::addCircleMarkers(~x, ~y, color = "red",
                        data = background.points, stroke = FALSE, fillOpacity = 0.5,
                        radius = 8, group = "Background points")
     overlays <- c(overlays, "Background points")
@@ -53,13 +53,13 @@ interactive.plot.enmtools.species <- function(x, map.provider = "Esri.WorldPhysi
     presence.points <- x$presence.points
     if(cluster.points) {
       m <- m %>%
-        leaflet::addCircleMarkers(~Longitude, ~Latitude, color = "green",
+        leaflet::addCircleMarkers(~x, ~y, color = "green",
                          stroke = FALSE, fillOpacity = 0.5, radius = 8,
                          data = presence.points, clusterOptions = leaflet::markerClusterOptions(),
                          group = "Occurrence points")
     } else {
       m <- m %>%
-        leaflet::addCircleMarkers(~Longitude, ~Latitude, color = "green",
+        leaflet::addCircleMarkers(~x, ~y, color = "green",
                          data = presence.points, stroke = FALSE, fillOpacity = 0.5,
                          radius = 8, group = "Occurrence points")
     }

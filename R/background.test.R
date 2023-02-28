@@ -83,7 +83,7 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
     combined.all.points <- rbind(species.1$presence.points, species.2$presence.points, combined.background.points)
 
     # Adding env (skipped for BC otherwise)
-    this.df <- as.data.frame(terra::extract(env, combined.all.points))
+    this.df <- as.data.frame(terra::extract(env, combined.all.points, ID = FALSE))
 
     env <- clamp.env(this.df, env)
   }

@@ -60,7 +60,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
   if(inherits(model, "enmtools.rf.ranger")){
     thismodel <- model$model
     feature_names <- colnames(model$analysis.df)
-    feature_names <- feature_names[!feature_names %in% c("Longitude", "Latitude", "presence")]
+    feature_names <- feature_names[!feature_names %in% c("x", "y", "presence")]
     train <- model$analysis.df[,-c(1,2)]
     target <- "presence"
     pred_wrapper <- function(object, newdata) predict(object, data = newdata, type = "response")$predictions
@@ -82,7 +82,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
   if(inherits(model, "enmtools.ppmlasso")){
     thismodel <- model$model
     feature_names <- colnames(model$analysis.df)
-    feature_names <- feature_names[!feature_names %in% c("Longitude", "Latitude", "presence", "wt")]
+    feature_names <- feature_names[!feature_names %in% c("x", "y", "presence", "wt")]
     train <- model$analysis.df[,c(feature_names, "presence")]
     target <- "presence"
     pred_wrapper <- function(object, newdata) predict(object, newdata = newdata, type = "response")

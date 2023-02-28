@@ -93,7 +93,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
   clamping.strength <- NA
   if(clamp == TRUE){
     # Adding env (skipped for MX otherwise)
-    this.df <- as.data.frame(terra::extract(env, species$presence.points))
+    this.df <- as.data.frame(terra::extract(env, species$presence.points, ID = FALSE))
 
     env <- clamp.env(this.df, env)
 
@@ -122,7 +122,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
   # Test eval for randomly withheld data
   if(is.numeric(test.prop)){
     if(test.prop > 0 & test.prop < 1){
-      test.check <- terra::extract(env, test.data)
+      test.check <- terra::extract(env, test.data, ID = FALSE)
       test.data <- test.data[complete.cases(test.check),]
 
       temp.sp <- species
@@ -144,7 +144,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
   # Test eval for spatially structured data
   if(is.character(test.prop)){
     if(test.prop == "block"){
-      test.check <- terra::extract(env, test.data)
+      test.check <- terra::extract(env, test.data, ID = FALSE)
       test.data <- test.data[complete.cases(test.check),]
 
       temp.sp <- species
@@ -413,21 +413,21 @@ plot.enmtools.maxent <- function(x, ...){
 
 
   suit.points <- data.frame(rasterToPoints2(x$suitability))
-  colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
+  colnames(suit.points) <- c("x", "y", "Suitability")
 
-  suit.plot <- ggplot(data = suit.points, aes_string(y = "Latitude", x = "Longitude")) +
+  suit.plot <- ggplot(data = suit.points, aes_string(y = "y", x = "x")) +
     geom_raster(aes_string(fill = "Suitability")) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
     geom_point(data = x$analysis.df[x$analysis.df$presence == 1 &
-                                    x$analysis.df$Longitude > terra::ext(x$suitability)[1] &
-                                    x$analysis.df$Longitude < terra::ext(x$suitability)[2] &
-                                    x$analysis.df$Latitude > terra::ext(x$suitability)[3] &
-                                    x$analysis.df$Latitude < terra::ext(x$suitability)[4],],  aes_string(y = "Latitude", x = "Longitude"),
+                                    x$analysis.df$x > terra::ext(x$suitability)[1] &
+                                    x$analysis.df$x < terra::ext(x$suitability)[2] &
+                                    x$analysis.df$y > terra::ext(x$suitability)[3] &
+                                    x$analysis.df$y < terra::ext(x$suitability)[4],],  aes_string(y = "y", x = "x"),
                pch = 21, fill = "white", color = "black", size = 2)
 
   if(!(all(is.na(x$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = x$test.data,  aes_string(y = "Latitude", x = "Longitude"),
+    suit.plot <- suit.plot + geom_point(data = x$test.data,  aes_string(y = "y", x = "x"),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
 
@@ -460,9 +460,9 @@ predict.enmtools.maxent <- function(object, env, maxpts = 1000, clamp = TRUE, ..
   }
 
   suit.points <- data.frame(rasterToPoints2(suitability))
-  colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
+  colnames(suit.points) <- c("x", "y", "Suitability")
 
-  suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
+  suit.plot <- ggplot(data = suit.points,  aes_string(y = "y", x = "x")) +
     geom_raster(aes_string(fill = "Suitability")) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()

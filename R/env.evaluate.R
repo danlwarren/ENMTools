@@ -46,7 +46,7 @@ env.evaluate <- function(species, model, env, bg.source = "background", n.backgr
 
   if(bg.source == "background"){
     allpoints <- rbind(presence, background)
-    values <- terra::extract(env, allpoints)
+    values <- terra::extract(env, allpoints, ID = FALSE)
     maxes <- apply(values, 2, function(x) max(x, na.rm = TRUE))
     mins <- apply(values, 2, function(x) min(x, na.rm = TRUE))
   }
@@ -63,7 +63,7 @@ env.evaluate <- function(species, model, env, bg.source = "background", n.backgr
   bg.table <- t(t(this.lhs) * (maxes  - mins) + mins)
   colnames(bg.table) <- names(env)
 
-  p.table <- terra::extract(env, presence)
+  p.table <- terra::extract(env, presence, ID = FALSE)
 
   # Having to do this for now because the dismo models don't like "newdata"
   # Unfortunately I think we finally have to use an if statement because ranger predict is really different

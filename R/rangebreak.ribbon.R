@@ -28,7 +28,7 @@
 #'
 #' # We're just going to fudge together occurrence data from a ribbon here
 #' # from random points between the two species' ranges
-#' p <- data.frame(Longitude = runif(50, -4, -2), Latitude = runif(50, 40, 43))
+#' p <- data.frame(x = runif(50, -4, -2), y = runif(50, 40, 43))
 #' bg <- background.buffer(p, 100000, mask = euro.worldclim[[1]], n = 100, return.type = "points")
 #' ribbon <- enmtools.species(species.name = "ribbon", presence.points = p, background.points = bg)
 #'
@@ -87,7 +87,7 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
   # and setting replicate clmaping to FALSE
   if(clamp == TRUE){
     # Adding env (skipped for BC otherwise)
-    this.df <- as.data.frame(terra::extract(env, combined.presence.points))
+    this.df <- as.data.frame(terra::extract(env, combined.presence.points, ID = FALSE))
 
     env <- clamp.env(this.df, env)
   }

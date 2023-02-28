@@ -29,7 +29,7 @@ add.env <- function(species, env, verbose = TRUE){
       # Have to assign names manually because otherwise it fails when there's only one env layer
 
       #names <- c(colnames(species$presence.points), names(env))
-      species$presence.points <- cbind(species$presence.points, terra::extract(env, species$presence.points))
+      species$presence.points <- cbind(species$presence.points, terra::extract(env, species$presence.points, ID = FALSE))
       #colnames(species$presence.points) <- names
       species$presence.points <- species$presence.points[complete.cases(terra::values(species$presence.points)),]
 
@@ -43,7 +43,7 @@ add.env <- function(species, env, verbose = TRUE){
       }
 
       #names <- c(colnames(species$background.points), names(env))
-      species$background.points <- cbind(species$background.points, terra::extract(env, species$background.points))
+      species$background.points <- cbind(species$background.points, terra::extract(env, species$background.points, ID = FALSE))
       #colnames(species$background.points) <- names
       species$background.points <- species$background.points[complete.cases(terra::values(species$background.points)),]
     } else {

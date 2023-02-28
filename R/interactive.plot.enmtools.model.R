@@ -26,12 +26,12 @@ interactive.plot.enmtools.model <- function(x, map.provider = "Esri.WorldPhysica
 
 
   if(!is.null(x$analysis.df$presence)) {
-    pnts <- x$analysis.df[ , c("Longitude", "Latitude", "presence")]
+    pnts <- x$analysis.df[ , c("x", "y", "presence")]
     presence.points <- pnts[pnts$presence == 1, ]
     background.points <- pnts[pnts$presence == 0, ]
   } else {
-    pnts <- x$analysis.df[ , c("Longitude", "Latitude")]
-    presence.points <- x$analysis.df[ , c("Longitude", "Latitude")]
+    pnts <- x$analysis.df[ , c("x", "y")]
+    presence.points <- x$analysis.df[ , c("x", "y")]
   }
 
   m <- leaflet::leaflet(pnts) %>%
@@ -41,20 +41,20 @@ interactive.plot.enmtools.model <- function(x, map.provider = "Esri.WorldPhysica
 
   if(is.data.frame(background.points)){
     m <- m %>%
-      leaflet::addCircleMarkers(~Longitude, ~Latitude, color = "black",
+      leaflet::addCircleMarkers(~x, ~y, color = "black",
                        stroke = FALSE, fillOpacity = 0.5, radius= 8,
                        data = background.points, group = "Background points")
   }
 
   if(cluster.points) {
     m <- m %>%
-      leaflet::addCircleMarkers(~Longitude, ~Latitude, color = "red",
+      leaflet::addCircleMarkers(~x, ~y, color = "red",
                        stroke = FALSE, fillOpacity = 0.5, radius= 8,
                        clusterOptions = leaflet::markerClusterOptions(),
                        data = presence.points, group = "Training points")
   } else {
     m <- m %>%
-      leaflet::addCircleMarkers(~Longitude, ~Latitude, color = "red",
+      leaflet::addCircleMarkers(~x, ~y, color = "red",
                        stroke = FALSE, fillOpacity = 0.5, radius= 8,
                        data = presence.points, group = "Training points")
   }
@@ -62,7 +62,7 @@ interactive.plot.enmtools.model <- function(x, map.provider = "Esri.WorldPhysica
 
   if(is.data.frame(x$test.data)){
     m <- m %>%
-      leaflet::addCircleMarkers(~Longitude, ~Latitude, color = "green",
+      leaflet::addCircleMarkers(~x, ~y, color = "green",
                        stroke = FALSE, fillOpacity = 0.5, radius= 8,
                        group = "Test points", data = x$test.data)
   }
