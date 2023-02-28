@@ -47,3 +47,4 @@ Suggests:
     progress,
     rmarkdown
 VignetteBuilder: knitr
+Config/testthat/edition: 3

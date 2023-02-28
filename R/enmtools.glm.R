@@ -88,12 +88,13 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
   # regardless of what was passed.
   f <- reformulate(attr(delete.response(terms(f)), "term.labels"), response = "presence")
 
-  pres <- species$presence.points
-  abs <- species$background.points
-  pres$presence <- 1
-  abs$presence <- 0
-  analysis.df <- terra::as.data.frame(rbind(pres, abs), geom = "XY")
-  analysis.df <- analysis.df[ , c("x", "y", colnames(analysis.df)[!colnames(analysis.df) %in% c("x", "y")])]
+  analysis.df <- make_analysis.df(species)
+  # pres <- species$presence.points
+  # abs <- species$background.points
+  # pres$presence <- 1
+  # abs$presence <- 0
+  # analysis.df <- terra::as.data.frame(rbind(pres, abs), geom = "XY")
+  # analysis.df <- analysis.df[ , c("x", "y", colnames(analysis.df)[!colnames(analysis.df) %in% c("x", "y")])]
 
   if(weights == "equal"){
     weights <- c(rep(1, nrow(species$presence.points)),
@@ -432,6 +433,7 @@ plot.enmtools.glm <- function(x, ...){
 
   suit.points <- data.frame(rasterToPoints2(x$suitability))
   colnames(suit.points) <- c("x", "y", "Suitability")
+  test <- terra::as.data.frame(x$test.data, geom = "XY")
 
   suit.plot <- ggplot(data = suit.points,  aes_string(y = "y", x = "x")) +
     geom_raster(aes_string(fill = "Suitability")) +
@@ -441,7 +443,7 @@ plot.enmtools.glm <- function(x, ...){
                pch = 21, fill = "white", color = "black", size = 2)
 
   if(!(all(is.na(x$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = x$test.data,  aes_string(y = "y", x = "x"),
+    suit.plot <- suit.plot + geom_point(data = test,  aes_string(y = "y", x = "x"),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
 

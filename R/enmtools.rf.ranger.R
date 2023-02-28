@@ -80,9 +80,7 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
   # regardless of what was passed.
   f <- reformulate(attr(delete.response(terms(f)), "term.labels"), response = "presence")
 
-  analysis.df <- rbind(species$presence.points, species$background.points)
-  analysis.df$presence <- c(rep(1, nrow(species$presence.points)), rep(0, nrow(species$background.points)))
-  analysis.df$presence <- as.factor(analysis.df$presence)
+  analysis.df <- make_analysis.df(species)
 
   this.rf <- ranger::ranger(f, analysis.df[,-c(1,2)], probability = TRUE, ...)
 
@@ -396,6 +394,7 @@ plot.enmtools.rf.ranger <- function(x, ...){
 
   suit.points <- data.frame(rasterToPoints2(x$suitability))
   colnames(suit.points) <- c("x", "y", "Suitability")
+  test <- terra::as.data.frame(x$test.data, geom = "XY")
 
   suit.plot <- ggplot(data = suit.points, aes_string(y = "y", x = "x")) +
     geom_raster(aes_string(fill = "Suitability")) +
@@ -405,7 +404,7 @@ plot.enmtools.rf.ranger <- function(x, ...){
                pch = 21, fill = "white", color = "black", size = 2)
 
   if(!(all(is.na(x$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = x$test.data,  aes_string(y = "y", x = "x"),
+    suit.plot <- suit.plot + geom_point(data = test,  aes_string(y = "y", x = "x"),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
 
