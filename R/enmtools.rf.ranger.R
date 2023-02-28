@@ -203,7 +203,7 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
         thisrep.rf <- ranger::ranger(f, rts.df[,-c(1,2)], probability = TRUE, ...)
 
         thisrep.model.evaluation <- dismo::evaluate(predict(thisrep.rf, data = rep.species$presence.points)$predictions[ , 2, drop = TRUE],
-                                                   predict(thisrep.rf, data = rep.species$background.points)$predictions[ , 2, drop = TRUE])
+                                                    predict(thisrep.rf, data = rep.species$background.points)$predictions[ , 2, drop = TRUE])
         thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.rf, env, n.background = env.nback)
 
         rts.geog.training[i] <- thisrep.model.evaluation@auc
@@ -406,11 +406,9 @@ plot.enmtools.rf.ranger <- function(x, ...){
     geom_point(data = x$analysis.df[x$analysis.df$presence == 1,],  aes(y = .data$y, x = .data$x),
                pch = 21, fill = "white", color = "black", size = 2)
 
-  if(!is.na(x$test.data)){
-    if(!(all(is.na(terra::values(x$test.data))))){
-      suit.plot <- suit.plot + geom_point(data = test,  aes(y = .data$y, x = .data$x),
-                                          pch = 21, fill = "green", color = "black", size = 2)
-    }
+  if(inherits(x$test.data, "SpatVector")){
+    suit.plot <- suit.plot + geom_point(data = test,  aes(y = .data$y, x = .data$x),
+                                        pch = 21, fill = "green", color = "black", size = 2)
   }
 
   if(!is.na(x$species.name)){
