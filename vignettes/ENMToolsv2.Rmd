@@ -38,5 +38,5 @@ Now to test hypervolume.
 
 ```{r hypervolum_test, eval=FALSE}
 monticola.hyper <- enmtools.hypervolume(species = monticola, env = env[[c("bio1", "bio12", "bio7")]])
-
+monticola.ranger <- enmtools.rf.ranger(species = monticola, env = env, f = pres ~ bio1 + bio12 + bio7, test.prop = 0.2)
 ```

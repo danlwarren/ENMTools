@@ -113,7 +113,7 @@ enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = 
 
   sp1.bg.points <- data.frame(rasterToPoints2(sp1.niche$Z))
   colnames(sp1.bg.points) <- c("X", "Y", "Density")
-  sp1.bg.plot <-  ggplot(data = sp1.bg.points, aes_string(y = "Y", x = "X")) +
+  sp1.bg.plot <-  ggplot(data = sp1.bg.points, aes(y = .data$y, x = .data$x)) +
     geom_raster(aes_string(fill = "Density")) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Density")) +
     theme_classic() +
@@ -122,7 +122,7 @@ enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = 
 
   sp1.env.points <- data.frame(rasterToPoints2(sp1.niche$z.uncor))
   colnames(sp1.env.points) <- c("X", "Y", "Density")
-  sp1.env.plot <-  ggplot(data = sp1.env.points, aes_string(y = "Y", x = "X")) +
+  sp1.env.plot <-  ggplot(data = sp1.env.points, aes(y = .data$y, x = .data$x)) +
     geom_raster(aes_string(fill = "Density")) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Density")) +
     theme_classic() +
@@ -131,7 +131,7 @@ enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = 
 
   sp1.env.corr.points <- data.frame(rasterToPoints2(sp1.niche$z.cor))
   colnames(sp1.env.corr.points) <- c("X", "Y", "Density")
-  sp1.env.plot.corr <-  ggplot(data = sp1.env.corr.points, aes_string(y = "Y", x = "X")) +
+  sp1.env.plot.corr <-  ggplot(data = sp1.env.corr.points, aes(y = .data$y, x = .data$x)) +
     geom_raster(aes_string(fill = "Density")) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Density")) +
     theme_classic() +
@@ -140,7 +140,7 @@ enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = 
 
   sp2.bg.points <- data.frame(rasterToPoints2(sp2.niche$Z))
   colnames(sp2.bg.points) <- c("X", "Y", "Density")
-  sp2.bg.plot <-  ggplot(data = sp2.bg.points, aes_string(y = "Y", x = "X")) +
+  sp2.bg.plot <-  ggplot(data = sp2.bg.points, aes(y = .data$y, x = .data$x)) +
     geom_raster(aes_string(fill = "Density")) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Density")) +
     theme_classic() +
@@ -149,7 +149,7 @@ enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = 
 
   sp2.env.points <- data.frame(rasterToPoints2(sp2.niche$z.uncor))
   colnames(sp2.env.points) <- c("X", "Y", "Density")
-  sp2.env.plot <-  ggplot(data = sp2.env.points, aes_string(y = "Y", x = "X")) +
+  sp2.env.plot <-  ggplot(data = sp2.env.points, aes(y = .data$y, x = .data$x)) +
     geom_raster(aes_string(fill = "Density")) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Density")) +
     theme_classic() +
@@ -158,7 +158,7 @@ enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = 
 
   sp2.env.corr.points <- data.frame(rasterToPoints2(sp2.niche$z.cor))
   colnames(sp2.env.corr.points) <- c("X", "Y", "Density")
-  sp2.env.plot.corr <-  ggplot(data = sp2.env.corr.points, aes_string(y = "Y", x = "X")) +
+  sp2.env.plot.corr <-  ggplot(data = sp2.env.corr.points, aes(y = .data$y, x = .data$x)) +
     geom_raster(aes_string(fill = "Density")) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Density")) +
     theme_classic() +
@@ -273,7 +273,7 @@ summary.ecospat.id.test <- function(object, ...){
 
 print.ecospat.id.test <- function(x, ...){
 
-  print(summary(x))
+  print(summary(x, ...))
 
 }
 

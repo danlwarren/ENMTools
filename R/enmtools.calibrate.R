@@ -364,7 +364,7 @@ summary.enmtools.calibrate <- function(object, ...){
 # Print method for objects of class enmtools.calibrate
 print.enmtools.calibrate <- function(x, ...){
 
-  print(summary(x))
+  print(summary(x, ...))
 
 }
 

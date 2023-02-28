@@ -140,7 +140,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
       notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
     }
 
-    model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
+    model.evaluation <-dismo::evaluate(species$presence.points, species$background.points,
                                        this.glm, env)
     env.model.evaluation <- env.evaluate(species, this.glm, env, n.background = env.nback)
 
@@ -383,10 +383,10 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
 }
 
 # Summary for objects of class enmtools.glm
-summary.enmtools.glm <- function(object, ...){
+summary.enmtools.glm <- function(object, plot = TRUE, ...){
 
   cat("\n\nFormula:  ")
-  print(object$formula)
+  cat(deparse(object$formula))
 
   cat("\n\nData table (top ten lines): ")
   print(kable(head(object$analysis.df, 10)))
@@ -415,14 +415,16 @@ summary.enmtools.glm <- function(object, ...){
   cat("\n\nNotes:  \n")
   object$notes
 
-  plot(object)
+  if(plot) {
+    plot(object)
+  }
 
 }
 
 # Print method for objects of class enmtools.glm
 print.enmtools.glm <- function(x, ...){
 
-  print(summary(x))
+  print(summary(x, ...))
 
 }
 
@@ -435,15 +437,15 @@ plot.enmtools.glm <- function(x, ...){
   colnames(suit.points) <- c("x", "y", "Suitability")
   test <- terra::as.data.frame(x$test.data, geom = "XY")
 
-  suit.plot <- ggplot(data = suit.points,  aes_string(y = "y", x = "x")) +
-    geom_raster(aes_string(fill = "Suitability")) +
+  suit.plot <- ggplot(data = suit.points,  aes(y = .data$y, x = .data$x)) +
+    geom_raster(aes(fill = .data$Suitability)) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
-    geom_point(data = x$analysis.df[x$analysis.df$presence == 1,],  aes_string(y = "y", x = "x"),
+    geom_point(data = x$analysis.df[x$analysis.df$presence == 1,],  aes(y = .data$y, x = .data$x),
                pch = 21, fill = "white", color = "black", size = 2)
 
-  if(!(all(is.na(x$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = test,  aes_string(y = "y", x = "x"),
+  if(!(all(is.na(terra::values(x$test.data))))){
+    suit.plot <- suit.plot + geom_point(data = test,  aes(y = .data$y, x = .data$x),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
 
@@ -476,15 +478,15 @@ predict.enmtools.glm <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
   suit.points <- data.frame(rasterToPoints2(suitability))
   colnames(suit.points) <- c("x", "y", "Suitability")
 
-  suit.plot <- ggplot(data = suit.points,  aes_string(y = "y", x = "x")) +
-    geom_raster(aes_string(fill = "Suitability")) +
+  suit.plot <- ggplot(data = suit.points,  aes(y = .data$y, x = .data$x)) +
+    geom_raster(aes(fill = .data$Suitability)) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()
 
   clamp.points <- data.frame(rasterToPoints2(clamping.strength))
   colnames(clamp.points) <- c("x", "y", "Clamping")
 
-  clamp.plot <- ggplot(data = clamp.points,  aes_string(y = "y", x = "x")) +
+  clamp.plot <- ggplot(data = clamp.points,  aes(y = .data$y, x = .data$x)) +
     geom_raster(aes_string(fill = "Clamping")) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()

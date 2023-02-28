@@ -55,18 +55,20 @@ enmtools.hypervolume <- function(species, env, samples.per.point = 10, reduction
 
 
 # Summary for objects of class enmtools.hypervolume
-summary.enmtools.hypervolume <- function(object, ...){
+summary.enmtools.hypervolume <- function(object, plot = TRUE, ...){
 
   print(object$hv)
 
-  plot(object)
+  if(plot) {
+    plot(object)
+  }
 
 }
 
 # Print method for objects of class enmtools.hypervolume
 print.enmtools.hypervolume <- function(x, ...){
 
-  print(summary(x))
+  print(summary(x, ...))
 
 }
 
@@ -78,15 +80,15 @@ plot.enmtools.hypervolume <- function(x, ...){
   colnames(suit.points) <- c("x", "y", "Suitability")
   test <- terra::as.data.frame(x$test.data, geom = "XY")
 
-  suit.plot <- ggplot(data = suit.points,  aes_string(y = "y", x = "x")) +
-    geom_raster(aes_string(fill = "Suitability")) +
+  suit.plot <- ggplot(data = suit.points,  aes(y = .data$y, x = .data$x)) +
+    geom_raster(aes(fill = .data$Suitability)) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
-    geom_point(data = x$analysis.df,  aes_string(y = "y", x = "x"),
+    geom_point(data = x$analysis.df,  aes(y = .data$y, x = .data$x),
                pch = 21, fill = "white", color = "black", size = 2)
 
-  if(!(all(is.na(x$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = test,  aes_string(y = "y", x = "x"),
+  if(!(all(is.na(terra::values(x$test.data))))){
+    suit.plot <- suit.plot + geom_point(data = test,  aes(y = .data$y, x = .data$x),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
 
@@ -109,8 +111,8 @@ predict.enmtools.hypervolume <- function(object, env, reduction.factor = 0.1){
   suit.points <- data.frame(rasterToPoints2(suitability))
   colnames(suit.points) <- c("x", "y", "Suitability")
 
-  suit.plot <- ggplot(data = suit.points,  aes_string(y = "y", x = "x")) +
-    geom_raster(aes_string(fill = "Suitability")) +
+  suit.plot <- ggplot(data = suit.points,  aes(y = .data$y, x = .data$x)) +
+    geom_raster(aes(fill = .data$Suitability)) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()
 
