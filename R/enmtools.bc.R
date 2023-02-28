@@ -72,7 +72,9 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
     notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
   }
 
-  this.bc <- bioclim(env, species$presence.points[,1:2])
+  # dismo's bioclim function doesn't work with SpatRaster
+  # objects so we're going to convert to a matrix instead
+  this.bc <- dismo::bioclim(terra::extract(env, species$presence.points, ID = FALSE))
 
   suitability <- predict(env, this.bc, type = "response")
 
@@ -173,7 +175,7 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
       # Everything else goes back to the background
       rep.species$background.points <- allpoints
 
-      thisrep.bc <- dismo::bioclim(env, rep.species$presence.points[,1:2])
+      thisrep.bc <- dismo::bioclim(terra::extract(env, rep.species$presence.points, ID = FALSE))
 
       thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points[,1:2], rep.species$background.points[,1:2],
                                                  thisrep.bc, env)
@@ -222,13 +224,13 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
     # Making plots
     training.plot <- qplot(rts.geog.training, geom = "histogram", fill = "density", alpha = 0.5) +
       geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
-      xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("AUC") +
+      xlim(0,1) + guides(fill = "none", alpha = FALSE) + xlab("AUC") +
       ggtitle(paste("Model performance in geographic space on training data")) +
       theme(plot.title = element_text(hjust = 0.5))
 
     env.training.plot <- qplot(rts.env.training, geom = "histogram", fill = "density", alpha = 0.5) +
       geom_vline(xintercept = env.model.evaluation@auc, linetype = "longdash") +
-      xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("AUC") +
+      xlim(0,1) + guides(fill = "none", alpha = FALSE) + xlab("AUC") +
       ggtitle(paste("Model performance in environmental space on training data")) +
       theme(plot.title = element_text(hjust = 0.5))
 
@@ -236,13 +238,13 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
     if(test.prop > 0){
       test.plot <- qplot(rts.geog.test, geom = "histogram", fill = "density", alpha = 0.5) +
         geom_vline(xintercept = test.evaluation@auc, linetype = "longdash") +
-        xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("AUC") +
+        xlim(0,1) + guides(fill = "none", alpha = FALSE) + xlab("AUC") +
         ggtitle(paste("Model performance in geographic space on test data")) +
         theme(plot.title = element_text(hjust = 0.5))
 
       env.test.plot <- qplot(rts.env.test, geom = "histogram", fill = "density", alpha = 0.5) +
         geom_vline(xintercept = env.test.evaluation@auc, linetype = "longdash") +
-        xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("AUC") +
+        xlim(0,1) + guides(fill = "none", alpha = FALSE) + xlab("AUC") +
         ggtitle(paste("Model performance in environmental space on test data")) +
         theme(plot.title = element_text(hjust = 0.5))
     } else {

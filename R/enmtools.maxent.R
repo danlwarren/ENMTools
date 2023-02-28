@@ -277,13 +277,13 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
     # Making plots
     training.plot <- qplot(rts.geog.training, geom = "histogram", fill = "density", alpha = 0.5) +
       geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
-      xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("AUC") +
+      xlim(0,1) + guides(fill = "none", alpha = FALSE) + xlab("AUC") +
       ggtitle(paste("Model performance in geographic space on training data")) +
       theme(plot.title = element_text(hjust = 0.5))
 
     env.training.plot <- qplot(rts.env.training, geom = "histogram", fill = "density", alpha = 0.5) +
       geom_vline(xintercept = env.model.evaluation@auc, linetype = "longdash") +
-      xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("AUC") +
+      xlim(0,1) + guides(fill = "none", alpha = FALSE) + xlab("AUC") +
       ggtitle(paste("Model performance in environmental space on training data")) +
       theme(plot.title = element_text(hjust = 0.5))
 
@@ -291,13 +291,13 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
     if(test.prop > 0){
       test.plot <- qplot(rts.geog.test, geom = "histogram", fill = "density", alpha = 0.5) +
         geom_vline(xintercept = test.evaluation@auc, linetype = "longdash") +
-        xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("AUC") +
+        xlim(0,1) + guides(fill = "none", alpha = FALSE) + xlab("AUC") +
         ggtitle(paste("Model performance in geographic space on test data")) +
         theme(plot.title = element_text(hjust = 0.5))
 
       env.test.plot <- qplot(rts.env.test, geom = "histogram", fill = "density", alpha = 0.5) +
         geom_vline(xintercept = env.test.evaluation@auc, linetype = "longdash") +
-        xlim(0,1) + guides(fill = FALSE, alpha = FALSE) + xlab("AUC") +
+        xlim(0,1) + guides(fill = "none", alpha = FALSE) + xlab("AUC") +
         ggtitle(paste("Model performance in environmental space on test data")) +
         theme(plot.title = element_text(hjust = 0.5))
     } else {
