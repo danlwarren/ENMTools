@@ -121,6 +121,17 @@ test_that("enmtools.model objects work for core methods", {
   expect_enmtools_model(cyreni.glm)
 
 
+  p.dm <- plot(cyreni.dm)
+  expect_s3_class(p.dm, "ggplot")
+  expect_snapshot(print(cyreni.dm, plot = FALSE))
+
+  p.bc <- plot(cyreni.bc)
+  expect_s3_class(p.bc, "ggplot")
+  expect_snapshot(print(cyreni.bc, plot = FALSE))
+
+  p.glm <- plot(cyreni.glm)
+  expect_s3_class(p.glm, "ggplot")
+  expect_snapshot(print(cyreni.glm, plot = FALSE))
 
   # skip_on_ci()
   # skip_on_cran()
@@ -142,6 +153,9 @@ test_that("ranger model objects work", {
   skip_if_not_installed("ranger")
   cyreni.rf.ranger <- enmtools.rf.ranger(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
   expect_enmtools_model(cyreni.rf.ranger)
+  p <- plot(cyreni.rf.ranger)
+  expect_s3_class(p, "ggplot")
+  expect_snapshot(print(cyreni.rf.ranger, plot = FALSE))
 })
 
 # test_that("ppm model objects work", {
@@ -154,6 +168,9 @@ test_that("gam model objects work", {
   skip_if_not_installed("mgcv")
   cyreni.gam <- enmtools.gam(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
   expect_enmtools_model(cyreni.gam)
+  p <- plot(cyreni.gam)
+  expect_s3_class(p, "ggplot")
+  expect_snapshot(print(cyreni.gam, plot = FALSE))
 })
 
 
@@ -164,8 +181,8 @@ test_that("interactive.plot produces correct object", {
   cyreni.dm <- enmtools.dm(cyreni, euro.worldclim, test.prop = 0.2)
   m_dm <- interactive.plot(cyreni.dm)
   m_dm_cluster <- interactive.plot(cyreni.dm, cluster.points = TRUE)
-  expect_is(m_dm, "leaflet")
-  expect_is(m_dm_cluster, "leaflet")
+  expect_s3_class(m_dm, "leaflet")
+  expect_s3_class(m_dm_cluster, "leaflet")
   expect_match(sapply(m_dm_cluster$x$calls, function(x) x$method), "addRasterImage", all = FALSE)
   expect_match(sapply(m_dm$x$calls, function(x) x$method), "addRasterImage", all = FALSE)
 })
@@ -186,6 +203,10 @@ test_that("interactive.plot produces correct object", {
 #' Monte Carlo tests, ENMTools-style
 #'
 #'
+test_that("rts tests work", {
+  cyreni.bc <- enmtools.bc(cyreni, euro.worldclim, rts.reps = 100)
+})
+
 
 
 #' Ecospat tests

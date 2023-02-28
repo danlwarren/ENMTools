@@ -36,7 +36,7 @@ interactive.plot.enmtools.model <- function(x, map.provider = "Esri.WorldPhysica
 
   m <- leaflet::leaflet(pnts) %>%
     leaflet::addProviderTiles(map.provider, group = "Base map") %>%
-    leaflet::addRasterImage(x$suitability, colors = "inferno", opacity = raster.opacity,
+    leaflet::addRasterImage(raster::raster(x$suitability), colors = "inferno", opacity = raster.opacity,
                             group = "Model", maxBytes = max.bytes)
 
   if(is.data.frame(background.points)){
