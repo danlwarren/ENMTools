@@ -33,7 +33,11 @@ Model fitting functions from ENMTools still function much as they did before onc
 ```{r run_glm, eval = FALSE}
 monticola.glm <- enmtools.glm(species = monticola, env = env, f = pres ~ bio1 + bio12 + bio7, test.prop = 0.2)
 monticola.glm
+
+monticola.glm.rts <- enmtools.glm(species = monticola, env = env, f = pres ~ bio1 + bio12 + bio7, test.prop = 0.2, rts.reps = 100)
+monticola.glm.rts
 ```
+
 Now to test hypervolume.
 
 ```{r hypervolum_test, eval=FALSE}
