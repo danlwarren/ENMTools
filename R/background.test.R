@@ -162,8 +162,8 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
     # Building the models for reps
     if(type == "glm"){
-      rep.species.1.model <- enmtools.glm(rep.species.1, env, f, clamp = FALSE, ...)
-      rep.species.2.model <- enmtools.glm(rep.species.2, env, f, clamp = FALSE, ...)
+      rep.species.1.model <- enmtools.glm(rep.species.1, env, f, clamp = FALSE)
+      rep.species.2.model <- enmtools.glm(rep.species.2, env, f, clamp = FALSE)
     }
 
     if(type == "gam"){
