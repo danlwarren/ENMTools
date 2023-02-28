@@ -346,7 +346,7 @@ monticola.glm
     ## 
     ## Data table (top ten lines): 
     ## 
-    ## |   | Longitude| Latitude| bio1| bio12| bio7| presence|
+    ## |   | x| y| bio1| bio12| bio7| presence|
     ## |:--|---------:|--------:|----:|-----:|----:|--------:|
     ## |1  | -5.171215| 43.06957|   78|   917|  249|        1|
     ## |2  | -6.036635| 43.02531|   76|  1012|  246|        1|
@@ -453,7 +453,7 @@ monticola.glm
     ## 
     ## Data table (top ten lines): 
     ## 
-    ## |   | Longitude| Latitude| bio1| bio12| bio7| presence|
+    ## |   | x| y| bio1| bio12| bio7| presence|
     ## |:--|---------:|--------:|----:|-----:|----:|--------:|
     ## |1  | -5.171215| 43.06957|   78|   917|  249|        1|
     ## |2  | -6.036635| 43.02531|   76|  1012|  246|        1|
@@ -562,7 +562,7 @@ monticola.glm
     ## 
     ## Data table (top ten lines): 
     ## 
-    ## |   | Longitude| Latitude| bio1| bio12| bio7| presence|
+    ## |   | x| y| bio1| bio12| bio7| presence|
     ## |:--|---------:|--------:|----:|-----:|----:|--------:|
     ## |1  | -5.171215| 43.06957|   78|   917|  249|        1|
     ## |2  | -6.036635| 43.02531|   76|  1012|  246|        1|
@@ -1155,7 +1155,7 @@ rbl.glm$replicate.models$monticola.rep.1
     ## 
     ## Data table (top ten lines): 
     ## 
-    ## | Longitude| Latitude| bio1| bio12| bio7| presence|
+    ## | x| y| bio1| bio12| bio7| presence|
     ## |---------:|--------:|----:|-----:|----:|--------:|
     ## |  0.130000| 42.64000|   61|  1053|  238|        1|
     ## | -0.020000| 42.59000|   62|  1027|  240|        1|
@@ -1249,7 +1249,7 @@ rbl.glm$replicate.models$cyreni.rep.1
     ## 
     ## Data table (top ten lines): 
     ## 
-    ## | Longitude| Latitude| bio1| bio12| bio7| presence|
+    ## | x| y| bio1| bio12| bio7| presence|
     ## |---------:|--------:|----:|-----:|----:|--------:|
     ## | -4.010000|  40.7800|   91|   555|  284|        1|
     ## | -4.010000|  40.7800|   91|   555|  284|        1|
@@ -1343,8 +1343,8 @@ points(cyreni$presence.points, col = "red")
 points(monticola$presence.points, col = "blue")
 
 ribbon <- enmtools.species(species.name = "ribbon")
-ribbon$presence.points <- data.frame(Longitude = runif(n = 10, min = -9, max = 0),
-                                      Latitude = runif(n = 10, min = 40.5, max = 42))
+ribbon$presence.points <- data.frame(x = runif(n = 10, min = -9, max = 0),
+                                      y = runif(n = 10, min = 40.5, max = 42))
 points(ribbon$presence.points, pch = 16)
 ```
 
@@ -1371,7 +1371,7 @@ ribbon
     ## 
     ## Presence points (first ten only): 
     ## 
-    ## |  Longitude| Latitude|
+    ## |  x| y|
     ## |----------:|--------:|
     ## | -2.6519202| 41.37311|
     ## | -8.5270937| 41.24908|
@@ -1534,7 +1534,7 @@ species.from.gbif <- function(genus, species, name = NA, env){
                               species.name = name)
 
   # Rename columns, get rid of duds
-  colnames(this.sp$presence.points) <- c("Longitude", "Latitude")
+  colnames(this.sp$presence.points) <- c("x", "y")
   this.sp$presence.points <- this.sp$presence.points[complete.cases(extract(env, this.sp$presence.points)),]
   this.sp$presence.points <- this.sp$presence.points[!duplicated(this.sp$presence.points),]
 

@@ -30,7 +30,7 @@ enmtools.hypervolume <- function(species, env, samples.per.point = 10, reduction
     env[[i]] <- (env[[i]] - terra::global(env[[i]], "mean", na.rm = TRUE))/terra::global(env[[i]], "sd", na.rm = TRUE)
   }
 
-  climate <- terra::extract(env, species$presence.points)
+  climate <- terra::extract(env, species$presence.points, ID = FALSE)
 
   this.hv = NA
 
@@ -75,17 +75,17 @@ print.enmtools.hypervolume <- function(x, ...){
 plot.enmtools.hypervolume <- function(x, ...){
 
   suit.points <- data.frame(rasterToPoints2(x$suitability))
-  colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
+  colnames(suit.points) <- c("x", "y", "Suitability")
 
-  suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
+  suit.plot <- ggplot(data = suit.points,  aes_string(y = "y", x = "x")) +
     geom_raster(aes_string(fill = "Suitability")) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
-    geom_point(data = x$analysis.df,  aes_string(y = "Latitude", x = "Longitude"),
+    geom_point(data = x$analysis.df,  aes_string(y = "y", x = "x"),
                pch = 21, fill = "white", color = "black", size = 2)
 
   if(!(all(is.na(x$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = x$test.data,  aes_string(y = "Latitude", x = "Longitude"),
+    suit.plot <- suit.plot + geom_point(data = x$test.data,  aes_string(y = "y", x = "x"),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
 
@@ -106,9 +106,9 @@ predict.enmtools.hypervolume <- function(object, env, reduction.factor = 0.1){
   # Make a plot of habitat suitability in the new region
   suitability <- hypervolume::hypervolume_project(object$hv, env, reduction.factor = reduction.factor)
   suit.points <- data.frame(rasterToPoints2(suitability))
-  colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
+  colnames(suit.points) <- c("x", "y", "Suitability")
 
-  suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
+  suit.plot <- ggplot(data = suit.points,  aes_string(y = "y", x = "x")) +
     geom_raster(aes_string(fill = "Suitability")) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()

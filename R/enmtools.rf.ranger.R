@@ -119,11 +119,11 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
     # Test eval for randomly withheld data
     if(is.numeric(test.prop)){
       if(test.prop > 0 & test.prop < 1){
-        test.check <- terra::extract(env, test.data)
+        test.check <- terra::extract(env, test.data, ID = FALSE)
         test.data <- test.data[complete.cases(test.check),]
 
-        test.evaluation <- dismo::evaluate(predict(this.rf, data = terra::extract(env, test.data))$predictions[ , 2, drop = TRUE],
-                                           predict(this.rf, data = terra::extract(env, species$background.points[,1:2]))$predictions[ , 2, drop = TRUE])
+        test.evaluation <- dismo::evaluate(predict(this.rf, data = terra::extract(env, test.data, ID = FALSE))$predictions[ , 2, drop = TRUE],
+                                           predict(this.rf, data = terra::extract(env, species$background.points[,1:2], ID = FALSE))$predictions[ , 2, drop = TRUE])
         temp.sp <- species
         temp.sp$presence.points <- test.data
         env.test.evaluation <- env.evaluate(temp.sp, this.rf, env, n.background = env.nback)
@@ -133,10 +133,10 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
     # Test eval for spatially structured data
     if(is.character(test.prop)){
       if(test.prop == "block"){
-        test.check <- terra::extract(env, test.data)
+        test.check <- terra::extract(env, test.data, ID = FALSE)
         test.data <- test.data[complete.cases(test.check),]
-        test.evaluation <- dismo::evaluate(predict(this.rf, data = terra::extract(env, test.data))$predictions[ , 2, drop = TRUE],
-                                           predict(this.rf, data = terra::extract(env, test.bg))$predictions[ , 2, drop = TRUE])
+        test.evaluation <- dismo::evaluate(predict(this.rf, data = terra::extract(env, test.data, ID = FALSE))$predictions[ , 2, drop = TRUE],
+                                           predict(this.rf, data = terra::extract(env, test.bg, ID = FALSE))$predictions[ , 2, drop = TRUE])
         temp.sp <- species
         temp.sp$presence.points <- test.data
         temp.sp$background.points <- test.bg
@@ -395,17 +395,17 @@ plot.enmtools.rf.ranger <- function(x, ...){
 
 
   suit.points <- data.frame(rasterToPoints2(x$suitability))
-  colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
+  colnames(suit.points) <- c("x", "y", "Suitability")
 
-  suit.plot <- ggplot(data = suit.points, aes_string(y = "Latitude", x = "Longitude")) +
+  suit.plot <- ggplot(data = suit.points, aes_string(y = "y", x = "x")) +
     geom_raster(aes_string(fill = "Suitability")) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
-    geom_point(data = x$analysis.df[x$analysis.df$presence == 1,],  aes_string(y = "Latitude", x = "Longitude"),
+    geom_point(data = x$analysis.df[x$analysis.df$presence == 1,],  aes_string(y = "y", x = "x"),
                pch = 21, fill = "white", color = "black", size = 2)
 
   if(!(all(is.na(x$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = x$test.data,  aes_string(y = "Latitude", x = "Longitude"),
+    suit.plot <- suit.plot + geom_point(data = x$test.data,  aes_string(y = "y", x = "x"),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
 
@@ -440,17 +440,17 @@ predict.enmtools.rf.ranger <- function(object, env, maxpts = 1000, clamp = TRUE,
   }
 
   suit.points <- data.frame(rasterToPoints2(suitability))
-  colnames(suit.points) <- c("Longitude", "Latitude", "Suitability")
+  colnames(suit.points) <- c("x", "y", "Suitability")
 
-  suit.plot <- ggplot(data = suit.points,  aes_string(y = "Latitude", x = "Longitude")) +
+  suit.plot <- ggplot(data = suit.points,  aes_string(y = "y", x = "x")) +
     geom_raster(aes_string(fill = "Suitability")) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()
 
   clamp.points <- data.frame(rasterToPoints2(clamping.strength))
-  colnames(clamp.points) <- c("Longitude", "Latitude", "Clamping")
+  colnames(clamp.points) <- c("x", "y", "Clamping")
 
-  clamp.plot <- ggplot(data = clamp.points,  aes_string(y = "Latitude", x = "Longitude")) +
+  clamp.plot <- ggplot(data = clamp.points,  aes_string(y = "y", x = "x")) +
     geom_raster(aes_string(fill = "Clamping")) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()

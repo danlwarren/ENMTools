@@ -50,7 +50,7 @@ check.species <- function(this.species, env = NA, trim.dupes = FALSE){
 
   # Extracts data from env at presence points, uses that to remove points that have NA in any layer
   if(inherits(env, "SpatRaster")){
-    temp.df <- terra::extract(env, terra::crds(this.species$presence.points))
+    temp.df <- terra::extract(env, terra::crds(this.species$presence.points, ID = FALSE))
     this.species$presence.points <- terra::vect(this.species$presence.points[complete.cases(temp.df),])
   }
 
@@ -75,7 +75,7 @@ check.species <- function(this.species, env = NA, trim.dupes = FALSE){
 format.latlon <- function(latlon){
 
   # Basically this bit just tries to auto-identify the lat and lon columns, then returns a
-  # reformatted data frame with col names "Longitude" and "Latitude"
+  # reformatted data frame with col names "x" and "y"
 
   # Try to figure out which columns contain "lon" or "x"
   loncols <- c(which(grepl("^lon", colnames(latlon), ignore.case = TRUE)), match("x", tolower(colnames(latlon))))
@@ -92,18 +92,18 @@ format.latlon <- function(latlon){
 
   # Check whether we've got one column for each, and make sure they're not the same column
   if(is.na(latcols)){
-    stop("Unable to auotmatically determine Longitude and Latitude columns.  Please rename to Longitude and Latitude.")
+    stop("Unable to auotmatically determine x and y columns.  Please rename to x and y.")
   }
 
   if(is.na(loncols)){
-    stop("Unable to auotmatically determine Longitude and Latitude columns.  Please rename to Longitude and Latitude.")
+    stop("Unable to auotmatically determine x and y columns.  Please rename to x and y.")
   }
 
   if(length(latcols == 1) & length(loncols == 1) & latcols != loncols){
     output <- data.frame(cbind(latlon[,loncols], latlon[,latcols]))
-    colnames(output) <- c("Longitude", "Latitude")
+    colnames(output) <- c("x", "y")
   } else {
-    stop("Unable to auotmatically determine Longitude and Latitude columns.  Please rename to Longitude and Latitude.")
+    stop("Unable to auotmatically determine x and y columns.  Please rename to x and y.")
   }
   return(output)
 }

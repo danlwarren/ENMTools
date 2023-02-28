@@ -65,7 +65,7 @@ identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99,
   # and setting replicate clmaping to FALSE
   if(clamp == TRUE){
     # Adding env (skipped for BC otherwise)
-    this.df <- as.data.frame(terra::extract(env, combined.presence.points))
+    this.df <- as.data.frame(terra::extract(env, combined.presence.points, ID = FALSE))
 
     env <- clamp.env(this.df, env)
   }
