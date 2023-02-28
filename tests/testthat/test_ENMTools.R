@@ -1,6 +1,8 @@
 library(testthat)
 library(ENMTools)
 
+set.seed(2282023)
+
 #data(iberolacerta.clade)
 #data(euro.worldclim)
 
@@ -132,7 +134,7 @@ test_that("rf model objects work", {
   expect_enmtools_model(cyreni.rf)
   p <- plot(cyreni.rf)
   expect_s3_class(p, "ggplot")
-  expect_snapshot(print(cyreni.rf))
+  expect_snapshot(print(cyreni.rf, plot = FALSE))
 })
 
 
@@ -159,6 +161,7 @@ test_that("gam model objects work", {
 test_that("interactive.plot produces correct object", {
   skip_if_not_installed("leaflet")
   skip_on_ci()
+  cyreni.dm <- enmtools.dm(cyreni, euro.worldclim, test.prop = 0.2)
   m_dm <- interactive.plot(cyreni.dm)
   m_dm_cluster <- interactive.plot(cyreni.dm, cluster.points = TRUE)
   expect_is(m_dm, "leaflet")

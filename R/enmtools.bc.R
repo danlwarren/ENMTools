@@ -319,7 +319,7 @@ message("This function not enabled yet.  Check back soon!")
 
 
 # Summary for objects of class enmtools.bc
-summary.enmtools.bc <- function(object, ...){
+summary.enmtools.bc <- function(object, plot = TRUE, ...){
 
   cat("\n\nData table (top ten lines): ")
   print(kable(head(object$analysis.df, 10)))
@@ -349,14 +349,16 @@ summary.enmtools.bc <- function(object, ...){
   print(object$notes)
 
   #Note to self: plot command HAS to come last!
-  plot(object)
+  if(plot) {
+    plot(object)
+  }
 
 }
 
 #Print method for objects of class enmtools.bc
 print.enmtools.bc <- function(x, ...){
 
-  print(summary(x))
+  print(summary(x, ...))
 
 }
 
@@ -368,18 +370,18 @@ plot.enmtools.bc <- function(x, ...){
   colnames(suit.points) <- c("x", "y", "Suitability")
   test <- terra::as.data.frame(x$test.data, geom = "XY")
 
-  suit.plot <- ggplot(data = suit.points,  aes_string(y = "y", x = "x")) +
-    geom_raster(aes_string(fill = "Suitability")) +
+  suit.plot <- ggplot(data = suit.points,  aes(y = .data$y, x = .data$x)) +
+    geom_raster(aes(fill = .data$Suitability)) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
     geom_point(data = x$analysis.df[x$analysis.df$x > terra::ext(x$suitability)[1] &
                                       x$analysis.df$x < terra::ext(x$suitability)[2] &
                                       x$analysis.df$y > terra::ext(x$suitability)[3] &
-                                      x$analysis.df$y < terra::ext(x$suitability)[4],],  aes_string(y = "y", x = "x"),
+                                      x$analysis.df$y < terra::ext(x$suitability)[4],],  aes(y = .data$y, x = .data$x),
                pch = 21, fill = "white", color = "black", size = 2)
 
-  if(!(all(is.na(x$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = test,  aes_string(y = "y", x = "x"),
+  if(!(all(is.na(terra::values(x$test.data))))){
+    suit.plot <- suit.plot + geom_point(data = test,  aes(y = .data$y, x = .data$x),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
 
@@ -414,15 +416,15 @@ predict.enmtools.bc <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
   suit.points <- data.frame(rasterToPoints2(suitability))
   colnames(suit.points) <- c("x", "y", "Suitability")
 
-  suit.plot <- ggplot(data = suit.points,  aes_string(y = "y", x = "x")) +
-    geom_raster(aes_string(fill = "Suitability")) +
+  suit.plot <- ggplot(data = suit.points,  aes(y = .data$y, x = .data$x)) +
+    geom_raster(aes(fill = .data$Suitability)) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()
 
   clamp.points <- data.frame(rasterToPoints2(clamping.strength))
   colnames(clamp.points) <- c("x", "y", "Clamping")
 
-  clamp.plot <- ggplot(data = clamp.points,  aes_string(y = "y", x = "x")) +
+  clamp.plot <- ggplot(data = clamp.points,  aes(y = .data$y, x = .data$x)) +
     geom_raster(aes_string(fill = "Clamping")) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()

@@ -81,6 +81,7 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
   f <- reformulate(attr(delete.response(terms(f)), "term.labels"), response = "presence")
 
   analysis.df <- make_analysis.df(species)
+  analysis.df$presence <- as.factor(analysis.df$presence)
 
   this.rf <- ranger::ranger(f, analysis.df[,-c(1,2)], probability = TRUE, ...)
 
@@ -88,13 +89,13 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
     predict(model, data, ...)$predictions[ , 2]
   }
 
-  suitability <- terra::predict(env, this.rf, fun = pfun, type = "response")
+  suitability <- terra::predict(env, this.rf, fun = pfun, type = "response", na.rm = TRUE)
 
   # Clamping and getting a diff layer
   clamping.strength <- NA
   if(clamp == TRUE){
     env <- clamp.env(analysis.df, env)
-    clamped.suitability <- terra::predict(env, this.rf, fun = pfun, type = "response")
+    clamped.suitability <- terra::predict(env, this.rf, fun = pfun, type = "response", na.rm = TRUE)
     clamping.strength <- clamped.suitability - suitability
     suitability <- clamped.suitability
   }
@@ -110,8 +111,8 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
       notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
     }
 
-    model.evaluation <- dismo::evaluate(predict(this.rf, data = species$presence.points)$predictions[ , 2, drop = TRUE],
-                                        predict(this.rf, data = species$background.points)$predictions[ , 2, drop = TRUE])
+    model.evaluation <- dismo::evaluate(predict(this.rf, data = analysis.df[analysis.df$presence == 1, ])$predictions[ , 2, drop = TRUE],
+                                        predict(this.rf, data = analysis.df[analysis.df$presence == 0, ])$predictions[ , 2, drop = TRUE])
     env.model.evaluation <- env.evaluate(species, this.rf, env, n.background = env.nback)
 
     # Test eval for randomly withheld data
@@ -344,10 +345,10 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
 }
 
 # Summary for objects of class enmtools.rf
-summary.enmtools.rf.ranger <- function(object, ...){
+summary.enmtools.rf.ranger <- function(object, plot = TRUE, ...){
 
   cat("\n\nFormula:  ")
-  print(object$formula)
+  cat(deparse(object$formula))
 
   cat("\n\nData table (top ten lines): ")
   print(kable(head(object$analysis.df, 10)))
@@ -376,14 +377,16 @@ summary.enmtools.rf.ranger <- function(object, ...){
   cat("\n\nNotes:  \n")
   object$notes
 
-  plot(object)
+  if(plot) {
+    plot(object)
+  }
 
 }
 
 # Print method for objects of class enmtools.rf
 print.enmtools.rf.ranger <- function(x, ...){
 
-  print(summary(x))
+  print(summary(x, ...))
 
 }
 
@@ -396,15 +399,15 @@ plot.enmtools.rf.ranger <- function(x, ...){
   colnames(suit.points) <- c("x", "y", "Suitability")
   test <- terra::as.data.frame(x$test.data, geom = "XY")
 
-  suit.plot <- ggplot(data = suit.points, aes_string(y = "y", x = "x")) +
-    geom_raster(aes_string(fill = "Suitability")) +
+  suit.plot <- ggplot(data = suit.points, aes(y = .data$y, x = .data$x)) +
+    geom_raster(aes(fill = .data$Suitability)) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
-    geom_point(data = x$analysis.df[x$analysis.df$presence == 1,],  aes_string(y = "y", x = "x"),
+    geom_point(data = x$analysis.df[x$analysis.df$presence == 1,],  aes(y = .data$y, x = .data$x),
                pch = 21, fill = "white", color = "black", size = 2)
 
-  if(!(all(is.na(x$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = test,  aes_string(y = "y", x = "x"),
+  if(!(all(is.na(terra::values(x$test.data))))){
+    suit.plot <- suit.plot + geom_point(data = test,  aes(y = .data$y, x = .data$x),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
 
@@ -441,15 +444,15 @@ predict.enmtools.rf.ranger <- function(object, env, maxpts = 1000, clamp = TRUE,
   suit.points <- data.frame(rasterToPoints2(suitability))
   colnames(suit.points) <- c("x", "y", "Suitability")
 
-  suit.plot <- ggplot(data = suit.points,  aes_string(y = "y", x = "x")) +
-    geom_raster(aes_string(fill = "Suitability")) +
+  suit.plot <- ggplot(data = suit.points,  aes(y = .data$y, x = .data$x)) +
+    geom_raster(aes(fill = .data$Suitability)) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()
 
   clamp.points <- data.frame(rasterToPoints2(clamping.strength))
   colnames(clamp.points) <- c("x", "y", "Clamping")
 
-  clamp.plot <- ggplot(data = clamp.points,  aes_string(y = "y", x = "x")) +
+  clamp.plot <- ggplot(data = clamp.points,  aes(y = .data$y, x = .data$x)) +
     geom_raster(aes_string(fill = "Clamping")) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()

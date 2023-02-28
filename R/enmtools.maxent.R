@@ -367,7 +367,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
 }
 
 # Summary for objects of class enmtools.maxent
-summary.enmtools.maxent <- function(object, ...){
+summary.enmtools.maxent <- function(object, plot = TRUE, ...){
 
   cat("\n\nData table (top ten lines): ")
   print(kable(head(object$analysis.df, 10)))
@@ -396,7 +396,9 @@ summary.enmtools.maxent <- function(object, ...){
   cat("\n\nNotes:  \n")
   print(object$notes)
 
-  plot(object)
+  if(plot) {
+    plot(object)
+  }
 
 }
 
@@ -415,19 +417,19 @@ plot.enmtools.maxent <- function(x, ...){
   colnames(suit.points) <- c("x", "y", "Suitability")
   test <- terra::as.data.frame(x$test.data, geom = "XY")
 
-  suit.plot <- ggplot(data = suit.points, aes_string(y = "y", x = "x")) +
-    geom_raster(aes_string(fill = "Suitability")) +
+  suit.plot <- ggplot(data = suit.points, aes(y = .data$y, x = .data$x)) +
+    geom_raster(aes(fill = .data$Suitability)) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic() +
     geom_point(data = x$analysis.df[x$analysis.df$presence == 1 &
                                     x$analysis.df$x > terra::ext(x$suitability)[1] &
                                     x$analysis.df$x < terra::ext(x$suitability)[2] &
                                     x$analysis.df$y > terra::ext(x$suitability)[3] &
-                                    x$analysis.df$y < terra::ext(x$suitability)[4],],  aes_string(y = "y", x = "x"),
+                                    x$analysis.df$y < terra::ext(x$suitability)[4],],  aes(y = .data$y, x = .data$x),
                pch = 21, fill = "white", color = "black", size = 2)
 
-  if(!(all(is.na(x$test.data)))){
-    suit.plot <- suit.plot + geom_point(data = test,  aes_string(y = "y", x = "x"),
+  if(!(all(is.na(terra::values(x$test.data))))){
+    suit.plot <- suit.plot + geom_point(data = test,  aes(y = .data$y, x = .data$x),
                                         pch = 21, fill = "green", color = "black", size = 2)
   }
 
@@ -462,8 +464,8 @@ predict.enmtools.maxent <- function(object, env, maxpts = 1000, clamp = TRUE, ..
   suit.points <- data.frame(rasterToPoints2(suitability))
   colnames(suit.points) <- c("x", "y", "Suitability")
 
-  suit.plot <- ggplot(data = suit.points,  aes_string(y = "y", x = "x")) +
-    geom_raster(aes_string(fill = "Suitability")) +
+  suit.plot <- ggplot(data = suit.points,  aes(y = .data$y, x = .data$x)) +
+    geom_raster(aes(fill = .data$Suitability)) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()
 
