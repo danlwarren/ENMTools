@@ -104,7 +104,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
     weights <- rep(1, nrow(species$presence.points) + nrow(species$background.points))
   }
 
-  this.glm <- glm(f, analysis.df[,-c(1,2)], family="binomial", weights = weights)
+  this.glm <- glm(f, analysis.df[,-c(1,2)], family="binomial", weights = weights, ...)
   if(step == TRUE){
     if(verbose == TRUE){
       this.glm <- step(this.glm)

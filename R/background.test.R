@@ -146,6 +146,7 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
       #background sampling for species 1, only run when we're doing a symmetric test
       combined.points <- rbind(rep.species.1$presence.points, species.1.original.background)
+      values(combined.points) <- NULL
       sample.vector <- sample(nrow(combined.points))
       combined.points <- combined.points[sample.vector,]
       rep.species.1$presence.points <- combined.points[1:nrow(species.1$presence.points),]
@@ -155,6 +156,7 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
     # Background sampling for species 2, run regardless of the type of test
     combined.points <- rbind(rep.species.2$presence.points, species.2.original.background)
+    values(combined.points) <- NULL
     sample.vector <- sample(nrow(combined.points))
     combined.points <- combined.points[sample.vector,]
     rep.species.2$presence.points <- combined.points[1:nrow(species.2$presence.points),]
