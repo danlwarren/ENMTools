@@ -23,7 +23,7 @@ marginal.plots <- function(model, env, layer, standardize = TRUE, verbose = FALS
   }
 
   if(inherits(model, c("enmtools.bc", "enmtools.dm"))){
-    points <- model$analysis.df
+    points <- model$analysis.df[,1:2]
   } else {
     points <- model$analysis.df[model$analysis.df$presence == 1,1:2]
   }
@@ -62,12 +62,11 @@ marginal.plots <- function(model, env, layer, standardize = TRUE, verbose = FALS
   # have that info, but sampling random bg for those that don't
   minmax <- terra::minmax(env[[layer]])
   if(inherits(model, c("enmtools.bc", "enmtools.dm"))){
-    pres.env <- terra::extract(env[[layer]], model$analysis.df, ID = FALSE)
+    pres.env <- unlist(terra::extract(env[[layer]], model$analysis.df[,1:2], ID = FALSE))
     pres.dens <- density(pres.env, from = minmax[1, ], to = minmax[2, ], n = 100, na.rm = TRUE)$y
     pres.dens <- pres.dens/max(pres.dens)
-    bg.env <- terra::extract(env[[layer]],
-                             terra::spatSample(env[[layer]], size = 1000, as.points = TRUE, na.rm = TRUE, ID = FALSE))
-    bg.dens <- density(bg.env[,2], from = minmax[1, ], to = minmax[2, ], n = 100, na.rm = TRUE)$y
+    bg.env <- unlist(terra::spatSample(env[[layer]], size = 1000, na.rm = TRUE))
+    bg.dens <- density(bg.env, from = minmax[1, ], to = minmax[2, ], n = 100, na.rm = TRUE)$y
     bg.dens <- bg.dens/max(bg.dens)
   } else {
     pres.env <- unlist(terra::extract(env[[layer]], model$analysis.df[model$analysis.df$presence == 1,c(1,2)], ID = FALSE))

@@ -273,8 +273,11 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
   }
 
 
+  analysis.df <- cbind(terra::crds(species$presence.points),
+    terra::extract(env, species$presence.points, as.points = TRUE, ID = FALSE))
+
   output <- list(species.name = species$species.name,
-                 analysis.df = species$presence.points[,1:2],
+                 analysis.df = analysis.df,
                  test.data = test.data,
                  test.prop = test.prop,
                  model = this.bc,
