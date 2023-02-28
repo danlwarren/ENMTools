@@ -122,12 +122,12 @@ enmtools.aoc <- function(clade, env = NULL,  overlap.source, nreps = 100, f = NU
 
   intercept.plot <- ggplot2::qplot(reps.aoc[2:nrow(reps.aoc),"(Intercept)"], geom = "histogram", fill = "histogram", alpha = 0.5) +
     geom_vline(xintercept = reps.aoc[1,"(Intercept)"], linetype = "longdash") +
-    guides(fill = "none", alpha = FALSE) + xlab("Intercept") + ggtitle(description) +
+    guides(fill = "none", alpha = "none") + xlab("Intercept") + ggtitle(description) +
     theme(plot.title = element_text(hjust = 0.5))
 
   slope.plot <- ggplot2::qplot(reps.aoc[2:nrow(reps.aoc),"empirical.df$age"], geom = "histogram", fill = "histogram", alpha = 0.5) +
     geom_vline(xintercept = reps.aoc[1,"empirical.df$age"], linetype = "longdash") +
-    guides(fill = "none", alpha = FALSE) + xlab("Slope") + ggtitle(description) +
+    guides(fill = "none", alpha = "none") + xlab("Slope") + ggtitle(description) +
     theme(plot.title = element_text(hjust = 0.5))
 
   regressions.plot <- ggplot2::qplot(empirical.df$age, empirical.df$overlap) + theme_bw()
