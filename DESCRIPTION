@@ -23,7 +23,8 @@ Imports:
     spatstat.random,
     ggpubr,
     forcats,
-    terra
+    terra,
+    raster (>= 3.6.3)
 Depends: 
     dismo,
     R (>= 2.10)
