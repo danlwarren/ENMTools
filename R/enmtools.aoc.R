@@ -116,21 +116,29 @@ enmtools.aoc <- function(clade, env = NULL,  overlap.source, nreps = 100, f = NU
                     do.call(rbind, lapply(reps, function(x) x$coefficients)))
 
   rownames(reps.aoc) <- c("empirical", paste("rep", 1:nreps))
+  colnames(reps.aoc) <- c("Intercept", "Age")
 
   # Modified for two-tailed test
   p.values <- apply(reps.aoc, 2, function(x) min(rank(x)[1], rank(-x)[1])/length(x))
 
-  intercept.plot <- ggplot2::qplot(reps.aoc[2:nrow(reps.aoc),"(Intercept)"], geom = "histogram", fill = "histogram", alpha = 0.5) +
-    geom_vline(xintercept = reps.aoc[1,"(Intercept)"], linetype = "longdash") +
+  reps.aoc <- as.data.frame(reps.aoc)
+
+  intercept.plot <- ggplot(reps.aoc[2:nrow(reps.aoc),], aes(x = .data$Intercept, fill = "density", alpha = 0.5)) +
+    geom_histogram(bins = 20) +
+    geom_vline(xintercept = reps.aoc[1,"Intercept"], linetype = "longdash") +
     guides(fill = "none", alpha = "none") + xlab("Intercept") + ggtitle(description) +
     theme(plot.title = element_text(hjust = 0.5))
 
-  slope.plot <- ggplot2::qplot(reps.aoc[2:nrow(reps.aoc),"empirical.df$age"], geom = "histogram", fill = "histogram", alpha = 0.5) +
-    geom_vline(xintercept = reps.aoc[1,"empirical.df$age"], linetype = "longdash") +
+  slope.plot <- ggplot(reps.aoc[2:nrow(reps.aoc),], aes(x = .data$Age, fill = "density", alpha = 0.5)) +
+    geom_histogram(bins = 20) +
+    geom_vline(xintercept = reps.aoc[1,"Age"], linetype = "longdash") +
     guides(fill = "none", alpha = "none") + xlab("Slope") + ggtitle(description) +
     theme(plot.title = element_text(hjust = 0.5))
 
-  regressions.plot <- ggplot2::qplot(empirical.df$age, empirical.df$overlap) + theme_bw()
+
+
+  regressions.plot <- ggplot(data = empirical.df, aes(x = .data$age, y = .data$overlap)) +
+    theme_bw() + geom_point()
   for(i in 2:min(100, nrow(reps.aoc))){
     regressions.plot <- regressions.plot + geom_abline(slope=reps.aoc[i,2],
                                                        intercept=reps.aoc[i,1],
