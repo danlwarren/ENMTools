@@ -1,9 +1,9 @@
 #' Takes an enmtools.species object with presence and background points, and builds
-#' a `tidymodels` model.
+#' a fitted `tidymodels` workflow.
 #'
 #' @param species An enmtools.species object
 #' @param env A SpatRaster of environmental data.
-#' @param f A formula
+#' @param f A formula or tidymodels recipe
 #' @param model A character string specifying the desired model. Default is "glm"
 #' @param test.prop Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.
 #' @param eval Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.
@@ -33,15 +33,44 @@
 
 enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, step = FALSE, model_args = list()){
 
+  if(!is.null(f)) {
+    if(inherits(f, "recipe")) {
+      rec <- f
+    } else {
+      rec <- recipe(species, f, env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias)
+    }
+  }
+  analysis.df <- enmtools.prep(species, env = env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias)
 
+  mod <- parsnip::logistic_reg()
 
 }
 
-#' Reexports
-#' @export
-recipes::recipe
+recipe.enmtools.species <- function (x, formula = NULL, env = NA, nback = 1000, bg.source = "default", verbose = FALSE, bias = NA, ..., vars = NULL, roles = NULL) {
+  x <- enmtools.prep(x, env = env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias)
+  if(is.null(formula)) {
+    vars <- colnames(x)
+    roles <- rep("predictor", length(vars))
+    roles[vars == "presence"] <- "outcome"
+    roles[vars %in% c("x", "y")] <- "coords"
+  } else {
+    vars <- NULL
+    roles <- NULL
+  }
+  recipes::recipe(x, formula = formula, vars = vars, roles = roles)
+}
 
-recipe.enmtools.species <- function (x, formula = NULL, env = NA, ..., vars = NULL, roles = NULL) {
-  species <- species <- check.bg(species, env, ...)
+enmtools.prep <- function(x, env = NA, nback = 1000, bg.source = "default", verbose = FALSE, bias = NA) {
+  species <- check.bg(x, env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias)
+  species <- add.env(species, env = env, verbose = verbose)
+  x <- make_analysis.df(species)
+  x
+}
 
+choose_model <- function(model, ...) {
+  switch(model,
+         glm = parsnip::logistic_reg(...),
+         gam = parsnip::gen_additive_mod(...),
+         rf = parsnip::rand_forest(engine = "randomForest", ...),
+         ranger = parsnip::rand_forest(...))
 }

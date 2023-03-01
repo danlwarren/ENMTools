@@ -50,3 +50,10 @@ RTS:
 monticola.gam.rts <- enmtools.gam(species = monticola, env = env, f = pres ~ bio1 + bio12 + bio7, test.prop = 0, rts.reps = 10)
 monticola.gam.rts$rts.test
 ```
+
+## Tidymodels
+
+```{r tidy_testing}
+monti_recipe <- recipe(monticola, env = euro.worldclim)
+monti_recipe
+```
