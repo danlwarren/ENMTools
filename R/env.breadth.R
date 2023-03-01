@@ -121,8 +121,12 @@ env.breadth <- function(model, env, tolerance = .0001, max.reps = 10, chunk.size
     }
   }
 
+  plot.df <- data.frame(gens = gens,
+                        B2 = this.B2)
+
   output <- list(env.B2 = mean(this.B2),
-                 B2.plot = qplot(gens, this.B2, ylab = "B2", xlab = "Samples"))
+                 B2.plot = ggplot(data = plot.df, aes(x = .data$gens, y = .data$B2)) +
+                   geom_point() + xlab("Samples") + ylab("B2"))
 
   return(output)
 }

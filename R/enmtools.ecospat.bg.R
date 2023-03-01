@@ -104,16 +104,16 @@ enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = 
   reps.overlap <- rbind(empline, bg$sim[,c("D", "I")])
   p.values <- apply(reps.overlap, 2, function(x) min(rank(x)[1], rank(-x)[1])/length(x))
 
-  d.plot <- ggplot(data = eq$sim, aes(x = D, fill = "density", alpha = 0.5)) +
+  d.plot <- ggplot(data = bg$sim, aes(x = .data$D, fill = "density", alpha = 0.5)) +
     geom_histogram(binwidth = 0.05) +
-    geom_vline(xintercept = eq$obs$D, linetype = "longdash") +
+    geom_vline(xintercept = bg$obs$D, linetype = "longdash") +
     xlim(-.05,1.05) + guides(fill = "none", alpha = "none") + xlab("D") +
     ggtitle(paste("Ecospat identity test:", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
-  i.plot <- ggplot(data = eq$sim, aes(x = I, fill = "density", alpha = 0.5)) +
+  i.plot <- ggplot(data = bg$sim, aes(x = .data$I, fill = "density", alpha = 0.5)) +
     geom_histogram(binwidth = 0.05) +
-    geom_vline(xintercept = eq$obs$I, linetype = "longdash") +
+    geom_vline(xintercept = bg$obs$I, linetype = "longdash") +
     xlim(-.05,1.05) + guides(fill = "none", alpha = "none") + xlab("I") +
     ggtitle(paste("Ecospat identity test:", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))

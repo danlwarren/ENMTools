@@ -87,14 +87,16 @@ multistack.pca <- function(..., n = 2){
   nkeepers <- sapply(keepers, length)
   data.source <- Reduce(c, sapply(names(keepers), function(x) rep(x, nkeepers[[x]])))
 
-  # Doing this weird local() trick to keep qplot from making the same plot over and over
+  plot.df <- as.data.frame(pca$x)
+
+  # Doing this weird local() trick to keep ggplot from making the same plot over and over
   for (i in 1:n) {
-    pc.name <- colnames(pca$x)[i]
+    pc.name <- colnames(plot.df)[i]
     pc.plots[[pc.name]] <- local({
       i <- i
-      p1 <- qplot(pca$x[,i], fill = data.source,
-                    color = data.source, geom = "density",
-                    alpha = 0.3) + xlab(pc.name) + guides(alpha = "none") +
+
+      p1 <- ggplot(data = plot.df, aes(x = .data[[paste0("PC", i)]], fill = data.source, alpha = 0.3)) +
+        geom_density() +  xlab(pc.name) + guides(alpha = "none") +
         labs(fill = "Data source", color = "Data source")
       print(p1)
     })

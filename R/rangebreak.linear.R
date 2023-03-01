@@ -216,37 +216,37 @@ rangebreak.linear <- function(species.1, species.2, env, type, f = NULL, nreps =
 
   reps.overlap <- as.data.frame(reps.overlap)
 
-  d.plot <- ggplot(reps.overlap[2:nrow(reps.overlap),], aes(x = D, fill = "density", alpha = 0.5)) +
+  d.plot <- ggplot(reps.overlap[2:nrow(reps.overlap),], aes(x = .data$D, fill = "density", alpha = 0.5)) +
     geom_histogram(binwidth = 0.05) +
     geom_vline(xintercept = reps.overlap[1,"D"], linetype = "longdash") +
     xlim(-.05,1.05) + guides(fill = "none", alpha = "none") + xlab("D") +
     theme(plot.title = element_text(hjust = 0.5))
 
-  i.plot <- ggplot(reps.overlap[2:nrow(reps.overlap),], aes(x = I, fill = "density", alpha = 0.5)) +
+  i.plot <- ggplot(reps.overlap[2:nrow(reps.overlap),], aes(x = .data$I, fill = "density", alpha = 0.5)) +
     geom_histogram(binwidth = 0.05) +
     geom_vline(xintercept = reps.overlap[1,"I"], linetype = "longdash") +
     xlim(-.05,1.05) + guides(fill = "none", alpha = "none") + xlab("I") +
     theme(plot.title = element_text(hjust = 0.5))
 
-  cor.plot <- ggplot(reps.overlap[2:nrow(reps.overlap),], aes(x = rank.cor, fill = "density", alpha = 0.5)) +
+  cor.plot <- ggplot(reps.overlap[2:nrow(reps.overlap),], aes(x = .data$rank.cor, fill = "density", alpha = 0.5)) +
     geom_histogram(binwidth = 0.05) +
     geom_vline(xintercept = reps.overlap[1,"rank.cor"], linetype = "longdash") +
     xlim(-1.05,1.05) + guides(fill = "none", alpha = "none") + xlab("Rank Correlation") +
     theme(plot.title = element_text(hjust = 0.5))
 
-  env.d.plot <- ggplot(reps.overlap[2:nrow(reps.overlap),], aes(x = env.D, fill = "density", alpha = 0.5)) +
+  env.d.plot <- ggplot(reps.overlap[2:nrow(reps.overlap),], aes(x = .data$env.D, fill = "density", alpha = 0.5)) +
     geom_histogram(binwidth = 0.05) +
     geom_vline(xintercept = reps.overlap[1,"env.D"], linetype = "longdash") +
     xlim(-.05,1.05) + guides(fill = "none", alpha = "none") + xlab("D, Environmental Space") +
     theme(plot.title = element_text(hjust = 0.5))
 
-  env.i.plot <- ggplot(reps.overlap[2:nrow(reps.overlap),], aes(x = env.I, fill = "density", alpha = 0.5)) +
+  env.i.plot <- ggplot(reps.overlap[2:nrow(reps.overlap),], aes(x = .data$env.I, fill = "density", alpha = 0.5)) +
     geom_histogram(binwidth = 0.05) +
     geom_vline(xintercept = reps.overlap[1,"env.I"], linetype = "longdash") +
     xlim(-.05,1.05) + guides(fill = "none", alpha = "none") + xlab("I, Environmental Space") +
     theme(plot.title = element_text(hjust = 0.5))
 
-  env.cor.plot <- ggplot(reps.overlap[2:nrow(reps.overlap),], aes(x = env.cor, fill = "density", alpha = 0.5)) +
+  env.cor.plot <- ggplot(reps.overlap[2:nrow(reps.overlap),], aes(x = .data$env.cor, fill = "density", alpha = 0.5)) +
     geom_histogram(binwidth = 0.05) +
     geom_vline(xintercept = reps.overlap[1,"env.cor"], linetype = "longdash") +
     xlim(-1.05,1.05) + guides(fill = "none", alpha = "none") + xlab("Rank Correlation, Environmental Space") +

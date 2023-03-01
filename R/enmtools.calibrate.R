@@ -431,11 +431,13 @@ plot.enmtools.calibrate <- function(x, ...){
 class.plot <- function(pred, obs, name, cuts){
   temp.df <- data.frame(pred = pred,
                         obs = obs)
-  return(qplot(pred, facets = obs ~ ., data = temp.df,
-               alpha = 0.5, ylab = "Count", xlab = "Predicted",
-               bins = cuts, fill = obs, color = obs, main = name) +
-           theme_minimal() + theme(legend.position = "none", plot.title = element_text(hjust = 0.5)) +
-           scale_x_continuous(limits = c(0, 1), oob = function(x, limits) x))
+
+  return(ggplot(data = temp.df, aes(x = .data$pred, facets = .data$obs, alpha = 0.5,
+                                    fill = .data$obs, color = .data$obs)) +
+                  geom_histogram(bins = cuts) + ylab("Count") + xlab("Predicted") + ggtitle(name) +
+                  theme_minimal() + theme(legend.position = "none", plot.title = element_text(hjust = 0.5)) +
+                  scale_x_continuous(limits = c(0, 1), oob = function(x, limits) x))
+
 }
 
 # Function to make calibration plots
@@ -447,9 +449,11 @@ calib.plot <- function(pred, obs, name, cuts){
   this.calib <- caret::calibration(obs ~ pred, data = temp.df, class = "presence", cuts = cuts)
   this.calib$data <- this.calib$data[complete.cases(this.calib$data),]
 
-  return(qplot(this.calib$data$midpoint, this.calib$data$Percent,
-               geom = c("line", "point"), xlim = c(0, 100), ylim = c(0, 100),
-               xlab = "Predicted", ylab = "Observed", main = name) +
-           geom_abline(intercept = 0, slope = 1, linetype = 3) +
-           theme_minimal() + theme(legend.position = "none", plot.title = element_text(hjust = 0.5)))
+
+  return(ggplot(data = this.calib$data, aes(x = .data$midpoint, y = .data$Percent)) +
+                  geom_line() + geom_point() + xlim(0, 100) + ylim(0, 100) +
+                  xlab("Predicted") + ylab("Observed") + ggtitle(name) +
+                  geom_abline(intercept = 0, slope = 1, linetype = 3) +
+                  theme_minimal() + theme(legend.position = "none", plot.title = element_text(hjust = 0.5)))
+
 }

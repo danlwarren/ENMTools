@@ -350,22 +350,34 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
 
   output <- NA
 
+  plot.df <- data.frame(gens = gens,
+                        D = this.d,
+                        I = this.i,
+                        cor = this.cor)
+
+
   # Packing list for non-recalibrated models
   if(all(is.na(recal.model.1)) & all(is.na(recal.model.2))){
     output <- list(env.D = mean(this.d),
                    env.I = mean(this.i),
                    env.cor = mean(this.cor),
-                   env.D.plot = qplot(gens, this.d, ylab = "D", xlab = "Samples", ylim = c(0,1)),
-                   env.I.plot = qplot(gens, this.i, ylab = "I", xlab = "Samples", ylim = c(0,1)),
-                   env.cor.plot = qplot(gens, this.cor, ylab = "Correlation", xlab = "Samples", ylim = c(-1,1)))
+                   env.D.plot = ggplot(data = plot.df, aes(x = .data$gens, y = .data$D)) + geom_point() +
+                     ylab("D") + xlab("Samples") + ylim(0,1),
+                   env.I.plot = ggplot(data = plot.df, aes(x = .data$gens, y = .data$I)) + geom_point() +
+                     ylab("I") + xlab("Samples") + ylim(0,1),
+                   env.cor.plot = ggplot(data = plot.df, aes(x = .data$gens, y = .data$cor)) + geom_point() +
+                     ylab("Rank Correlation") + xlab("Samples") + ylim(-1,1))
   } else {
     # At least one of the models was recalibrated
     output <- list(env.D = mean(this.d),
                    env.I = mean(this.i),
                    env.cor = mean(this.cor),
-                   env.D.plot = qplot(gens, this.d, ylab = "D", xlab = "Samples", ylim = c(0,1)),
-                   env.I.plot = qplot(gens, this.i, ylab = "I", xlab = "Samples", ylim = c(0,1)),
-                   env.cor.plot = qplot(gens, this.cor, ylab = "Correlation", xlab = "Samples", ylim = c(-1,1)),
+                   env.D.plot = ggplot(data = plot.df, aes(x = .data$gens, y = .data$D)) + geom_point() +
+                     ylab("D") + xlab("Samples") + ylim(0,1),
+                   env.I.plot = ggplot(data = plot.df, aes(x = .data$gens, y = .data$I)) + geom_point() +
+                     ylab("I") + xlab("Samples") + ylim(0,1),
+                   env.cor.plot = ggplot(data = plot.df, aes(x = .data$gens, y = .data$cor)) + geom_point() +
+                     ylab("Rank Correlation") + xlab("Samples") + ylim(-1,1),
                    recal.env.D = lapply(recal.this.d, function(x) mean(x)),
                    recal.env.i = lapply(recal.this.i, function(x) mean(x)),
                    recal.env.cor = lapply(recal.this.cor, function(x) mean(x)))
