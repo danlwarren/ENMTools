@@ -114,27 +114,44 @@ test_that("enmtools.model objects work for core methods", {
   expect_enmtools_model(cyreni.dm)
   expect_enmtools_model(cyreni.bc)
 
+
   cyreni.bc <- enmtools.bc(cyreni, euro.worldclim, test.prop = 0.2)
   expect_enmtools_model(cyreni.bc)
 
   cyreni.glm <- enmtools.glm(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
   expect_enmtools_model(cyreni.glm)
 
+  expect_enmtools_model(cyreni.glm)
 
   p.dm <- plot(cyreni.dm)
   expect_s3_class(p.dm, "ggplot")
-  expect_snapshot(print(cyreni.dm, plot = FALSE))
+  expect_output(print(cyreni.dm, plot = FALSE))
 
   p.bc <- plot(cyreni.bc)
   expect_s3_class(p.bc, "ggplot")
-  expect_snapshot(print(cyreni.bc, plot = FALSE))
+  expect_output(print(cyreni.bc, plot = FALSE))
 
   p.glm <- plot(cyreni.glm)
   expect_s3_class(p.glm, "ggplot")
-  expect_snapshot(print(cyreni.glm, plot = FALSE))
+  expect_output(print(cyreni.glm, plot = FALSE))
 
   # skip_on_ci()
-  # skip_on_cran()
+  ## Generally slow tests
+  skip_on_cran()
+  cyreni.dm.rts1 <- enmtools.dm(cyreni, euro.worldclim, test.prop = 0.2, rts = 2)
+  cyreni.bc.rts1 <- enmtools.bc(cyreni, euro.worldclim, test.prop = 0.2, rts = 10)
+  cyreni.dm.rts2 <- enmtools.dm(cyreni, euro.worldclim, test.prop = 0, rts = 2)
+  cyreni.bc.rts2 <- enmtools.bc(cyreni, euro.worldclim, test.prop = 0, rts = 10)
+  cyreni.glm.rts1 <- enmtools.glm(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2,
+                                 rts = 10)
+  cyreni.glm.rts2 <- enmtools.glm(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0,
+                                 rts = 10)
+  expect_enmtools_model(cyreni.dm.rts1)
+  expect_enmtools_model(cyreni.bc.rts1)
+  expect_enmtools_model(cyreni.dm.rts2)
+  expect_enmtools_model(cyreni.bc.rts2)
+  expect_enmtools_model(cyreni.glm.rts1)
+  expect_enmtools_model(cyreni.glm.rts2)
   # cyreni.mx <- enmtools.maxent(cyreni, euro.worldclim, test.prop = 0.2)
   # expect_enmtools_model(cyreni.mx)
 })
@@ -145,7 +162,16 @@ test_that("rf model objects work", {
   expect_enmtools_model(cyreni.rf)
   p <- plot(cyreni.rf)
   expect_s3_class(p, "ggplot")
-  expect_snapshot(print(cyreni.rf, plot = FALSE))
+  expect_output(print(cyreni.rf, plot = FALSE))
+
+  ## slow
+  skip_on_cran()
+  suppressWarnings(cyreni.rf.rts1 <- enmtools.rf(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2,
+                                               rts.reps = 10))
+  suppressWarnings(cyreni.rf.rts2 <- enmtools.rf(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0,
+                                               rts.reps = 10))
+  expect_enmtools_model(cyreni.rf.rts1)
+  expect_enmtools_model(cyreni.rf.rts2)
 })
 
 
@@ -155,7 +181,16 @@ test_that("ranger model objects work", {
   expect_enmtools_model(cyreni.rf.ranger)
   p <- plot(cyreni.rf.ranger)
   expect_s3_class(p, "ggplot")
-  expect_snapshot(print(cyreni.rf.ranger, plot = FALSE))
+  expect_output(print(cyreni.rf.ranger, plot = FALSE))
+
+  ## slow
+  skip_on_cran()
+  suppressWarnings(cyreni.rf.ranger.rts1 <- enmtools.rf.ranger(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2,
+                                               rts.reps = 10))
+  suppressWarnings(cyreni.rf.ranger.rts2 <- enmtools.rf.ranger(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0,
+                                               rts.reps = 10))
+  expect_enmtools_model(cyreni.rf.ranger.rts1)
+  expect_enmtools_model(cyreni.rf.ranger.rts2)
 })
 
 # test_that("ppm model objects work", {
@@ -170,7 +205,16 @@ test_that("gam model objects work", {
   expect_enmtools_model(cyreni.gam)
   p <- plot(cyreni.gam)
   expect_s3_class(p, "ggplot")
-  expect_snapshot(print(cyreni.gam, plot = FALSE))
+  expect_output(print(cyreni.gam, plot = FALSE))
+
+  ## slow
+  skip_on_cran()
+  cyreni.gam.rts1 <- enmtools.gam(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2,
+                                               rts.reps = 10)
+  cyreni.gam.rts2 <- enmtools.gam(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0,
+                                               rts.reps = 10)
+  expect_enmtools_model(cyreni.gam.rts1)
+  expect_enmtools_model(cyreni.gam.rts2)
 })
 
 
@@ -203,9 +247,6 @@ test_that("interactive.plot produces correct object", {
 #' Monte Carlo tests, ENMTools-style
 #'
 #'
-test_that("rts tests work", {
-  cyreni.bc <- enmtools.bc(cyreni, euro.worldclim, rts.reps = 100)
-})
 
 
 

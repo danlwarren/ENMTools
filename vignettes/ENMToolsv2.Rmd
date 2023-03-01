@@ -34,8 +34,7 @@ Model fitting functions from ENMTools still function much as they did before onc
 monticola.glm <- enmtools.glm(species = monticola, env = env, f = pres ~ bio1 + bio12 + bio7, test.prop = 0.2)
 monticola.glm
 
-monticola.glm.rts <- enmtools.glm(species = monticola, env = env, f = pres ~ bio1 + bio12 + bio7, test.prop = 0.2, rts.reps = 100)
-monticola.glm.rts
+
 ```
 
 Now to test hypervolume.
@@ -43,4 +42,11 @@ Now to test hypervolume.
 ```{r hypervolum_test, eval=FALSE}
 monticola.hyper <- enmtools.hypervolume(species = monticola, env = env[[c("bio1", "bio12", "bio7")]])
 monticola.ranger <- enmtools.rf.ranger(species = monticola, env = env, f = pres ~ bio1 + bio12 + bio7, test.prop = 0.2)
+```
+
+RTS:
+
+```{r rts}
+monticola.gam.rts <- enmtools.gam(species = monticola, env = env, f = pres ~ bio1 + bio12 + bio7, test.prop = 0, rts.reps = 10)
+monticola.gam.rts$rts.test
 ```

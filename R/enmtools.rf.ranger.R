@@ -177,11 +177,18 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
         rep.species <- species
 
         # Mix the points all together
-        allpoints <- rbind(test.data, species$background.points[,1:2], species$presence.points[,1:2])
+        if(test.prop > 0) {
+          test <- as.data.frame(test.data, geom = "XY")[ , c("x", "y")]
+        } else {
+          test <- NULL
+        }
+        allpoints <- rbind(test,
+                           as.data.frame(species$background.points, geom = "XY")[ , c("x", "y")],
+                           as.data.frame(species$presence.points, geom = "XY")[ , c("x", "y")])
 
         # Sample presence points from pool and remove from pool
         rep.rows <- sample(nrow(allpoints), nrow(species$presence.points))
-        rep.species$presence.points <- allpoints[rep.rows,]
+        rep.species$presence.points <- terra::vect(allpoints[rep.rows,], geom=c("x", "y"), crs = terra::crs(species$presence.points))
         allpoints <- allpoints[-rep.rows,]
 
         # Do the same for test points
@@ -192,28 +199,31 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
         }
 
         # Everything else goes back to the background
-        rep.species$background.points <- allpoints
+        rep.species$background.points <- terra::vect(allpoints, geom=c("x", "y"), crs = terra::crs(species$presence.points))
 
         rep.species <- add.env(rep.species, env, verbose = verbose)
 
-        rts.df <- rbind(rep.species$presence.points, rep.species$background.points)
-        rts.df$presence <- c(rep(1, nrow(rep.species$presence.points)), rep(0, nrow(rep.species$background.points)))
+        rts.df <- make_analysis.df(rep.species)
         rts.df$presence <- as.factor(rts.df$presence)
 
         thisrep.rf <- ranger::ranger(f, rts.df[,-c(1,2)], probability = TRUE, ...)
 
-        thisrep.model.evaluation <- dismo::evaluate(predict(thisrep.rf, data = rep.species$presence.points)$predictions[ , 2, drop = TRUE],
-                                                    predict(thisrep.rf, data = rep.species$background.points)$predictions[ , 2, drop = TRUE])
+        thisrep.model.evaluation <- dismo::evaluate(predict(thisrep.rf, data = rts.df[rts.df$presence == 1, ])$predictions[ , 2, drop = TRUE],
+                                                    predict(thisrep.rf, data = rts.df[rts.df$presence == 0, ])$predictions[ , 2, drop = TRUE])
         thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.rf, env, n.background = env.nback)
 
         rts.geog.training[i] <- thisrep.model.evaluation@auc
         rts.env.training[i] <- thisrep.env.model.evaluation@auc
 
         if(test.prop > 0 & test.prop < 1){
-          thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points[,1:2],
-                                                    thisrep.rf, env)
           temp.sp <- rep.species
-          temp.sp$presence.points <- rep.test.data
+          temp.sp$presence.points <- terra::vect(rep.test.data, geom=c("x", "y"), crs = terra::crs(species$presence.points))
+          temp.sp <- add.env(temp.sp, env, verbose = verbose)
+          rep.test.data2 <- make_analysis.df(temp.sp)
+          rep.test.data2$presence <- as.factor(rep.test.data2$presence)
+          thisrep.test.evaluation <-dismo::evaluate(predict(thisrep.rf, data = rep.test.data2)$predictions[ , 2, drop = TRUE],
+                                                    predict(thisrep.rf, data = rts.df[rts.df$presence == 0, ])$predictions[ , 2, drop = TRUE])
+
           thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.rf, env, n.background = env.nback)
 
           rts.geog.test[i] <- thisrep.test.evaluation@auc
