@@ -53,9 +53,7 @@ background.buffer <- function(points, buffer.width, buffer.type = "circles", mas
 
   # sample points
   if(return.type == "points"){
-    xy <- terra::spatSample(buffer.raster, size=n, xy=TRUE, na.rm=TRUE)
-
-    colnames(xy)[1:2] <- c(colnames(points))
+    xy <- terra::spatSample(buffer.raster, size=n, xy=TRUE, na.rm=TRUE)[,1:2]
 
     # If we didn't get as many points as we wanted
     if(nrow(xy) < 1){
@@ -65,7 +63,9 @@ background.buffer <- function(points, buffer.width, buffer.type = "circles", mas
       xy <- xy[sample(1:nrow(xy), n, replace = TRUE),]
     }
 
-    return(as.data.frame(xy[,1:2]))
+    xy <- terra::vect(xy, crs = terra::crs(points), geom = c("x", "y"))
+
+    return(xy)
   }
 
 }

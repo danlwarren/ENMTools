@@ -129,13 +129,11 @@ rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 9
     rep.species.1 <- species.1
     rep.species.2 <- species.2
 
-    start.point <- terra::vect(as.matrix(combined.presence.points[runif(1, 1, nrow(combined.presence.points)),]),
-                               crs="+proj=longlat +datum=WGS84")
+    start.point <- sample(combined.presence.points, 1)
 
     # Get Euclidean distance from part.points
-    euc.distance <-  as.vector(terra::distance(start.point,
-                                            terra::vect(as.matrix(combined.presence.points), crs="+proj=longlat +datum=WGS84")))
-    part.points <- cbind(combined.presence.points, euc.distance)
+    euc.distance <-  as.vector(terra::distance(start.point, combined.presence.points))
+    part.points <- cbind(terra::crds(combined.presence.points), euc.distance)
 
     # Flip a coin to decide whether we're going from top to bottom or other way around
     if(rbinom(1,1,0.5) == 0){
@@ -144,8 +142,11 @@ rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 9
       part.points <- part.points[order(part.points[,3], decreasing = TRUE),]
     }
 
-    rep.species.1$presence.points <- part.points[1:nrow(species.1$presence.points), 1:2]
-    rep.species.2$presence.points <- part.points[(nrow(species.1$presence.points) + 1):nrow(part.points), 1:2]
+    rep.species.1$presence.points <- terra::vect(part.points[1:nrow(species.1$presence.points), 1:2],
+                                                 crs = terra::crs(species.1$presence.points))
+    rep.species.2$presence.points <- terra::vect(part.points[(nrow(species.1$presence.points) + 1):nrow(part.points), 1:2],
+                                                 crs = terra::crs(species.2$presence.points))
+
 
     # Building models for reps
     if(type == "glm"){
@@ -202,40 +203,42 @@ rangebreak.blob <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
   p.values <- apply(reps.overlap, 2, function(x) min(rank(x)[1], rank(-x)[1])/length(x))
 
-  d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"D"], geom = "histogram", fill = "density", alpha = 0.5) +
+  reps.overlap <- as.data.frame(reps.overlap)
+
+  d.plot <- ggplot(reps.overlap[2:nrow(reps.overlap),], aes(x = D, fill = "density", alpha = 0.5)) +
+    geom_histogram(binwidth = 0.05) +
     geom_vline(xintercept = reps.overlap[1,"D"], linetype = "longdash") +
     xlim(-.05,1.05) + guides(fill = "none", alpha = "none") + xlab("D") +
-    ggtitle(paste("Rangebreak test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
-  i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"I"], geom = "histogram", fill = "density", alpha = 0.5) +
+  i.plot <- ggplot(reps.overlap[2:nrow(reps.overlap),], aes(x = I, fill = "density", alpha = 0.5)) +
+    geom_histogram(binwidth = 0.05) +
     geom_vline(xintercept = reps.overlap[1,"I"], linetype = "longdash") +
     xlim(-.05,1.05) + guides(fill = "none", alpha = "none") + xlab("I") +
-    ggtitle(paste("Rangebreak test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
-  cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"rank.cor"], geom = "histogram", fill = "density", alpha = 0.5) +
+  cor.plot <- ggplot(reps.overlap[2:nrow(reps.overlap),], aes(x = rank.cor, fill = "density", alpha = 0.5)) +
+    geom_histogram(binwidth = 0.05) +
     geom_vline(xintercept = reps.overlap[1,"rank.cor"], linetype = "longdash") +
     xlim(-1.05,1.05) + guides(fill = "none", alpha = "none") + xlab("Rank Correlation") +
-    ggtitle(paste("Rangebreak test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
-  env.d.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.D"], geom = "histogram", fill = "density", alpha = 0.5) +
+  env.d.plot <- ggplot(reps.overlap[2:nrow(reps.overlap),], aes(x = env.D, fill = "density", alpha = 0.5)) +
+    geom_histogram(binwidth = 0.05) +
     geom_vline(xintercept = reps.overlap[1,"env.D"], linetype = "longdash") +
     xlim(-.05,1.05) + guides(fill = "none", alpha = "none") + xlab("D, Environmental Space") +
-    ggtitle(paste("Rangebreak test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
-  env.i.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.I"], geom = "histogram", fill = "density", alpha = 0.5) +
+  env.i.plot <- ggplot(reps.overlap[2:nrow(reps.overlap),], aes(x = env.I, fill = "density", alpha = 0.5)) +
+    geom_histogram(binwidth = 0.05) +
     geom_vline(xintercept = reps.overlap[1,"env.I"], linetype = "longdash") +
     xlim(-.05,1.05) + guides(fill = "none", alpha = "none") + xlab("I, Environmental Space") +
-    ggtitle(paste("Rangebreak test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
-  env.cor.plot <- qplot(reps.overlap[2:nrow(reps.overlap),"env.cor"], geom = "histogram", fill = "density", alpha = 0.5) +
+  env.cor.plot <- ggplot(reps.overlap[2:nrow(reps.overlap),], aes(x = env.cor, fill = "density", alpha = 0.5)) +
+    geom_histogram(binwidth = 0.05) +
     geom_vline(xintercept = reps.overlap[1,"env.cor"], linetype = "longdash") +
     xlim(-1.05,1.05) + guides(fill = "none", alpha = "none") + xlab("Rank Correlation, Environmental Space") +
-    ggtitle(paste("Rangebreak test:\n", species.1$species.name, "vs.", species.2$species.name)) +
     theme(plot.title = element_text(hjust = 0.5))
 
   output <- list(description = paste("\n\nblob rangebreak test", species.1$species.name, "vs.", species.2$species.name),

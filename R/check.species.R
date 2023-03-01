@@ -12,9 +12,6 @@
 
 check.species <- function(this.species, env = NA, trim.dupes = FALSE){
 
-  # Checking classes of input args.  The isTRUE stuff is needed because R doesn't
-  # know how to do is.na on raster data, so it was barfing and error when a raster
-  # was passed in.
 
   # This bit replaces NULL values with NA values
   expect <- c("presence.points", "background.points",
@@ -26,25 +23,36 @@ check.species <- function(this.species, env = NA, trim.dupes = FALSE){
     this.species[[i]] <- NA
   }
 
-  if(!inherits(this.species$range, c("SpatRaster"))){
-    stop("Argument range requires an object of class SpatRaster")
+  if(!inherits(this.species$range, "SpatRaster")){
+    if(!is.na(this.species$range)){
+      stop("Argument range requires an object of class SpatRaster")
+    }
   }
-  if(is.na(terra::crs(this.species$range))){
-    warning("Species range raster does not have a CRS set")
+
+  if(inherits(this.species$range, "SpatRaster")){
+    if(is.na(terra::crs(this.species$range))){
+      warning("Species range raster does not have a CRS set")
+    }
   }
 
 
   if(!inherits(this.species$presence.points, "SpatVector")){
-    "Species presence points require an object of class SpatVector"
+    if(!is.na(this.species$presence.points)){
+      "Species presence points require an object of class SpatVector"
+    }
   }
 
   if(!inherits(this.species$background.points, "SpatVector")){
-    "Species background points require an object of class SpatVector"
+    if(!is.na(this.species$background.points)){
+      "Species background points require an object of class SpatVector"
+    }
   }
 
 
   if(!inherits(this.species$species.name, "character")){
-    stop("Argument species.name requires an object of class character")
+    if(!is.na(this.species$species.name)){
+      stop("Argument species.name requires an object of class character")
+    }
   }
 
 
