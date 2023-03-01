@@ -23,7 +23,10 @@ Imports:
     ggpubr,
     forcats,
     terra,
-    raster (>= 3.6.3)
+    raster (>= 3.6.3),
+    recipes,
+    parsnip,
+    workflows
 Depends: 
     dismo,
     R (>= 2.10)

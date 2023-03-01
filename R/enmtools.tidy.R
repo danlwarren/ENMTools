@@ -37,3 +37,11 @@ enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, 
 
 }
 
+#' Reexports
+#' @export
+recipes::recipe
+
+recipe.enmtools.species <- function (x, formula = NULL, env = NA, ..., vars = NULL, roles = NULL) {
+  species <- species <- check.bg(species, env, ...)
+
+}
