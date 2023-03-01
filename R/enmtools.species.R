@@ -105,11 +105,11 @@ plot.enmtools.species <- function(x, ...){
     terra::plot(x$range, col = "orange")
   }
 
-  if(class(x$background.points)  %in% c("SpatVector")){
+  if(inherits(x$background.points, "SpatVector")){
     points(terra::crds(x$background.points)[,1:2], pch = 4, col = "red")
   }
 
-  if(class(x$presence.points,"SpatVector")){
+  if(inherits(x$presence.points,"SpatVector")){
     points(terra::crds(x$presence.points)[,1:2], pch = 16, col = "black")
   }
 
