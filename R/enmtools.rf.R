@@ -174,11 +174,18 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
         rep.species <- species
 
         # Mix the points all together
-        allpoints <- rbind(test.data, species$background.points[,1:2], species$presence.points[,1:2])
+        if(test.prop > 0) {
+          test <- as.data.frame(test.data, geom = "XY")[ , c("x", "y")]
+        } else {
+          test <- NULL
+        }
+        allpoints <- rbind(test,
+                           as.data.frame(species$background.points, geom = "XY")[ , c("x", "y")],
+                           as.data.frame(species$presence.points, geom = "XY")[ , c("x", "y")])
 
         # Sample presence points from pool and remove from pool
         rep.rows <- sample(nrow(allpoints), nrow(species$presence.points))
-        rep.species$presence.points <- allpoints[rep.rows,]
+        rep.species$presence.points <- terra::vect(allpoints[rep.rows,], geom=c("x", "y"), crs = terra::crs(species$presence.points))
         allpoints <- allpoints[-rep.rows,]
 
         # Do the same for test points
@@ -189,16 +196,15 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
         }
 
         # Everything else goes back to the background
-        rep.species$background.points <- allpoints
+        rep.species$background.points <- terra::vect(allpoints, geom=c("x", "y"), crs = terra::crs(species$presence.points))
 
         rep.species <- add.env(rep.species, env, verbose = verbose)
 
-        rts.df <- rbind(rep.species$presence.points, rep.species$background.points)
-        rts.df$presence <- c(rep(1, nrow(rep.species$presence.points)), rep(0, nrow(rep.species$background.points)))
+        rts.df <- make_analysis.df(rep.species)
 
-        thisrep.rf <- randomForest::randomForest(f, rts.df[,-c(1,2)], ...)
+        suppressWarnings(thisrep.rf <- randomForest::randomForest(f, rts.df[,-c(1,2)], ...))
 
-        thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points[,1:2], species$background.points[,1:2],
+        thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points, species$background.points,
                                                    thisrep.rf, env)
         thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.rf, env, n.background = env.nback)
 
@@ -206,10 +212,10 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
         rts.env.training[i] <- thisrep.env.model.evaluation@auc
 
         if(test.prop > 0 & test.prop < 1){
-          thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points[,1:2],
+          thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points,
                                                     thisrep.rf, env)
           temp.sp <- rep.species
-          temp.sp$presence.points <- rep.test.data
+          temp.sp$presence.points <- terra::vect(rep.test.data, geom=c("x", "y"), crs = terra::crs(species$presence.points))
           thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.rf, env, n.background = env.nback)
 
           rts.geog.test[i] <- thisrep.test.evaluation@auc

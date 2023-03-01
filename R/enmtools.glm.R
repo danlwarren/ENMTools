@@ -218,7 +218,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
 
         # Sample presence points from pool and remove from pool
         rep.rows <- sample(nrow(allpoints), nrow(species$presence.points))
-        rep.species$presence.points <- terra::vect(allpoints[rep.rows,], geom=c("x", "y"))
+        rep.species$presence.points <- terra::vect(allpoints[rep.rows,], geom=c("x", "y"), crs = terra::crs(species$presence.points))
         allpoints <- allpoints[-rep.rows,]
 
         # Do the same for test points
@@ -229,7 +229,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
         }
 
         # Everything else goes back to the background
-        rep.species$background.points <- terra::vect(allpoints, geom=c("x", "y"))
+        rep.species$background.points <- terra::vect(allpoints, geom=c("x", "y"), crs = terra::crs(species$presence.points))
 
         rep.species <- add.env(rep.species, env, verbose = verbose)
 
@@ -254,7 +254,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
           thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points,
                                                     thisrep.glm, env)
           temp.sp <- rep.species
-          temp.sp$presence.points <- terra::vect(rep.test.data, geom = c("x", "y"))
+          temp.sp$presence.points <- terra::vect(rep.test.data, geom = c("x", "y"), crs = terra::crs(species$presence.points))
           thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.glm, env, n.background = env.nback)
 
           rts.geog.test[i] <- thisrep.test.evaluation@auc
