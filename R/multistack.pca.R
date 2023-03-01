@@ -89,7 +89,7 @@ multistack.pca <- function(..., n = 2){
 
   plot.df <- as.data.frame(pca$x)
 
-  # Doing this weird local() trick to keep qplot from making the same plot over and over
+  # Doing this weird local() trick to keep ggplot from making the same plot over and over
   for (i in 1:n) {
     pc.name <- colnames(plot.df)[i]
     pc.plots[[pc.name]] <- local({
