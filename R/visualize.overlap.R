@@ -66,14 +66,14 @@ visualize.overlap <- function(model.1, model.2, env, nbins = 100, layers, plot.p
   # Set value to mean for all non-target vars
   for(i in names(env)){
     if(!(i %in% layers)){
-      layer.values <- terra::extract(env[[i]], rbind(points.1, points.2), ID = FALSE)
+      layer.values <- unlist(terra::extract(env[[i]], rbind(points.1[,1:2], points.2[,1:2]), ID = FALSE))
       plot.df <- cbind(plot.df, rep(mean(layer.values, na.rm=TRUE), nrow(plot.df)))
       names <- c(names, i)
     }
   }
 
-  pointdata.1 <- as.data.frame(terra::extract(env[[layers]], points.1, ID = FALSE))
-  pointdata.2 <- as.data.frame(terra::extract(env[[layers]], points.2, ID = FALSE))
+  pointdata.1 <- as.data.frame(terra::extract(env[[layers]], points.1[,1:2], ID = FALSE))
+  pointdata.2 <- as.data.frame(terra::extract(env[[layers]], points.2[,1:2], ID = FALSE))
 
   colnames(plot.df) <- names
 
@@ -102,7 +102,7 @@ visualize.overlap <- function(model.1, model.2, env, nbins = 100, layers, plot.p
   plot.df <- cbind(plot.df[,1:2], pred1, pred2)
 
   #This is where I'm going to need to look up how to overlap two contours!
-  overlap.plot <- ggplot(data = plot.df, aes_string(y = names[2], x = names[1])) +
+  overlap.plot <- ggplot(data = plot.df, aes(y = .data[[names[2]]], x = .data[[names[1]]])) +
     geom_contour(aes(z = pred1), colour = "red") + geom_contour(aes(z = pred2)) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     theme_classic() +

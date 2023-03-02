@@ -5,7 +5,7 @@
 #' @param cuts The number of bins to split suitability scores into for calculating calibration.
 #' @param env A set of environment layers to be used for optional env space metrics
 #' @param n.background Number of background points to be used for env space metrics
-#' @param methods Numeric or vector specifying which methods the CalibratR package should use for recalibration.   1=hist_scaled, 2=hist_transformed, 3=BBQ_scaled, 4=BBQ_transformed.  Option 5 is disabled by default due to errors.
+#' @param recal.methods Numeric or vector specifying which methods the CalibratR package should use for recalibration.   1=hist_scaled, 2=hist_transformed, 3=BBQ_scaled, 4=BBQ_transformed.  Option 5 is disabled by default due to errors.
 #' @param ... Further arguments to be passed to CalibratR's "calibrate" function.
 #'
 #' @return An enmtools.calibrate object containing calibration and classificaction plots, metrics of model calibration, and (optionally) versions of the model that were recalibrated using various methods.

@@ -2,6 +2,8 @@
 % Please edit documentation in R/enmtools.species.R
 \name{enmtools.species}
 \alias{enmtools.species}
+\alias{save.enmtools.species}
+\alias{load.enmtools.species}
 \title{Defining a class for enmtools.species.}
 \usage{
 enmtools.species(
@@ -11,6 +13,10 @@ enmtools.species(
   species.name = NA,
   models = NA
 )
+
+save.enmtools.species(x, ...)
+
+load.enmtools.species(x, ...)
 }
 \arguments{
 \item{range}{A raster or SpatialPolygon with the actual range they occur in}
@@ -24,6 +30,10 @@ enmtools.species(
 \item{models}{A list of models that are made for the species, which will be stuffed in there as we go along
 to pass the check.  This is used by internal enmtools functions to make sure the necessary data is present
 before processing anything.}
+
+\item{x}{Path to an enmtools.species file}
+
+\item{...}{Other arguments passed to R's load function}
 }
 \value{
 Returns an enmtools.species object, either empty or populated with the parameter values that were passed into the function.
@@ -31,3 +41,10 @@ Returns an enmtools.species object, either empty or populated with the parameter
 \description{
 Each species gets:
 }
+\section{Functions}{
+\itemize{
+\item \code{save.enmtools.species()}: Save an ENMTools species object
+
+\item \code{load.enmtools.species()}: Load an ENMTools species object
+
+}}

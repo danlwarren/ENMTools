@@ -14,11 +14,11 @@
 
 point.overlap <- function(x, y){
 
-  if(!inherits(x$presence.points, c("data.frame"))){
+  if(!inherits(x$presence.points, c("SpatVector"))){
     stop(paste("Species", x$species.name, "does not have presence points!"))
   }
 
-  if(!inherits(y$presence.points, c("data.frame"))){
+  if(!inherits(y$presence.points, c("SpatVector"))){
     stop(paste("Species", y$species.name, "does not have presence points!"))
   }
 

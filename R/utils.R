@@ -13,7 +13,7 @@ wrap_list <- function(l) {
 #' export
 #' @param l A list containing species objects that need to be converted
 unwrap_list <- function(l) {
-  rapply(l, terra::wrap, classes = c("SpatVector", "SpatRaster"))
+  rapply(l, terra::unwrap, classes = c("PackedSpatVector", "PackedSpatRaster"))
 }
 
 make_analysis.df <- function(species) {
