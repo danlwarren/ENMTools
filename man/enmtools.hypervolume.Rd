@@ -2,7 +2,7 @@
 % Please edit documentation in R/enmtools.hypervolume.R
 \name{enmtools.hypervolume}
 \alias{enmtools.hypervolume}
-\title{Takes an emtools.species object and environmental layers, and constructs a hypervolume using the R package hypervolume}
+\title{THIS FUNCTION IS CURRENTLY DISABLED.  Takes an emtools.species object and environmental layers, and constructs a hypervolume using the R package hypervolume}
 \usage{
 enmtools.hypervolume(
   species,
@@ -36,7 +36,7 @@ enmtools.hypervolume(
 An enmtools hypvervolume object containing a hypervolume object, a raster of suitability scores, the species name, and the occurrence data frame.
 }
 \description{
-Takes an emtools.species object and environmental layers, and constructs a hypervolume using the R package hypervolume
+THIS FUNCTION IS CURRENTLY DISABLED.  Takes an emtools.species object and environmental layers, and constructs a hypervolume using the R package hypervolume
 }
 \examples{
 \donttest{

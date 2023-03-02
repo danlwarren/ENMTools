@@ -21,6 +21,8 @@
 
 hypervolume.overlap <- function(species.1, species.2, env = NA, reduction.factor = 0.1, ...){
 
+  return("This function is currently disabled, will be re-enabled once hypervolume on CRAN is working with the terra package.")
+
   check.packages("hypervolume")
 
   # Turn species into hypervolumes, if they're not already

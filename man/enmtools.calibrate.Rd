@@ -10,6 +10,7 @@ enmtools.calibrate(
   cuts = 11,
   env = NA,
   n.background = 10000,
+  recal.methods = c(1, 2, 3, 4),
   ...
 )
 }
@@ -23,6 +24,8 @@ enmtools.calibrate(
 \item{env}{A set of environment layers to be used for optional env space metrics}
 
 \item{n.background}{Number of background points to be used for env space metrics}
+
+\item{recal.methods}{Numeric or vector specifying which methods the CalibratR package should use for recalibration.   1=hist_scaled, 2=hist_transformed, 3=BBQ_scaled, 4=BBQ_transformed.  Option 5 is disabled by default due to errors.}
 
 \item{...}{Further arguments to be passed to CalibratR's "calibrate" function.}
 }

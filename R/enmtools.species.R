@@ -125,3 +125,20 @@ print.enmtools.species <- function(x, ...){
 
 }
 
+#' @describeIn enmtools.species Save an ENMTools species object
+#' @param x An enmtools.species object to be saved
+#' @param ... Other arguments passed to R's save function (eg., filename)
+save.enmtools.species <- function(x, ...){
+  x <- rapply(x, terra::wrap, classes = c("SpatVector", "SpatRaster"), how = "replace")
+  save(x, ...)
+}
+
+#' @describeIn enmtools.species Load an ENMTools species object
+#' @param x Path to an enmtools.species file
+#' @param ... Other arguments passed to R's load function
+load.enmtools.species <- function(x, ...) {
+  load(x, ...)
+  x <- rapply(x, terra::unwrap, classes = c("PackedSpatVector", "PackedSpatRaster"), how = "replace")
+  return(x)
+}
+

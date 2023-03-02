@@ -92,3 +92,20 @@ plot.enmtools.clade <- function(x, ...){
 print.enmtools.clade <- function(x, ...){
   summary(x)
 }
+
+#' @describeIn enmtools.clade Save an ENMTools clade object
+#' @param x An enmtools.clade object to be saved
+#' @param ... Other arguments passed to R's save function (eg., filename)
+save.enmtools.clade <- function(x, ...){
+  x <- rapply(x, terra::wrap, classes = c("SpatVector", "SpatRaster"), how = "replace")
+  save(x, ...)
+}
+
+#' @describeIn enmtools.clade Load an ENMTools clade object
+#' @param x Path to an enmtools.species file
+#' @param ... Other arguments passed to R's load function
+load.enmtools.clade<- function(x, ...) {
+  load(x, ...)
+  x <- rapply(x, terra::unwrap, classes = c("PackedSpatVector", "PackedSpatRaster"), how = "replace")
+  return(x)
+}

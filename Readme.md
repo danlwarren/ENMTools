@@ -1,5 +1,9 @@
 # ENMTools
 
+<!-- badges: start -->
+  [![R-CMD-check](https://github.com/danlwarren/ENMTools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/danlwarren/ENMTools/actions/workflows/R-CMD-check.yaml)
+  <!-- badges: end -->
+
 This package implements various tests, visualizations, and metrics for
 use with environmental niche models (ENMs) and species distribution
 models (SDMs).
