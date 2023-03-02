@@ -53,7 +53,7 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
       } else if(corner < 1 | corner > 4){
         stop("corner should be an integer from 1 to 4!")
       }
-      test.inds <- get.block(species$presence.points, species$background.points)
+      test.inds <- get.block(terra::crds(species$presence.points), terra::crds(species$background.points))
       test.bg.inds <- which(test.inds$bg.grp == corner)
       test.inds <- which(test.inds$occs.grp == corner)
       test.data <- species$presence.points[test.inds,]
