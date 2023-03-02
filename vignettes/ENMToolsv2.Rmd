@@ -56,4 +56,15 @@ monticola.gam.rts$rts.test
 ```{r tidy_testing}
 monti_recipe <- recipe(monticola, env = euro.worldclim)
 monti_recipe
+
+test <- enmtools.tidy(monticola, euro.worldclim)
+test
+
+tt <- enmtools.tidy(monticola, euro.worldclim, model = "rf.ranger", test.prop = 0.2, model_args = list(trees = 1000))
+terra::plot(tt$suitability)
+
+bm <- bench::mark(tt1 <- enmtools.tidy(monticola, euro.worldclim, model = "rf.ranger", test.prop = 0.2, rts.reps = 10),
+            tt2 <- enmtools.rf.ranger(monticola, euro.worldclim, test.prop = 0.2, rts.reps = 10),
+            check = FALSE)
+bm
 ```

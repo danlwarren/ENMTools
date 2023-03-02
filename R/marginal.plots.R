@@ -69,12 +69,12 @@ marginal.plots <- function(model, env, layer, standardize = TRUE, verbose = FALS
     bg.dens <- density(bg.env, from = minmax[1, ], to = minmax[2, ], n = 100, na.rm = TRUE)$y
     bg.dens <- bg.dens/max(bg.dens)
   } else {
-    pres.env <- unlist(terra::extract(env[[layer]], model$analysis.df[model$analysis.df$presence == 1,c(1,2)], ID = FALSE))
-    pres.dens <- density(pres.env, from = minmax[1, ], to = minmax[2, ], n = 100, na.rm = TRUE)$y
-    pres.dens <- pres.dens/max(pres.dens)
-    bg.env <- unlist(terra::extract(env[[layer]], model$analysis.df[model$analysis.df$presence == 0,c(1,2)], ID = FALSE))
-    bg.dens <- density(bg.env, from = minmax[1, ], to = minmax[2, ], n = 100, na.rm = TRUE)$y
-    bg.dens <- bg.dens/max(bg.dens)
+      pres.env <- unlist(terra::extract(env[[layer]], model$analysis.df[model$analysis.df$presence == 1,c(1,2)], ID = FALSE))
+      pres.dens <- density(pres.env, from = minmax[1, ], to = minmax[2, ], n = 100, na.rm = TRUE)$y
+      pres.dens <- pres.dens/max(pres.dens)
+      bg.env <- unlist(terra::extract(env[[layer]], model$analysis.df[model$analysis.df$presence == 0,c(1,2)], ID = FALSE))
+      bg.dens <- density(bg.env, from = minmax[1, ], to = minmax[2, ], n = 100, na.rm = TRUE)$y
+      bg.dens <- bg.dens/max(bg.dens)
   }
 
 
@@ -91,7 +91,11 @@ marginal.plots <- function(model, env, layer, standardize = TRUE, verbose = FALS
     if(inherits(model$model, "ranger")) {
       pred <- predict(model$model, data = plot.df, type = "response")$predictions[ , 2, drop = TRUE]
     } else {
-      pred <- predict(model$model, newdata = plot.df, type = "response")
+      if(inherits(model$model, "workflow")) {
+        pred <- unlist(predict(model$model, new_data = plot.df, type = "prob")$.pred_1)
+      } else {
+        pred <- predict(model$model, newdata = plot.df, type = "response")
+      }
     }
   }
 

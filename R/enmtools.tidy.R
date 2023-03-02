@@ -4,7 +4,9 @@
 #' @param species An enmtools.species object
 #' @param env A SpatRaster of environmental data.
 #' @param f A formula or tidymodels recipe
-#' @param model A character string specifying the desired model. Default is "glm"
+#' @param model A character string specifying the desired model, or a `parsnip`
+#' model definition. Default is "glm". If a character string, choices are the
+#' standard ENMTools models: `c("glm", "bc", "dm", "gam", "rf", "rf.ranger")`
 #' @param test.prop Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.
 #' @param eval Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.
 #' @param nback Number of background points to draw from range or env, if background points aren't provided
@@ -19,40 +21,384 @@
 #' @param corner An integer from 1 to 4.  Selects which corner to use for "block" test data.  By default the corner is selected randomly.
 #' @param bias An optional raster estimating relative sampling effort per grid cell.  Will be used for drawing background data.
 #' @param step Logical determining whether to do stepwise model selection or not
-#' @param model_args An optional named list with additional arguments to the
-#' modelling function (as specified in `model` argument).
+#' @param ... Additional arguments to be passed to the modelling function
 #'
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
 #'
 #' @examples
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
-#' enmtools.glm(iberolacerta.clade$species$monticola, env = euro.worldclim, f = pres ~ bio1 + bio9)
+#' enmtools.tidy(iberolacerta.clade$species$monticola, env = euro.worldclim, f = pres ~ bio1 + bio9)
 
 
 
-enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, step = FALSE, model_args = list()){
+enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, step = FALSE, model_args = list(), ...){
 
+  notes <- NULL
+
+  mod <- choose_model(model, model_args)
+
+  if(!case_weights_check(mod)) {
+   weights <- "none"
+  }
+
+  # Declaring some NAs in case we skip evaluation
+  test.data <- NA
+  model.evaluation <- NA
+  env.model.evaluation <- NA
+  test.evaluation <- NA
+  env.test.evaluation <- NA
+  rts.test <- NA
+
+  # Code for randomly withheld test data
+  if(is.numeric(test.prop)){
+    if(test.prop > 0 & test.prop < 1){
+      test.inds <- sample(1:nrow(species$presence.points), ceiling(nrow(species$presence.points) * test.prop))
+      test.data <- species$presence.points[test.inds,]
+      species$presence.points <- species$presence.points[-test.inds,]
+    }
+  }
+
+  # Code for spatially structured test data
+  if(is.character(test.prop)){
+    if(test.prop == "block"){
+      if(is.na(corner)){
+        corner <- ceiling(runif(1, 0, 4))
+      } else if(corner < 1 | corner > 4){
+        stop("corner should be an integer from 1 to 4!")
+      }
+      test.inds <- get.block(species$presence.points, species$background.points)
+      test.bg.inds <- which(test.inds$bg.grp == corner)
+      test.inds <- which(test.inds$occs.grp == corner)
+      test.data <- species$presence.points[test.inds,]
+      test.bg <- species$background.points[test.bg.inds,]
+      species$presence.points <- species$presence.points[-test.inds,]
+      species$background.points <- species$background.points[-test.bg.inds,]
+    }
+  }
+
+  ## check formula and construct tidymodels objects
   if(!is.null(f)) {
     if(inherits(f, "recipe")) {
       rec <- f
     } else {
-      rec <- recipe(species, f, env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias)
+      rec <- recipe(species, f, env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias,
+                    weights = weights)
+    }
+  } else {
+    rec <- recipe(species, env = env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias,
+                  weights = weights)
+  }
+  preps <- enmtools.prep(species, env = env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias, weights = weights)
+
+  analysis.df <- preps$data
+  species <- preps$species
+
+  wf <- workflows::workflow(rec, mod)
+
+  if(weights == "equal"){
+    wf <- workflows::add_case_weights(wf, .data$weights)
+  }
+
+  f2 <- make_formula(model, ...)
+  if(!is.null(f2)) {
+    f <- f2
+    wf <- workflows::update_model(wf, mod, formula = f)
+   }
+
+  this.fit <- parsnip::fit(wf, data = analysis.df)
+
+  suitability <- predict(env, this.fit, type = "prob", na.rm = TRUE)$.pred_1
+
+    # Clamping and getting a diff layer
+  clamping.strength <- NA
+  if(clamp == TRUE){
+    env <- clamp.env(analysis.df, env)
+    clamped.suitability <- predict(env, this.fit, type = "prob", na.rm = TRUE)$.pred_1
+    clamping.strength <- clamped.suitability - suitability
+    suitability <- clamped.suitability
+  }
+
+  if(eval == TRUE){
+
+    # This is a very weird hack that has to be done because dismo's evaluate function
+    # fails if the stack only has one layer.
+    if(length(names(env)) == 1){
+      oldname <- names(env)
+      env <- c(env, env)
+      names(env) <- c(oldname, "dummyvar")
+      notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
+    }
+
+    model.evaluation <- dismo::evaluate(as.numeric(unlist(predict(this.fit, new_data = analysis.df[analysis.df$presence == 1, ]))),
+                                        as.numeric(unlist(predict(this.fit, new_data = analysis.df[analysis.df$presence == 0, ]))))
+    env.model.evaluation <- env.evaluate(species, this.fit, env, n.background = env.nback)
+
+    # Test eval for randomly withheld data
+    if(is.numeric(test.prop)){
+      if(test.prop > 0 & test.prop < 1){
+        test.check <- terra::extract(env, test.data, ID = FALSE)
+        test.data <- test.data[complete.cases(test.check),]
+        test.evaluation <- dismo::evaluate(as.numeric(unlist(predict(this.fit, new_data = terra::extract(env, test.data, ID = FALSE)))),
+                                           as.numeric(unlist(predict(this.fit, new_data = terra::extract(env, species$background.points, ID = FALSE)))))
+        temp.sp <- species
+        temp.sp$presence.points <- test.data
+        env.test.evaluation <- env.evaluate(temp.sp, this.fit, env, n.background = env.nback)
+      }
+    }
+
+    # Test eval for spatially structured data
+    if(is.character(test.prop)){
+      if(test.prop == "block"){
+        test.check <- terra::extract(env, test.data, ID = FALSE)
+        test.data <- test.data[complete.cases(test.check),]
+        test.evaluation <- dismo::evaluate(as.numeric(unlist(predict(this.fit, new_data = terra::extract(env, test.data, ID = FALSE)))),
+                                           as.numeric(unlist(predict(this.fit, new_data = terra::extract(env, test.bg, ID = FALSE)))))
+
+        temp.sp <- species
+        temp.sp$presence.points <- test.data
+        temp.sp$background.points <- test.bg
+        env.test.evaluation <- env.evaluate(temp.sp, this.fit, env, n.background = env.nback)
+      }
+    }
+
+
+    # Do Raes and ter Steege test for significance.  Turned off if eval == FALSE
+    if(rts.reps > 0 & eval == TRUE){
+
+      message("\nBuilding RTS replicate models...\n")
+
+      # Die if we're not doing randomly withheld test data and RTS reps > 0
+      if(!is.numeric(test.prop)){
+        stop(paste("RTS test can only be conducted with randomly withheld data, and test.prop is set to", test.prop))
+      }
+
+      rts.models <- list()
+
+      rts.geog.training <- c()
+      rts.geog.test <- c()
+      rts.env.training <- c()
+      rts.env.test <- c()
+
+      if (requireNamespace("progress", quietly = TRUE)) {
+        pb <- progress::progress_bar$new(
+          format = " [:bar] :percent eta: :eta",
+          total = rts.reps, clear = FALSE, width= 60)
+      }
+
+      for(i in 1:rts.reps){
+
+        if (requireNamespace("progress", quietly = TRUE)) {
+          pb$tick()
+        }
+
+        if(verbose == TRUE){message(paste("Replicate", i, "of", rts.reps))}
+
+        # Repeating analysis with scrambled pa points and then evaluating models
+        rep.species <- species
+
+        # Mix the points all together
+        if(test.prop > 0) {
+          test <- as.data.frame(test.data, geom = "XY")[ , c("x", "y")]
+        } else {
+          test <- NULL
+        }
+        allpoints <- rbind(test,
+                           as.data.frame(species$background.points, geom = "XY")[ , c("x", "y")],
+                           as.data.frame(species$presence.points, geom = "XY")[ , c("x", "y")])
+
+        # Sample presence points from pool and remove from pool
+        rep.rows <- sample(nrow(allpoints), nrow(species$presence.points))
+        rep.species$presence.points <- terra::vect(allpoints[rep.rows,], geom=c("x", "y"), crs = terra::crs(species$presence.points))
+        allpoints <- allpoints[-rep.rows,]
+
+        # Do the same for test points
+        if(test.prop > 0){
+          test.rows <- sample(nrow(allpoints), nrow(test.data))
+          rep.test.data <- allpoints[test.rows,]
+          allpoints <- allpoints[-test.rows,]
+        }
+
+        # Everything else goes back to the background
+        rep.species$background.points <- terra::vect(allpoints, geom=c("x", "y"), crs = terra::crs(species$presence.points))
+
+        rts.prep <- enmtools.prep(rep.species, env, nback = 0, weights = weights)
+        rts.df <- rts.prep$data
+        rep.species <- rts.prep$species
+
+        thisrep.tidy <- parsnip::fit(wf, data = rts.df)
+
+        thisrep.model.evaluation <-dismo::evaluate(as.numeric(unlist(predict(thisrep.tidy, new_data = rts.df[rts.df$presence == 1, ]))),
+                                                    as.numeric(unlist(predict(thisrep.tidy, new_data = rts.df[rts.df$presence == 0, ]))))
+
+        thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.tidy, env, n.background = env.nback)
+
+        rts.geog.training[i] <- thisrep.model.evaluation@auc
+        rts.env.training[i] <- thisrep.env.model.evaluation@auc
+
+        if(test.prop > 0 & test.prop < 1){
+          temp.sp <- rep.species
+          temp.sp$presence.points <- terra::vect(rep.test.data, geom=c("x", "y"), crs = terra::crs(species$presence.points))
+          temp.sp.prep <- enmtools.prep(temp.sp, env, nback = 0, weights = weights)
+          rep.test.data2 <- temp.sp.prep$data
+          temp.sp <- temp.sp.prep$species
+
+          thisrep.test.evaluation <-dismo::evaluate(as.numeric(unlist(predict(thisrep.tidy, new_data = rep.test.data2))),
+                                                    as.numeric(unlist(predict(thisrep.tidy, new_data = rts.df[rts.df$presence == 0, ]))))
+
+          temp.sp <- rep.species
+          temp.sp$presence.points <- terra::vect(rep.test.data, geom = c("x", "y"), crs = terra::crs(species$presence.points))
+          thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.tidy, env, n.background = env.nback)
+
+          rts.geog.test[i] <- thisrep.test.evaluation@auc
+          rts.env.test[i] <- thisrep.env.test.evaluation@auc
+
+          rts.models[[paste0("rep.",i)]] <- list(model = thisrep.tidy,
+                                                 training.evaluation = thisrep.model.evaluation,
+                                                 env.training.evaluation = thisrep.env.model.evaluation,
+                                                 test.evaluation = thisrep.test.evaluation,
+                                                 env.test.evaluation = thisrep.env.test.evaluation)
+        } else {
+          rts.models[[paste0("rep.",i)]] <- list(model = thisrep.tidy,
+                                                 training.evaluation = thisrep.model.evaluation,
+                                                 env.training.evaluation = thisrep.env.model.evaluation,
+                                                 test.evaluation = NA,
+                                                 env.test.evaluation = NA)
+        }
+
+      }
+
+      # Reps are all run now, time to package it all up
+
+      # Calculating p values
+      rts.geog.training.pvalue = mean(rts.geog.training > model.evaluation@auc)
+      rts.env.training.pvalue = mean(rts.env.training > env.model.evaluation@auc)
+      if(test.prop > 0){
+        rts.geog.test.pvalue <- mean(rts.geog.test > test.evaluation@auc)
+        rts.env.test.pvalue <- mean(rts.env.test > env.test.evaluation@auc)
+      } else {
+        rts.geog.test.pvalue <- NA
+        rts.env.test.pvalue <- NA
+      }
+
+      rts.geog.training <- data.frame(AUC = rts.geog.training)
+      rts.env.training <- data.frame(AUC = rts.env.training)
+      rts.geog.test <- data.frame(AUC = rts.geog.test)
+      rts.env.test <- data.frame(AUC = rts.env.test)
+
+      # Making plots
+      training.plot <- ggplot(rts.geog.training, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
+        geom_histogram(binwidth = 0.05) +
+        geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
+        xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
+        ggtitle(paste("Model performance in geographic space on training data")) +
+        theme(plot.title = element_text(hjust = 0.5))
+
+      env.training.plot <- ggplot(rts.env.training, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
+        geom_histogram(binwidth = 0.05) +
+        geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
+        xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
+        ggtitle(paste("Model performance in environment space on training data")) +
+        theme(plot.title = element_text(hjust = 0.5))
+
+      # Make plots for test AUC distributions
+      if(test.prop > 0){
+        test.plot <- ggplot(rts.geog.test, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
+          geom_histogram(binwidth = 0.05) +
+          geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
+          xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
+          ggtitle(paste("Model performance in geographic space on test data")) +
+          theme(plot.title = element_text(hjust = 0.5))
+
+        env.test.plot <- ggplot(rts.env.test, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
+          geom_histogram(binwidth = 0.05) +
+          geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
+          xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
+          ggtitle(paste("Model performance in environment space on test data")) +
+          theme(plot.title = element_text(hjust = 0.5))
+      } else {
+        test.plot <- NA
+        env.test.plot <- NA
+      }
+
+      rts.pvalues = list(rts.geog.training.pvalue = rts.geog.training.pvalue,
+                         rts.env.training.pvalue = rts.env.training.pvalue,
+                         rts.geog.test.pvalue = rts.geog.test.pvalue,
+                         rts.env.test.pvalue = rts.env.test.pvalue)
+      rts.distributions = list(rts.geog.training = rts.geog.training,
+                               rts.env.training = rts.env.training,
+                               rts.geog.test = rts.geog.test,
+                               rts.env.test = rts.env.test)
+      rts.plots = list(geog.training.plot = training.plot,
+                       env.training.plot = env.training.plot,
+                       geog.test.plot = test.plot,
+                       env.test.plot = env.test.plot)
+
+      rts.test <- list(rts.models = rts.models,
+                       rts.pvalues = rts.pvalues,
+                       rts.distributions = rts.distributions,
+                       rts.plots = rts.plots,
+                       rts.nreps = rts.reps)
+    }
+
+  }
+
+  output <- list(species.name = species$species.name,
+                 formula = f,
+                 analysis.df = analysis.df,
+                 test.data = test.data,
+                 test.prop = test.prop,
+                 model = this.fit,
+                 training.evaluation = model.evaluation,
+                 test.evaluation = test.evaluation,
+                 env.training.evaluation = env.model.evaluation,
+                 env.test.evaluation = env.test.evaluation,
+                 rts.test = rts.test,
+                 suitability = suitability,
+                 clamping.strength = clamping.strength,
+                 call = sys.call(),
+                 notes = notes)
+
+  class(output) <- c("enmtools.glm", "enmtools.model")
+
+  # Doing response plots for each variable.  Doing this bit after creating
+  # the output object because marginal.plots expects an enmtools.model object
+  response.plots <- list()
+
+  plot.vars <- all.vars(formula(recipes::prep(workflows::extract_preprocessor(this.fit))))
+
+  for(i in 2:length(plot.vars)){
+    this.var <-plot.vars[i]
+    if(this.var %in% names(env)){
+      response.plots[[this.var]] <- marginal.plots(output, env, this.var)
     }
   }
-  analysis.df <- enmtools.prep(species, env = env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias)
 
-  mod <- parsnip::logistic_reg()
+  output[["response.plots"]] <- response.plots
 
+  if(!is.null(report)){
+    if(file.exists(report) & overwrite == FALSE){
+      stop("Report file exists, and overwrite is set to FALSE!")
+    } else {
+      # message("\n\nGenerating html report...\n")
+      message("This function not enabled yet.  Check back soon!")
+      # makereport(output, outfile = report)
+    }
+  }
+
+  return(output)
+
+  #list(fit = fit, suitability = suitability)
 }
 
-recipe.enmtools.species <- function (x, formula = NULL, env = NA, nback = 1000, bg.source = "default", verbose = FALSE, bias = NA, ..., vars = NULL, roles = NULL) {
-  x <- enmtools.prep(x, env = env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias)
+recipe.enmtools.species <- function (x, formula = NULL, env = NA, nback = 1000, bg.source = "default", verbose = FALSE, bias = NA, weights = NULL, ..., vars = NULL, roles = NULL) {
+  x <- enmtools.prep(x, env = env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias, weights = weights)$data
   if(is.null(formula)) {
     vars <- colnames(x)
+    vars <- vars[-which(vars %in% c("x", "y"))]
     roles <- rep("predictor", length(vars))
     roles[vars == "presence"] <- "outcome"
-    roles[vars %in% c("x", "y")] <- "coords"
+    roles[vars == "weights"] <- "case_weights"
   } else {
     vars <- NULL
     roles <- NULL
@@ -60,17 +406,39 @@ recipe.enmtools.species <- function (x, formula = NULL, env = NA, nback = 1000, 
   recipes::recipe(x, formula = formula, vars = vars, roles = roles)
 }
 
-enmtools.prep <- function(x, env = NA, nback = 1000, bg.source = "default", verbose = FALSE, bias = NA) {
-  species <- check.bg(x, env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias)
+enmtools.prep <- function(x, env = NA, nback = 1000, bg.source = "default", verbose = FALSE, bias = NA, weights = NULL) {
+  if(nback > 0) {
+    species <- check.bg(x, env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias)
+  } else {
+    species <- x
+  }
   species <- add.env(species, env = env, verbose = verbose)
   x <- make_analysis.df(species)
-  x
+  if(weights == "equal"){
+    weights <- c(rep(1, nrow(species$presence.points)),
+                 rep(nrow(species$presence.points)/nrow(species$background.points),
+                     nrow(species$background.points)))
+    weights <- parsnip::importance_weights(weights)
+    x$weights <- weights
+  }
+  x$presence <- as.factor(x$presence)
+  list(data = x, species = species)
 }
 
-choose_model <- function(model, ...) {
+choose_model <- function(model, args = list(), ...) {
+  m <- switch(model,
+         glm = parsnip::logistic_reg(),
+         gam = parsnip::gen_additive_mod(mode = "classification"),
+         rf = parsnip::rand_forest(mode = "classification", engine = "randomForest"),
+         `rf.ranger` = parsnip::rand_forest(mode = "classification"))
+  if(length(args) > 0) {
+    m <- parsnip::set_args(m, !!!args)
+  }
+  m
+}
+
+make_formula <- function(model, k = 4, ...) {
   switch(model,
-         glm = parsnip::logistic_reg(...),
-         gam = parsnip::gen_additive_mod(...),
-         rf = parsnip::rand_forest(engine = "randomForest", ...),
-         ranger = parsnip::rand_forest(...))
+         gam = as.formula(paste("presence", paste(unlist(lapply(names(env), FUN = function(x) paste0("s(", x, ", k = ", k, ")"))), collapse = " + "), sep = " ~ ")),
+         NULL)
 }
