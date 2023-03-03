@@ -118,13 +118,13 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
     notes <- c(notes, "AIC is 2x number of coefficients, indicating an uninformative model.  This often indicates that you have too many predictors for your number of data points.")
   }
 
-  suitability <- predict(env, this.glm, type = "response")
+  suitability <- terra::predict(env, this.glm, type = "response", na.rm = TRUE)
 
   # Clamping and getting a diff layer
   clamping.strength <- NA
   if(clamp == TRUE){
     env <- clamp.env(analysis.df, env)
-    clamped.suitability <- predict(env, this.glm, type = "response")
+    clamped.suitability <- terra::predict(env, this.glm, type = "response", na.rm = TRUE)
     clamping.strength <- clamped.suitability - suitability
     suitability <- clamped.suitability
   }
@@ -141,7 +141,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
     }
 
     model.evaluation <-dismo::evaluate(species$presence.points, species$background.points,
-                                       this.glm, env)
+                                       this.glm, env, na.rm = TRUE)
     env.model.evaluation <- env.evaluate(species, this.glm, env, n.background = env.nback)
 
     # Test eval for randomly withheld data
@@ -149,8 +149,8 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
       if(test.prop > 0 & test.prop < 1){
         test.check <- terra::extract(env, test.data, ID = FALSE)
         test.data <- test.data[complete.cases(test.check),]
-        test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
-                                          this.glm, env)
+        test.evaluation <-dismo::evaluate(test.data, species$background.points,
+                                          this.glm, env, na.rm = TRUE)
         temp.sp <- species
         temp.sp$presence.points <- test.data
         env.test.evaluation <- env.evaluate(temp.sp, this.glm, env, n.background = env.nback)
@@ -163,7 +163,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
         test.check <- terra::extract(env, test.data, ID = FALSE)
         test.data <- test.data[complete.cases(test.check),]
         test.evaluation <-dismo::evaluate(test.data, test.bg,
-                                          this.glm, env)
+                                          this.glm, env, na.rm = TRUE)
         temp.sp <- species
         temp.sp$presence.points <- test.data
         temp.sp$background.points <- test.bg
@@ -244,7 +244,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
         }
 
         thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points, species$background.points,
-                                                   thisrep.glm, env)
+                                                   thisrep.glm, env, na.rm = TRUE)
         thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.glm, env, n.background = env.nback)
 
         rts.geog.training[i] <- thisrep.model.evaluation@auc
@@ -252,7 +252,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
 
         if(test.prop > 0 & test.prop < 1){
           thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points,
-                                                    thisrep.glm, env)
+                                                    thisrep.glm, env, na.rm = TRUE)
           temp.sp <- rep.species
           temp.sp$presence.points <- terra::vect(rep.test.data, geom = c("x", "y"), crs = terra::crs(species$presence.points))
           thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.glm, env, n.background = env.nback)
@@ -480,13 +480,13 @@ plot.enmtools.glm <- function(x, ...){
 predict.enmtools.glm <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
 
   # Make a plot of habitat suitability in the new region
-  suitability <- terra::predict(env, object$model, type = "response")
+  suitability <- terra::predict(env, object$model, type = "response", na.rm = TRUE)
 
   # Clamping and getting a diff layer
   clamping.strength <- NA
   if(clamp == TRUE){
     env <- clamp.env(object$analysis.df, env)
-    clamped.suitability <- terra::predict(env, object$model, type = "response")
+    clamped.suitability <- terra::predict(env, object$model, type = "response", na.rm = TRUE)
     clamping.strength <- clamped.suitability - suitability
     suitability <- clamped.suitability
   }

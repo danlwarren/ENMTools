@@ -86,7 +86,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
 
   this.rf <- randomForest::randomForest(f, analysis.df[,-c(1,2)], ...)
 
-  suitability <- predict(env, this.rf, type = "response")
+  suitability <- terra::predict(env, this.rf, type = "response", na.rm = TRUE)
 
   # Clamping and getting a diff layer
   clamping.strength <- NA
@@ -108,8 +108,8 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
       notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
     }
 
-    model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
-                                 this.rf, env)
+    model.evaluation <-dismo::evaluate(species$presence.points, species$background.points,
+                                 this.rf, env, na.rm = TRUE)
     env.model.evaluation <- env.evaluate(species, this.rf, env, n.background = env.nback)
 
     # Test eval for randomly withheld data
@@ -117,8 +117,8 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
       if(test.prop > 0 & test.prop < 1){
         test.check <- terra::extract(env, test.data, ID = FALSE)
         test.data <- test.data[complete.cases(test.check),]
-        test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
-                                          this.rf, env)
+        test.evaluation <-dismo::evaluate(test.data, species$background.points,
+                                          this.rf, env, na.rm = TRUE)
         temp.sp <- species
         temp.sp$presence.points <- test.data
         env.test.evaluation <- env.evaluate(temp.sp, this.rf, env, n.background = env.nback)
@@ -131,7 +131,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
         test.check <- terra::extract(env, test.data, ID = FALSE)
         test.data <- test.data[complete.cases(test.check),]
         test.evaluation <-dismo::evaluate(test.data, test.bg,
-                                          this.rf, env)
+                                          this.rf, env, na.rm = TRUE)
         temp.sp <- species
         temp.sp$presence.points <- test.data
         temp.sp$background.points <- test.bg
@@ -205,7 +205,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
         suppressWarnings(thisrep.rf <- randomForest::randomForest(f, rts.df[,-c(1,2)], ...))
 
         thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points, species$background.points,
-                                                   thisrep.rf, env)
+                                                   thisrep.rf, env, na.rm = TRUE)
         thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.rf, env, n.background = env.nback)
 
         rts.geog.training[i] <- thisrep.model.evaluation@auc
@@ -213,7 +213,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
 
         if(test.prop > 0 & test.prop < 1){
           thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points,
-                                                    thisrep.rf, env)
+                                                    thisrep.rf, env, na.rm = TRUE)
           temp.sp <- rep.species
           temp.sp$presence.points <- terra::vect(rep.test.data, geom=c("x", "y"), crs = terra::crs(species$presence.points))
           thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.rf, env, n.background = env.nback)
