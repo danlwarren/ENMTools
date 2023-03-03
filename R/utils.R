@@ -23,6 +23,7 @@ make_analysis.df <- function(species) {
   abs$presence <- 0
   analysis.df <- terra::as.data.frame(rbind(pres, abs), geom = "XY")
   analysis.df <- analysis.df[ , c("x", "y", colnames(analysis.df)[!colnames(analysis.df) %in% c("x", "y")])]
+  analysis.df <- analysis.df[complete.cases(analysis.df), ]
   analysis.df
 }
 

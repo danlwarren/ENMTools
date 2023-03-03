@@ -5,8 +5,9 @@
 #' @param env A SpatRaster of environmental data.
 #' @param f A formula or tidymodels recipe
 #' @param model A character string specifying the desired model, or a `parsnip`
-#' model definition. Default is "glm". If a character string, choices are the
-#' standard ENMTools models: `c("glm", "bc", "dm", "gam", "rf", "rf.ranger")`
+#' model definition for any model with `mode = "classification"`. Default is
+#' "glm". If a character string, choices are the standard ENMTools models:
+#' `c("glm", "bc", "dm", "gam", "rf", "rf.ranger", "maxent")`
 #' @param test.prop Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.
 #' @param eval Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.
 #' @param nback Number of background points to draw from range or env, if background points aren't provided
@@ -108,13 +109,13 @@ enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, 
 
   this.fit <- parsnip::fit(wf, data = analysis.df)
 
-  suitability <- predict(env, this.fit, type = "prob", na.rm = TRUE)$.pred_1
+  suitability <- terra::predict(env, this.fit, type = "prob", na.rm = TRUE)$.pred_1
 
     # Clamping and getting a diff layer
   clamping.strength <- NA
   if(clamp == TRUE){
     env <- clamp.env(analysis.df, env)
-    clamped.suitability <- predict(env, this.fit, type = "prob", na.rm = TRUE)$.pred_1
+    clamped.suitability <- terra::predict(env, this.fit, type = "prob", na.rm = TRUE)$.pred_1
     clamping.strength <- clamped.suitability - suitability
     suitability <- clamped.suitability
   }
@@ -137,10 +138,12 @@ enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, 
     # Test eval for randomly withheld data
     if(is.numeric(test.prop)){
       if(test.prop > 0 & test.prop < 1){
-        test.check <- terra::extract(env, test.data, ID = FALSE)
-        test.data <- test.data[complete.cases(test.check),]
-        test.evaluation <- dismo::evaluate(as.numeric(unlist(predict(this.fit, new_data = terra::extract(env, test.data, ID = FALSE)))),
-                                           as.numeric(unlist(predict(this.fit, new_data = terra::extract(env, species$background.points, ID = FALSE)))))
+        test.data.check <- terra::extract(env, test.data, ID = FALSE)
+        test.data.check <- test.data.check[complete.cases(test.data.check),]
+        test.bg.check <- terra::extract(env, species$background.points, ID = FALSE)
+        test.bg.check <- test.bg.check[complete.cases(test.bg.check),]
+        test.evaluation <- dismo::evaluate(as.numeric(unlist(predict(this.fit, new_data = test.data.check))),
+                                           as.numeric(unlist(predict(this.fit, new_data = test.bg.check))))
         temp.sp <- species
         temp.sp$presence.points <- test.data
         env.test.evaluation <- env.evaluate(temp.sp, this.fit, env, n.background = env.nback)
@@ -150,10 +153,12 @@ enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, 
     # Test eval for spatially structured data
     if(is.character(test.prop)){
       if(test.prop == "block"){
-        test.check <- terra::extract(env, test.data, ID = FALSE)
+        test.data.check <- terra::extract(env, test.data, ID = FALSE)
         test.data <- test.data[complete.cases(test.check),]
-        test.evaluation <- dismo::evaluate(as.numeric(unlist(predict(this.fit, new_data = terra::extract(env, test.data, ID = FALSE)))),
-                                           as.numeric(unlist(predict(this.fit, new_data = terra::extract(env, test.bg, ID = FALSE)))))
+        test.bg.check <- terra::extract(env, test.bg, ID = FALSE)
+        test.bg.check <- test.bg.check[complete.cases(test.bg.check),]
+        test.evaluation <- dismo::evaluate(as.numeric(unlist(predict(this.fit, new_data = test.data.check))),
+                                           as.numeric(unlist(predict(this.fit, new_data = test.bg.check))))
 
         temp.sp <- species
         temp.sp$presence.points <- test.data
@@ -426,6 +431,13 @@ enmtools.prep <- function(x, env = NA, nback = 1000, bg.source = "default", verb
 }
 
 choose_model <- function(model, args = list(), ...) {
+  if(inherits(model, "model_spec")) {
+    if(length(args) > 0) {
+      return(parsnip::set_args(model, !!!args))
+    } else {
+      return(model)
+    }
+  }
   m <- switch(model,
          glm = parsnip::logistic_reg(),
          gam = parsnip::gen_additive_mod(mode = "classification"),
@@ -438,7 +450,12 @@ choose_model <- function(model, args = list(), ...) {
 }
 
 make_formula <- function(model, k = 4, ...) {
-  switch(model,
-         gam = as.formula(paste("presence", paste(unlist(lapply(names(env), FUN = function(x) paste0("s(", x, ", k = ", k, ")"))), collapse = " + "), sep = " ~ ")),
-         NULL)
+  if(!inherits(model, "model_spec")) {
+    f <- switch(model,
+           gam = as.formula(paste("presence", paste(unlist(lapply(names(env), FUN = function(x) paste0("s(", x, ", k = ", k, ")"))), collapse = " + "), sep = " ~ ")),
+           NULL)
+  } else {
+    f <- NULL
+  }
+  f
 }

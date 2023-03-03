@@ -140,7 +140,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
       notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
     }
 
-    model.evaluation <-dismo::evaluate(species$presence.points, species$background.points,
+    model.evaluation <- dismo::evaluate(species$presence.points, species$background.points,
                                        this.glm, env, na.rm = TRUE)
     env.model.evaluation <- env.evaluate(species, this.glm, env, n.background = env.nback)
 

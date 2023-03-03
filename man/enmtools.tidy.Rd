@@ -3,7 +3,7 @@
 \name{enmtools.tidy}
 \alias{enmtools.tidy}
 \title{Takes an enmtools.species object with presence and background points, and builds
-a `tidymodels` model.}
+a fitted `tidymodels` workflow.}
 \usage{
 enmtools.tidy(
   species,
@@ -24,7 +24,8 @@ enmtools.tidy(
   corner = NA,
   bias = NA,
   step = FALSE,
-  model_args = list()
+  model_args = list(),
+  ...
 )
 }
 \arguments{
@@ -32,9 +33,12 @@ enmtools.tidy(
 
 \item{env}{A SpatRaster of environmental data.}
 
-\item{f}{A formula}
+\item{f}{A formula or tidymodels recipe}
 
-\item{model}{A character string specifying the desired model. Default is "glm"}
+\item{model}{A character string specifying the desired model, or a `parsnip`
+model definition for any model with `mode = "classification"`. Default is
+"glm". If a character string, choices are the standard ENMTools models:
+`c("glm", "bc", "dm", "gam", "rf", "rf.ranger", "maxent")`}
 
 \item{test.prop}{Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.}
 
@@ -64,18 +68,17 @@ enmtools.tidy(
 
 \item{step}{Logical determining whether to do stepwise model selection or not}
 
-\item{model_args}{An optional named list with additional arguments to the
-modelling function (as specified in `model` argument).}
+\item{...}{Additional arguments to be passed to the modelling function}
 }
 \value{
 An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
 }
 \description{
 Takes an enmtools.species object with presence and background points, and builds
-a `tidymodels` model.
+a fitted `tidymodels` workflow.
 }
 \examples{
 data(euro.worldclim)
 data(iberolacerta.clade)
-enmtools.glm(iberolacerta.clade$species$monticola, env = euro.worldclim, f = pres ~ bio1 + bio9)
+enmtools.tidy(iberolacerta.clade$species$monticola, env = euro.worldclim, f = pres ~ bio1 + bio9)
 }
