@@ -25,10 +25,10 @@ Imports:
     terra,
     raster (>= 3.6.3),
     recipes,
-    parsnip,
     workflows
 Depends: 
     dismo,
+    parsnip,
     R (>= 2.10)
 Suggests: 
     testthat,

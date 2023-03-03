@@ -459,3 +459,89 @@ make_formula <- function(model, k = 4, ...) {
   }
   f
 }
+
+make_pres_only_sdm <- function() {
+  set_new_model("pres_only_sdm")
+  set_model_mode(model = "pres_only_sdm", mode = "classification")
+  set_model_engine(
+    "pres_only_sdm",
+    mode = "classification",
+    eng = "bioclim"
+  )
+  set_model_engine(
+    "pres_only_sdm",
+    mode = "classification",
+    eng = "domain"
+  )
+  set_dependency("pres_only_sdm", eng = "bioclim", pkg = "dismo")
+  set_dependency("pres_only_sdm", eng = "domain", pkg = "dismo")
+
+  set_fit(
+    model = "pres_only_sdm",
+    eng = "bioclim",
+    mode = "classification",
+    value = list(
+      interface = "matrix",
+      protect = c("x", "p"),
+      func = c(pkg = "dismo", fun = "bioclim"),
+      defaults = list()
+    )
+  )
+
+  set_encoding(
+    model = "pres_only_sdm",
+    eng = "bioclim",
+    mode = "classification",
+    options = list(
+      predictor_indicators = "traditional",
+      compute_intercept = FALSE,
+      remove_intercept = FALSE,
+      allow_sparse_x = FALSE
+    )
+  )
+
+  class_info <-
+    list(
+      pre = NULL,
+      post = NULL,
+      func = c(fun = "predict"),
+      args =
+        # These lists should be of the form:
+        # {predict.mda argument name} = {values provided from parsnip objects}
+        list(
+          # We don't want the first two arguments evaluated right now
+          # since they don't exist yet. `type` is a simple object that
+          # doesn't need to have its evaluation deferred.
+          object = quote(object$fit),
+          newdata = quote(new_data),
+          type = "class"
+        )
+    )
+
+  set_pred(
+    model = "discrim_mixture",
+    eng = "mda",
+    mode = "classification",
+    type = "class",
+    value = class_info
+  )
+
+}
+
+pres_only_sdm <- function(mode = "classification", engine = "bioclim") {
+    # Check for correct mode
+    if (mode  != "classification") {
+      rlang::abort("`mode` should be 'classification'")
+    }
+
+
+    # Save some empty slots for future parts of the specification
+    new_model_spec(
+      "pres_only_sdm",
+      args = NULL,
+      eng_args = NULL,
+      mode = mode,
+      method = NULL,
+      engine = engine
+    )
+  }
