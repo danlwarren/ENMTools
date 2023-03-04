@@ -21,5 +21,7 @@ globalVariables(c("f", "predict", "value"))
                       })
   iberolacerta.clade <<- y
 
+  make_pres_only_sdm()
+
 }
 

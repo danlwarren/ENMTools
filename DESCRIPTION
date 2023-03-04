@@ -25,7 +25,8 @@ Imports:
     terra,
     raster (>= 3.6.3),
     recipes,
-    workflows
+    workflows,
+    tibble
 Depends: 
     dismo,
     parsnip,

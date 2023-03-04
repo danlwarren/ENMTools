@@ -69,4 +69,6 @@ bm <- bench::mark(tt1 <- enmtools.tidy(monticola, euro.worldclim, model = "rf.ra
 bm
 
 tt <- enmtools.tidy(monticola, euro.worldclim, model = parsnip::boost_tree("classification"), test.prop = 0.2, rts.reps = 10)
+
+tt2 <- enmtools.tidy(monticola, euro.worldclim, model = "bc", test.prop = 0.2, rts.reps = 10)
 ```

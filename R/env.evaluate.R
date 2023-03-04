@@ -73,8 +73,8 @@ env.evaluate <- function(species, model, env, bg.source = "background", n.backgr
     pred.bg <- as.numeric(predict(model, data = data.frame(bg.table), type = "response")$predictions[ , 2, drop = TRUE])
   } else {
     if(inherits(model, "workflow")) {
-      pred.p <- as.numeric(unlist(predict(model, new_data = data.frame(p.table))))
-      pred.bg <- as.numeric(unlist(predict(model, new_data = data.frame(bg.table))))
+      pred.p <- as.numeric(unlist(predict(model, new_data = data.frame(p.table), type = "prob")$.pred_1))
+      pred.bg <- as.numeric(unlist(predict(model, new_data = data.frame(bg.table), type = "prob")$.pred_1))
     } else {
       pred.p <- as.numeric(predict(model, newdata = data.frame(p.table), x = data.frame(p.table), type = "response"))
       pred.bg <- as.numeric(predict(model, newdata = data.frame(bg.table), x = data.frame(bg.table), type = "response"))

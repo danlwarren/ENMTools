@@ -131,8 +131,8 @@ enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, 
       notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
     }
 
-    model.evaluation <- dismo::evaluate(as.numeric(unlist(predict(this.fit, new_data = analysis.df[analysis.df$presence == 1, ]))),
-                                        as.numeric(unlist(predict(this.fit, new_data = analysis.df[analysis.df$presence == 0, ]))))
+    model.evaluation <- dismo::evaluate(as.numeric(unlist(predict(this.fit, new_data = analysis.df[analysis.df$presence == 1, ], type = "prob")$.pred_1)),
+                                        as.numeric(unlist(predict(this.fit, new_data = analysis.df[analysis.df$presence == 0, ], type = "prob")$.pred_1)))
     env.model.evaluation <- env.evaluate(species, this.fit, env, n.background = env.nback)
 
     # Test eval for randomly withheld data
@@ -142,8 +142,8 @@ enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, 
         test.data.check <- test.data.check[complete.cases(test.data.check),]
         test.bg.check <- terra::extract(env, species$background.points, ID = FALSE)
         test.bg.check <- test.bg.check[complete.cases(test.bg.check),]
-        test.evaluation <- dismo::evaluate(as.numeric(unlist(predict(this.fit, new_data = test.data.check))),
-                                           as.numeric(unlist(predict(this.fit, new_data = test.bg.check))))
+        test.evaluation <- dismo::evaluate(as.numeric(unlist(predict(this.fit, new_data = test.data.check, type = "prob")$.pred_1)),
+                                           as.numeric(unlist(predict(this.fit, new_data = test.bg.check, type = "prob")$.pred_1)))
         temp.sp <- species
         temp.sp$presence.points <- test.data
         env.test.evaluation <- env.evaluate(temp.sp, this.fit, env, n.background = env.nback)
@@ -157,8 +157,8 @@ enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, 
         test.data <- test.data[complete.cases(test.check),]
         test.bg.check <- terra::extract(env, test.bg, ID = FALSE)
         test.bg.check <- test.bg.check[complete.cases(test.bg.check),]
-        test.evaluation <- dismo::evaluate(as.numeric(unlist(predict(this.fit, new_data = test.data.check))),
-                                           as.numeric(unlist(predict(this.fit, new_data = test.bg.check))))
+        test.evaluation <- dismo::evaluate(as.numeric(unlist(predict(this.fit, new_data = test.data.check, type = "prob")$.pred_1)),
+                                           as.numeric(unlist(predict(this.fit, new_data = test.bg.check, type = "prob")$.pred_1)))
 
         temp.sp <- species
         temp.sp$presence.points <- test.data
@@ -233,8 +233,8 @@ enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, 
 
         thisrep.tidy <- parsnip::fit(wf, data = rts.df)
 
-        thisrep.model.evaluation <-dismo::evaluate(as.numeric(unlist(predict(thisrep.tidy, new_data = rts.df[rts.df$presence == 1, ]))),
-                                                    as.numeric(unlist(predict(thisrep.tidy, new_data = rts.df[rts.df$presence == 0, ]))))
+        thisrep.model.evaluation <-dismo::evaluate(as.numeric(unlist(predict(thisrep.tidy, new_data = rts.df[rts.df$presence == 1, ], type = "prob")$.pred_1)),
+                                                    as.numeric(unlist(predict(thisrep.tidy, new_data = rts.df[rts.df$presence == 0, ], type = "prob")$.pred_1)))
 
         thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.tidy, env, n.background = env.nback)
 
@@ -248,8 +248,8 @@ enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, 
           rep.test.data2 <- temp.sp.prep$data
           temp.sp <- temp.sp.prep$species
 
-          thisrep.test.evaluation <-dismo::evaluate(as.numeric(unlist(predict(thisrep.tidy, new_data = rep.test.data2))),
-                                                    as.numeric(unlist(predict(thisrep.tidy, new_data = rts.df[rts.df$presence == 0, ]))))
+          thisrep.test.evaluation <-dismo::evaluate(as.numeric(unlist(predict(thisrep.tidy, new_data = rep.test.data2, type = "prob")$.pred_1)),
+                                                    as.numeric(unlist(predict(thisrep.tidy, new_data = rts.df[rts.df$presence == 0, ], type = "prob")$.pred_1)))
 
           temp.sp <- rep.species
           temp.sp$presence.points <- terra::vect(rep.test.data, geom = c("x", "y"), crs = terra::crs(species$presence.points))
@@ -396,7 +396,7 @@ enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, 
   #list(fit = fit, suitability = suitability)
 }
 
-recipe.enmtools.species <- function (x, formula = NULL, env = NA, nback = 1000, bg.source = "default", verbose = FALSE, bias = NA, weights = NULL, ..., vars = NULL, roles = NULL) {
+recipe.enmtools.species <- function (x, formula = NULL, env = NA, nback = 1000, bg.source = "default", verbose = FALSE, bias = NA, weights = "none", ..., vars = NULL, roles = NULL) {
   x <- enmtools.prep(x, env = env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias, weights = weights)$data
   if(is.null(formula)) {
     vars <- colnames(x)
@@ -411,7 +411,7 @@ recipe.enmtools.species <- function (x, formula = NULL, env = NA, nback = 1000, 
   recipes::recipe(x, formula = formula, vars = vars, roles = roles)
 }
 
-enmtools.prep <- function(x, env = NA, nback = 1000, bg.source = "default", verbose = FALSE, bias = NA, weights = NULL) {
+enmtools.prep <- function(x, env = NA, nback = 1000, bg.source = "default", verbose = FALSE, bias = NA, weights = "none") {
   if(nback > 0) {
     species <- check.bg(x, env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias)
   } else {
@@ -442,7 +442,8 @@ choose_model <- function(model, args = list(), ...) {
          glm = parsnip::logistic_reg(),
          gam = parsnip::gen_additive_mod(mode = "classification"),
          rf = parsnip::rand_forest(mode = "classification", engine = "randomForest"),
-         `rf.ranger` = parsnip::rand_forest(mode = "classification"))
+         `rf.ranger` = parsnip::rand_forest(mode = "classification"),
+         bc = pres_only_sdm())
   if(length(args) > 0) {
     m <- parsnip::set_args(m, !!!args)
   }
@@ -460,6 +461,14 @@ make_formula <- function(model, k = 4, ...) {
   f
 }
 
+bioclim_bridge <- function(x, y) {
+  dismo::bioclim(as.matrix(x[y[[1]] == levels(y[[1]])[2], ]))
+}
+
+domain_bridge <- function(x, y) {
+  dismo::domain(x[y == levels(y)[2], ])
+}
+
 make_pres_only_sdm <- function() {
   set_new_model("pres_only_sdm")
   set_model_mode(model = "pres_only_sdm", mode = "classification")
@@ -475,6 +484,8 @@ make_pres_only_sdm <- function() {
   )
   set_dependency("pres_only_sdm", eng = "bioclim", pkg = "dismo")
   set_dependency("pres_only_sdm", eng = "domain", pkg = "dismo")
+  set_dependency("pres_only_sdm", eng = "bioclim", pkg = "ENMTools")
+  set_dependency("pres_only_sdm", eng = "domain", pkg = "ENMTools")
 
   set_fit(
     model = "pres_only_sdm",
@@ -482,8 +493,9 @@ make_pres_only_sdm <- function() {
     mode = "classification",
     value = list(
       interface = "matrix",
-      protect = c("x", "p"),
-      func = c(pkg = "dismo", fun = "bioclim"),
+      data = c(x = "x", y = "y"),
+      protect = c("x", "y"),
+      func = c(pkg = "ENMTools", fun = "bioclim_bridge"),
       defaults = list()
     )
   )
@@ -493,37 +505,38 @@ make_pres_only_sdm <- function() {
     eng = "bioclim",
     mode = "classification",
     options = list(
-      predictor_indicators = "traditional",
+      predictor_indicators = "none",
       compute_intercept = FALSE,
       remove_intercept = FALSE,
       allow_sparse_x = FALSE
     )
   )
 
-  class_info <-
+  prob_info <-
     list(
       pre = NULL,
-      post = NULL,
-      func = c(fun = "predict"),
+      post = function(x, object) {
+        tibble::tibble(.pred_0 = 1 - x, .pred_1 = x)
+      },
+      func = c(pkg = "dismo", fun = "predict"),
       args =
         # These lists should be of the form:
-        # {predict.mda argument name} = {values provided from parsnip objects}
+        # {predict.class argument name} = {values provided from parsnip objects}
         list(
           # We don't want the first two arguments evaluated right now
           # since they don't exist yet. `type` is a simple object that
           # doesn't need to have its evaluation deferred.
           object = quote(object$fit),
-          newdata = quote(new_data),
-          type = "class"
+          x = quote(new_data)
         )
     )
 
   set_pred(
-    model = "discrim_mixture",
-    eng = "mda",
+    model = "pres_only_sdm",
+    eng = "bioclim",
     mode = "classification",
-    type = "class",
-    value = class_info
+    type = "prob",
+    value = prob_info
   )
 
 }
