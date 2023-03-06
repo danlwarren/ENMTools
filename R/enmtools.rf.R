@@ -92,7 +92,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
   clamping.strength <- NA
   if(clamp == TRUE){
     env <- clamp.env(analysis.df, env)
-    clamped.suitability <- predict(env, this.rf, type = "response")
+    clamped.suitability <- terra::predict(env, this.rf, type = "response")
     clamping.strength <- clamped.suitability - suitability
     suitability <- clamped.suitability
   }

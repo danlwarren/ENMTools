@@ -48,7 +48,7 @@ enmtools.bc(
 
 \item{bias}{An optional raster estimating relative sampling effort per grid cell.  Will be used for drawing background data.}
 
-\item{...}{Arguments to be passed to bioclim()}
+\item{...}{Arguments to be passed to dismo::bioclim()}
 }
 \value{
 An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.

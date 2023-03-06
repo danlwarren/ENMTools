@@ -12,6 +12,7 @@ License: GPL-2
 RoxygenNote: 7.2.3
 Imports: 
     knitr,
+    dismo,
     ggplot2,
     gridExtra,
     lhs,
@@ -25,10 +26,8 @@ Imports:
     terra,
     raster (>= 3.6.3),
     recipes,
-    workflows,
-    tibble
+    workflows
 Depends: 
-    dismo,
     parsnip,
     R (>= 2.10)
 Suggests: 

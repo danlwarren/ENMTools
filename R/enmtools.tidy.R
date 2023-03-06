@@ -101,7 +101,7 @@ enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, 
     wf <- workflows::add_case_weights(wf, .data$weights)
   }
 
-  f2 <- make_formula(model, ...)
+  f2 <- make_formula(model, env, ...)
   if(!is.null(f2)) {
     f <- f2
     wf <- workflows::update_model(wf, mod, formula = f)
@@ -154,7 +154,7 @@ enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, 
     if(is.character(test.prop)){
       if(test.prop == "block"){
         test.data.check <- terra::extract(env, test.data, ID = FALSE)
-        test.data <- test.data[complete.cases(test.check),]
+        test.data.check <- test.data.check[complete.cases(test.data.check),]
         test.bg.check <- terra::extract(env, test.bg, ID = FALSE)
         test.bg.check <- test.bg.check[complete.cases(test.bg.check),]
         test.evaluation <- dismo::evaluate(as.numeric(unlist(predict(this.fit, new_data = test.data.check, type = "prob")$.pred_1)),
@@ -452,7 +452,7 @@ choose_model <- function(model, args = list(), ...) {
   m
 }
 
-make_formula <- function(model, k = 4, ...) {
+make_formula <- function(model, env, k = 4, ...) {
   if(!inherits(model, "model_spec")) {
     f <- switch(model,
            gam = as.formula(paste("presence", paste(unlist(lapply(names(env), FUN = function(x) paste0("s(", x, ", k = ", k, ")"))), collapse = " + "), sep = " ~ ")),
@@ -518,7 +518,10 @@ make_pres_only_sdm <- function() {
     list(
       pre = NULL,
       post = function(x, object) {
-        tibble::tibble(".pred_{object$lvl[1]}" := 1 - x, ".pred_{object$lvl[2]}" := x)
+        cnames <- paste0(".pred_", object$lvl)
+        res <- data.frame(pred_0 = 1 - x, pred_1 = x)
+        colnames(res) <- cnames
+        res
       },
       func = c(pkg = "dismo", fun = "predict"),
       args =
