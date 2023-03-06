@@ -401,14 +401,16 @@ recipe.enmtools.species <- function (x, formula = NULL, env = NA, nback = 1000, 
   if(is.null(formula)) {
     vars <- colnames(x)
     vars <- vars[-which(vars %in% c("x", "y"))]
-    roles <- rep("predictor", length(vars))
-    roles[vars == "presence"] <- "outcome"
-    roles[vars == "weights"] <- "case_weights"
   } else {
-    vars <- NULL
-    roles <- NULL
+    if(length(formula) > 2) {
+      formula <- formula[-2]
+    }
+    vars <- c("presence", all.vars(formula), colnames(x)[colnames(x) == "weights"])
   }
-  recipes::recipe(x, formula = formula, vars = vars, roles = roles)
+  roles <- rep("predictor", length(vars))
+  roles[vars == "presence"] <- "outcome"
+  roles[vars == "weights"] <- "case_weights"
+  recipes::recipe(x, vars = vars, roles = roles)
 }
 
 enmtools.prep <- function(x, env = NA, nback = 1000, bg.source = "default", verbose = FALSE, bias = NA, weights = "none") {
@@ -470,24 +472,24 @@ domain_bridge <- function(x, y) {
 }
 
 make_pres_only_sdm <- function() {
-  set_new_model("pres_only_sdm")
-  set_model_mode(model = "pres_only_sdm", mode = "classification")
-  set_model_engine(
+  parsnip::set_new_model("pres_only_sdm")
+  parsnip::set_model_mode(model = "pres_only_sdm", mode = "classification")
+  parsnip::set_model_engine(
     "pres_only_sdm",
     mode = "classification",
     eng = "bioclim"
   )
-  set_model_engine(
+  parsnip::set_model_engine(
     "pres_only_sdm",
     mode = "classification",
     eng = "domain"
   )
-  set_dependency("pres_only_sdm", eng = "bioclim", pkg = "dismo")
-  set_dependency("pres_only_sdm", eng = "domain", pkg = "dismo")
-  set_dependency("pres_only_sdm", eng = "bioclim", pkg = "ENMTools")
-  set_dependency("pres_only_sdm", eng = "domain", pkg = "ENMTools")
+  parsnip::set_dependency("pres_only_sdm", eng = "bioclim", pkg = "dismo")
+  parsnip::set_dependency("pres_only_sdm", eng = "domain", pkg = "dismo")
+  parsnip::set_dependency("pres_only_sdm", eng = "bioclim", pkg = "ENMTools")
+  parsnip::set_dependency("pres_only_sdm", eng = "domain", pkg = "ENMTools")
 
-  set_fit(
+  parsnip::set_fit(
     model = "pres_only_sdm",
     eng = "bioclim",
     mode = "classification",
@@ -500,7 +502,7 @@ make_pres_only_sdm <- function() {
     )
   )
 
-  set_encoding(
+  parsnip::set_encoding(
     model = "pres_only_sdm",
     eng = "bioclim",
     mode = "classification",
@@ -516,7 +518,7 @@ make_pres_only_sdm <- function() {
     list(
       pre = NULL,
       post = function(x, object) {
-        tibble::tibble(.pred_0 = 1 - x, .pred_1 = x)
+        tibble::tibble(".pred_{object$lvl[1]}" := 1 - x, ".pred_{object$lvl[2]}" := x)
       },
       func = c(pkg = "dismo", fun = "predict"),
       args =
@@ -531,7 +533,7 @@ make_pres_only_sdm <- function() {
         )
     )
 
-  set_pred(
+  parsnip::set_pred(
     model = "pres_only_sdm",
     eng = "bioclim",
     mode = "classification",
@@ -544,7 +546,7 @@ make_pres_only_sdm <- function() {
 pres_only_sdm <- function(mode = "classification", engine = "bioclim") {
     # Check for correct mode
     if (mode  != "classification") {
-      rlang::abort("`mode` should be 'classification'")
+      stop("`mode` should be 'classification'")
     }
 
 
