@@ -50,5 +50,4 @@ Suggests:
     viridis,
     progress,
     rmarkdown
-VignetteBuilder: knitr
 Config/testthat/edition: 3
