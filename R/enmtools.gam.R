@@ -102,13 +102,13 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
 
   this.gam <- mgcv::gam(f, analysis.df[,-c(1,2)], family="binomial", weights = weights, method = gam.method, select = gam.select, ...)
 
-  suitability <- predict(env, this.gam, type = "response")
+  suitability <- terra::predict(env, this.gam, type = "response", na.rm = TRUE)
 
   # Clamping and getting a diff layer
   clamping.strength <- NA
   if(clamp == TRUE){
     env <- clamp.env(analysis.df, env)
-    clamped.suitability <- predict(env, this.gam, type = "response")
+    clamped.suitability <- terra::predict(env, this.gam, type = "response", na.rm = TRUE)
     clamping.strength <- clamped.suitability - suitability
     suitability <- clamped.suitability
   }
@@ -122,8 +122,8 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
     notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
   }
 
-  model.evaluation <- dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
-                               this.gam, env)
+  model.evaluation <- dismo::evaluate(species$presence.points, species$background.points,
+                               this.gam, env, na.rm = TRUE)
   env.model.evaluation <- env.evaluate(species, this.gam, env, n.background = env.nback)
 
 
@@ -132,8 +132,8 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
     if(test.prop > 0 & test.prop < 1){
       test.check <- terra::extract(env, test.data, ID = FALSE)
       test.data <- test.data[complete.cases(test.check),]
-      test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
-                                        this.gam, env)
+      test.evaluation <-dismo::evaluate(test.data, species$background.points,
+                                        this.gam, env, na.rm = TRUE)
       temp.sp <- species
       temp.sp$presence.points <- test.data
       env.test.evaluation <- env.evaluate(temp.sp, this.gam, env, n.background = env.nback)
@@ -146,7 +146,7 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
       test.check <- terra::extract(env, test.data, ID = FALSE)
       test.data <- test.data[complete.cases(test.check),]
       test.evaluation <-dismo::evaluate(test.data, test.bg,
-                                        this.gam, env)
+                                        this.gam, env, na.rm = TRUE)
       temp.sp <- species
       temp.sp$presence.points <- test.data
       temp.sp$background.points <- test.bg
@@ -220,7 +220,7 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
       thisrep.gam <- mgcv::gam(f, rts.df[,-c(1,2)], family="binomial", ...)
 
       thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points, species$background.points,
-                                                 thisrep.gam, env)
+                                                 thisrep.gam, env, na.rm = TRUE)
       thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.gam, env, n.background = env.nback)
 
       rts.geog.training[i] <- thisrep.model.evaluation@auc
@@ -228,7 +228,7 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
 
       if(test.prop > 0 & test.prop < 1){
         thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points,
-                                                  thisrep.gam, env)
+                                                  thisrep.gam, env, na.rm = TRUE)
         temp.sp <- rep.species
         temp.sp$presence.points <- terra::vect(rep.test.data, geom=c("x", "y"), crs = terra::crs(species$presence.points))
         thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.gam, env, n.background = env.nback)
@@ -451,13 +451,13 @@ plot.enmtools.gam <- function(x, ...){
 predict.enmtools.gam <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
 
   # Make a plot of habitat suitability in the new region
-  suitability <- terra::predict(env, object$model, type = "response")
+  suitability <- terra::predict(env, object$model, type = "response", na.rm = TRUE)
 
   # Clamping and getting a diff layer
   clamping.strength <- NA
   if(clamp == TRUE){
     env <- clamp.env(object$analysis.df, env)
-    clamped.suitability <- terra::predict(env, object$model, type = "response")
+    clamped.suitability <- terra::predict(env, object$model, type = "response", na.rm = TRUE)
     clamping.strength <- clamped.suitability - suitability
     suitability <- clamped.suitability
   }

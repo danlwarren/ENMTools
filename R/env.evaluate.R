@@ -37,8 +37,8 @@ env.evaluate <- function(species, model, env, bg.source = "background", n.backgr
     stop("Argument species must supply an enmtools.species object!")
   }
 
-  presence <- species$presence.points[,1:2]
-  background <- species$background.points[,1:2]
+  presence <- species$presence.points
+  background <- species$background.points
 
   if(inherits(model, "enmtools.model")){
     model <- model$model
@@ -64,6 +64,7 @@ env.evaluate <- function(species, model, env, bg.source = "background", n.backgr
   colnames(bg.table) <- names(env)
 
   p.table <- terra::extract(env, presence, ID = FALSE)
+  p.table <- p.table[complete.cases(p.table), ]
 
   # Having to do this for now because the dismo models don't like "newdata"
   # Unfortunately I think we finally have to use an if statement because ranger predict is really different
@@ -78,7 +79,7 @@ env.evaluate <- function(species, model, env, bg.source = "background", n.backgr
 
 
 
-  env.evaluation <-dismo::evaluate(pred.p, pred.bg)
+  env.evaluation <- dismo::evaluate(pred.p, pred.bg)
 
   return(env.evaluation)
 }

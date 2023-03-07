@@ -122,7 +122,7 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
         test.data <- test.data[complete.cases(test.check),]
 
         test.evaluation <- dismo::evaluate(predict(this.rf, data = terra::extract(env, test.data, ID = FALSE))$predictions[ , 2, drop = TRUE],
-                                           predict(this.rf, data = terra::extract(env, species$background.points[,1:2], ID = FALSE))$predictions[ , 2, drop = TRUE])
+                                           predict(this.rf, data = terra::extract(env, species$background.points, ID = FALSE))$predictions[ , 2, drop = TRUE])
         temp.sp <- species
         temp.sp$presence.points <- test.data
         env.test.evaluation <- env.evaluate(temp.sp, this.rf, env, n.background = env.nback)
@@ -134,6 +134,8 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
       if(test.prop == "block"){
         test.check <- terra::extract(env, test.data, ID = FALSE)
         test.data <- test.data[complete.cases(test.check),]
+        test.check <- terra::extract(env, test.bg, ID = FALSE)
+        test.bg <- test.bg[complete.cases(test.check),]
         test.evaluation <- dismo::evaluate(predict(this.rf, data = terra::extract(env, test.data, ID = FALSE))$predictions[ , 2, drop = TRUE],
                                            predict(this.rf, data = terra::extract(env, test.bg, ID = FALSE))$predictions[ , 2, drop = TRUE])
         temp.sp <- species
@@ -206,6 +208,7 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
         rts.df <- make_analysis.df(rep.species)
         rts.df$presence <- as.factor(rts.df$presence)
 
+        rts.df <- rts.df[complete.cases(rts.df), ]
         thisrep.rf <- ranger::ranger(f, rts.df[,-c(1,2)], probability = TRUE, ...)
 
         thisrep.model.evaluation <- dismo::evaluate(predict(thisrep.rf, data = rts.df[rts.df$presence == 1, ])$predictions[ , 2, drop = TRUE],
@@ -221,6 +224,7 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
           temp.sp <- add.env(temp.sp, env, verbose = verbose)
           rep.test.data2 <- make_analysis.df(temp.sp)
           rep.test.data2$presence <- as.factor(rep.test.data2$presence)
+          rep.test.data2 <- rep.test.data2[complete.cases(rep.test.data2), ]
           thisrep.test.evaluation <-dismo::evaluate(predict(thisrep.rf, data = rep.test.data2)$predictions[ , 2, drop = TRUE],
                                                     predict(thisrep.rf, data = rts.df[rts.df$presence == 0, ])$predictions[ , 2, drop = TRUE])
 
@@ -449,13 +453,13 @@ predict.enmtools.rf.ranger <- function(object, env, maxpts = 1000, clamp = TRUE,
   }
 
   # Make a plot of habitat suitability in the new region
-  suitability <- terra::predict(env, object$model, fun = pfun, type = "response")
+  suitability <- terra::predict(env, object$model, fun = pfun, type = "response", na.rm = TRUE)
 
   # Clamping and getting a diff layer
   clamping.strength <- NA
   if(clamp == TRUE){
     env <- clamp.env(object$analysis.df, env)
-    clamped.suitability <- terra::predict(env, object$model, fun = pfun, type = "response")
+    clamped.suitability <- terra::predict(env, object$model, fun = pfun, type = "response", na.rm = TRUE)
     clamping.strength <- clamped.suitability - suitability
     suitability <- clamped.suitability
   }

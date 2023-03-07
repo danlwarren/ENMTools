@@ -82,10 +82,10 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
 
   if(verbose){
     this.mx <- dismo::maxent(env, p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)
-    suitability <- predict(env, this.mx, type = "response", ...)
+    suitability <- terra::predict(env, this.mx, type = "response", na.rm = TRUE, ...)
   } else {
     invisible(capture.output(this.mx <- dismo::maxent(env, p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)))
-    invisible(capture.output(suitability <- predict(env, this.mx, type = "response", ...)))
+    invisible(capture.output(suitability <- terra::predict(env, this.mx, type = "response", na.rm = TRUE, ...)))
   }
 
   # Clamping and getting a diff layer
@@ -97,9 +97,9 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
     env <- clamp.env(this.df, env)
 
     if(verbose){
-      clamped.suitability <- predict(env, this.mx, type = "response", ...)
+      clamped.suitability <- terra::predict(env, this.mx, type = "response", na.rm = TRUE, ...)
     } else {
-      invisible(capture.output(clamped.suitability <- predict(env, this.mx, type = "response", ...)))
+      invisible(capture.output(clamped.suitability <- terra::predict(env, this.mx, type = "response", na.rm = TRUE, ...)))
     }
 
     clamping.strength <- clamped.suitability - suitability
@@ -107,13 +107,13 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
   }
 
   if(verbose){
-    model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
-                                       this.mx, env)
+    model.evaluation <-dismo::evaluate(species$presence.points, species$background.points,
+                                       this.mx, env, na.rm = TRUE)
     env.model.evaluation <- env.evaluate(species, this.mx, env, n.background = env.nback)
 
   } else {
-    invisible(capture.output(model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
-                                       this.mx, env)))
+    invisible(capture.output(model.evaluation <-dismo::evaluate(species$presence.points, species$background.points,
+                                       this.mx, env, na.rm = TRUE)))
     invisible(capture.output(env.model.evaluation <- env.evaluate(species, this.mx, env, n.background = env.nback)))
 
   }
@@ -128,12 +128,12 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
       temp.sp$presence.points <- test.data
 
       if(verbose){
-        test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
-                                          this.mx, env)
+        test.evaluation <-dismo::evaluate(test.data, species$background.points,
+                                          this.mx, env, na.rm = TRUE)
         env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)
       } else {
-        invisible(capture.output(test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
-                                          this.mx, env)))
+        invisible(capture.output(test.evaluation <-dismo::evaluate(test.data, species$background.points,
+                                          this.mx, env, na.rm = TRUE)))
         invisible(capture.output(env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)))
       }
 
@@ -152,11 +152,11 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
 
       if(verbose){
         test.evaluation <-dismo::evaluate(test.data, test.bg,
-                                          this.mx, env)
+                                          this.mx, env, na.rm = TRUE)
         env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)
       } else {
-        invisible(capture.output(test.evaluation <-dismo::evaluate(test.data, test.bg,
-                                          this.mx, env)))
+        invisible(capture.output(test.evaluation <- dismo::evaluate(test.data, test.bg,
+                                          this.mx, env, na.rm = TRUE)))
         invisible(capture.output(env.test.evaluation <- env.evaluate(temp.sp, this.mx, env, n.background = env.nback)))
       }
 
@@ -223,13 +223,13 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
       # We have to do this to capture the "this is maxent version XXX message".
       if(verbose){
         thisrep.mx <- dismo::maxent(env, p = rts.df[rts.df$presence == 1,1:2], a = rts.df[rts.df$presence == 0,1:2], ...)
-        thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points[,1:2], species$background.points[,1:2],
-                                                   thisrep.mx, env)
+        thisrep.model.evaluation <- dismo::evaluate(rep.species$presence.points, species$background.points,
+                                                   thisrep.mx, env, na.rm = TRUE)
         thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.mx, env, n.background = env.nback)
       } else {
         invisible(capture.output(thisrep.mx <- dismo::maxent(env, p = rts.df[rts.df$presence == 1,1:2], a = rts.df[rts.df$presence == 0,1:2], ...)))
-        invisible(capture.output(thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points[,1:2], species$background.points[,1:2],
-                                                   thisrep.mx, env)))
+        invisible(capture.output(thisrep.model.evaluation <- dismo::evaluate(rep.species$presence.points, species$background.points,
+                                                   thisrep.mx, env, na.rm = TRUE)))
         invisible(capture.output(thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.mx, env, n.background = env.nback)))
       }
 
@@ -237,8 +237,8 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
       rts.env.training[i] <- thisrep.env.model.evaluation@auc
 
       if(test.prop > 0 & test.prop < 1){
-        thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points[,1:2],
-                                                  thisrep.mx, env)
+        thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points,
+                                                  thisrep.mx, env, na.rm = TRUE)
         temp.sp <- rep.species
         temp.sp$presence.points <- rep.test.data
         thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.mx, env, n.background = env.nback)
@@ -457,7 +457,7 @@ plot.enmtools.maxent <- function(x, ...){
 predict.enmtools.maxent <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
 
   # Make a plot of habitat suitability in the new region
-  suitability <- invisible(capture.output(terra::predict(env, object$model, ...)))
+  suitability <- invisible(capture.output(terra::predict(env, object$model, na.rm = TRUE, ...)))
 
   # I'm actually not sure this is doing anything - I think maxent models are clamped by default
   if(clamp == TRUE){
@@ -465,7 +465,7 @@ predict.enmtools.maxent <- function(object, env, maxpts = 1000, clamp = TRUE, ..
     this.df <- as.data.frame(rbind(object$model@presence, object$model@absence))
 
     env <- clamp.env(this.df, env)
-    clamped.suitability <- invisible(capture.output(terra::predict(env, object$model, ...)))
+    clamped.suitability <- invisible(capture.output(terra::predict(env, object$model, na.rm = TRUE, ...)))
     clamping.strength <- clamped.suitability - suitability
     suitability <- clamped.suitability
   }
