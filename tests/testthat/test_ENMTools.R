@@ -158,7 +158,7 @@ test_that("enmtools.model objects work for core methods", {
 
 test_that("rf model objects work", {
   skip_if_not_installed("randomForest")
-  expect_warning(cyreni.rf <- enmtools.rf(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2))
+  cyreni.rf <- enmtools.rf(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
   expect_enmtools_model(cyreni.rf)
   p <- plot(cyreni.rf)
   expect_s3_class(p, "ggplot")
@@ -229,6 +229,18 @@ test_that("interactive.plot produces correct object", {
   expect_s3_class(m_dm_cluster, "leaflet")
   expect_match(sapply(m_dm_cluster$x$calls, function(x) x$method), "addRasterImage", all = FALSE)
   expect_match(sapply(m_dm$x$calls, function(x) x$method), "addRasterImage", all = FALSE)
+})
+
+test_that("glm with polynomial terms works", {
+  aurelioi.glm.poly <- enmtools.glm(iberolacerta.clade$species$aurelioi, euro.worldclim,
+   f = pres ~ poly(bio1, 4) + poly(bio12, 4))
+  expect_enmtools_model(aurelioi.glm.poly)
+})
+
+test_that("gam with smooth terms works", {
+  aurelioi.gam.s <- enmtools.gam(iberolacerta.clade$species$aurelioi, euro.worldclim,
+   f = pres ~ s(bio1, bio12, 4))
+  expect_enmtools_model(aurelioi.gam.s)
 })
 
 

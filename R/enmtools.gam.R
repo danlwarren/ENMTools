@@ -18,6 +18,7 @@
 #' @param clamp When set to TRUE, clamps the environmental layers so that predictions made outside the min/max of the training data for each predictor are set to the value for the min/max for that predictor. Prevents the model from extrapolating beyond the min/max bounds of the predictor space the model was trained in, although there could still be projections outside the multivariate training space if predictors are strongly correlated.
 #' @param corner An integer from 1 to 4.  Selects which corner to use for "block" test data.  By default the corner is selected randomly.
 #' @param bias An optional raster estimating relative sampling effort per grid cell.  Will be used for drawing background data.
+#' @param legacy If `TRUE`, ENMTools legacy code will be used (version 1.1)
 #' @param ... Arguments to be passed to gam()
 #'
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
@@ -31,344 +32,356 @@
 
 
 
-enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", gam.method = "REML", gam.select = TRUE, bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, ...){
+enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", gam.method = "REML", gam.select = TRUE, bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, legacy = FALSE, ...){
 
   check.packages("mgcv")
 
-  notes <- NULL
-
-  species <- check.bg(species, env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias)
-
-  # Builds a default formula using all env
-  if(is.null(f)){
-    smoothers <- unlist(lapply(names(env), FUN = function(x) paste0("s(", x, ", k = ", k, ")")))
-    f <- as.formula(paste("presence", paste(smoothers, collapse = " + "), sep = " ~ "))
-    notes <- c(notes, "No formula was provided, so a GAM formula was built automatically")
-  }
-
-  #print(f)
-
-  gam.precheck(f, species, env)
-
-  test.data <- NA
-  test.evaluation <- NA
-  env.test.evaluation <- NA
-  rts.test <- NA
-
-
-  # Code for randomly withheld test data
-  if(is.numeric(test.prop)){
-    if(test.prop > 0 & test.prop < 1){
-      test.inds <- sample(1:nrow(species$presence.points), ceiling(nrow(species$presence.points) * test.prop))
-      test.data <- species$presence.points[test.inds,]
-      species$presence.points <- species$presence.points[-test.inds,]
+  if(!legacy) {
+    model_args <- list(...)
+    if(is.null(f)) {
+      f <- make_formula("gam", env, k = k)
     }
-  }
-
-  # Code for spatially structured test data
-  if(is.character(test.prop)){
-    if(test.prop == "block"){
-      if(is.na(corner)){
-        corner <- ceiling(runif(1, 0, 4))
-      } else if(corner < 1 | corner > 4){
-        stop("corner should be an integer from 1 to 4!")
-      }
-      test.inds <- get.block(terra::crds(species$presence.points), terra::crds(species$background.points))
-      test.bg.inds <- which(test.inds$bg.grp == corner)
-      test.inds <- which(test.inds$occs.grp == corner)
-      test.data <- species$presence.points[test.inds,]
-      test.bg <- species$background.points[test.bg.inds,]
-      species$presence.points <- species$presence.points[-test.inds,]
-      species$background.points <- species$background.points[-test.bg.inds,]
-    }
-  }
-
-  ### Add env data
-  species <- add.env(species, env, verbose = verbose)
-
-  # Recast this formula so that the response variable is named "presence"
-  # regardless of what was passed.
-  f <- reformulate(attr(delete.response(terms(f)), "term.labels"), response = "presence")
-
-  analysis.df <- make_analysis.df(species)
-
-  if(weights == "equal"){
-    weights <- c(rep(1, nrow(species$presence.points)),
-                 rep(nrow(species$presence.points)/nrow(species$background.points),
-                     nrow(species$background.points)))
+    return(
+      enmtools.tidy(species, env, f = f, model = "gam", test.prop = test.prop, eval = TRUE, nback = nback, env.nback = env.nback, report = report, overwrite = overwrite, rts.reps = rts.reps, bg.source = bg.source,  verbose = verbose, clamp = clamp, corner = corner, bias = bias, needs_formula = TRUE, model_args = model_args, ...)
+    )
   } else {
-    weights <- rep(1, nrow(species$presence.points) + nrow(species$background.points))
-  }
 
-  this.gam <- mgcv::gam(f, analysis.df[,-c(1,2)], family="binomial", weights = weights, method = gam.method, select = gam.select, ...)
+    notes <- NULL
 
-  suitability <- terra::predict(env, this.gam, type = "response", na.rm = TRUE)
+    species <- check.bg(species, env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias)
 
-  # Clamping and getting a diff layer
-  clamping.strength <- NA
-  if(clamp == TRUE){
-    env <- clamp.env(analysis.df, env)
-    clamped.suitability <- terra::predict(env, this.gam, type = "response", na.rm = TRUE)
-    clamping.strength <- clamped.suitability - suitability
-    suitability <- clamped.suitability
-  }
-
-  # This is a very weird hack that has to be done because dismo's evaluate function
-  # fails if the stack only has one layer.
-  if(length(names(env)) == 1){
-    oldname <- names(env)
-    env <- c(env, env)
-    names(env) <- c(oldname, "dummyvar")
-    notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
-  }
-
-  model.evaluation <- dismo::evaluate(species$presence.points, species$background.points,
-                               this.gam, env, na.rm = TRUE)
-  env.model.evaluation <- env.evaluate(species, this.gam, env, n.background = env.nback)
-
-
-  # Test eval for randomly withheld data
-  if(is.numeric(test.prop)){
-    if(test.prop > 0 & test.prop < 1){
-      test.check <- terra::extract(env, test.data, ID = FALSE)
-      test.data <- test.data[complete.cases(test.check),]
-      test.evaluation <-dismo::evaluate(test.data, species$background.points,
-                                        this.gam, env, na.rm = TRUE)
-      temp.sp <- species
-      temp.sp$presence.points <- test.data
-      env.test.evaluation <- env.evaluate(temp.sp, this.gam, env, n.background = env.nback)
-    }
-  }
-
-  # Test eval for spatially structured data
-  if(is.character(test.prop)){
-    if(test.prop == "block"){
-      test.check <- terra::extract(env, test.data, ID = FALSE)
-      test.data <- test.data[complete.cases(test.check),]
-      test.evaluation <-dismo::evaluate(test.data, test.bg,
-                                        this.gam, env, na.rm = TRUE)
-      temp.sp <- species
-      temp.sp$presence.points <- test.data
-      temp.sp$background.points <- test.bg
-      env.test.evaluation <- env.evaluate(temp.sp, this.gam, env, n.background = env.nback)
-    }
-  }
-
-  # Do Raes and ter Steege test for significance.  Turned off if eval == FALSE
-  if(rts.reps > 0){
-
-    message("\nBuilding RTS replicate models...\n")
-
-    # Die if we're not doing randomly withheld test data and RTS reps > 0
-    if(!is.numeric(test.prop)){
-      stop(paste("RTS test can only be conducted with randomly withheld data, and test.prop is set to", test.prop))
+    # Builds a default formula using all env
+    if(is.null(f)){
+      smoothers <- unlist(lapply(names(env), FUN = function(x) paste0("s(", x, ", k = ", k, ")")))
+      f <- as.formula(paste("presence", paste(smoothers, collapse = " + "), sep = " ~ "))
+      notes <- c(notes, "No formula was provided, so a GAM formula was built automatically")
     }
 
-    rts.models <- list()
+    #print(f)
 
-    rts.geog.training <- c()
-    rts.geog.test <- c()
-    rts.env.training <- c()
-    rts.env.test <- c()
+    gam.precheck(f, species, env)
 
-    if (requireNamespace("progress", quietly = TRUE)) {
-      pb <- progress::progress_bar$new(
-        format = " [:bar] :percent eta: :eta",
-        total = rts.reps, clear = FALSE, width= 60)
+    test.data <- NA
+    test.evaluation <- NA
+    env.test.evaluation <- NA
+    rts.test <- NA
+
+
+    # Code for randomly withheld test data
+    if(is.numeric(test.prop)){
+      if(test.prop > 0 & test.prop < 1){
+        test.inds <- sample(1:nrow(species$presence.points), ceiling(nrow(species$presence.points) * test.prop))
+        test.data <- species$presence.points[test.inds,]
+        species$presence.points <- species$presence.points[-test.inds,]
+      }
     }
 
-    for(i in 1:rts.reps){
+    # Code for spatially structured test data
+    if(is.character(test.prop)){
+      if(test.prop == "block"){
+        if(is.na(corner)){
+          corner <- ceiling(runif(1, 0, 4))
+        } else if(corner < 1 | corner > 4){
+          stop("corner should be an integer from 1 to 4!")
+        }
+        test.inds <- get.block(terra::crds(species$presence.points), terra::crds(species$background.points))
+        test.bg.inds <- which(test.inds$bg.grp == corner)
+        test.inds <- which(test.inds$occs.grp == corner)
+        test.data <- species$presence.points[test.inds,]
+        test.bg <- species$background.points[test.bg.inds,]
+        species$presence.points <- species$presence.points[-test.inds,]
+        species$background.points <- species$background.points[-test.bg.inds,]
+      }
+    }
+
+    ### Add env data
+    species <- add.env(species, env, verbose = verbose)
+
+    # Recast this formula so that the response variable is named "presence"
+    # regardless of what was passed.
+    f <- reformulate(attr(delete.response(terms(f)), "term.labels"), response = "presence")
+
+    analysis.df <- make_analysis.df(species)
+
+    if(weights == "equal"){
+      weights <- c(rep(1, nrow(species$presence.points)),
+                   rep(nrow(species$presence.points)/nrow(species$background.points),
+                       nrow(species$background.points)))
+    } else {
+      weights <- rep(1, nrow(species$presence.points) + nrow(species$background.points))
+    }
+
+    this.gam <- mgcv::gam(f, analysis.df[,-c(1,2)], family="binomial", weights = weights, method = gam.method, select = gam.select, ...)
+
+    suitability <- terra::predict(env, this.gam, type = "response", na.rm = TRUE)
+
+    # Clamping and getting a diff layer
+    clamping.strength <- NA
+    if(clamp == TRUE){
+      env <- clamp.env(analysis.df, env)
+      clamped.suitability <- terra::predict(env, this.gam, type = "response", na.rm = TRUE)
+      clamping.strength <- clamped.suitability - suitability
+      suitability <- clamped.suitability
+    }
+
+    # This is a very weird hack that has to be done because dismo's evaluate function
+    # fails if the stack only has one layer.
+    if(length(names(env)) == 1){
+      oldname <- names(env)
+      env <- c(env, env)
+      names(env) <- c(oldname, "dummyvar")
+      notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
+    }
+
+    model.evaluation <- dismo::evaluate(species$presence.points, species$background.points,
+                                 this.gam, env, na.rm = TRUE)
+    env.model.evaluation <- env.evaluate(species, this.gam, env, n.background = env.nback)
+
+
+    # Test eval for randomly withheld data
+    if(is.numeric(test.prop)){
+      if(test.prop > 0 & test.prop < 1){
+        test.check <- terra::extract(env, test.data, ID = FALSE)
+        test.data <- test.data[complete.cases(test.check),]
+        test.evaluation <-dismo::evaluate(test.data, species$background.points,
+                                          this.gam, env, na.rm = TRUE)
+        temp.sp <- species
+        temp.sp$presence.points <- test.data
+        env.test.evaluation <- env.evaluate(temp.sp, this.gam, env, n.background = env.nback)
+      }
+    }
+
+    # Test eval for spatially structured data
+    if(is.character(test.prop)){
+      if(test.prop == "block"){
+        test.check <- terra::extract(env, test.data, ID = FALSE)
+        test.data <- test.data[complete.cases(test.check),]
+        test.evaluation <-dismo::evaluate(test.data, test.bg,
+                                          this.gam, env, na.rm = TRUE)
+        temp.sp <- species
+        temp.sp$presence.points <- test.data
+        temp.sp$background.points <- test.bg
+        env.test.evaluation <- env.evaluate(temp.sp, this.gam, env, n.background = env.nback)
+      }
+    }
+
+    # Do Raes and ter Steege test for significance.  Turned off if eval == FALSE
+    if(rts.reps > 0){
+
+      message("\nBuilding RTS replicate models...\n")
+
+      # Die if we're not doing randomly withheld test data and RTS reps > 0
+      if(!is.numeric(test.prop)){
+        stop(paste("RTS test can only be conducted with randomly withheld data, and test.prop is set to", test.prop))
+      }
+
+      rts.models <- list()
+
+      rts.geog.training <- c()
+      rts.geog.test <- c()
+      rts.env.training <- c()
+      rts.env.test <- c()
 
       if (requireNamespace("progress", quietly = TRUE)) {
-        pb$tick()
+        pb <- progress::progress_bar$new(
+          format = " [:bar] :percent eta: :eta",
+          total = rts.reps, clear = FALSE, width= 60)
       }
 
-      if(verbose == TRUE){message(paste("Replicate", i, "of", rts.reps))}
+      for(i in 1:rts.reps){
 
-      # Repeating analysis with scrambled pa points and then evaluating models
-      rep.species <- species
-
-      # Mix the points all together
-      if(test.prop > 0) {
-          test <- as.data.frame(test.data, geom = "XY")[ , c("x", "y")]
-        } else {
-          test <- NULL
+        if (requireNamespace("progress", quietly = TRUE)) {
+          pb$tick()
         }
-        allpoints <- rbind(test,
-                           as.data.frame(species$background.points, geom = "XY")[ , c("x", "y")],
-                           as.data.frame(species$presence.points, geom = "XY")[ , c("x", "y")])
 
-      # Sample presence points from pool and remove from pool
-      rep.rows <- sample(nrow(allpoints), nrow(species$presence.points))
-      rep.species$presence.points <- terra::vect(allpoints[rep.rows,], geom=c("x", "y"), crs = terra::crs(species$presence.points))
-      allpoints <- allpoints[-rep.rows,]
+        if(verbose == TRUE){message(paste("Replicate", i, "of", rts.reps))}
 
-      # Do the same for test points
+        # Repeating analysis with scrambled pa points and then evaluating models
+        rep.species <- species
+
+        # Mix the points all together
+        if(test.prop > 0) {
+            test <- as.data.frame(test.data, geom = "XY")[ , c("x", "y")]
+          } else {
+            test <- NULL
+          }
+          allpoints <- rbind(test,
+                             as.data.frame(species$background.points, geom = "XY")[ , c("x", "y")],
+                             as.data.frame(species$presence.points, geom = "XY")[ , c("x", "y")])
+
+        # Sample presence points from pool and remove from pool
+        rep.rows <- sample(nrow(allpoints), nrow(species$presence.points))
+        rep.species$presence.points <- terra::vect(allpoints[rep.rows,], geom=c("x", "y"), crs = terra::crs(species$presence.points))
+        allpoints <- allpoints[-rep.rows,]
+
+        # Do the same for test points
+        if(test.prop > 0){
+          test.rows <- sample(nrow(allpoints), nrow(test.data))
+          rep.test.data <- allpoints[test.rows,]
+          allpoints <- allpoints[-test.rows,]
+        }
+
+        # Everything else goes back to the background
+        rep.species$background.points <- terra::vect(allpoints, geom=c("x", "y"), crs = terra::crs(species$presence.points))
+
+        rep.species <- add.env(rep.species, env, verbose = verbose)
+
+        rts.df <- make_analysis.df(rep.species)
+
+        thisrep.gam <- mgcv::gam(f, rts.df[,-c(1,2)], family="binomial", ...)
+
+        thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points, species$background.points,
+                                                   thisrep.gam, env, na.rm = TRUE)
+        thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.gam, env, n.background = env.nback)
+
+        rts.geog.training[i] <- thisrep.model.evaluation@auc
+        rts.env.training[i] <- thisrep.env.model.evaluation@auc
+
+        if(test.prop > 0 & test.prop < 1){
+          thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points,
+                                                    thisrep.gam, env, na.rm = TRUE)
+          temp.sp <- rep.species
+          temp.sp$presence.points <- terra::vect(rep.test.data, geom=c("x", "y"), crs = terra::crs(species$presence.points))
+          thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.gam, env, n.background = env.nback)
+
+          rts.geog.test[i] <- thisrep.test.evaluation@auc
+          rts.env.test[i] <- thisrep.env.test.evaluation@auc
+
+          rts.models[[paste0("rep.",i)]] <- list(model = thisrep.gam,
+                                                 training.evaluation = thisrep.model.evaluation,
+                                                 env.training.evaluation = thisrep.env.model.evaluation,
+                                                 test.evaluation = thisrep.test.evaluation,
+                                                 env.test.evaluation = thisrep.env.test.evaluation)
+        } else {
+          rts.models[[paste0("rep.",i)]] <- list(model = thisrep.gam,
+                                                 training.evaluation = thisrep.model.evaluation,
+                                                 env.training.evaluation = thisrep.env.model.evaluation,
+                                                 test.evaluation = NA,
+                                                 env.test.evaluation = NA)
+        }
+      }
+
+      # Reps are all run now, time to package it all up
+
+      # Calculating p values
+      rts.geog.training.pvalue = mean(rts.geog.training > model.evaluation@auc)
+      rts.env.training.pvalue = mean(rts.env.training > env.model.evaluation@auc)
       if(test.prop > 0){
-        test.rows <- sample(nrow(allpoints), nrow(test.data))
-        rep.test.data <- allpoints[test.rows,]
-        allpoints <- allpoints[-test.rows,]
-      }
-
-      # Everything else goes back to the background
-      rep.species$background.points <- terra::vect(allpoints, geom=c("x", "y"), crs = terra::crs(species$presence.points))
-
-      rep.species <- add.env(rep.species, env, verbose = verbose)
-
-      rts.df <- make_analysis.df(rep.species)
-
-      thisrep.gam <- mgcv::gam(f, rts.df[,-c(1,2)], family="binomial", ...)
-
-      thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points, species$background.points,
-                                                 thisrep.gam, env, na.rm = TRUE)
-      thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.gam, env, n.background = env.nback)
-
-      rts.geog.training[i] <- thisrep.model.evaluation@auc
-      rts.env.training[i] <- thisrep.env.model.evaluation@auc
-
-      if(test.prop > 0 & test.prop < 1){
-        thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points,
-                                                  thisrep.gam, env, na.rm = TRUE)
-        temp.sp <- rep.species
-        temp.sp$presence.points <- terra::vect(rep.test.data, geom=c("x", "y"), crs = terra::crs(species$presence.points))
-        thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.gam, env, n.background = env.nback)
-
-        rts.geog.test[i] <- thisrep.test.evaluation@auc
-        rts.env.test[i] <- thisrep.env.test.evaluation@auc
-
-        rts.models[[paste0("rep.",i)]] <- list(model = thisrep.gam,
-                                               training.evaluation = thisrep.model.evaluation,
-                                               env.training.evaluation = thisrep.env.model.evaluation,
-                                               test.evaluation = thisrep.test.evaluation,
-                                               env.test.evaluation = thisrep.env.test.evaluation)
+        rts.geog.test.pvalue <- mean(rts.geog.test > test.evaluation@auc)
+        rts.env.test.pvalue <- mean(rts.env.test > env.test.evaluation@auc)
       } else {
-        rts.models[[paste0("rep.",i)]] <- list(model = thisrep.gam,
-                                               training.evaluation = thisrep.model.evaluation,
-                                               env.training.evaluation = thisrep.env.model.evaluation,
-                                               test.evaluation = NA,
-                                               env.test.evaluation = NA)
+        rts.geog.test.pvalue <- NA
+        rts.env.test.pvalue <- NA
+      }
+
+      rts.geog.training <- data.frame(AUC = rts.geog.training)
+      rts.env.training <- data.frame(AUC = rts.env.training)
+      rts.geog.test <- data.frame(AUC = rts.geog.test)
+      rts.env.test <- data.frame(AUC = rts.env.test)
+
+      # Making plots
+      training.plot <- ggplot(rts.geog.training, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
+        geom_histogram(binwidth = 0.05) +
+        geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
+        xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
+        ggtitle(paste("Model performance in geographic space on training data")) +
+        theme(plot.title = element_text(hjust = 0.5))
+
+      env.training.plot <- ggplot(rts.env.training, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
+        geom_histogram(binwidth = 0.05) +
+        geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
+        xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
+        ggtitle(paste("Model performance in environment space on training data")) +
+        theme(plot.title = element_text(hjust = 0.5))
+
+      # Make plots for test AUC distributions
+      if(test.prop > 0){
+        test.plot <- ggplot(rts.geog.test, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
+          geom_histogram(binwidth = 0.05) +
+          geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
+          xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
+          ggtitle(paste("Model performance in geographic space on test data")) +
+          theme(plot.title = element_text(hjust = 0.5))
+
+        env.test.plot <- ggplot(rts.env.test, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
+          geom_histogram(binwidth = 0.05) +
+          geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
+          xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
+          ggtitle(paste("Model performance in environment space on test data")) +
+          theme(plot.title = element_text(hjust = 0.5))
+      } else {
+        test.plot <- NA
+        env.test.plot <- NA
+      }
+
+      rts.pvalues = list(rts.geog.training.pvalue = rts.geog.training.pvalue,
+                         rts.env.training.pvalue = rts.env.training.pvalue,
+                         rts.geog.test.pvalue = rts.geog.test.pvalue,
+                         rts.env.test.pvalue = rts.env.test.pvalue)
+      rts.distributions = list(rts.geog.training = rts.geog.training,
+                               rts.env.training = rts.env.training,
+                               rts.geog.test = rts.geog.test,
+                               rts.env.test = rts.env.test)
+      rts.plots = list(geog.training.plot = training.plot,
+                       env.training.plot = env.training.plot,
+                       geog.test.plot = test.plot,
+                       env.test.plot = env.test.plot)
+
+      rts.test <- list(rts.models = rts.models,
+                       rts.pvalues = rts.pvalues,
+                       rts.distributions = rts.distributions,
+                       rts.plots = rts.plots,
+                       rts.nreps = rts.reps)
+    }
+
+
+
+    output <- list(species.name = species$species.name,
+                   formula = f,
+                   analysis.df = analysis.df,
+                   test.data = test.data,
+                   test.prop = test.prop,
+                   model = this.gam,
+                   training.evaluation = model.evaluation,
+                   test.evaluation = test.evaluation,
+                   env.training.evaluation = env.model.evaluation,
+                   env.test.evaluation = env.test.evaluation,
+                   rts.test = rts.test,
+                   suitability = suitability,
+                   clamping.strength = clamping.strength,
+                   call = sys.call(),
+                   notes = notes)
+
+    class(output) <- c("enmtools.gam", "enmtools.model")
+
+    # Doing response plots for each variable.  Doing this bit after creating
+    # the output object because marginal.plots expects an enmtools.model object
+    response.plots <- list()
+
+    plot.vars <- all.vars(formula(this.gam))
+
+    for(i in 2:length(plot.vars)){
+      this.var <-plot.vars[i]
+      if(this.var %in% names(env)){
+        response.plots[[this.var]] <- marginal.plots(output, env, this.var)
       }
     }
 
-    # Reps are all run now, time to package it all up
+    output[["response.plots"]] <- response.plots
 
-    # Calculating p values
-    rts.geog.training.pvalue = mean(rts.geog.training > model.evaluation@auc)
-    rts.env.training.pvalue = mean(rts.env.training > env.model.evaluation@auc)
-    if(test.prop > 0){
-      rts.geog.test.pvalue <- mean(rts.geog.test > test.evaluation@auc)
-      rts.env.test.pvalue <- mean(rts.env.test > env.test.evaluation@auc)
-    } else {
-      rts.geog.test.pvalue <- NA
-      rts.env.test.pvalue <- NA
+    if(!is.null(report)){
+      if(file.exists(report) & overwrite == FALSE){
+        stop("Report file exists, and overwrite is set to FALSE!")
+      } else {
+        # message("\n\nGenerating html report...\n")
+  message("This function not enabled yet.  Check back soon!")
+        # makereport(output, outfile = report)
+      }
     }
 
-    rts.geog.training <- data.frame(AUC = rts.geog.training)
-    rts.env.training <- data.frame(AUC = rts.env.training)
-    rts.geog.test <- data.frame(AUC = rts.geog.test)
-    rts.env.test <- data.frame(AUC = rts.env.test)
+    return(output)
 
-    # Making plots
-    training.plot <- ggplot(rts.geog.training, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
-      geom_histogram(binwidth = 0.05) +
-      geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
-      xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
-      ggtitle(paste("Model performance in geographic space on training data")) +
-      theme(plot.title = element_text(hjust = 0.5))
-
-    env.training.plot <- ggplot(rts.env.training, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
-      geom_histogram(binwidth = 0.05) +
-      geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
-      xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
-      ggtitle(paste("Model performance in environment space on training data")) +
-      theme(plot.title = element_text(hjust = 0.5))
-
-    # Make plots for test AUC distributions
-    if(test.prop > 0){
-      test.plot <- ggplot(rts.geog.test, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
-        geom_histogram(binwidth = 0.05) +
-        geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
-        xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
-        ggtitle(paste("Model performance in geographic space on test data")) +
-        theme(plot.title = element_text(hjust = 0.5))
-
-      env.test.plot <- ggplot(rts.env.test, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
-        geom_histogram(binwidth = 0.05) +
-        geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
-        xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
-        ggtitle(paste("Model performance in environment space on test data")) +
-        theme(plot.title = element_text(hjust = 0.5))
-    } else {
-      test.plot <- NA
-      env.test.plot <- NA
-    }
-
-    rts.pvalues = list(rts.geog.training.pvalue = rts.geog.training.pvalue,
-                       rts.env.training.pvalue = rts.env.training.pvalue,
-                       rts.geog.test.pvalue = rts.geog.test.pvalue,
-                       rts.env.test.pvalue = rts.env.test.pvalue)
-    rts.distributions = list(rts.geog.training = rts.geog.training,
-                             rts.env.training = rts.env.training,
-                             rts.geog.test = rts.geog.test,
-                             rts.env.test = rts.env.test)
-    rts.plots = list(geog.training.plot = training.plot,
-                     env.training.plot = env.training.plot,
-                     geog.test.plot = test.plot,
-                     env.test.plot = env.test.plot)
-
-    rts.test <- list(rts.models = rts.models,
-                     rts.pvalues = rts.pvalues,
-                     rts.distributions = rts.distributions,
-                     rts.plots = rts.plots,
-                     rts.nreps = rts.reps)
   }
-
-
-
-  output <- list(species.name = species$species.name,
-                 formula = f,
-                 analysis.df = analysis.df,
-                 test.data = test.data,
-                 test.prop = test.prop,
-                 model = this.gam,
-                 training.evaluation = model.evaluation,
-                 test.evaluation = test.evaluation,
-                 env.training.evaluation = env.model.evaluation,
-                 env.test.evaluation = env.test.evaluation,
-                 rts.test = rts.test,
-                 suitability = suitability,
-                 clamping.strength = clamping.strength,
-                 call = sys.call(),
-                 notes = notes)
-
-  class(output) <- c("enmtools.gam", "enmtools.model")
-
-  # Doing response plots for each variable.  Doing this bit after creating
-  # the output object because marginal.plots expects an enmtools.model object
-  response.plots <- list()
-
-  plot.vars <- all.vars(formula(this.gam))
-
-  for(i in 2:length(plot.vars)){
-    this.var <-plot.vars[i]
-    if(this.var %in% names(env)){
-      response.plots[[this.var]] <- marginal.plots(output, env, this.var)
-    }
-  }
-
-  output[["response.plots"]] <- response.plots
-
-  if(!is.null(report)){
-    if(file.exists(report) & overwrite == FALSE){
-      stop("Report file exists, and overwrite is set to FALSE!")
-    } else {
-      # message("\n\nGenerating html report...\n")
-message("This function not enabled yet.  Check back soon!")
-      # makereport(output, outfile = report)
-    }
-  }
-
-  return(output)
 
 }
 

@@ -22,6 +22,7 @@ enmtools.glm(
   corner = NA,
   bias = NA,
   step = FALSE,
+  legacy = FALSE,
   ...
 )
 }
@@ -58,7 +59,9 @@ enmtools.glm(
 
 \item{bias}{An optional raster estimating relative sampling effort per grid cell.  Will be used for drawing background data.}
 
-\item{step}{Logical determining whether to do stepwise model selection or not}
+\item{step}{Logical determining whether to do stepwise model selection or not. This argument is deprecated and no longer does anything unless \code{legacy = TRUE}.}
+
+\item{legacy}{If \code{TRUE}, ENMTools legacy code will be used (version 1.1)}
 
 \item{...}{Arguments to be passed to glm()}
 }

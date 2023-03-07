@@ -16,6 +16,10 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(ENMTools)
+library(recipes)
+library(ggplot2)
+library(GGally)
+library(DALEXtra)
 ```
 
 This vignette is about new feature in ENMTools in version 2.0. It can help for user's migrating from version 1.0, and is also a testing ground for the new feature.
@@ -67,10 +71,103 @@ monticola.boost
 
 To our knowledge this is the first application of boosted regression trees to species distribution modelling, and you saw it here! It was as easy as that!
 
-## Advanced `tidymodels` integration
+If you want to pass arguments to the underlying functions you can use the `model_args` arguments of `enmtools.tidy()`. In `tidymodels` there are two types of arguments: main arguments, which are common to all 'engines' for a particular type of model, and engine arguments, which are specific to a particular engine. In `tidymodels` the 'engine' is the underlying R function used to fit the model (e.g. 'ranger' is an engine for random forest (`parsnip::rand_forest()`)). The main arguments can easily be found in the `parsnip` model specification (e.g. `parsnip::boost_tree()$args`). The engine arguments can be found in the documentation for individual engines (linked to from the eg. `?parsnip::boost_tree`, or directly with `?parsnip::details_boost_tree_xgboost`). You can pass either type of argument using `model_args`. As an example, we can increase the number of trees estimated by the boosted regression using the main argument `trees`, and change the metric used to evaluate trees using the engine arguments `eval_metric`. You can pass custom values for these like this:
 
-- Using `recipes`
-- Model 'explainers' (https://modeloriented.github.io/DALEXtra/index.html)
-- Other stuff I haven't thought of yet
+```{r boost2}
+monticola.boost2 <- enmtools.tidy(monticola, euro.worldclim, model = parsnip::boost_tree("classification"), test.prop = 0.2,
+                                  model_args = list(trees = 1000, eval_metric = "auc"))
+monticola.boost2
+```
+
+# Advanced `tidymodels` integration
+
+## Using recipes with ENMTools
+
+An important new feature in ENMTools enabled by `tidymodels` is the ability to use recipes from the `recipes` package with ENMTools. Recipes allow the user to specify data preprocessing steps in the form of a 'recipe'. These steps are then applied to the data before modelling. Importantly, recipes also collect any required information needed to apply the steps to data for which the user want predictions. For example, a common data preprocessing step is to standardise your predictor variables so they all have a common variance, making them easier to compare, with say, the `scale()` function. However, care must be taken when doing this because once the model is fit, you will have to transform any data you want to make predictions on in the same way as the training data. In this case, it would be an easy mistake to make to simply run `scale()` on the data you want predictions for. But this would transform the data using the variance of the data to be predicted, which may be different from the training data. This would make the data for prediction incomparable to the training data and can lead to serious downstream errors. To solve this you have to save the variance of the predictor variables in the training data, and then later use this variance to standardize the prediction data with the same values as the training data. This can become a lot to keep track of, but recipes do this for you. Previously, ENMTools had no way to deal with this situation of data transformation because predictions were made inside the modelling functions. The only way for the user to ensure predictions were being made on data transformed in the same way was to transform the environmental variables in the input raster (since ENMTools draw values for both training and prediction data from this raster). Now you can do arbitrary transformations (or at least, any supported by the `recipes` package), in ENMTools and you can be confident they are applied correctly to training and prediction data. To learn more about recipes, visit https://recipes.tidymodels.org/
+
+Here is an example of using recipes with ENMTools. You can setup a recipe using the `recipe` function, which is applied to an `enmtools.species` object in combination with a raster of environmental variables. You can specify what variables to use from the environmental raster using a formula (see example below). You then apply preprocessing 'steps' to the recipe. Variables you can access in steps are the predictor variables from your input raster. You can refer to all predictor variables using the selector function `all_predictors()`. If you have a mix of numeric and factor variables you may find `all_numeric_predictors()` or `all_factor_predictors()` useful. To see all available selectors see `?recipes::has_role`. Here we will do two common transformation used to improve properties of predictors for machine learning models. We will do a Box-Cox transformation, which attempts to reduce skew in the data and make it more Gaussian-like, then we will standardise. We can then pass the recipe into ENMTools in place of the usual formula (`f` argument). Note that when you make the recipe it needs to know whether you plan to use weights in the ENMTools modelling function. Just pass the same value to the `weights` argument of `recipe()` and the `weights` argument of the modelling function (the default is the same but to make this explicit and avoid future misunderstanding, we explicitly specify the argument here).
+
+```{r recipes}
+rec <- recipe(monticola, formula = presence ~ bio1 + bio3 + bio9 + bio12, env = env, weights = "equal") %>%
+  step_BoxCox(all_predictors()) %>%
+  step_normalize(all_predictors())
+rec
+```
+
+You can see what the recipe does to your data by using the `recipes::prep()` and `recipes::bake()` functions.
+
+```{r prep}
+prep(rec) %>%
+  bake(new_data = NULL)
+```
+
+`new_data = NULL` tells `bake()` to use the original data set supplied to `prep()` (through `recipe()`). Alternatively, `new_data` can be data for which you want predictions. What is happening here is that `prep()` is recording any necessary data for the transformation, such as the estimated parameters of the Box-Cox transformations, and the means and standard deviations of the data for the normalization. Then `bake()` applies this to data in `new_data` (or the training data if `new_data = NULL`).
+
+We can see what the transformations have done by comparing to untransformed data:
+
+```{r compare_trans}
+orig_dat <- recipe(monticola, formula = presence ~ bio1 + bio3 + bio9 + bio12, env = env, weights = "equal") %>%
+  prep() %>%
+  bake(NULL)
+trans_dat <- prep(rec) %>%
+  bake(NULL)
+
+ggpairs(orig_dat[ , 2:5], progress = FALSE) + ggtitle("Untransformed")
+ggpairs(trans_dat[ , 2:5], progress = FALSE) + ggtitle("Transformed")
+```
+
+Let's use this in a glm model and a domain model.
+
+```{r apply_it1}
+monticola.glm.rec <- enmtools.glm(monticola, env, f = rec, test.prop = 0.2)
+monticola.glm.rec
+```
+
+```{r apply_it2}
+monticola.dm.rec <- enmtools.dm(monticola, env, f = rec, test.prop = 0.2)
+monticola.dm.rec
+```
+
+The suitability plots suggest the transformation have been applied correctly to the prediction data since they look very reasonable and as you would expect.
+
+## Explaining any model using model 'explainers'
+
+DALE is a method that can be used to estimate various ways of 'explaining' a predictive model that works on any kind of model. There is an implementation of the method for `tidymodels`, so we can use it for any model estimated by ENMTools (https://modeloriented.github.io/DALEXtra/index.html). You can read about model explanation in the context of `tidymodels` here: https://www.tmwr.org/explain.html .
+
+Here is an example of calculating 'global' explanations for the boosted regression tree we fit above, as well as for a `bioclim` model. The result is a measure of the 'importance' of each variable in the model.
+
+```{r boost_explain}
+explainer_boost <- 
+  explain_tidymodels(
+    monticola.boost$model, 
+    data = monticola.boost$analysis.df[ , paste0("bio", 1:19)], 
+    y = as.numeric(as.character(monticola.boost$analysis.df$presence)),
+    label = "boost_tree",
+    verbose = TRUE
+  )
+
+vip_boost <- model_parts(explainer_boost)
+plot(vip_boost)
+
+```
+In the boosted regression model, 'bio5' and 'bio13' are the most important variables for understanding the distibution of the monticola species. The origin of the blue bars is the reference point, if the value on the x axis is not far from this then the variable does not explain much (what it means more specifically is that if you permute the variable randomly its predictive power in the model doesn't change much, implying it is not important). The darker blue bars and lines are a boxplot giving some sense of the uncertainty in the importance measure. Let's see how it works for bioclim.
+
+```{r bc_explain}
+monticola.bc <- enmtools.bc(monticola, env, test.prop = 0.2)
+
+explainer_bc <- 
+  explain_tidymodels(
+    monticola.bc$model, 
+    data = monticola.bc$analysis.df[ , paste0("bio", 1:19)], 
+    y = as.numeric(as.character(monticola.bc$analysis.df$presence)),
+    label = "bioclim",
+    verbose = TRUE
+  )
+
+vip_bc <- model_parts(explainer_bc)
+plot(vip_bc)
+
+```
+This shows no variable is particularly important since permuting almost any of them does not change their predictive power much. The one exception might be 'bio15', which has some small importance. 
 
 ## Reports

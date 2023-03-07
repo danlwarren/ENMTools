@@ -7,12 +7,12 @@
 \method{recipe}{enmtools.species}(
   x,
   formula = NULL,
-  env = NA,
+  env,
   nback = 1000,
   bg.source = "default",
   verbose = FALSE,
   bias = NA,
-  weights = "none",
+  weights = "equal",
   ...,
   vars = NULL,
   roles = NULL

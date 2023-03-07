@@ -20,6 +20,7 @@
 #' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
 #' @param clamp When set to TRUE, clamps the environmental layers so that predictions made outside the min/max of the training data for each predictor are set to the value for the min/max for that predictor. Prevents the model from extrapolating beyond the min/max bounds of the predictor space the model was trained in, although there could still be projections outside the multivariate training space if predictors are strongly correlated.
 #' @param corner An integer from 1 to 4.  Selects which corner to use for "block" test data.  By default the corner is selected randomly.
+#' @param needs_formula Some `parsnip` models require a formula to specify the structure of the data. If this is the case, set this to `TRUE` so that ENMTools knows to pass the original formula to the `tidymodels` workflow. You can safely ignore this if `model` is specified as a character string (e.g. a 'classic' ENMTools model)
 #' @param bias An optional raster estimating relative sampling effort per grid cell.  Will be used for drawing background data.
 #' @param model_args Arguments to be passed to the `parsnip` model specification. For 'classic' ENMTools models specified with a character string argument to `model`, these can be found using `get_parsnip_model(model)`. Arguments to the underlying engine used by the `parsnip` specification can also be specified here. These can be found under the individual model specifications for parsnip engines.
 #' @param ... Additional arguments for future extensions. Not currently used.
@@ -33,7 +34,7 @@
 
 
 
-enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, model_args = list(), ...){
+enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, needs_formula = is.character(model) && model %in% c("gam"), model_args = list(), ...){
 
   notes <- NULL
 
@@ -78,32 +79,44 @@ enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, 
     }
   }
 
+  wf <- workflows::workflow()
   ## check formula and construct tidymodels objects
   if(!is.null(f)) {
     if(inherits(f, "recipe")) {
       rec <- f
+      wf <- workflows::add_recipe(wf, rec)
     } else {
-      rec <- recipe(species, f, env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias,
-                    weights = weights)
+      # Recast this formula so that the response variable is named "presence"
+      # regardless of what was passed.
+      f <- reformulate(attr(delete.response(terms(f)), "term.labels"), response = "presence")
+      if(class(mod)[1] == "gen_additive_mod") {
+        rec <- recipe(species, formula = f, env = env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias,
+                      weights = weights)
+        wf <- workflows::add_recipe(wf, rec)
+      } else {
+        wf <- workflows::add_formula(wf, f)
+      }
     }
   } else {
     rec <- recipe(species, env = env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias,
                   weights = weights)
+    wf <- workflows::add_recipe(wf, rec)
   }
   preps <- enmtools.prep(species, env = env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias, weights = weights)
 
   analysis.df <- preps$data
   species <- preps$species
 
-  wf <- workflows::workflow(rec, mod)
+  wf <- workflows::add_model(wf, mod)
 
   if(weights == "equal"){
-    wf <- workflows::add_case_weights(wf, .data$weights)
+    wf <- workflows::add_case_weights(wf, "weights")
   }
 
-  f2 <- make_formula(model, env, ...)
-  if(!is.null(f2)) {
-    f <- f2
+  if(needs_formula) {
+    if(is.null(f)) {
+      f <- make_formula(model, env, ...)
+    }
     wf <- workflows::update_model(wf, mod, formula = f)
    }
 
@@ -364,13 +377,17 @@ enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, 
                  call = sys.call(),
                  notes = notes)
 
-  class(output) <- c("enmtools.glm", "enmtools.model")
+  class(output) <- c("enmtools.tidy", "enmtools.model")
 
   # Doing response plots for each variable.  Doing this bit after creating
   # the output object because marginal.plots expects an enmtools.model object
   response.plots <- list()
 
-  plot.vars <- all.vars(formula(recipes::prep(workflows::extract_preprocessor(this.fit))))
+  form <- workflows::extract_preprocessor(this.fit)
+  if(!inherits(form, "formula")) {
+    form <- formula(recipes::prep(form))
+  }
+  plot.vars <- all.vars(form)
 
   for(i in 2:length(plot.vars)){
     this.var <-plot.vars[i]
@@ -419,7 +436,7 @@ enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, 
 #'
 #' @examples
 #' recipe(iberolacerta.clade$species$monticola, env = euro.worldclim)
-recipe.enmtools.species <- function (x, formula = NULL, env = NA, nback = 1000, bg.source = "default", verbose = FALSE, bias = NA, weights = "none", ..., vars = NULL, roles = NULL) {
+recipe.enmtools.species <- function (x, formula = NULL, env, nback = 1000, bg.source = "default", verbose = FALSE, bias = NA, weights = "equal", ..., vars = NULL, roles = NULL) {
   x <- enmtools.prep(x, env = env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias, weights = weights)$data
   if(is.null(formula)) {
     vars <- colnames(x)
@@ -703,3 +720,127 @@ pres_only_sdm <- function(mode = "classification", engine = "bioclim") {
 #' @name recipe
 #' @rdname reexports
 NULL
+
+
+# Summary for objects of class enmtools.glm
+summary.enmtools.tidy <- function(object, plot = TRUE, ...){
+
+  cat("\n\nFormula or recipe:  ")
+  print(object$formula)
+
+  cat("\n\nData table (top ten lines): ")
+  print(kable(head(object$analysis.df, 10)))
+
+  cat("\n\nModel:  ")
+  print(summary(object$model))
+
+  cat("\n\nModel fit (training data):  ")
+  print(object$training.evaluation)
+
+  cat("\n\nEnvironment space model fit (training data):  ")
+  print(object$env.training.evaluation)
+
+  cat("\n\nProportion of data wittheld for model fitting:  ")
+  cat(object$test.prop)
+
+  cat("\n\nModel fit (test data):  ")
+  print(object$test.evaluation)
+
+  cat("\n\nEnvironment space model fit (test data):  ")
+  print(object$env.test.evaluation)
+
+  cat("\n\nSuitability:  \n")
+  print(object$suitability)
+
+  cat("\n\nNotes:  \n")
+  object$notes
+
+  if(plot) {
+    plot(object)
+  }
+
+}
+
+# Print method for objects of class enmtools.glm
+print.enmtools.tidy <- function(x, ...){
+
+  print(summary(x, ...))
+
+}
+
+plot.enmtools.tidy <- function(x, ...){
+
+
+  suit.points <- data.frame(rasterToPoints2(x$suitability))
+  colnames(suit.points) <- c("x", "y", "Suitability")
+  test <- terra::as.data.frame(x$test.data, geom = "XY")
+
+  suit.plot <- ggplot(data = suit.points,  aes(y = .data$y, x = .data$x)) +
+    geom_raster(aes(fill = .data$Suitability)) +
+    scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
+    coord_fixed() + theme_classic() +
+    geom_point(data = x$analysis.df[x$analysis.df$presence == 1,],  aes(y = .data$y, x = .data$x),
+               pch = 21, fill = "white", color = "black", size = 2)
+
+
+  if(inherits(x$test.data, "SpatVector")){
+    suit.plot <- suit.plot + geom_point(data = test,  aes(y = .data$y, x = .data$x),
+                                        pch = 21, fill = "green", color = "black", size = 2)
+  }
+
+  if(!is.na(x$species.name)){
+    title <- paste("GLM model for", x$species.name)
+    suit.plot <- suit.plot + ggtitle(title) + theme(plot.title = element_text(hjust = 0.5))
+  }
+
+
+  return(suit.plot)
+
+}
+
+
+# Predict method for models of class enmtools.glm
+predict.enmtools.tidy <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
+
+  # Make a plot of habitat suitability in the new region
+  suitability <- terra::predict(env, object$model, type = "response", na.rm = TRUE)
+
+  # Clamping and getting a diff layer
+  clamping.strength <- NA
+  if(clamp == TRUE){
+    env <- clamp.env(object$analysis.df, env)
+    clamped.suitability <- terra::predict(env, object$model, type = "response", na.rm = TRUE)
+    clamping.strength <- clamped.suitability - suitability
+    suitability <- clamped.suitability
+  }
+
+  suit.points <- data.frame(rasterToPoints2(suitability))
+  colnames(suit.points) <- c("x", "y", "Suitability")
+
+  suit.plot <- ggplot(data = suit.points,  aes(y = .data$y, x = .data$x)) +
+    geom_raster(aes(fill = .data$Suitability)) +
+    scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
+    coord_fixed() + theme_classic()
+
+  clamp.points <- data.frame(rasterToPoints2(clamping.strength))
+  colnames(clamp.points) <- c("x", "y", "Clamping")
+
+  clamp.plot <- ggplot(data = clamp.points,  aes(y = .data$y, x = .data$x)) +
+    geom_raster(aes_string(fill = "Clamping")) +
+    scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
+    coord_fixed() + theme_classic()
+
+  if(!is.na(object$species.name)){
+    title <- paste("GLM model projection for", object$species.name)
+    suit.plot <- suit.plot + ggtitle(title) + theme(plot.title = element_text(hjust = 0.5))
+  }
+
+  this.threespace = threespace.plot(object, env, maxpts)
+
+  output <- list(suitability.plot = suit.plot,
+                 clamping.strength = clamping.strength,
+                 suitability = suitability,
+                 clamp.plot = clamp.plot,
+                 threespace.plot = this.threespace)
+  return(output)
+}

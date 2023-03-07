@@ -7,6 +7,7 @@
 enmtools.dm(
   species,
   env = NA,
+  f = NULL,
   test.prop = 0,
   report = NULL,
   nback = 1000,
@@ -18,6 +19,7 @@ enmtools.dm(
   clamp = TRUE,
   corner = NA,
   bias = NA,
+  legacy = FALSE,
   ...
 )
 }
@@ -25,6 +27,8 @@ enmtools.dm(
 \item{species}{An enmtools.species object}
 
 \item{env}{A SpatRaster of environmental data.}
+
+\item{f}{An R formula or a \code{\link[recipes:recipe]{recipes::recipe()}} object. This is only used to specify a subset of variables to use from the environmental raster (by including on the right hand side) or to pass a recipe in. This argument is new as of version 2.0}
 
 \item{test.prop}{Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.}
 
@@ -47,6 +51,8 @@ enmtools.dm(
 \item{corner}{An integer from 1 to 4.  Selects which corner to use for "block" test data.  By default the corner is selected randomly.}
 
 \item{bias}{An optional raster estimating relative sampling effort per grid cell.  Will be used for drawing background data.}
+
+\item{legacy}{If \code{TRUE}, ENMTools legacy code will be used (version 1.1)}
 
 \item{...}{Arguments to be passed to domain()}
 }

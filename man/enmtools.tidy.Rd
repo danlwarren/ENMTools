@@ -23,6 +23,7 @@ enmtools.tidy(
   clamp = TRUE,
   corner = NA,
   bias = NA,
+  needs_formula = is.character(model) && model \%in\% c("gam"),
   model_args = list(),
   ...
 )
@@ -64,6 +65,8 @@ model definition for any model with \code{mode = "classification"}. Default is
 \item{corner}{An integer from 1 to 4.  Selects which corner to use for "block" test data.  By default the corner is selected randomly.}
 
 \item{bias}{An optional raster estimating relative sampling effort per grid cell.  Will be used for drawing background data.}
+
+\item{needs_formula}{Some \code{parsnip} models require a formula to specify the structure of the data. If this is the case, set this to \code{TRUE} so that ENMTools knows to pass the original formula to the \code{tidymodels} workflow. You can safely ignore this if \code{model} is specified as a character string (e.g. a 'classic' ENMTools model)}
 
 \item{model_args}{Arguments to be passed to the \code{parsnip} model specification. For 'classic' ENMTools models specified with a character string argument to \code{model}, these can be found using \code{get_parsnip_model(model)}. Arguments to the underlying engine used by the \code{parsnip} specification can also be specified here. These can be found under the individual model specifications for parsnip engines.}
 

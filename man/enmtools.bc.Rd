@@ -7,6 +7,7 @@
 enmtools.bc(
   species,
   env = NA,
+  f = NULL,
   test.prop = 0,
   report = NULL,
   overwrite = FALSE,
@@ -26,6 +27,8 @@ enmtools.bc(
 \item{species}{An enmtools.species object}
 
 \item{env}{A SpatRaster of environmental data.}
+
+\item{f}{An R formula or a \code{\link[recipes:recipe]{recipes::recipe()}} object. This is only used to specify a subset of variables to use from the environmental raster (by including on the right hand side) or to pass a recipe in. This argument is new as of version 2.0}
 
 \item{test.prop}{Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.}
 

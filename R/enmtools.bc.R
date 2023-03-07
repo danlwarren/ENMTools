@@ -1,6 +1,7 @@
 #' Takes an emtools.species object with presence and background points, and builds a Bioclim model
 #'
 #' @param species An enmtools.species object
+#' @param f An R formula or a [recipes::recipe()] object. This is only used to specify a subset of variables to use from the environmental raster (by including on the right hand side) or to pass a recipe in. This argument is new as of version 2.0
 #' @param env A SpatRaster of environmental data.
 #' @param test.prop Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.
 #' @param report Optional name of an html file for generating reports
@@ -23,7 +24,7 @@
 #' enmtools.bc(iberolacerta.clade$species$monticola, env = euro.worldclim)
 #' }
 
-enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwrite = FALSE, nback = 1000, env.nback = 10000, rts.reps = 0, bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, legacy = FALSE, ...){
+enmtools.bc <- function(species, env = NA, f = NULL, test.prop = 0, report = NULL, overwrite = FALSE, nback = 1000, env.nback = 10000, rts.reps = 0, bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, legacy = FALSE, ...){
 
   if(!legacy) {
     return(

@@ -20,6 +20,7 @@ enmtools.rf(
   clamp = TRUE,
   corner = NA,
   bias = NA,
+  legacy = FALSE,
   ...
 )
 }
@@ -53,6 +54,8 @@ enmtools.rf(
 \item{corner}{An integer from 1 to 4.  Selects which corner to use for "block" test data.  By default the corner is selected randomly.}
 
 \item{bias}{An optional raster estimating relative sampling effort per grid cell.  Will be used for drawing background data.}
+
+\item{legacy}{If \code{TRUE}, ENMTools legacy code will be used (version 1.1)}
 
 \item{...}{Arguments to be passed to rf()}
 }
