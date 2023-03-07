@@ -36,7 +36,7 @@ expect_enmtools_model <- function(model){
 
   expect_true(all(class(model$model) %in% c("MaxEnt", "Domain", "Bioclim",
                                             "randomForest.formula", "randomForest",
-                                            "list", "glm", "lm", "gam", "ranger")),
+                                            "list", "glm", "lm", "gam", "ranger", "workflow")),
               info = "Class of model is not recognized")
 
   # Evaluation on training data happens unless it's bypassed (GLM only I think)

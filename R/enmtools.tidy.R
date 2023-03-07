@@ -21,8 +21,8 @@
 #' @param clamp When set to TRUE, clamps the environmental layers so that predictions made outside the min/max of the training data for each predictor are set to the value for the min/max for that predictor. Prevents the model from extrapolating beyond the min/max bounds of the predictor space the model was trained in, although there could still be projections outside the multivariate training space if predictors are strongly correlated.
 #' @param corner An integer from 1 to 4.  Selects which corner to use for "block" test data.  By default the corner is selected randomly.
 #' @param bias An optional raster estimating relative sampling effort per grid cell.  Will be used for drawing background data.
-#' @param step Logical determining whether to do stepwise model selection or not
-#' @param ... Additional arguments to be passed to the modelling function
+#' @param model_args Arguments to be passed to the `parsnip` model specification. For 'classic' ENMTools models specified with a character string argument to `model`, these can be found using `get_parsnip_model(model)`. Arguments to the underlying engine used by the `parsnip` specification can also be specified here. These can be found under the individual model specifications for parsnip engines.
+#' @param ... Additional arguments for future extensions. Not currently used.
 #'
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
 #'
@@ -33,7 +33,7 @@
 
 
 
-enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, step = FALSE, model_args = list(), ...){
+enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, model_args = list(), ...){
 
   notes <- NULL
 
@@ -396,6 +396,29 @@ enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, 
   #list(fit = fit, suitability = suitability)
 }
 
+#' Build a recipe from an `enmtools.species` object
+#'
+#' A [recipe][recipes::recipe()] is a description of the steps to be applied to a data set in order to prepare it for data analysis.
+#' This function builds one for an `enmtools.species` object. Once built, any recipe steps can be added to it.
+#' The recipe returned assumes a data.frame in the form used by ENMTools internally, which includes an
+#' outcome variable called `"presence"`, specifying whether the data point is a presence point or a 'background' or
+#' 'pseudo-absence' point. It also includes as predictor variables all environmental variables contained in
+#' `env` unless a reduced set is specified in `formula`, in which case only the reduced set are available as predictors.
+#' If you are unsure what variables are accessible for recipe steps, use [`enmtools.prep(x)$data`][enmtools.prep()], which returns the prepared
+#' data used by ENMTools. The only exception are the variables "x" and "y", which will be present in the prepared data
+#' but are currently not useable by recipe steps (these are the spatial coordinates of points).
+#'
+#' @param x An `enmtools.species` object
+#' @param formula An R formula
+#' @param ... Additional arguments. Not currently used.
+#' @inheritParams enmtools.glm
+#' @inheritParams recipes::recipe
+#'
+#' @inherit recipes::recipe return details
+#' @export
+#'
+#' @examples
+#' recipe(iberolacerta.clade$species$monticola, env = euro.worldclim)
 recipe.enmtools.species <- function (x, formula = NULL, env = NA, nback = 1000, bg.source = "default", verbose = FALSE, bias = NA, weights = "none", ..., vars = NULL, roles = NULL) {
   x <- enmtools.prep(x, env = env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias, weights = weights)$data
   if(is.null(formula)) {
@@ -413,6 +436,19 @@ recipe.enmtools.species <- function (x, formula = NULL, env = NA, nback = 1000, 
   recipes::recipe(x, vars = vars, roles = roles)
 }
 
+#' Prepare data for ENMTools models
+#'
+#' This is mostly used internally by ENMTools but we export it for users who want to
+#' see how the sausage is made.
+#'
+#' @param x An `enmtools.species` object
+#' @inheritParams enmtools.glm
+#'
+#' @return A list containing two elements: `data` and `species`. `data` contains a data.frame with formatted data suitable for modelling. `species` contains an updated `enmtools.species` object with background point information filled in.
+#' @export
+#'
+#' @examples
+#' enmtools.prep(iberolacerta.clade$species$monticola, euro.worldclim)
 enmtools.prep <- function(x, env = NA, nback = 1000, bg.source = "default", verbose = FALSE, bias = NA, weights = "none") {
   if(nback > 0) {
     species <- check.bg(x, env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias)
@@ -445,7 +481,8 @@ choose_model <- function(model, args = list(), ...) {
          gam = parsnip::gen_additive_mod(mode = "classification"),
          rf = parsnip::rand_forest(mode = "classification", engine = "randomForest"),
          `rf.ranger` = parsnip::rand_forest(mode = "classification"),
-         bc = pres_only_sdm())
+         bc = pres_only_sdm(),
+         dm = pres_only_sdm(engine = "domain"))
   if(length(args) > 0) {
     m <- parsnip::set_args(m, !!!args)
   }
@@ -463,12 +500,53 @@ make_formula <- function(model, env, k = 4, ...) {
   f
 }
 
+#' Wrapper function for `dismo::bioclim()`
+#'
+#' Wraps [`dismo::bioclim()`] for use in a `parsnip` model specification.
+#' Mostly for internal use. Exported so it works properly with parallel computation in `tidymodels`
+#'
+#' @param x Matrix or data.frame of environmental variables at points
+#' @param y Single column matrix or data.frame containing a two-level factor, specifying whether each point is a 'presence' point or a 'background' point.
+#'
+#' @return The result of calling [`dismo::bioclim()`]
+#' @export
+#'
+#' @examples
+#' dat <- enmtools.prep(iberolacerta.clade$species$monticola, euro.worldclim)$data
+#' bioclim_bridge(dat[ , c("bio1", "bio9")], dat[, "presence", drop = FALSE])
 bioclim_bridge <- function(x, y) {
-  dismo::bioclim(as.matrix(x[y[[1]] == levels(y[[1]])[2], ]))
+  dat <- check_pres_only(x, y)
+  dismo::bioclim(dat)
 }
 
+#' Wrapper function for `dismo::domain()`
+#'
+#' Wraps [`dismo::domain()`] for use in a `parsnip` model specification.
+#' Mostly for internal use. Exported so it works properly with parallel computation in `tidymodels`
+#'
+#' @param x Matrix or data.frame of environmental variables at points
+#' @param y Single column matrix or data.frame containing a two-level factor, specifying whether each point is a 'presence' point or a 'background' point.
+#'
+#' @return The result of calling [`dismo::domain()`]
+#' @export
+#'
+#' @examples
+#' dat <- enmtools.prep(iberolacerta.clade$species$monticola, euro.worldclim)$data
+#' domain_bridge(dat[ , c("bio1", "bio9")], dat[, "presence", drop = FALSE])
 domain_bridge <- function(x, y) {
-  dismo::domain(x[y == levels(y)[2], ])
+  dat <- check_pres_only(x, y)
+  dismo::domain(dat)
+}
+
+check_pres_only <- function(x, y) {
+  # if(ncol(y) > 1) {
+  #   stop("pres_only_sdm can only accept an outcome with a single variable")
+  # }
+  if(!is.factor(y[[1]]) || nlevels(y[[1]]) != 2) {
+    stop("pres_only_sdm outcome must be a factor with a exactly two levels")
+  }
+  dat <- as.matrix(x[y[[1]] == levels(y[[1]])[2], ])
+  dat
 }
 
 make_pres_only_sdm <- function() {
@@ -484,10 +562,17 @@ make_pres_only_sdm <- function() {
     mode = "classification",
     eng = "domain"
   )
+  parsnip::set_model_engine(
+    "pres_only_sdm",
+    mode = "classification",
+    eng = "hypervolume"
+  )
   parsnip::set_dependency("pres_only_sdm", eng = "bioclim", pkg = "dismo")
   parsnip::set_dependency("pres_only_sdm", eng = "domain", pkg = "dismo")
+  parsnip::set_dependency("pres_only_sdm", eng = "hypervolume", pkg = "dismo")
   parsnip::set_dependency("pres_only_sdm", eng = "bioclim", pkg = "ENMTools")
   parsnip::set_dependency("pres_only_sdm", eng = "domain", pkg = "ENMTools")
+  parsnip::set_dependency("pres_only_sdm", eng = "hypervolume", pkg = "ENMTools")
 
   parsnip::set_fit(
     model = "pres_only_sdm",
@@ -502,9 +587,34 @@ make_pres_only_sdm <- function() {
     )
   )
 
+  parsnip::set_fit(
+    model = "pres_only_sdm",
+    eng = "domain",
+    mode = "classification",
+    value = list(
+      interface = "matrix",
+      data = c(x = "x", y = "y"),
+      protect = c("x", "y"),
+      func = c(pkg = "ENMTools", fun = "domain_bridge"),
+      defaults = list()
+    )
+  )
+
   parsnip::set_encoding(
     model = "pres_only_sdm",
     eng = "bioclim",
+    mode = "classification",
+    options = list(
+      predictor_indicators = "none",
+      compute_intercept = FALSE,
+      remove_intercept = FALSE,
+      allow_sparse_x = FALSE
+    )
+  )
+
+  parsnip::set_encoding(
+    model = "pres_only_sdm",
+    eng = "domain",
     mode = "classification",
     options = list(
       predictor_indicators = "none",
@@ -544,8 +654,30 @@ make_pres_only_sdm <- function() {
     value = prob_info
   )
 
+  parsnip::set_pred(
+    model = "pres_only_sdm",
+    eng = "domain",
+    mode = "classification",
+    type = "prob",
+    value = prob_info
+  )
+
 }
 
+#' `parsnip` Model specification for presence-only species distribution models
+#'
+#' @details Engines available:
+#' - [`bioclim`][dismo::bioclim()]
+#' - [`domain`][dismo::domain()]
+#' - [`hypervolume`][hypervolume::hypervolume()]
+#'
+#' @param mode A single character string for the type of model. The only possible value for this model is "classification".
+#' @param engine A single character string specifying what computational engine to use for fitting. Possible engines are listed below. The default for this model is "bioclim".
+#' @inherit parsnip::logistic_reg return
+#' @export
+#'
+#' @examples
+#' pres_only_sdm()
 pres_only_sdm <- function(mode = "classification", engine = "bioclim") {
     # Check for correct mode
     if (mode  != "classification") {
@@ -562,4 +694,12 @@ pres_only_sdm <- function(mode = "classification", engine = "bioclim") {
       method = NULL,
       engine = engine
     )
-  }
+}
+
+#' Reexported functions from other packages
+#'
+#' [recipes::recipe()]
+#'
+#' @name recipe
+#' @rdname reexports
+NULL

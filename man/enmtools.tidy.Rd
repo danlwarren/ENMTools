@@ -3,7 +3,7 @@
 \name{enmtools.tidy}
 \alias{enmtools.tidy}
 \title{Takes an enmtools.species object with presence and background points, and builds
-a fitted `tidymodels` workflow.}
+a fitted \code{tidymodels} workflow.}
 \usage{
 enmtools.tidy(
   species,
@@ -23,7 +23,6 @@ enmtools.tidy(
   clamp = TRUE,
   corner = NA,
   bias = NA,
-  step = FALSE,
   model_args = list(),
   ...
 )
@@ -35,10 +34,10 @@ enmtools.tidy(
 
 \item{f}{A formula or tidymodels recipe}
 
-\item{model}{A character string specifying the desired model, or a `parsnip`
-model definition for any model with `mode = "classification"`. Default is
+\item{model}{A character string specifying the desired model, or a \code{parsnip}
+model definition for any model with \code{mode = "classification"}. Default is
 "glm". If a character string, choices are the standard ENMTools models:
-`c("glm", "bc", "dm", "gam", "rf", "rf.ranger", "maxent")`}
+\code{c("glm", "bc", "dm", "gam", "rf", "rf.ranger", "maxent")}}
 
 \item{test.prop}{Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.}
 
@@ -66,16 +65,16 @@ model definition for any model with `mode = "classification"`. Default is
 
 \item{bias}{An optional raster estimating relative sampling effort per grid cell.  Will be used for drawing background data.}
 
-\item{step}{Logical determining whether to do stepwise model selection or not}
+\item{model_args}{Arguments to be passed to the \code{parsnip} model specification. For 'classic' ENMTools models specified with a character string argument to \code{model}, these can be found using \code{get_parsnip_model(model)}. Arguments to the underlying engine used by the \code{parsnip} specification can also be specified here. These can be found under the individual model specifications for parsnip engines.}
 
-\item{...}{Additional arguments to be passed to the modelling function}
+\item{...}{Additional arguments for future extensions. Not currently used.}
 }
 \value{
 An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
 }
 \description{
 Takes an enmtools.species object with presence and background points, and builds
-a fitted `tidymodels` workflow.
+a fitted \code{tidymodels} workflow.
 }
 \examples{
 data(euro.worldclim)

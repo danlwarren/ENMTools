@@ -18,9 +18,13 @@ knitr::opts_chunk$set(
 library(ENMTools)
 ```
 
-This vignette is about new feature in ENMTools in version 2.0. It can help for user's migrating from version 1.0, and is also a testing ground for the new feature. 
-Firstly, the datasets included with ENMTools in version 1.0, `iberolacerta.clade` and `euro.worldclim`, are no longer accessed through the `data()`, command, but are now internal to the package. That means if `ENMTools` is loaded that you can simply call the datasets directly without having to explicitly load them with `data()` first.
-Second, ENMTools uses the `terra` package for geospatial raster data, instead of the `raster` package, which has now been deprecated. The internal datasets have been updated to reflect this. For example, `euro.worldclim` is now a "SpatRaster" object from `terra` instead of a "RasterLayer" from `raster`. The good news is that objects from `terra` work very similarly to objects from `raster` (which makes sense since `terra` is from the same developers as `raster`).
+This vignette is about new feature in ENMTools in version 2.0. It can help for user's migrating from version 1.0, and is also a testing ground for the new feature.
+
+## Version 1.1 changes: Spatial packages 
+
+Firstly, some changes happened in version 1.1 that you may not have seen yet, that were designed to update ENMTools to the new generation of spatial tools in R. Primary, this means switching from the `raster` package to the `terra` package.
+As part of this, the datasets included with ENMTools in version 1.0, `iberolacerta.clade` and `euro.worldclim`, are no longer accessed through the `data()`, command, but are now internal to the package. That means if `ENMTools` is loaded that you can simply call the datasets directly without having to explicitly load them with `data()` first.
+ENMTools now internally uses the `terra` package for geospatial raster data, instead of the `raster` package, which has now been deprecated, and all ENMTools function now expect terra::SpatRaster object instead of object inheriting from `raster` classes. The internal datasets have been updated to reflect this. For example, `euro.worldclim` is now a "SpatRaster" object from `terra` instead of a "RasterLayer" from `raster`. The good news is that objects from `terra` work very similarly to objects from `raster` (which makes sense since `terra` is from the same developers as `raster`). In addition to using `SpatRaster` objects for raster data, we have upgraded ENMTools to use `SpatVector` class object for geographic data points (e.g. presence and background points), instead of plain data.frames, which is what was used before. This is an important upgrade as it now allows users to attach a projection to any coordinates passed to ENMTools, and ENMTools will respect this projection (previously ENMTools could only take coordinates in Longitude-Latitude format, e.g. WGS84 or EPSG::4326).
 
 ```{r first_test}
 monticola <- iberolacerta.clade$species$monticola
@@ -28,48 +32,44 @@ cyreni <- iberolacerta.clade$species$cyreni
 env <- euro.worldclim
 env
 ```
-Model fitting functions from ENMTools still function much as they did before once you have an `enmtools.species` object that has been updated to use `terra` instead of `raster`. At least, from you, the users, perspective, they work the same. Under the hood, many changes have been made, but you don't need to know about that now. Those changes enable some more advanced features that we will talke about later, but for now if you just want ENMTools to behave the way you are used to from ENTools 1.0, the good news is that it will. Let's try running a GLM model.
+# ENMTools 2.0: 
+## Joining forces with `tidymodels`
+
+Beyond those relatively minor changes first added to version 1.1, version 2.0 adds a slew of powerful new features.
+Model fitting functions from ENMTools still function much as they did before once you have an `enmtools.species` object that has been updated to use `terra` instead of `raster`. At least from the user's perspective, they work the same. Under the hood, many changes have been made, but you don't need to know about that now. Those changes enable some more advanced features that we will talk about later, but for now if you just want ENMTools to behave the way you are used to from ENTools 1.0, the good news is that it will. Let's try running a GLM model.
 
 ```{r run_glm, eval = FALSE}
 monticola.glm <- enmtools.glm(species = monticola, env = env, f = pres ~ bio1 + bio12 + bio7, test.prop = 0.2)
 monticola.glm
 
-
 ```
 
-Now to test hypervolume.
+This gives a very similar output to ENMTools version < 2. The only difference you may notice is the model slot in the `enmtools.model` object now has an onject of class `workflow`, which is from the `workflows` package. `workflows` is a package in the `tidymodels` suite of packages for conducting modelling analyses in R. This reflects the most major change in ENMTools version 2.0, that it now uses `tidymodels` infrastructure for fitting models. As far as the user is concerned this may make no difference to you. If you just want to use ENMTools how you did before, this change makes little difference. If you want to retrieve the original model object you can use `workflows::extract_fit_engine()`
 
-```{r hypervolum_test, eval=FALSE}
-monticola.hyper <- enmtools.hypervolume(species = monticola, env = env[[c("bio1", "bio12", "bio7")]])
-monticola.ranger <- enmtools.rf.ranger(species = monticola, env = env, f = pres ~ bio1 + bio12 + bio7, test.prop = 0.2)
+```{r extract_model, eval = FALSE}
+workflows::extract_fit_engine(monticola.glm$model)
 ```
 
-RTS:
+On the other hand, if you just want ENMTools to function exactly as it did before, we do offer the `legacy = TRUE` argument. Setting this argument in any ENMTools modelling function will use the legacy version of the function (e.g. from version 1.1).
 
-```{r rts}
-monticola.gam.rts <- enmtools.gam(species = monticola, env = env, f = pres ~ bio1 + bio12 + bio7, test.prop = 0, rts.reps = 10)
-monticola.gam.rts$rts.test
+```{r glm_legacy, eval = FALSE}
+monticola.glm <- enmtools.glm(species = monticola, env = env, f = pres ~ bio1 + bio12 + bio7, test.prop = 0.2, legacy = TRUE)
+monticola.glm
 ```
 
-## Tidymodels
+However, this change opens up a lot of additional functionality because much of the infrastructure for model fitting provided by `tidymodels` is now accessible to the ENMTools user. Later on in this vignette we will provide some examples of how you can use `tidymodels` in conjunction with ENMTools. Beyond this better integration into the wider world of modelling in R, a major implication of the move to `tidymodels` is that now, in addition to all original modelling methods provided by ENMTools, any model type implemented in `tidymodels` for classification can now be used for species distribution modelling using the ENMTools framework, out of the box. We are very excited about this feature. Here are some examples, let's run our monticola example from above, but use a boosted regression tree approach, available through `tidymodels`. To do this, we can use the new `enmtools.tidy()` function, and pass it a model specification provided by the `tidymodels` package called `parsnip`. Note that `tidymodels` is itself a wrapper around modelling functions provided by many different R packages. If you do not have the necessary package installed then `tidymodels` will throw an error and tell you what package you need. In this case, it will be the `xgboost` package. The `enmtools.tidy()` function has similar arguments to all all ENMTools modelling functions, with the addition of a `model` argument. This can either be a character string giving the name of a 'classic' ENMTools model (such as 'glm' or 'maxent'), or it can be a `model_spec` object from the `parsnip` package (or other other `tidymodels` extension packages). This is how you can do a boosted regression tree:
 
-```{r tidy_testing}
-monti_recipe <- recipe(monticola, env = euro.worldclim)
-monti_recipe
-
-test <- enmtools.tidy(monticola, euro.worldclim)
-test
-
-tt <- enmtools.tidy(monticola, euro.worldclim, model = "rf.ranger", test.prop = 0.2, model_args = list(trees = 1000))
-terra::plot(tt$suitability)
-
-bm <- bench::mark(tt1 <- enmtools.tidy(monticola, euro.worldclim, model = "rf.ranger", test.prop = 0.2, rts.reps = 10),
-            tt2 <- enmtools.rf.ranger(monticola, euro.worldclim, test.prop = 0.2, rts.reps = 10),
-            check = FALSE)
-bm
-
-tt <- enmtools.tidy(monticola, euro.worldclim, model = parsnip::boost_tree("classification"), test.prop = 0.2, rts.reps = 10)
-
-tt2 <- enmtools.tidy(monticola, euro.worldclim, f = ~ bio1 + bio9, model = "bc", test.prop = 0.2, rts.reps = 10)
-tt2 <- enmtools.tidy(monticola, euro.worldclim, model = "bc", test.prop = 0.2, rts.reps = 10)
+```{r boost}
+monticola.boost <- enmtools.tidy(monticola, euro.worldclim, model = parsnip::boost_tree("classification"), test.prop = 0.2)
+monticola.boost
 ```
+
+To our knowledge this is the first application of boosted regression trees to species distribution modelling, and you saw it here! It was as easy as that!
+
+## Advanced `tidymodels` integration
+
+- Using `recipes`
+- Model 'explainers' (https://modeloriented.github.io/DALEXtra/index.html)
+- Other stuff I haven't thought of yet
+
+## Reports

@@ -2,7 +2,7 @@
 % Please edit documentation in R/enmtools.rf.ranger.R
 \name{enmtools.rf.ranger}
 \alias{enmtools.rf.ranger}
-\title{Takes an emtools.species object with presence and background points, and builds a random forest model using the 'probability mode' in package `ranger`}
+\title{Takes an emtools.species object with presence and background points, and builds a random forest model using the 'probability mode' in package \code{ranger}}
 \usage{
 enmtools.rf.ranger(
   species,
@@ -60,7 +60,7 @@ enmtools.rf.ranger(
 An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
 }
 \description{
-Takes an emtools.species object with presence and background points, and builds a random forest model using the 'probability mode' in package `ranger`
+Takes an emtools.species object with presence and background points, and builds a random forest model using the 'probability mode' in package \code{ranger}
 }
 \examples{
 \donttest{

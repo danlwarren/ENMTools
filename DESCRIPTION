@@ -48,5 +48,8 @@ Suggests:
     fastshap,
     viridis,
     progress,
-    rmarkdown
+    rmarkdown,
+    torch
 Config/testthat/edition: 3
+VignetteBuilder: knitr
+Roxygen: list(markdown = TRUE)
