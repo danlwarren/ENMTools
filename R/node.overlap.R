@@ -8,7 +8,7 @@
 
 node.overlap <- function(overlap, tree){
 
-   check.packages("ape")
+   assert.extras.this.fun()
 
    # Get numbers for internal nodes
    nodes <- ape::branching.times(tree)
@@ -109,7 +109,7 @@ get.daughter.overlap <- function(tree, overlap, nodes){
 # phyloclim.
 get.mult <- function (tree, tips){
 
-   check.packages("ape")
+   assert.extras.this.fun()
 
    ntips <- length(tree$tip.label)
    mrca <- ape::getMRCA(tree, tips)

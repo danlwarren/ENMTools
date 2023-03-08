@@ -19,7 +19,7 @@
 
 interactive.plot.enmtools.species <- function(x, map.provider = "Esri.WorldPhysical", cluster.points = FALSE, max.bytes = 4194304, ...) {
 
-  check.packages("leaflet")
+  assert.extras.this.fun()
 
   m <- leaflet::leaflet() %>%
     leaflet::addProviderTiles(map.provider, group = "Base map")
