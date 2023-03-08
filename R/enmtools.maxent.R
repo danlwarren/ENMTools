@@ -18,11 +18,9 @@
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
 #'
 #' @examples
-#' \dontrun{
-#' install.extras(repos='http://cran.us.r-project.org')
 #' if(requireNamespace("rJava", quietly = TRUE)) {
-#'     enmtools.maxent(iberolacerta.clade$species$monticola, env = euro.worldclim)
-#' }
+#'     ## maxent is not working on some platforms so use try()
+#'     try(enmtools.maxent(iberolacerta.clade$species$monticola, env = euro.worldclim))
 #' }
 
 

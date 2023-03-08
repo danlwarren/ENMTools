@@ -2,8 +2,8 @@
 #'
 #' Convenience function that installs all extra packages used in ENMTools.  ENMTools uses
 #' functions from a lot of external packages, and due to CRAN best practices it doesn't install
-#' those packages by default.  The function install.extras() just calls install.packages with a
-#' list of all of the extra packages.  At present this list includes mgcv, ecospat, randomForest,
+#' those packages by default.  The function install.extras() calls install.packages with a
+#' list of all of the extra packages that are not already available.  At present this list includes mgcv, ecospat, randomForest,
 #' hypervolume, ape, leaflet, ranger, CalibratR, caret, and ResourceSelection.
 #'
 #' @param ... Other parameters to be passed to \code{install.packages}
@@ -36,7 +36,9 @@ install.extras <- function(...) {
                 "viridis",
                 "progress")
 
-  installs <- installs[!(installs %in% utils::installed.packages())]
+  avail <- sapply(installs, requireNamespace, quietly = TRUE)
+
+  installs <- installs[!avail]
 
   if(length(installs) > 0){
     install.packages(installs, ...)
