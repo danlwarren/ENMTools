@@ -19,15 +19,17 @@
 #'
 #' @examples
 #' \donttest{
-#' install.extras(repos='http://cran.us.r-project.org')
+#' #install.extras(repos='http://cran.us.r-project.org')
 #' monticola <- iberolacerta.clade$species$monticola
 #' cyreni <- iberolacerta.clade$species$cyreni
-#' enmtools.ecospat.id(monticola, cyreni, euro.worldclim[[1:2]], nback = 500)
+#' if(check.extras("enmtools.ecospat.id")) {
+#'   enmtools.ecospat.id(monticola, cyreni, euro.worldclim[[1:2]], nback = 500)
+#' }
 #' }
 
 enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = NULL, th.sp=0, th.env=0, R=100, nback = 1000, bg.source = "default", verbose = FALSE){
 
-  check.packages("ecospat")
+  assert.extras.this.fun()
 
   species.1 <- check.bg(species.1, env, nback, verbose = verbose)
   species.2 <- check.bg(species.2, env, nback, verbose = verbose)

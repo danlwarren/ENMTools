@@ -18,17 +18,15 @@
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
 #'
 #' @examples
-#' \dontrun{
-#' install.extras(repos='http://cran.us.r-project.org')
-#' if(requireNamespace("rJava", quietly = TRUE)) {
-#'     enmtools.maxent(iberolacerta.clade$species$monticola, env = euro.worldclim)
-#' }
+#' if(check.extras("enmtools.maxent")) {
+#'     ## maxent is not working on some platforms so use try()
+#'     try(enmtools.maxent(iberolacerta.clade$species$monticola, env = euro.worldclim))
 #' }
 
 
 enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0,  bg.source = "default", verbose = FALSE, clamp = TRUE,  corner = NA, bias = NA, ...){
 
-  check.packages("rJava")
+  assert.extras.this.fun()
 
   notes <- NULL
 

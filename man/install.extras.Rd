@@ -4,23 +4,26 @@
 \alias{install.extras}
 \title{install.extras}
 \usage{
-install.extras(...)
+install.extras(funs = NULL, install = TRUE, ...)
 }
 \arguments{
+\item{funs}{character vector of ENMTools function names to install extra dependencies for. If `NULL`, extras for all ENMTools functions will be installed.}
+
+\item{install}{Should the packages be installed?}
+
 \item{...}{Other parameters to be passed to \code{install.packages}}
 }
 \value{
-No return value.
+The list of missing packages is return invisibly.
 }
 \description{
 Convenience function that installs all extra packages used in ENMTools.  ENMTools uses
 functions from a lot of external packages, and due to CRAN best practices it doesn't install
-those packages by default.  The function install.extras() just calls install.packages with a
-list of all of the extra packages.  At present this list includes mgcv, ecospat, randomForest,
-hypervolume, ape, leaflet, ranger, CalibratR, caret, and ResourceSelection.
+those packages by default.  The function install.extras() calls install.packages with a
+list of all of the extra packages that are not already available. Use [check.extras()] to find out which packages are needed for a list of functions.
 }
 \examples{
 \donttest{
-install.extras()
+install.extras(install = FALSE)
 }
 }
