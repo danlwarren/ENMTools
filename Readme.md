@@ -1540,6 +1540,7 @@ name <- species
 
 # Get GBIF data
 xy = gbif(genus = genus, species = species)[,c("lon", "lat")]
+xy <- xy[complete.cases(xy),]
 
 # Rename columns, get rid of duds
 colnames(xy) <- c("x", "y")
