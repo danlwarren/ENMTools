@@ -58,8 +58,8 @@ check.species <- function(this.species, env = NA, trim.dupes = FALSE){
 
   # Extracts data from env at presence points, uses that to remove points that have NA in any layer
   if(inherits(env, "SpatRaster")){
-    temp.df <- terra::extract(env, terra::crds(this.species$presence.points, ID = FALSE))
-    this.species$presence.points <- terra::vect(this.species$presence.points[complete.cases(temp.df),])
+    temp.df <- terra::extract(env, this.species$presence.points, ID = FALSE)
+    this.species$presence.points <- this.species$presence.points[complete.cases(temp.df),]
   }
 
   # Removing duplicates

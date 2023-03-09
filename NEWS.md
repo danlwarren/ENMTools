@@ -1,6 +1,11 @@
 ENMTools 1.x
 ============
 
+ENMTools 1.1
+
+- Updated the entire package to use terra instead of raster
+- Numerous other bug fixes and behind-the-scenes improvements
+
 ENMTools 1.0.7
 --------------
 
