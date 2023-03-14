@@ -30,6 +30,8 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
 
   notes <- NULL
 
+  env <- check.raster(env, "env")
+
   species <- check.bg(species, env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias)
 
   maxent.precheck(f, species, env)

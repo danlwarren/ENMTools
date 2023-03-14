@@ -37,6 +37,8 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
 
   notes <- NULL
 
+  env <- check.raster(env, "env")
+
   species <- check.bg(species, env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias)
 
   # Builds a default formula using all env

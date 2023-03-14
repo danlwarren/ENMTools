@@ -27,6 +27,8 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
 
   notes <- NULL
 
+  env <- check.raster(env, "env")
+
   species <- check.bg(species, env, nback, verbose = verbose, bias = bias)
 
   dm.precheck(species, env)
