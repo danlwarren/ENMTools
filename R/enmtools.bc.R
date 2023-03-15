@@ -26,6 +26,8 @@ enmtools.bc <- function(species, env = NA, test.prop = 0, report = NULL, overwri
 
   notes <- NULL
 
+  env <- check.raster(env, "env")
+
   species <- check.bg(species, env, nback, verbose = verbose, bias = bias)
 
   bc.precheck(species, env)

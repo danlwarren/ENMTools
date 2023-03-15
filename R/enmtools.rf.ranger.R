@@ -28,6 +28,8 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
 
   notes <- NULL
 
+  env <- check.raster(env, "env")
+
   species <- check.bg(species, env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias)
 
   # Builds a default formula using all env
