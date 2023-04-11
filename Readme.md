@@ -128,16 +128,6 @@ monticola <- enmtools.species()
 monticola
 ```
 
-## 
-## 
-## Range raster not defined.
-## 
-## Presence points not defined.
-## 
-## Background points not defined.
-## 
-## Species name not defined.
-
 You can add bits of it when the object is created.  As of version 1.1, ENMTools requires that all point and raster data be stored in terra's SpatVector and SpatRaster objects:
 
 ``` r
@@ -300,12 +290,16 @@ it visually instead.
 raster.cor.plot(env)
 ```
 
+```r
 ## $cor.mds.plot
+```
 
 ![](Readme_files/figure-gfm/collinearity2-1.png)<!-- -->
 
+```r
 ## 
 ## $cor.heatmap
+```
 
 ![](Readme_files/figure-gfm/collinearity2-2.png)<!-- -->
 
@@ -678,17 +672,23 @@ To check out the marginal response functions, you only need to type
 monticola.glm$response.plots
 ```
 
+```r
 ## $bio1
+```
 
 ![](Readme_files/figure-gfm/response_plots-1.png)<!-- -->
 
+```r
 ## 
 ## $bio7
+```
 
 ![](Readme_files/figure-gfm/response_plots-2.png)<!-- -->
 
+```r
 ## 
 ## $bio12
+```
 
 ![](Readme_files/figure-gfm/response_plots-3.png)<!-- -->
 
@@ -716,14 +716,18 @@ represent your occurrence points in environment space.
 visualize.enm(monticola.glm, env, layers = c("bio1", "bio12"), plot.test.data = TRUE)
 ```
 
+```r
 ## $background.plot
 
 ## Warning: Removed 396 rows containing missing values (geom_raster).
+```
 
 ![](Readme_files/figure-gfm/visualize.enm-1.png)<!-- -->
 
+```r
 ## 
 ## $suit.plot
+```
 
 ![](Readme_files/figure-gfm/visualize.enm-2.png)<!-- -->
 
@@ -760,11 +764,13 @@ using ENMs, while having a low breadth in environment space.
 raster.breadth(monticola.glm)
 ```
 
+```r
 ## $B1
 ## [1] 0.9485566
 ## 
 ## $B2
 ## [1] 0.5587834
+```
 
 ENMTools also provides metrics for measuring similarity between ENMs.
 These include Schoener’s D (Schoener 1968), I (Warren et al. 2008), and
@@ -780,6 +786,7 @@ cyreni.glm <- enmtools.glm(species = cyreni, env = env, f = pres ~ poly(bio1, 2)
 raster.overlap(monticola.glm, cyreni.glm)
 ```
 
+```r
 ## $D
 ## [1] 0.7478775
 ## 
@@ -788,6 +795,7 @@ raster.overlap(monticola.glm, cyreni.glm)
 ## 
 ## $rank.cor
 ## [1] 0.5275103
+```
 
 A new feature of the R version of ENMTools is that you can now use these
 same metrics in the n-dimensional space of all combinations of
@@ -819,13 +827,17 @@ env.overlap(monticola.glm, cyreni.glm, env, tolerance = .001)
 ```
 ![](Readme_files/figure-gfm/env_overlap-1.png)<!-- -->
 
+```r
 ## 
 ## $env.I.plot
+```
 
 ![](Readme_files/figure-gfm/env_overlap-2.png)<!-- -->
 
+```r
 ## 
 ## $env.cor.plot
+```
 
 ![](Readme_files/figure-gfm/env_overlap-3.png)<!-- -->
 
@@ -1011,7 +1023,6 @@ esp.id
 ```
 ![](Readme_files/figure-gfm/ecospat_identity-1.png)<!-- -->![](Readme_files/figure-gfm/ecospat_identity-2.png)<!-- -->
 
-## NULL
 
 And here’s a symmetric background test. The difference between symmetric
 and asymmetric for these tests is the same as for the background tests
@@ -1043,7 +1054,6 @@ esp.bg.sym
 ```
 ![](Readme_files/figure-gfm/ecospat_background-1.png)<!-- -->![](Readme_files/figure-gfm/ecospat_background-2.png)<!-- -->
 
-## NULL
 
 Note that if you provide more than two layers to the enmtools.ecospat
 function, it will performa a PCA analysis on the provided layers and
@@ -1075,7 +1085,6 @@ esp.bg.sym
 ```
 ![](Readme_files/figure-gfm/ecospat_background2-1.png)<!-- -->![](Readme_files/figure-gfm/ecospat_background2-2.png)<!-- -->
 
-## NULL
 
 ### Rangebreak tests
 
@@ -1482,11 +1491,13 @@ offset.
 rbr.glm$lines.df
 ```
 
+```r
 ##        slope intercept    offset
 ## 1 -2.0354472  32.46446 0.5669571
 ## 2 -0.4279309  39.02535 0.2719289
 ## 3  0.1616337  41.49875 0.2532446
 ## 4 -0.0792137  42.74416 0.2507831
+```
 
 The intercept denotes the intercept corresponding to the CENTER of each
 ribbon. To get the lines denoting the edges of the ribbons (for example
@@ -1656,7 +1667,7 @@ summary(range.aoc)
 ```
 ![](Readme_files/figure-gfm/range_aoc-1.png)<!-- -->![](Readme_files/figure-gfm/range_aoc-2.png)<!-- -->
 
-## NULL
+
 
 Now we can do one using point overlaps just by changing the
 overlap.source argument:
@@ -1678,7 +1689,7 @@ summary(point.aoc)
 ```
 ![](Readme_files/figure-gfm/point_aoc-1.png)<!-- -->![](Readme_files/figure-gfm/point_aoc-2.png)<!-- -->
 
-## NULL
+
 
 Or we can use similarity between ENMs built for each species. Here we’ll
 use GLM models:
@@ -1700,7 +1711,7 @@ summary(glm.aoc)
 ```
 ![](Readme_files/figure-gfm/enm_aoc-1.png)<!-- -->![](Readme_files/figure-gfm/enm_aoc-2.png)<!-- -->
 
-## NULL
+
 
 ### Literature cited
 
