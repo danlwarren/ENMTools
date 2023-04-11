@@ -12,7 +12,7 @@
 
 raster.cor.plot <- function(env, method = "pearson"){
 
-  check.packages("reshape2")
+  assert.extras.this.fun()
 
   n.layers <- length(names(env))
 

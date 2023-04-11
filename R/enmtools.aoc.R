@@ -181,7 +181,7 @@ print.enmtools.aoc <- function(x, ...){
 
 plot.enmtools.aoc <- function(x, ...){
 
-  check.packages("ape")
+  assert.extras.this.fun()
 
   plot(x$tree, no.margin=TRUE, edge.width=2, cex=1)
   ape::nodelabels(format(x$empirical.df$overlap, digits = 1, nsmall = 2))

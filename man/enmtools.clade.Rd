@@ -2,14 +2,24 @@
 % Please edit documentation in R/enmtools.clade.R
 \name{enmtools.clade}
 \alias{enmtools.clade}
+\alias{save.enmtools.clade}
+\alias{load.enmtools.clade}
 \title{Defining a class for enmtools.clade.  Each clade gets:}
 \usage{
 enmtools.clade(species = NA, tree = NA)
+
+save.enmtools.clade(x, ...)
+
+load.enmtools.clade(x, ...)
 }
 \arguments{
 \item{species}{A list of enmtools.species objects}
 
 \item{tree}{A tree showing the relationships between the species}
+
+\item{x}{Path to an enmtools.species file}
+
+\item{...}{Other arguments passed to R's load function}
 }
 \value{
 An enmtools.clade object, either empty or containing a formatted version of the data that was passed into the function.
@@ -17,3 +27,10 @@ An enmtools.clade object, either empty or containing a formatted version of the 
 \description{
 Defining a class for enmtools.clade.  Each clade gets:
 }
+\section{Functions}{
+\itemize{
+\item \code{save.enmtools.clade()}: Save an ENMTools clade object
+
+\item \code{load.enmtools.clade()}: Load an ENMTools clade object
+
+}}

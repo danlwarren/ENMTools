@@ -67,6 +67,7 @@ aranica <- iberolacerta.clade$species$aranica
 # We're just going to fudge together occurrence data from a ribbon here
 # from random points between the two species' ranges
 p <- data.frame(x = runif(50, -4, -2), y = runif(50, 40, 43))
+p <- terra::vect(p, geom = c("x", "y"), crs = terra::crs(cyreni$presence.points))
 bg <- background.buffer(p, 100000, mask = euro.worldclim[[1]], n = 100, return.type = "points")
 ribbon <- enmtools.species(species.name = "ribbon", presence.points = p, background.points = bg)
 

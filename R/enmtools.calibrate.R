@@ -5,23 +5,26 @@
 #' @param cuts The number of bins to split suitability scores into for calculating calibration.
 #' @param env A set of environment layers to be used for optional env space metrics
 #' @param n.background Number of background points to be used for env space metrics
+#' @param recal.methods Numeric or vector specifying which methods the CalibratR package should use for recalibration.   1=hist_scaled, 2=hist_transformed, 3=BBQ_scaled, 4=BBQ_transformed.  Option 5 is disabled by default due to errors.
 #' @param ... Further arguments to be passed to CalibratR's "calibrate" function.
 #'
 #' @return An enmtools.calibrate object containing calibration and classificaction plots, metrics of model calibration, and (optionally) versions of the model that were recalibrated using various methods.
 #'
 #' @examples
 #' \donttest{
-#' install.extras(repos='http://cran.us.r-project.org')
+#' #install.extras(repos='http://cran.us.r-project.org')
 #' monticola.glm <- enmtools.glm(iberolacerta.clade$species$monticola,
 #'                               env = euro.worldclim,
 #'                               f = pres ~ bio1 + bio9,
 #'                               test.prop = 0.3)
-#' enmtools.calibrate(monticola.glm)
+#' if(check.extras("enmtools.calibrate")) {
+#'   enmtools.calibrate(monticola.glm)
+#' }
 #' }
 
-enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, n.background = 10000, ...){
+enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, n.background = 10000, recal.methods = c(1, 2, 3, 4), ...){
 
-  check.packages(c("ecospat", "CalibratR", "caret", "ResourceSelection"))
+  assert.extras.this.fun()
 
   if(suppressWarnings(is.na(model$test.evaluation))){
     stop("No test evaluation data available, cannot measure calibration.")
@@ -101,14 +104,14 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
   env.test.evaluation <- list()
 
   if(recalibrate == TRUE){
-    recalibrated.model <- CalibratR::calibrate(this.pa, pred.df$prob, evaluate_no_CV_error = FALSE, ...)
+    recalibrated.model <- CalibratR::calibrate(this.pa, pred.df$prob, evaluate_no_CV_error = FALSE, model_idx = recal.methods, ...)
     preds <- as.matrix(terra::as.data.frame(model$suitability, xy = TRUE))
-    cal.preds <- CalibratR::predict_calibratR(recalibrated.model$calibration_models, preds[,"layer"])
+    cal.preds <- CalibratR::predict_calibratR(recalibrated.model$calibration_models, new = preds[,"lyr1"])
 
     # The Phillips and Elith recalibration should be done here for presence only models
     # Should make it optional with a flag that defaults to TRUE
     # transformation is (mean untransformed suitability * suitability in grid cell)/(prevalence * (1 - suitability in grid cell))
-    calibrated.suitabilities <- lapply(cal.preds, function(x) terra::rasterize(preds[,1:2], model$suitability, field = x))
+    calibrated.suitabilities <- lapply(cal.preds, function(x) terra::rasterize(preds[,1:2], model$suitability, values = x))
 
     class.plots.1 <- lapply(names(recalibrated.model$summary_CV$models$uncalibrated), function(x) class.plot(recalibrated.model$predictions[[x]], pred.df$obs, x, cuts = cuts))
     class.plots.2 <- lapply(names(recalibrated.model$summary_CV$models$calibrated), function(x) class.plot(recalibrated.model$predictions[[x]], pred.df$obs, x, cuts = cuts))
@@ -189,16 +192,9 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
       recalibrated.metrics[[i]][["env.test.evaluation"]] <- env.test.evaluation[[i]]
 
       # Boyce is noyce
-      # Testing to see whether models are presence only or presence/background
-      recalibrated.metrics[[i]][["continuous.boyce"]] <- NA
-      if("presence" %in% colnames(model$analysis.df)){
-        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat::ecospat.boyce(calibrated.suitabilities[[i]],
-                                                                                   model$test.data, PEplot = FALSE)
-      } else {
-        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat::ecospat.boyce(calibrated.suitabilities[[i]],
-                                                                                   model$test.data, PEplot = FALSE)
-      }
-
+      recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat::ecospat.boyce(as.numeric(terra::values(calibrated.suitabilities[[i]], na.rm = TRUE)),
+                                                                                 unlist(terra::extract(model$suitability, model$test.data, ID = FALSE)),
+                                                                                 PEplot = FALSE)
     }
 
     # The code so nice I used it twice
@@ -221,14 +217,9 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
 
       # Boyce is noyce
       # Testing to see whether models are presence only or presence/background
-      recalibrated.metrics[[i]][["continuous.boyce"]] <- NA
-      if("presence" %in% colnames(model$analysis.df)){
-        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat::ecospat.boyce(calibrated.suitabilities[[i]],
-                                                                                   model$test.data, PEplot = FALSE)
-      } else {
-        recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat::ecospat.boyce(calibrated.suitabilities[[i]],
-                                                                                   model$test.data, PEplot = FALSE)
-      }
+      recalibrated.metrics[[i]][["continuous.boyce"]]  <- ecospat::ecospat.boyce(as.numeric(terra::values(calibrated.suitabilities[[i]], na.rm = TRUE)),
+                                                                                 unlist(terra::extract(model$suitability, model$test.data, ID = FALSE)),
+                                                                                 PEplot = FALSE)
     }
   }
 
@@ -431,11 +422,13 @@ plot.enmtools.calibrate <- function(x, ...){
 class.plot <- function(pred, obs, name, cuts){
   temp.df <- data.frame(pred = pred,
                         obs = obs)
-  return(qplot(pred, facets = obs ~ ., data = temp.df,
-               alpha = 0.5, ylab = "Count", xlab = "Predicted",
-               bins = cuts, fill = obs, color = obs, main = name) +
+
+  return(ggplot(data = temp.df, aes(x = .data$pred, facets = .data$obs, alpha = 0.5,
+                                    fill = .data$obs, color = .data$obs)) +
+           geom_histogram(bins = cuts) + ylab("Count") + xlab("Predicted") + ggtitle(name) +
            theme_minimal() + theme(legend.position = "none", plot.title = element_text(hjust = 0.5)) +
            scale_x_continuous(limits = c(0, 1), oob = function(x, limits) x))
+
 }
 
 # Function to make calibration plots
@@ -447,9 +440,11 @@ calib.plot <- function(pred, obs, name, cuts){
   this.calib <- caret::calibration(obs ~ pred, data = temp.df, class = "presence", cuts = cuts)
   this.calib$data <- this.calib$data[complete.cases(this.calib$data),]
 
-  return(qplot(this.calib$data$midpoint, this.calib$data$Percent,
-               geom = c("line", "point"), xlim = c(0, 100), ylim = c(0, 100),
-               xlab = "Predicted", ylab = "Observed", main = name) +
+
+  return(ggplot(data = this.calib$data, aes(x = .data$midpoint, y = .data$Percent)) +
+           geom_line() + geom_point() + xlim(0, 100) + ylim(0, 100) +
+           xlab("Predicted") + ylab("Observed") + ggtitle(name) +
            geom_abline(intercept = 0, slope = 1, linetype = 3) +
            theme_minimal() + theme(legend.position = "none", plot.title = element_text(hjust = 0.5)))
+
 }

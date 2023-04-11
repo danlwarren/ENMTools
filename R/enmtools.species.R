@@ -105,11 +105,11 @@ plot.enmtools.species <- function(x, ...){
     terra::plot(x$range, col = "orange")
   }
 
-  if(class(x$background.points)  %in% c("SpatVector")){
+  if(inherits(x$background.points, "SpatVector")){
     points(terra::crds(x$background.points)[,1:2], pch = 4, col = "red")
   }
 
-  if(class(x$presence.points,"SpatVector")){
+  if(inherits(x$presence.points,"SpatVector")){
     points(terra::crds(x$presence.points)[,1:2], pch = 16, col = "black")
   }
 
@@ -123,5 +123,22 @@ print.enmtools.species <- function(x, ...){
 
   summary(x)
 
+}
+
+#' @describeIn enmtools.species Save an ENMTools species object
+#' @param x An enmtools.species object to be saved
+#' @param ... Other arguments passed to R's save function (eg., filename)
+save.enmtools.species <- function(x, ...){
+  x <- rapply(x, terra::wrap, classes = c("SpatVector", "SpatRaster"), how = "replace")
+  save(x, ...)
+}
+
+#' @describeIn enmtools.species Load an ENMTools species object
+#' @param x Path to an enmtools.species file
+#' @param ... Other arguments passed to R's load function
+load.enmtools.species <- function(x, ...) {
+  load(x, ...)
+  x <- rapply(x, terra::unwrap, classes = c("PackedSpatVector", "PackedSpatRaster"), how = "replace")
+  return(x)
 }
 

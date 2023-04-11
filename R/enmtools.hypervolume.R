@@ -1,4 +1,4 @@
-#' Takes an emtools.species object and environmental layers, and constructs a hypervolume using the R package hypervolume
+#' THIS FUNCTION IS CURRENTLY DISABLED.  Takes an emtools.species object and environmental layers, and constructs a hypervolume using the R package hypervolume
 #'
 #' @param species An enmtools.species object
 #' @param env A stack of environmental rasters
@@ -13,7 +13,7 @@
 #'
 #' @examples
 #' \donttest{
-#' install.extras(repos='http://cran.us.r-project.org')
+#' #install.extras(repos='http://cran.us.r-project.org')
 #' env <- euro.worldclim[[c(1,8,12,17)]]
 #' if(requireNamespace("hypervolume", quietly = TRUE)) {
 #'     monticola.hv <- enmtools.hypervolume(iberolacerta.clade$species$monticola, env = env)
@@ -22,7 +22,9 @@
 
 enmtools.hypervolume <- function(species, env, samples.per.point = 10, reduction.factor = 0.1, method = "gaussian",  verbose = FALSE, clamp = TRUE, ...){
 
-  check.packages("hypervolume")
+  return("This function is currently disabled, will be re-enabled once hypervolume on CRAN is working with the terra package.")
+
+  assert.extras.this.fun()
 
   hypervolume.precheck(species, env)
 

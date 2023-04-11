@@ -26,9 +26,11 @@
 
 enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, ...){
 
-  check.packages("randomForest")
+  assert.extras.this.fun()
 
   notes <- NULL
+
+  env <- check.raster(env, "env")
 
   species <- check.bg(species, env, nback = nback,  bg.source = bg.source, verbose = verbose, bias = bias)
 
@@ -65,7 +67,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
       } else if(corner < 1 | corner > 4){
         stop("corner should be an integer from 1 to 4!")
       }
-      test.inds <- get.block(species$presence.points, species$background.points)
+      test.inds <- get.block(terra::crds(species$presence.points), terra::crds(species$background.points))
       test.bg.inds <- which(test.inds$bg.grp == corner)
       test.inds <- which(test.inds$occs.grp == corner)
       test.data <- species$presence.points[test.inds,]
@@ -86,7 +88,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
 
   this.rf <- randomForest::randomForest(f, analysis.df[,-c(1,2)], ...)
 
-  suitability <- predict(env, this.rf, type = "response")
+  suitability <- terra::predict(env, this.rf, type = "response", na.rm = TRUE)
 
   # Clamping and getting a diff layer
   clamping.strength <- NA
@@ -108,8 +110,8 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
       notes <- c(notes, "Only one predictor was provided, so a dummy variable was created in order to be compatible with dismo's prediction function.")
     }
 
-    model.evaluation <-dismo::evaluate(species$presence.points[,1:2], species$background.points[,1:2],
-                                 this.rf, env)
+    model.evaluation <-dismo::evaluate(species$presence.points, species$background.points,
+                                 this.rf, env, na.rm = TRUE)
     env.model.evaluation <- env.evaluate(species, this.rf, env, n.background = env.nback)
 
     # Test eval for randomly withheld data
@@ -117,8 +119,8 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
       if(test.prop > 0 & test.prop < 1){
         test.check <- terra::extract(env, test.data, ID = FALSE)
         test.data <- test.data[complete.cases(test.check),]
-        test.evaluation <-dismo::evaluate(test.data, species$background.points[,1:2],
-                                          this.rf, env)
+        test.evaluation <-dismo::evaluate(test.data, species$background.points,
+                                          this.rf, env, na.rm = TRUE)
         temp.sp <- species
         temp.sp$presence.points <- test.data
         env.test.evaluation <- env.evaluate(temp.sp, this.rf, env, n.background = env.nback)
@@ -131,7 +133,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
         test.check <- terra::extract(env, test.data, ID = FALSE)
         test.data <- test.data[complete.cases(test.check),]
         test.evaluation <-dismo::evaluate(test.data, test.bg,
-                                          this.rf, env)
+                                          this.rf, env, na.rm = TRUE)
         temp.sp <- species
         temp.sp$presence.points <- test.data
         temp.sp$background.points <- test.bg
@@ -205,7 +207,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
         suppressWarnings(thisrep.rf <- randomForest::randomForest(f, rts.df[,-c(1,2)], ...))
 
         thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points, species$background.points,
-                                                   thisrep.rf, env)
+                                                   thisrep.rf, env, na.rm = TRUE)
         thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.rf, env, n.background = env.nback)
 
         rts.geog.training[i] <- thisrep.model.evaluation@auc
@@ -213,7 +215,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
 
         if(test.prop > 0 & test.prop < 1){
           thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points,
-                                                    thisrep.rf, env)
+                                                    thisrep.rf, env, na.rm = TRUE)
           temp.sp <- rep.species
           temp.sp$presence.points <- terra::vect(rep.test.data, geom=c("x", "y"), crs = terra::crs(species$presence.points))
           thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.rf, env, n.background = env.nback)
@@ -248,31 +250,40 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
         rts.env.test.pvalue <- NA
       }
 
+      rts.geog.training <- data.frame(AUC = rts.geog.training)
+      rts.env.training <- data.frame(AUC = rts.env.training)
+      rts.geog.test <- data.frame(AUC = rts.geog.test)
+      rts.env.test <- data.frame(AUC = rts.env.test)
+
       # Making plots
-      training.plot <- qplot(rts.geog.training, geom = "histogram", fill = "density", alpha = 0.5) +
+      training.plot <- ggplot(rts.geog.training, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
+        geom_histogram(binwidth = 0.05) +
         geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
-        xlim(0,1) + guides(fill = "none", alpha = "none") + xlab("AUC") +
+        xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
         ggtitle(paste("Model performance in geographic space on training data")) +
         theme(plot.title = element_text(hjust = 0.5))
 
-      env.training.plot <- qplot(rts.env.training, geom = "histogram", fill = "density", alpha = 0.5) +
-        geom_vline(xintercept = env.model.evaluation@auc, linetype = "longdash") +
-        xlim(0,1) + guides(fill = "none", alpha = "none") + xlab("AUC") +
-        ggtitle(paste("Model performance in environmental space on training data")) +
+      env.training.plot <- ggplot(rts.env.training, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
+        geom_histogram(binwidth = 0.05) +
+        geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
+        xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
+        ggtitle(paste("Model performance in environment space on training data")) +
         theme(plot.title = element_text(hjust = 0.5))
 
       # Make plots for test AUC distributions
       if(test.prop > 0){
-        test.plot <- qplot(rts.geog.test, geom = "histogram", fill = "density", alpha = 0.5) +
-          geom_vline(xintercept = test.evaluation@auc, linetype = "longdash") +
-          xlim(0,1) + guides(fill = "none", alpha = "none") + xlab("AUC") +
+        test.plot <- ggplot(rts.geog.test, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
+          geom_histogram(binwidth = 0.05) +
+          geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
+          xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
           ggtitle(paste("Model performance in geographic space on test data")) +
           theme(plot.title = element_text(hjust = 0.5))
 
-        env.test.plot <- qplot(rts.env.test, geom = "histogram", fill = "density", alpha = 0.5) +
-          geom_vline(xintercept = env.test.evaluation@auc, linetype = "longdash") +
-          xlim(0,1) + guides(fill = "none", alpha = "none") + xlab("AUC") +
-          ggtitle(paste("Model performance in environmental space on test data")) +
+        env.test.plot <- ggplot(rts.env.test, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
+          geom_histogram(binwidth = 0.05) +
+          geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
+          xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
+          ggtitle(paste("Model performance in environment space on test data")) +
           theme(plot.title = element_text(hjust = 0.5))
       } else {
         test.plot <- NA

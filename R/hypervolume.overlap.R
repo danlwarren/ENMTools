@@ -10,7 +10,7 @@
 #'
 #' @examples
 #' \donttest{
-#' install.extras(repos='http://cran.us.r-project.org')
+#' #install.extras(repos='http://cran.us.r-project.org')
 #' mont <- iberolacerta.clade$species$monticola
 #' cyr <- iberolacerta.clade$species$cyreni
 #' env <- euro.worldclim[[c(1,8,12,17)]]
@@ -21,7 +21,9 @@
 
 hypervolume.overlap <- function(species.1, species.2, env = NA, reduction.factor = 0.1, ...){
 
-  check.packages("hypervolume")
+  return("This function is currently disabled, will be re-enabled once hypervolume on CRAN is working with the terra package.")
+
+  assert.extras.this.fun()
 
   # Turn species into hypervolumes, if they're not already
   if(inherits(species.1, "enmtools.species")){

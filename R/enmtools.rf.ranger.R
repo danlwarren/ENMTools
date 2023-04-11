@@ -28,6 +28,8 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
 
   notes <- NULL
 
+  env <- check.raster(env, "env")
+
   species <- check.bg(species, env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias)
 
   # Builds a default formula using all env
@@ -63,7 +65,7 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
       } else if(corner < 1 | corner > 4){
         stop("corner should be an integer from 1 to 4!")
       }
-      test.inds <- get.block(species$presence.points, species$background.points)
+      test.inds <- get.block(terra::crds(species$presence.points), terra::crds(species$background.points))
       test.bg.inds <- which(test.inds$bg.grp == corner)
       test.inds <- which(test.inds$occ.grp == corner)
       test.data <- species$presence.points[test.inds,]
@@ -122,7 +124,7 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
         test.data <- test.data[complete.cases(test.check),]
 
         test.evaluation <- dismo::evaluate(predict(this.rf, data = terra::extract(env, test.data, ID = FALSE))$predictions[ , 2, drop = TRUE],
-                                           predict(this.rf, data = terra::extract(env, species$background.points[,1:2], ID = FALSE))$predictions[ , 2, drop = TRUE])
+                                           predict(this.rf, data = terra::extract(env, species$background.points, ID = FALSE))$predictions[ , 2, drop = TRUE])
         temp.sp <- species
         temp.sp$presence.points <- test.data
         env.test.evaluation <- env.evaluate(temp.sp, this.rf, env, n.background = env.nback)
@@ -134,6 +136,8 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
       if(test.prop == "block"){
         test.check <- terra::extract(env, test.data, ID = FALSE)
         test.data <- test.data[complete.cases(test.check),]
+        test.check <- terra::extract(env, test.bg, ID = FALSE)
+        test.bg <- test.bg[complete.cases(test.check),]
         test.evaluation <- dismo::evaluate(predict(this.rf, data = terra::extract(env, test.data, ID = FALSE))$predictions[ , 2, drop = TRUE],
                                            predict(this.rf, data = terra::extract(env, test.bg, ID = FALSE))$predictions[ , 2, drop = TRUE])
         temp.sp <- species
@@ -206,6 +210,7 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
         rts.df <- make_analysis.df(rep.species)
         rts.df$presence <- as.factor(rts.df$presence)
 
+        rts.df <- rts.df[complete.cases(rts.df), ]
         thisrep.rf <- ranger::ranger(f, rts.df[,-c(1,2)], probability = TRUE, ...)
 
         thisrep.model.evaluation <- dismo::evaluate(predict(thisrep.rf, data = rts.df[rts.df$presence == 1, ])$predictions[ , 2, drop = TRUE],
@@ -221,6 +226,7 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
           temp.sp <- add.env(temp.sp, env, verbose = verbose)
           rep.test.data2 <- make_analysis.df(temp.sp)
           rep.test.data2$presence <- as.factor(rep.test.data2$presence)
+          rep.test.data2 <- rep.test.data2[complete.cases(rep.test.data2), ]
           thisrep.test.evaluation <-dismo::evaluate(predict(thisrep.rf, data = rep.test.data2)$predictions[ , 2, drop = TRUE],
                                                     predict(thisrep.rf, data = rts.df[rts.df$presence == 0, ])$predictions[ , 2, drop = TRUE])
 
@@ -256,31 +262,40 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
         rts.env.test.pvalue <- NA
       }
 
+      rts.geog.training <- data.frame(AUC = rts.geog.training)
+      rts.env.training <- data.frame(AUC = rts.env.training)
+      rts.geog.test <- data.frame(AUC = rts.geog.test)
+      rts.env.test <- data.frame(AUC = rts.env.test)
+
       # Making plots
-      training.plot <- qplot(rts.geog.training, geom = "histogram", fill = "density", alpha = 0.5) +
+      training.plot <- ggplot(rts.geog.training, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
+        geom_histogram(binwidth = 0.05) +
         geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
-        xlim(0,1) + guides(fill = "none", alpha = "none") + xlab("AUC") +
+        xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
         ggtitle(paste("Model performance in geographic space on training data")) +
         theme(plot.title = element_text(hjust = 0.5))
 
-      env.training.plot <- qplot(rts.env.training, geom = "histogram", fill = "density", alpha = 0.5) +
-        geom_vline(xintercept = env.model.evaluation@auc, linetype = "longdash") +
-        xlim(0,1) + guides(fill = "none", alpha = "none") + xlab("AUC") +
-        ggtitle(paste("Model performance in environmental space on training data")) +
+      env.training.plot <- ggplot(rts.env.training, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
+        geom_histogram(binwidth = 0.05) +
+        geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
+        xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
+        ggtitle(paste("Model performance in environment space on training data")) +
         theme(plot.title = element_text(hjust = 0.5))
 
       # Make plots for test AUC distributions
       if(test.prop > 0){
-        test.plot <- qplot(rts.geog.test, geom = "histogram", fill = "density", alpha = 0.5) +
-          geom_vline(xintercept = test.evaluation@auc, linetype = "longdash") +
-          xlim(0,1) + guides(fill = "none", alpha = "none") + xlab("AUC") +
+        test.plot <- ggplot(rts.geog.test, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
+          geom_histogram(binwidth = 0.05) +
+          geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
+          xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
           ggtitle(paste("Model performance in geographic space on test data")) +
           theme(plot.title = element_text(hjust = 0.5))
 
-        env.test.plot <- qplot(rts.env.test, geom = "histogram", fill = "density", alpha = 0.5) +
-          geom_vline(xintercept = env.test.evaluation@auc, linetype = "longdash") +
-          xlim(0,1) + guides(fill = "none", alpha = "none") + xlab("AUC") +
-          ggtitle(paste("Model performance in environmental space on test data")) +
+        env.test.plot <- ggplot(rts.env.test, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
+          geom_histogram(binwidth = 0.05) +
+          geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
+          xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
+          ggtitle(paste("Model performance in environment space on test data")) +
           theme(plot.title = element_text(hjust = 0.5))
       } else {
         test.plot <- NA
@@ -440,13 +455,13 @@ predict.enmtools.rf.ranger <- function(object, env, maxpts = 1000, clamp = TRUE,
   }
 
   # Make a plot of habitat suitability in the new region
-  suitability <- terra::predict(env, object$model, fun = pfun, type = "response")
+  suitability <- terra::predict(env, object$model, fun = pfun, type = "response", na.rm = TRUE)
 
   # Clamping and getting a diff layer
   clamping.strength <- NA
   if(clamp == TRUE){
     env <- clamp.env(object$analysis.df, env)
-    clamped.suitability <- terra::predict(env, object$model, fun = pfun, type = "response")
+    clamped.suitability <- terra::predict(env, object$model, fun = pfun, type = "response", na.rm = TRUE)
     clamping.strength <- clamped.suitability - suitability
     suitability <- clamped.suitability
   }

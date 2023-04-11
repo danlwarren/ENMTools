@@ -1,6 +1,24 @@
 ENMTools 1.x
 ============
 
+
+ENMTools 1.1.1
+--------------
+
+### Bug Fixes
+
+- Updated Readme file
+- Fixes to new maxent interface
+
+
+ENMTools 1.1.0
+--------------
+
+### New features
+
+- Updated the entire package to use terra instead of raster
+- Numerous other bug fixes and behind-the-scenes improvements
+
 ENMTools 1.0.7
 --------------
 

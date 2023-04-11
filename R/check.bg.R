@@ -23,7 +23,9 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
     with.bias <- TRUE
   }
 
-
+  if(!is.logical(env) || !is.na(env)) {
+    env <- check.raster(env, "env")
+  }
 
   if(bg.source %in% c("points", "range", "env")){
 
@@ -81,7 +83,7 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
       # Drawing background points from range raster
       species$background.points <- terra::spatSample(species$range,
                                                      size = min(length(terra::cells(species$range)), nback), replace = TRUE,
-                                                     as.points = TRUE, na.rm = TRUE)
+                                                     as.points = TRUE, na.rm = TRUE, values = FALSE)
       # Becase terra doesn't actually sample with replacement
       if(nrow(species$background.points) < nback){
         species$background.points <- sample(species$background.points, nback, replace = TRUE)
@@ -105,7 +107,8 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
       species$background.points <- terra::spatSample(sample.raster,
                                                      size = min(length(terra::cells(sample.raster)), nback), replace = TRUE,
                                                      method = "weights", as.points = TRUE,
-                                                     na.rm = TRUE)
+                                                     na.rm = TRUE,
+                                                     values = FALSE)
       # Becase terra doesn't actually sample with replacement
       if(nrow(species$background.points) < nback){
         species$background.points <- sample(species$background.points, nback, replace = TRUE)
@@ -125,7 +128,7 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
       # Drawing background points from env raster
       species$background.points <- terra::spatSample(env,
                                                      size = min(length(terra::cells(env)), nback), replace = TRUE,
-                                                     as.points = TRUE, na.rm = TRUE)
+                                                     as.points = TRUE, na.rm = TRUE, values = FALSE)
       # Becase terra doesn't actually sample with replacement
       if(nrow(species$background.points) < nback){
         species$background.points <- sample(species$background.points, nback, replace = TRUE)
@@ -149,7 +152,7 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
       species$background.points <- terra::spatSample(sample.raster,
                                                      size = min(length(terra::cells(sample.raster)), nback), replace = TRUE,
                                                      method = "weights", as.points = TRUE,
-                                                     na.rm = TRUE)
+                                                     na.rm = TRUE, values = FALSE)
       # Becase terra doesn't actually sample with replacement
       if(nrow(species$background.points) < nback){
         species$background.points <- sample(species$background.points, nback, replace = TRUE)
