@@ -1,18 +1,22 @@
 ---
-title: "Template Title"
-author: "Your Name"
-date: "The Date"
-output: output_format
+output: html_notebook
+params: 
+    x: NA
+    title: "ENMTools species report"
+    author: "Author name"
+    date: "Date"
+title: "`r params$title`"
+author: "`r params$author`"
+date: "`r params$date`"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Adding an RMarkdown Template
+# ENMTools species report
 
-This file is what a user will see when they select your template. Make sure that you update the fields in the yaml header. In particular you will want to update the `output` field to whatever format your template requires.
+```{r}
+print("test")
+```
 
-This is a good place to demonstrate special features that your template provides. Ideally it should knit out-of-the-box, or at least contain clear instructions as to what needs changing.
-
-Finally, be sure to remove this message!
