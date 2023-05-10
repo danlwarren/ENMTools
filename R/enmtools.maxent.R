@@ -18,7 +18,7 @@
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
 #'
 #' @examples
-#' if(requireNamespace("rJava", quietly = TRUE)) {
+#' if(check.extras("enmtools.maxent")) {
 #'     ## maxent is not working on some platforms so use try()
 #'     try(enmtools.maxent(iberolacerta.clade$species$monticola, env = euro.worldclim))
 #' }
@@ -26,9 +26,11 @@
 
 enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0,  bg.source = "default", verbose = FALSE, clamp = TRUE,  corner = NA, bias = NA, ...){
 
-  check.packages("rJava")
+  assert.extras.this.fun()
 
   notes <- NULL
+
+  env <- check.raster(env, "env")
 
   species <- check.bg(species, env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias)
 
@@ -79,10 +81,10 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
   }
 
   if(verbose){
-    this.mx <- dismo::maxent(env, p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)
+    this.mx <- dismo::maxent(raster::stack(env), p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)
     suitability <- terra::predict(env, this.mx, type = "response", na.rm = TRUE, ...)
   } else {
-    invisible(capture.output(this.mx <- dismo::maxent(env, p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)))
+    invisible(capture.output(this.mx <- dismo::maxent(raster::stack(env), p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)))
     invisible(capture.output(suitability <- terra::predict(env, this.mx, type = "response", na.rm = TRUE, ...)))
   }
 
@@ -220,12 +222,12 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
 
       # We have to do this to capture the "this is maxent version XXX message".
       if(verbose){
-        thisrep.mx <- dismo::maxent(env, p = rts.df[rts.df$presence == 1,1:2], a = rts.df[rts.df$presence == 0,1:2], ...)
+        thisrep.mx <- dismo::maxent(raster::stack(env), p = rts.df[rts.df$presence == 1,1:2], a = rts.df[rts.df$presence == 0,1:2], ...)
         thisrep.model.evaluation <- dismo::evaluate(rep.species$presence.points, species$background.points,
                                                    thisrep.mx, env, na.rm = TRUE)
         thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.mx, env, n.background = env.nback)
       } else {
-        invisible(capture.output(thisrep.mx <- dismo::maxent(env, p = rts.df[rts.df$presence == 1,1:2], a = rts.df[rts.df$presence == 0,1:2], ...)))
+        invisible(capture.output(thisrep.mx <- dismo::maxent(raster::stack(env), p = rts.df[rts.df$presence == 1,1:2], a = rts.df[rts.df$presence == 0,1:2], ...)))
         invisible(capture.output(thisrep.model.evaluation <- dismo::evaluate(rep.species$presence.points, species$background.points,
                                                    thisrep.mx, env, na.rm = TRUE)))
         invisible(capture.output(thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.mx, env, n.background = env.nback)))

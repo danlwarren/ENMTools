@@ -11,16 +11,18 @@
 #'
 #' @examples
 #' \donttest{
-#' install.extras(repos='http://cran.us.r-project.org')
+#' #install.extras(repos='http://cran.us.r-project.org')
 #' monticola.glm <- enmtools.glm(iberolacerta.clade$species$monticola,
 #'                               env = euro.worldclim,
 #'                               test.prop = 0.3)
-#' enmtools.vip(monticola.glm)
+#' if(check.extras("enmtools.vip")) {
+#'   enmtools.vip(monticola.glm)
+#' }
 #' }
 
 enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", verbose = FALSE, ...){
 
-  check.packages(c("vip", "pdp", "fastshap", "reshape2", "viridis"))
+  assert.extras.this.fun()
 
   output <- list()
 

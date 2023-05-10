@@ -40,7 +40,7 @@ THIS FUNCTION IS CURRENTLY DISABLED.  Takes an emtools.species object and enviro
 }
 \examples{
 \donttest{
-install.extras(repos='http://cran.us.r-project.org')
+#install.extras(repos='http://cran.us.r-project.org')
 env <- euro.worldclim[[c(1,8,12,17)]]
 if(requireNamespace("hypervolume", quietly = TRUE)) {
     monticola.hv <- enmtools.hypervolume(iberolacerta.clade$species$monticola, env = env)
