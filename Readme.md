@@ -1,4 +1,4 @@
-# ENMTools
+# ENMTools <img src="man/figures/logo.png" align="right" height="276" />
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/danlwarren/ENMTools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/danlwarren/ENMTools/actions/workflows/R-CMD-check.yaml)
