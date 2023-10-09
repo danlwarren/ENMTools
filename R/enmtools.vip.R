@@ -153,7 +153,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
 
     output[["permute.plot"]] <- ggplot(plotdf,
                                        aes_string(x = "Importance",
-                                                  fill = "..x..")) +
+                                                  fill = after_stat("..x.."))) +
       geom_histogram(bins = 20) +
       theme_bw() +
       geom_hline(yintercept = 0, color = "grey") +
