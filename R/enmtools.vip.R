@@ -20,7 +20,7 @@
 #' }
 #' }
 
-enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", verbose = FALSE, ...){
+enmtools.vip <- function(model, metric = "roc_auc", nsim = 10, method = "permute", verbose = FALSE, ...){
 
   assert.extras.this.fun()
 
@@ -38,7 +38,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
     train <- model$analysis.df[,-c(1,2)]
     target <- "presence"
     pred_wrapper <- predict
-    reference_class <- "1"
+    train$presence <- as.factor(train$presence)
   }
 
   if(inherits(model, "enmtools.gam")){
@@ -47,7 +47,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
     train <- model$analysis.df[,-c(1,2)]
     target <- "presence"
     pred_wrapper <- predict
-    reference_class <- "1"
+    train$presence <- as.factor(train$presence)
   }
 
   if(inherits(model, "enmtools.rf")){
@@ -56,7 +56,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
     train <- model$analysis.df[,-c(1,2)]
     target <- "presence"
     pred_wrapper <- predict
-    reference_class <- "1"
+    train$presence <- as.factor(train$presence)
   }
 
   if(inherits(model, "enmtools.rf.ranger")){
@@ -66,7 +66,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
     train <- model$analysis.df[,-c(1,2)]
     target <- "presence"
     pred_wrapper <- function(object, newdata) predict(object, data = newdata, type = "response")$predictions
-    reference_class <- "1"
+    train$presence <- as.factor(train$presence)
   }
 
   if(inherits(model, "enmtools.maxent")){
@@ -77,8 +77,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
                         rep(0, nrow(attr(thismodel, "absence"))))
     target <- "presence"
     pred_wrapper <- function(object, newdata) predict(object, newdata)
-
-    reference_class <- "1"
+    train$presence <- as.factor(train$presence)
   }
 
   if(inherits(model, "enmtools.ppmlasso")){
@@ -88,7 +87,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
     train <- model$analysis.df[,c(feature_names, "presence")]
     target <- "presence"
     pred_wrapper <- function(object, newdata) predict(object, newdata = newdata, type = "response")
-    reference_class <- "1"
+    train$presence <- as.factor(train$presence)
   }
 
   if("model" %in% method){
@@ -134,7 +133,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
                                            target = target,
                                            metric = metric,
                                            pred_wrapper = pred_wrapper,
-                                           reference_class = "1",
+                                           event_level = "second",
                                            nsim = nsim,
                                            keep = TRUE)))
     } else {
@@ -144,7 +143,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
                                              target = target,
                                              metric = metric,
                                              pred_wrapper = pred_wrapper,
-                                             reference_class = "1",
+                                             event_level = "second",
                                              nsim = nsim,
                                              keep = TRUE)
     }

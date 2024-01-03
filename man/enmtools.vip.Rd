@@ -6,7 +6,7 @@
 \usage{
 enmtools.vip(
   model,
-  metric = "auc",
+  metric = "roc_auc",
   nsim = 10,
   method = "permute",
   verbose = FALSE,

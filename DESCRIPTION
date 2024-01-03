@@ -17,7 +17,6 @@ Imports:
     lhs,
     magrittr,
     ENMeval,
-    sp,
     spatstat.geom,
     spatstat.random,
     ggpubr,
@@ -45,5 +44,6 @@ Suggests:
     fastshap,
     viridis,
     progress,
-    rmarkdown
+    rmarkdown,
+    sf
 Config/testthat/edition: 3

@@ -63,7 +63,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
     pred2.recal <- NA
 
     # Draw a starting latin hypercube scheme
-    this.lhs <- randomLHS(chunk.size, length(names(env)))
+    this.lhs <- lhs::randomLHS(chunk.size, length(names(env)))
 
     # Setting it up so we can handle either a set of rasters or a list of minima and maxima
     if(inherits(env, c("SpatRaster"))){
@@ -219,7 +219,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
       # print(max(gens))
 
       # Add chunk.size rows to the LHS and build a new predict table
-      this.lhs <- randomLHS(chunk.size, length(names(env)))
+      this.lhs <- lhs::randomLHS(chunk.size, length(names(env)))
       predict.table <- t(t(this.lhs) * (maxes  - mins) + mins)
       colnames(predict.table) <- names(env)
 
