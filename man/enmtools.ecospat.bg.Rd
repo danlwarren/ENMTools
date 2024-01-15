@@ -10,7 +10,7 @@ enmtools.ecospat.bg(
   env,
   nreps = 99,
   layers = NULL,
-  test.type = "asymmetric",
+  test.type = "symmetric",
   th.sp = 0,
   th.env = 0,
   R = 100,
