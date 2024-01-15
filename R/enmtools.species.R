@@ -25,9 +25,14 @@ enmtools.species <- function(range = NA, presence.points = NA, background.points
     }
   }
 
+  # We were thinking to require this to be done by hand, but it can still
+  # be super convenient to do this on the fly when species.from.file is called
+  if(inherits(presence.points, "data.frame")){
+    presence.points <- check.points(presence.points)
+  }
 
   if(!inherits(presence.points, "SpatVector")){
-    if(!is.na(presence.points)){
+    if(!all(is.na(presence.points))){
       stop("Argument presence.points requires an object of class SpatVector")
     }
   }
