@@ -25,5 +25,12 @@ raster.standardize <- function(x, verbose=FALSE){
     print(paste("Starting standardize on", x, "at", Sys.time()))
   }
 
+  minval <- terra::minmax(x)[1]
+
+  if(minval < 0){
+    x <- x - minval + 1e-20
+  }
+
+
   return(x/as.numeric(terra::global(x, "sum", na.rm = TRUE)))
 }
