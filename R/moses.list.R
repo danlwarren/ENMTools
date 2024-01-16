@@ -34,8 +34,8 @@ moses.list <- function(species.list, env, f = NULL, eval = FALSE, nback = 1000, 
   names(separate.glms) <- lapply(species.list, function(x) x$species.name)
   separate.aic <- sum(unlist(lapply(separate.glms, function(x) x$model$aic)))
 
-  combined.species <- enmtools.species(presence.points = as.data.frame(do.call("rbind", lapply(species.list, function(x) rbind(x$presence.points)))),
-                                       background.points = as.data.frame(do.call("rbind", lapply(species.list, function(x) rbind(x$background.points)))),
+  combined.species <- enmtools.species(presence.points = terra::vect(lapply(species.list, function(x) rbind(x$presence.points))),
+                                       background.points = terra::vect(lapply(species.list, function(x) rbind(x$background.points))),
                                        species.name = "combined")
   combined.glm <- enmtools.glm(combined.species, env, f, eval, verbose = verbose, step = step, ...)
   combined.aic <- combined.glm$model$aic

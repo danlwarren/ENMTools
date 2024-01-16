@@ -92,7 +92,7 @@ check.species <- function(this.species, env = NA, trim.dupes = FALSE){
 }
 
 
-format.latlon <- function(latlon){
+reformat.latlon <- function(latlon){
 
   # Basically this bit just tries to auto-identify the lat and lon columns, then returns a
   # reformatted data frame with col names "x" and "y"
