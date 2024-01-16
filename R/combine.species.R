@@ -36,7 +36,7 @@ combine.species <- function(species.list){
     warning("Not all species ranges were of class SpatRaster, setting range raster to NA")
   }
 
-  combined$species.name <- paste(combined$species.name, species.list[[i]][["species.name"]], sep = " + ")
+  combined$species.name <- paste(lapply(species.list, function(x) x$species.name), collapse = " + ")
 
   return(combined)
 }
