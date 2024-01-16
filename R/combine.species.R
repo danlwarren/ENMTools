@@ -11,30 +11,32 @@
 combine.species <- function(species.list){
   combined <- species.list[[1]]
 
-  # Add data from other species
-  for(i in 2:length(species.list)){
-
-    if(is.data.frame(combined$presence.points) & is.data.frame(species.list[[i]]$presence.points)){
-      combined$presence.points <- rbind(combined$presence.points, species.list[[i]][["presence.points"]])
-    }
-
-    if(is.data.frame(combined$background.points) & is.data.frame(species.list[[i]]$background.points)){
-      combined$background.points <- rbind(combined$background.points, species.list[[i]][["background.points"]])
-    }
-
-    if(!inherits(combined$range, "Raster") | !inherits(species.list[[i]]$range, "Raster")){
-      combined$range <- NA
-    } else if(inherits(combined$range, "RasterLayer") & inherits(species.list[[i]]$range, "RasterLayer")){
-      combined$range <-  terra::merge(combined$range, species.list[[i]][["range"]])
-    } else if(is.data.frame(combined$range) & is.data.frame(species.list[[i]]$range)){
-      combined$range <- species.list[[i]]$range
-    } else {
-      stop(paste("Inconsistent data types for species ranges:\n",
-                 class(combined$range), "\n",
-                 class(species.list[[i]]$range)))
-    }
-    combined$species.name <- paste(combined$species.name, species.list[[i]][["species.name"]], sep = " + ")
+  # Check to see that all species have SpatVector presence points, combine if so
+  if(all(unlist(lapply(species.list, function(x) inherits(x$presence.points, "SpatVector"))))){
+    combined$presence.points <- terra::vect(lapply(species.list, function(x) rbind(x$presence.points)))
+  } else {
+    combined$presence.points <- NA
+    warning("Not all species presence points were of class SpatVector, setting presence points to NA")
   }
+
+  if(all(unlist(lapply(species.list, function(x) inherits(x$background, "SpatVector"))))){
+    combined$background.points = terra::vect(lapply(species.list, function(x) rbind(x$background.points)))
+  } else {
+    combined$background.points <- NA
+    warning("Not all species background points were of class SpatVector, setting background points to NA")
+  }
+
+  if(all(unlist(lapply(species.list, function(x) inherits(x$range, "SpatRaster"))))){
+    # Add data from other species - first species should already be in "combined"
+    for(i in 2:length(species.list)){
+      combined$range <-  terra::merge(combined$range, species.list[[i]][["range"]])
+    }
+  } else {
+    combined$range <- NA
+    warning("Not all species ranges were of class SpatRaster, setting range raster to NA")
+  }
+
+  combined$species.name <- paste(combined$species.name, species.list[[i]][["species.name"]], sep = " + ")
 
   return(combined)
 }
