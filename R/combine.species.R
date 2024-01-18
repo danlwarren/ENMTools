@@ -9,6 +9,11 @@
 
 
 combine.species <- function(species.list){
+
+  if(length(species.list) == 1){
+    return(species.list[[1]])
+  }
+
   combined <- species.list[[1]]
 
   # Check to see that all species have SpatVector presence points, combine if so
