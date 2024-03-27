@@ -6,7 +6,7 @@
 #' @param layers A vector of layer names to use for drawing environment space
 #' @param plot.points Logical determining whether presence points should be plotted on suitability plot
 #' @param plot.test.data Logical determining whether test data should be plotted, if present.  If test data is plotted, it will appear as translucent green triangles.
-#' @param minmax A named list of minima and maxima for each axis, in case the user wants to constrain or expand the space over which models are plotted.
+#' @param minmax Either "env", to set the minima and maxima using the environment layers, "points" to set the minima and maxima using the presence and background data, or a named list of minima and maxima for each layer.
 #'
 #' @return suit.plot A list containing two dimensional plot of an ENM in environment space and a plot of the available environments.
 #'
@@ -17,7 +17,7 @@
 #' f = pres ~ poly(bio1, 4) + poly(bio12, 4))
 #' visualize.enm(aurelioi.glm, euro.worldclim, layers = c("bio1", "bio12"))
 
-visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plot.test.data = FALSE, plot.points = TRUE, minmax = NA){
+visualize.enm <- function(model, env, nbins = 100, layers = colnames(model$analysis.df)[1:2], plot.test.data = FALSE, plot.points = TRUE, minmax = "env"){
 
   if(!inherits(model, "enmtools.model")){
     stop("This function requires an enmtools.model object!")
@@ -38,20 +38,37 @@ visualize.enm <- function(model, env, nbins = 100, layers = names(env)[1:2], plo
     points <- model$analysis.df[model$analysis.df$presence == 1,1:2]
   }
 
-  # Setting it up so we can handle either a set of rasters or a list of minima and maxima
+  # Getting min and max for each env layer
+  if(match.arg(minmax, "env")){
 
-  layer1.min <- min(terra::values(env[[layers[1]]]), na.rm=TRUE)
-  layer2.min <- min(terra::values(env[[layers[2]]]), na.rm=TRUE)
-  layer1.max <- max(terra::values(env[[layers[1]]]), na.rm=TRUE)
-  layer2.max <- max(terra::values(env[[layers[2]]]), na.rm=TRUE)
+    # Getting values from rasters
+    layer1.min <- min(terra::values(env[[layers[1]]]), na.rm=TRUE)
+    layer2.min <- min(terra::values(env[[layers[2]]]), na.rm=TRUE)
+    layer1.max <- max(terra::values(env[[layers[1]]]), na.rm=TRUE)
+    layer2.max <- max(terra::values(env[[layers[2]]]), na.rm=TRUE)
 
-  # Allow a different set of minima and maxima from those set by env layers
-  if(!all(is.na(minmax))){
-    layer1.min <- min(minmax[[layers[1]]])
-    layer2.min <- min(minmax[[layers[2]]])
-    layer1.max <- max(minmax[[layers[1]]])
-    layer2.max <- max(minmax[[layers[2]]])
+    } else if(match.arg(minmax, "points")){
+
+    # Getting values from presence and background
+    layer1.min <- min(model$analysis.df[,layers[1]], na.rm = TRUE)
+    layer2.min <- min(model$analysis.df[,layers[2]], na.rm = TRUE)
+    layer1.max <- max(model$analysis.df[,layers[1]], na.rm = TRUE)
+    layer2.max <- max(model$analysis.df[,layers[2]], na.rm = TRUE)
+
+  } else {
+
+    # Named list of minima and maxima
+    if(!all(is.na(minmax))){
+      layer1.min <- min(minmax[[layers[1]]])
+      layer2.min <- min(minmax[[layers[2]]])
+      layer1.max <- max(minmax[[layers[1]]])
+      layer2.max <- max(minmax[[layers[2]]])
+    }
   }
+
+
+
+
 
   # Build plot df
   plot.df <- cbind(rep(seq(layer1.min, layer1.max, length = nbins), nbins),
