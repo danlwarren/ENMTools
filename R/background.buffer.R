@@ -20,12 +20,12 @@ background.buffer <- function(points, buffer.width, buffer.type = "circles", mas
   pol <- NA
 
   if(buffer.type == "circles"){
-    x <- terra::buffer(points, width = buffer.width)
-    pol <- terra::aggregate(x)
+    pol <- terra::buffer(points, width = buffer.width)
+    pol <- terra::aggregate(pol)
   }
 
   if(buffer.type == "convhull"){
-    x <- terra::convHull(points)
+    pol <- terra::convHull(points)
     pol <- terra::buffer(pol, width = buffer.width)
   }
 
