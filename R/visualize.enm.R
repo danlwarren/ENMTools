@@ -39,7 +39,7 @@ visualize.enm <- function(model, env, nbins = 100, layers = colnames(model$analy
   }
 
   # Getting min and max for each env layer
-  if(match.arg(minmax, "env")){
+  if(minmax == "env"){
 
     # Getting values from rasters
     layer1.min <- min(terra::values(env[[layers[1]]]), na.rm=TRUE)
@@ -47,7 +47,7 @@ visualize.enm <- function(model, env, nbins = 100, layers = colnames(model$analy
     layer1.max <- max(terra::values(env[[layers[1]]]), na.rm=TRUE)
     layer2.max <- max(terra::values(env[[layers[2]]]), na.rm=TRUE)
 
-    } else if(match.arg(minmax, "points")){
+    } else if(minmax == "points"){
 
     # Getting values from presence and background
     layer1.min <- min(model$analysis.df[,layers[1]], na.rm = TRUE)
