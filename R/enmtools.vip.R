@@ -127,15 +127,15 @@ enmtools.vip <- function(model, metric = "roc_auc", nsim = 10, method = "permute
   if("permute" %in% method){
 
     if(inherits(model, c("enmtools.maxent")) & verbose == FALSE){
-    invisible(capture.output(output[["permute"]] <- vip::vi_permute(thismodel,
-                                           feature_names = feature_names,
-                                           train = train,
-                                           target = target,
-                                           metric = metric,
-                                           pred_wrapper = pred_wrapper,
-                                           event_level = "second",
-                                           nsim = nsim,
-                                           keep = TRUE)))
+      invisible(capture.output(output[["permute"]] <- vip::vi_permute(thismodel,
+                                                                      feature_names = feature_names,
+                                                                      train = train,
+                                                                      target = target,
+                                                                      metric = metric,
+                                                                      pred_wrapper = pred_wrapper,
+                                                                      event_level = "second",
+                                                                      nsim = nsim,
+                                                                      keep = TRUE)))
     } else {
       output[["permute"]] <- vip::vi_permute(thismodel,
                                              feature_names = feature_names,
@@ -186,7 +186,7 @@ enmtools.vip <- function(model, metric = "roc_auc", nsim = 10, method = "permute
 
     output[["shap.plot"]] <- ggplot(output[["shap"]],
                                     aes_string(x = "Importance",
-                                               fill = fct_reorder("Variable", "Importance", .desc = TRUE))) +
+                                               fill = after_stat("..x.."))) +
       geom_histogram(bins = 20) +
       theme_bw() +
       geom_hline(yintercept = 0, color = "grey") +
