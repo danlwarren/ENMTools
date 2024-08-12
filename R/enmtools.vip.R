@@ -127,15 +127,15 @@ enmtools.vip <- function(model, metric = "roc_auc", nsim = 10, method = "permute
   if("permute" %in% method){
 
     if(inherits(model, c("enmtools.maxent")) & verbose == FALSE){
-    invisible(capture.output(output[["permute"]] <- vip::vi_permute(thismodel,
-                                           feature_names = feature_names,
-                                           train = train,
-                                           target = target,
-                                           metric = metric,
-                                           pred_wrapper = pred_wrapper,
-                                           event_level = "second",
-                                           nsim = nsim,
-                                           keep = TRUE)))
+      invisible(capture.output(output[["permute"]] <- vip::vi_permute(thismodel,
+                                                                      feature_names = feature_names,
+                                                                      train = train,
+                                                                      target = target,
+                                                                      metric = metric,
+                                                                      pred_wrapper = pred_wrapper,
+                                                                      event_level = "second",
+                                                                      nsim = nsim,
+                                                                      keep = TRUE)))
     } else {
       output[["permute"]] <- vip::vi_permute(thismodel,
                                              feature_names = feature_names,
@@ -239,7 +239,7 @@ enmtools.vip <- function(model, metric = "roc_auc", nsim = 10, method = "permute
       geom_histogram(bins = 20) +
       theme_bw() +
       geom_hline(yintercept = 0, color = "grey") +
-      viridis::scale_fill_viridis(name = "Variable", option = "D", discrete = TRUE, direction = -1) +
+      viridis::scale_fill_viridis(name = "Variable", option = "D", discrete = TRUE) +
       facet_grid(rows = vars(fct_reorder(.data$Variable, .data$Importance, .desc = TRUE)), switch = "y") +
       ylab("Variable") +
       ggtitle("Variable importance, FIRM method") +
