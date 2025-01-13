@@ -29,7 +29,7 @@
 #' }
 #' }
 
-enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = NULL, test.type = "asymmetric", th.sp=0, th.env=0, R=100, nback = 1000, bg.source = "default", verbose = FALSE, ...){
+enmtools.ecospat.bg <- function(species.1, species.2, env, nreps = 99, layers = NULL, test.type = "symmetric", th.sp=0, th.env=0, R=100, nback = 1000, bg.source = "default", verbose = FALSE, ...){
 
   assert.extras.this.fun()
 

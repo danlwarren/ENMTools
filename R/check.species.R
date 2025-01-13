@@ -39,20 +39,20 @@ check.species <- function(this.species, env = NA, trim.dupes = FALSE){
   }
 
 
-  if(!is.logical(this.species$presence.points) || !is.na(this.species$presence.points)){
+  if(!is.logical(this.species$presence.points) || !all(is.na(this.species$presence.points))){
     this.species$presence.points <- check.points(this.species$presence.points, "presence.points")
   }
   if(!inherits(this.species$presence.points, "SpatVector")){
-    if(!is.na(this.species$presence.points)){
+    if(!all(is.na(this.species$presence.points))){
       "Species presence points require an object of or coercible to class SpatVector"
     }
   }
 
-  if(!is.logical(this.species$background.points) || !is.na(this.species$background.points)){
+  if(!is.logical(this.species$background.points) || !all(is.na(this.species$background.points))){
     this.species$background.points <- check.points(this.species$background.points, "background.points")
   }
   if(!inherits(this.species$background.points, "SpatVector")){
-    if(!is.na(this.species$background.points)){
+    if(!all(is.na(this.species$background.points))){
       "Species background points require an object of or coercible to class SpatVector"
     }
   }
@@ -92,7 +92,7 @@ check.species <- function(this.species, env = NA, trim.dupes = FALSE){
 }
 
 
-format.latlon <- function(latlon){
+reformat.latlon <- function(latlon){
 
   # Basically this bit just tries to auto-identify the lat and lon columns, then returns a
   # reformatted data frame with col names "x" and "y"

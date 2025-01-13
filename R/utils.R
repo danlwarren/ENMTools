@@ -36,6 +36,7 @@ check.points <- function(pts, name = "input") {
     warning(sprintf('%s are not the expected SpatVector class (instead, it is of class %s). ENMTools will attempt to coerce using terra::vect(as.matrix(...), crs = "EPSG:4326"), but we cannot guaranteed the correctness of the result. Please consider using SpatVector format directly in the future, to minimize unexpected results.',
             name,
             cls))
+    pts <- reformat.latlon(pts)
     pts <- terra::vect(as.matrix(pts), crs = "EPSG:4326")
   }
   pts

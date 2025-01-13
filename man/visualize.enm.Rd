@@ -8,10 +8,10 @@ visualize.enm(
   model,
   env,
   nbins = 100,
-  layers = names(env)[1:2],
+  layers = colnames(model$analysis.df)[1:2],
   plot.test.data = FALSE,
   plot.points = TRUE,
-  minmax = NA
+  minmax = "env"
 )
 }
 \arguments{
@@ -27,7 +27,7 @@ visualize.enm(
 
 \item{plot.points}{Logical determining whether presence points should be plotted on suitability plot}
 
-\item{minmax}{A named list of minima and maxima for each axis, in case the user wants to constrain or expand the space over which models are plotted.}
+\item{minmax}{Either "env", to set the minima and maxima using the environment layers, "points" to set the minima and maxima using the presence and background data, or a named list of minima and maxima for each layer.}
 }
 \value{
 suit.plot A list containing two dimensional plot of an ENM in environment space and a plot of the available environments.

@@ -245,7 +245,7 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
 
     env.training.plot <- ggplot(rts.env.training, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
       geom_histogram(binwidth = 0.05) +
-      geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
+      geom_vline(xintercept = env.model.evaluation@auc, linetype = "longdash") +
       xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
       ggtitle(paste("Model performance in environment space on training data")) +
       theme(plot.title = element_text(hjust = 0.5))
@@ -254,14 +254,14 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
     if(test.prop > 0){
       test.plot <- ggplot(rts.geog.test, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
         geom_histogram(binwidth = 0.05) +
-        geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
+        geom_vline(xintercept = test.evaluation@auc, linetype = "longdash") +
         xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
         ggtitle(paste("Model performance in geographic space on test data")) +
         theme(plot.title = element_text(hjust = 0.5))
 
       env.test.plot <- ggplot(rts.env.test, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
         geom_histogram(binwidth = 0.05) +
-        geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
+        geom_vline(xintercept = env.test.evaluation@auc, linetype = "longdash") +
         xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
         ggtitle(paste("Model performance in environment space on test data")) +
         theme(plot.title = element_text(hjust = 0.5))
