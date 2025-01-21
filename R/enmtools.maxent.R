@@ -30,6 +30,8 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
 
   notes <- NULL
 
+  env <- check.raster(env, "env")
+
   species <- check.bg(species, env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias)
 
   maxent.precheck(f, species, env)
@@ -79,10 +81,10 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
   }
 
   if(verbose){
-    this.mx <- dismo::maxent(env, p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)
+    this.mx <- dismo::maxent(raster::stack(env), p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)
     suitability <- terra::predict(env, this.mx, type = "response", na.rm = TRUE, ...)
   } else {
-    invisible(capture.output(this.mx <- dismo::maxent(env, p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)))
+    invisible(capture.output(this.mx <- dismo::maxent(raster::stack(env), p = analysis.df[analysis.df$presence == 1,1:2], a = analysis.df[analysis.df$presence == 0,1:2], ...)))
     invisible(capture.output(suitability <- terra::predict(env, this.mx, type = "response", na.rm = TRUE, ...)))
   }
 
@@ -220,12 +222,12 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
 
       # We have to do this to capture the "this is maxent version XXX message".
       if(verbose){
-        thisrep.mx <- dismo::maxent(env, p = rts.df[rts.df$presence == 1,1:2], a = rts.df[rts.df$presence == 0,1:2], ...)
+        thisrep.mx <- dismo::maxent(raster::stack(env), p = rts.df[rts.df$presence == 1,1:2], a = rts.df[rts.df$presence == 0,1:2], ...)
         thisrep.model.evaluation <- dismo::evaluate(rep.species$presence.points, species$background.points,
                                                    thisrep.mx, env, na.rm = TRUE)
         thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.mx, env, n.background = env.nback)
       } else {
-        invisible(capture.output(thisrep.mx <- dismo::maxent(env, p = rts.df[rts.df$presence == 1,1:2], a = rts.df[rts.df$presence == 0,1:2], ...)))
+        invisible(capture.output(thisrep.mx <- dismo::maxent(raster::stack(env), p = rts.df[rts.df$presence == 1,1:2], a = rts.df[rts.df$presence == 0,1:2], ...)))
         invisible(capture.output(thisrep.model.evaluation <- dismo::evaluate(rep.species$presence.points, species$background.points,
                                                    thisrep.mx, env, na.rm = TRUE)))
         invisible(capture.output(thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.mx, env, n.background = env.nback)))
@@ -286,7 +288,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
 
     env.training.plot <- ggplot(rts.env.training, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
       geom_histogram(binwidth = 0.05) +
-      geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
+      geom_vline(xintercept = env.model.evaluation@auc, linetype = "longdash") +
       xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
       ggtitle(paste("Model performance in environment space on training data")) +
       theme(plot.title = element_text(hjust = 0.5))
@@ -295,14 +297,14 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
     if(test.prop > 0){
       test.plot <- ggplot(rts.geog.test, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
         geom_histogram(binwidth = 0.05) +
-        geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
+        geom_vline(xintercept = test.evaluation@auc, linetype = "longdash") +
         xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
         ggtitle(paste("Model performance in geographic space on test data")) +
         theme(plot.title = element_text(hjust = 0.5))
 
       env.test.plot <- ggplot(rts.env.test, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
         geom_histogram(binwidth = 0.05) +
-        geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
+        geom_vline(xintercept = env.test.evaluation@auc, linetype = "longdash") +
         xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
         ggtitle(paste("Model performance in environment space on test data")) +
         theme(plot.title = element_text(hjust = 0.5))

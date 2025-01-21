@@ -37,3 +37,41 @@ case_weights_check <- function (spec) {
     data_args <- model_info$value[[1]]$protect
     any(data_args == "weights")
 }
+
+check.points <- function(pts, name = "input") {
+  if(!inherits(pts, "SpatVector")) {
+    cls <- class(pts)
+    if(length(cls) > 1) {
+      cls <- paste(cls, collapse = ", ")
+    }
+    warning(sprintf('%s are not the expected SpatVector class (instead, it is of class %s). ENMTools will attempt to coerce using terra::vect(as.matrix(...), crs = "EPSG:4326"), but we cannot guaranteed the correctness of the result. Please consider using SpatVector format directly in the future, to minimize unexpected results.',
+            name,
+            cls))
+    pts <- reformat.latlon(pts)
+    pts <- terra::vect(as.matrix(pts), crs = "EPSG:4326")
+  }
+  pts
+}
+
+check.raster <- function(rst, name = "input") {
+  if(!inherits(rst, "SpatRaster")) {
+    cls <- class(rst)
+    if(length(cls) > 1) {
+      cls <- paste(cls, collapse = ", ")
+    }
+    crss <- try(terra::crs(rst))
+    if(!inherits(crss, "try-error")) {
+      warning(sprintf('%s is not the expected SpatRaster class (instead, it is of class %s). ENMTools will attempt to coerce using terra::rast(...), but we cannot guaranteed the correctness of the result. Please consider using SpatRaster format directly in the future, to minimize unexpected results.',
+            name,
+            cls))
+      rst <- terra::rast(rst)
+    } else {
+      warning(sprintf('%s is not the expected SpatRaster class (instead, it is of class %s). ENMTools will attempt to coerce using terra::rast(..., crs = "EPSG:4326"), but we cannot guaranteed the correctness of the result. Please consider using SpatRaster format directly in the future, to minimize unexpected results.',
+            name,
+            cls))
+      rst <- terra::rast(rst, crs = "EPSG:4326")
+    }
+  }
+  rst
+
+}

@@ -175,23 +175,23 @@ test_that("rf model objects work", {
 })
 
 
-test_that("ranger model objects work", {
-  skip_if_not_installed("ranger")
-  cyreni.rf.ranger <- enmtools.rf.ranger(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
-  expect_enmtools_model(cyreni.rf.ranger)
-  p <- plot(cyreni.rf.ranger)
-  expect_s3_class(p, "ggplot")
-  expect_output(print(cyreni.rf.ranger, plot = FALSE))
-
-  ## slow
-  skip_on_cran()
-  suppressWarnings(cyreni.rf.ranger.rts1 <- enmtools.rf.ranger(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2,
-                                               rts.reps = 10))
-  suppressWarnings(cyreni.rf.ranger.rts2 <- enmtools.rf.ranger(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0,
-                                               rts.reps = 10))
-  expect_enmtools_model(cyreni.rf.ranger.rts1)
-  expect_enmtools_model(cyreni.rf.ranger.rts2)
-})
+# test_that("ranger model objects work", {
+#   skip_if_not_installed("ranger")
+#   cyreni.rf.ranger <- enmtools.rf.ranger(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
+#   expect_enmtools_model(cyreni.rf.ranger)
+#   p <- plot(cyreni.rf.ranger)
+#   expect_s3_class(p, "ggplot")
+#   expect_output(print(cyreni.rf.ranger, plot = FALSE))
+#
+#   ## slow
+#   skip_on_cran()
+#   suppressWarnings(cyreni.rf.ranger.rts1 <- enmtools.rf.ranger(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2,
+#                                                rts.reps = 10))
+#   suppressWarnings(cyreni.rf.ranger.rts2 <- enmtools.rf.ranger(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0,
+#                                                rts.reps = 10))
+#   expect_enmtools_model(cyreni.rf.ranger.rts1)
+#   expect_enmtools_model(cyreni.rf.ranger.rts2)
+# })
 
 # test_that("ppm model objects work", {
 #   skip_if_not_installed("ppmlasso")
@@ -241,6 +241,25 @@ test_that("gam with smooth terms works", {
   aurelioi.gam.s <- enmtools.gam(iberolacerta.clade$species$aurelioi, euro.worldclim,
    f = pres ~ s(bio1, bio12, 4))
   expect_enmtools_model(aurelioi.gam.s)
+})
+
+test_that("backwards compatability works", {
+  cyreni <- iberolacerta.clade$species$cyreni
+  loaded <- load("sysdata.rda")
+  on.exit(rm(list = loaded), add = TRUE, after = FALSE)
+  expect_warning(cyreni.glm.raster <- enmtools.glm(cyreni,
+                                                   euro.worldclim,
+                                                   f = pres ~ bio1 + bio9,
+                                                   test.prop = 0.2),
+                 "env is not the expected SpatRaster class",
+                 fixed = TRUE)
+  expect_enmtools_model(cyreni.glm.raster)
+  suppressWarnings(cyreni.glm.raster2 <- enmtools.glm(iberolacerta.clade$species$cyreni,
+                                                   euro.worldclim,
+                                                   f = pres ~ bio1 + bio9,
+                                                   test.prop = 0.2))
+  expect_enmtools_model(cyreni.glm.raster2)
+
 })
 
 

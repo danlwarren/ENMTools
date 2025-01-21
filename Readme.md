@@ -1,4 +1,4 @@
-# ENMTools
+# ENMTools <img src="man/figures/logo.png" align="right" height="276" />
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/danlwarren/ENMTools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/danlwarren/ENMTools/actions/workflows/R-CMD-check.yaml)
@@ -128,16 +128,6 @@ monticola <- enmtools.species()
 monticola
 ```
 
-## 
-## 
-## Range raster not defined.
-## 
-## Presence points not defined.
-## 
-## Background points not defined.
-## 
-## Species name not defined.
-
 You can add bits of it when the object is created.  As of version 1.1, ENMTools requires that all point and raster data be stored in terra's SpatVector and SpatRaster objects:
 
 ``` r
@@ -211,6 +201,7 @@ of handy functions for this.
 raster.cor.matrix(env)
 ```
 
+```
 ##              bio1         bio2        bio3        bio4       bio5        bio6
 ## bio1   1.00000000  0.208715969  0.36766171 -0.21357041  0.8853513  0.93295069
 ## bio2   0.20871597  1.000000000  0.58362743  0.30918934  0.5417192 -0.01723188
@@ -291,7 +282,7 @@ raster.cor.matrix(env)
 ## bio17  0.38396995
 ## bio18  0.17654879
 ## bio19  1.00000000
-
+```
 That’s great, but it’s a bit hard to pick variables this way. Let’s try
 it visually instead.
 
@@ -299,12 +290,16 @@ it visually instead.
 raster.cor.plot(env)
 ```
 
+```r
 ## $cor.mds.plot
+```
 
 ![](Readme_files/figure-gfm/collinearity2-1.png)<!-- -->
 
+```r
 ## 
 ## $cor.heatmap
+```
 
 ![](Readme_files/figure-gfm/collinearity2-2.png)<!-- -->
 
@@ -327,12 +322,12 @@ plot(env)
 ``` r
 raster.cor.matrix(env)
 ```
-
+```
 ##              bio1      bio12        bio7
 ## bio1   1.00000000 -0.6084667 -0.05329392
 ## bio12 -0.60846674  1.0000000 -0.29133189
 ## bio7  -0.05329392 -0.2913319  1.00000000
-
+```
 ### GLM
 
 GLMs usually require the user to supply a formula, an enmtools.species
@@ -344,7 +339,7 @@ enmtools.glm will build a formula automatically.
 monticola.glm <- enmtools.glm(species = monticola, env = env, f = pres ~ bio1 + bio12 + bio7, test.prop = 0.2)
 monticola.glm
 ```
-
+```
 ## 
 ## 
 ## Formula:  presence ~ bio1 + bio12 + bio7
@@ -441,6 +436,7 @@ monticola.glm
 ## 
 ## 
 ## 
+```
 ## Notes:
 
 ![](Readme_files/figure-gfm/build_glms1-1.png)<!-- -->
@@ -451,7 +447,7 @@ Notice this produces the same formula as:
 monticola.glm <- enmtools.glm(species = monticola, env = env, test.prop = 0.2)
 monticola.glm
 ```
-
+```
 ## 
 ## 
 ## Formula:  presence ~ bio1 + bio12 + bio7
@@ -548,6 +544,7 @@ monticola.glm
 ## 
 ## 
 ## 
+```
 ## Notes:
 
 ![](Readme_files/figure-gfm/build_glms2-1.png)<!-- -->
@@ -559,7 +556,7 @@ or polynomial effects), you’ll need to supply that manually.
 monticola.glm <- enmtools.glm(species = monticola, env = env, f = pres ~ poly(bio1, 2) + poly(bio7, 2) * poly(bio12, 2), test.prop = 0.2)
 monticola.glm
 ```
-
+```
 ## 
 ## 
 ## Formula:  presence ~ poly(bio1, 2) + poly(bio7, 2) + poly(bio12, 2) + poly(bio7, 
@@ -664,6 +661,7 @@ monticola.glm
 ## 
 ## 
 ## 
+```
 ## Notes:
 
 ![](Readme_files/figure-gfm/build_glms3-1.png)<!-- -->
@@ -674,17 +672,23 @@ To check out the marginal response functions, you only need to type
 monticola.glm$response.plots
 ```
 
+```r
 ## $bio1
+```
 
 ![](Readme_files/figure-gfm/response_plots-1.png)<!-- -->
 
+```r
 ## 
 ## $bio7
+```
 
 ![](Readme_files/figure-gfm/response_plots-2.png)<!-- -->
 
+```r
 ## 
 ## $bio12
+```
 
 ![](Readme_files/figure-gfm/response_plots-3.png)<!-- -->
 
@@ -712,14 +716,18 @@ represent your occurrence points in environment space.
 visualize.enm(monticola.glm, env, layers = c("bio1", "bio12"), plot.test.data = TRUE)
 ```
 
+```r
 ## $background.plot
 
 ## Warning: Removed 396 rows containing missing values (geom_raster).
+```
 
 ![](Readme_files/figure-gfm/visualize.enm-1.png)<!-- -->
 
+```r
 ## 
 ## $suit.plot
+```
 
 ![](Readme_files/figure-gfm/visualize.enm-2.png)<!-- -->
 
@@ -756,11 +764,13 @@ using ENMs, while having a low breadth in environment space.
 raster.breadth(monticola.glm)
 ```
 
+```r
 ## $B1
 ## [1] 0.9485566
 ## 
 ## $B2
 ## [1] 0.5587834
+```
 
 ENMTools also provides metrics for measuring similarity between ENMs.
 These include Schoener’s D (Schoener 1968), I (Warren et al. 2008), and
@@ -776,6 +786,7 @@ cyreni.glm <- enmtools.glm(species = cyreni, env = env, f = pres ~ poly(bio1, 2)
 raster.overlap(monticola.glm, cyreni.glm)
 ```
 
+```r
 ## $D
 ## [1] 0.7478775
 ## 
@@ -784,6 +795,7 @@ raster.overlap(monticola.glm, cyreni.glm)
 ## 
 ## $rank.cor
 ## [1] 0.5275103
+```
 
 A new feature of the R version of ENMTools is that you can now use these
 same metrics in the n-dimensional space of all combinations of
@@ -801,7 +813,7 @@ monticola.glm <- enmtools.glm(species = monticola, env = env, f = pres ~ poly(bi
 cyreni.glm <- enmtools.glm(species = monticola, env = env, f = pres ~ poly(bio1, 2) + poly(bio7, 2) + poly(bio12, 2), test.prop = 0.2)
 env.overlap(monticola.glm, cyreni.glm, env, tolerance = .001)
 ```
-
+```
 ## $env.D
 ## [1] 0.897097
 ## 
@@ -812,16 +824,20 @@ env.overlap(monticola.glm, cyreni.glm, env, tolerance = .001)
 ## [1] 0.9865452
 ## 
 ## $env.D.plot
-
+```
 ![](Readme_files/figure-gfm/env_overlap-1.png)<!-- -->
 
+```r
 ## 
 ## $env.I.plot
+```
 
 ![](Readme_files/figure-gfm/env_overlap-2.png)<!-- -->
 
+```r
 ## 
 ## $env.cor.plot
+```
 
 ![](Readme_files/figure-gfm/env_overlap-3.png)<!-- -->
 
@@ -864,7 +880,7 @@ id.glm <- identity.test(species.1 = monticola, species.2 = cyreni, env = env, ty
 ``` r
 id.glm
 ```
-
+```
 ## 
 ## 
 ##  
@@ -886,7 +902,7 @@ id.glm
 ## |rep 2     | 0.9087039| 0.9913237| 0.9852638| 0.9384133| 0.9935937|  0.9697489|
 ## |rep 3     | 0.9791252| 0.9995183| 0.9984504| 0.9811351| 0.9997007|  0.9971318|
 ## |rep 4     | 0.9289314| 0.9939631| 0.9729151| 0.9392022| 0.9957229|  0.9272778|
-
+```
 ![](Readme_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 ### Background or similarity test
@@ -926,7 +942,7 @@ bg.bc.asym <- background.test(species.1 = monticola, species.2 = cyreni, env = e
 ``` r
 bg.bc.asym
 ```
-
+```
 ##        D        I rank.cor    env.D    env.I  env.cor 
 ##      0.2      0.2      0.2      0.2      0.2      0.2 
 ## 
@@ -938,7 +954,7 @@ bg.bc.asym
 ## |rep 2     | 0.5470379| 0.8063909|  0.4982629| 0.4108920| 0.6905606| 0.5238803|
 ## |rep 3     | 0.5624673| 0.8120506|  0.5129404| 0.4435050| 0.7020514| 0.5163875|
 ## |rep 4     | 0.5647117| 0.8294455|  0.5672455| 0.4575679| 0.7249441| 0.5452493|
-
+```
 ![](Readme_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 And here is a Domain background test using the symmetric approach:
@@ -950,7 +966,7 @@ bg.dm.sym <- background.test(species.1 = monticola, species.2 = cyreni, env = en
 ``` r
 bg.dm.sym
 ```
-
+```
 ##        D        I rank.cor    env.D    env.I  env.cor 
 ##      0.2      0.2      0.2      0.2      0.2      0.2 
 ## 
@@ -962,7 +978,7 @@ bg.dm.sym
 ## |rep 2     | 0.9305978| 0.9915371|  0.9584368| 0.8564836| 0.9758468| 0.9865889|
 ## |rep 3     | 0.9758020| 0.9993212|  0.9847157| 0.9600547| 0.9985082| 0.9857853|
 ## |rep 4     | 0.9310147| 0.9907188|  0.9236047| 0.8602047| 0.9774277| 0.9671379|
-
+```
 ![](Readme_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ### Ecospat tests
@@ -985,7 +1001,7 @@ bio2). Here’s an equivalency/identity test:
 esp.id <- enmtools.ecospat.id(monticola, cyreni, env[[c("bio1", "bio12")]])
 esp.id
 ```
-
+```
 ## 
 ## 
 ##  
@@ -1004,10 +1020,9 @@ esp.id
 ## ecospat.id test p-values:
 ##    D    I 
 ## 0.01 0.01
-
+```
 ![](Readme_files/figure-gfm/ecospat_identity-1.png)<!-- -->![](Readme_files/figure-gfm/ecospat_identity-2.png)<!-- -->
 
-## NULL
 
 And here’s a symmetric background test. The difference between symmetric
 and asymmetric for these tests is the same as for the background tests
@@ -1017,7 +1032,7 @@ presented above.
 esp.bg.sym <- enmtools.ecospat.bg(monticola, cyreni, env[[c("bio1", "bio12")]], test.type = "symmetric")
 esp.bg.sym
 ```
-
+```
 ## 
 ## 
 ##  
@@ -1036,10 +1051,9 @@ esp.bg.sym
 ## ecospat.bg test p-values:
 ##    D    I 
 ## 0.28 0.24
-
+```
 ![](Readme_files/figure-gfm/ecospat_background-1.png)<!-- -->![](Readme_files/figure-gfm/ecospat_background-2.png)<!-- -->
 
-## NULL
 
 Note that if you provide more than two layers to the enmtools.ecospat
 function, it will performa a PCA analysis on the provided layers and
@@ -1049,7 +1063,7 @@ measure overlaps on the first two axes of that PCA space.
 esp.bg.sym <- enmtools.ecospat.bg(monticola, cyreni, env, test.type = "symmetric")
 esp.bg.sym
 ```
-
+```
 ## 
 ## 
 ##  
@@ -1068,10 +1082,9 @@ esp.bg.sym
 ## ecospat.bg test p-values:
 ##    D    I 
 ## 0.27 0.24
-
+```
 ![](Readme_files/figure-gfm/ecospat_background2-1.png)<!-- -->![](Readme_files/figure-gfm/ecospat_background2-2.png)<!-- -->
 
-## NULL
 
 ### Rangebreak tests
 
@@ -1090,7 +1103,7 @@ the identity and background tests. Here’s a linear one using GLM models:
 rbl.glm <- rangebreak.linear(monticola, cyreni, env, type = "glm", nreps = 4)
 rbl.glm
 ```
-
+```
 ## 
 ## 
 ##  
@@ -1112,7 +1125,7 @@ rbl.glm
 ## |rep 2     | 0.4156049| 0.7008724|  0.0889224| 0.5704781| 0.7915851| -0.0025339|
 ## |rep 3     | 0.4745117| 0.6965579| -0.0827780| 0.2625301| 0.4989265| -0.6614652|
 ## |rep 4     | 0.4638508| 0.7359583|  0.1223530| 0.3185485| 0.6112774| -0.2595020|
-
+```
 ![](Readme_files/figure-gfm/rangebreak_linear-1.png)<!-- -->![](Readme_files/figure-gfm/rangebreak_linear-2.png)<!-- -->
 
 And here’s a blob test using GAM:
@@ -1121,7 +1134,7 @@ And here’s a blob test using GAM:
 rbb.bc <- rangebreak.blob(monticola, cyreni, env, type = "gam", nreps = 4)
 rbb.bc
 ```
-
+```
 ## 
 ## 
 ##  
@@ -1143,7 +1156,7 @@ rbb.bc
 ## |rep 2     | 0.4587150| 0.7232480|  0.1300365| 0.3186436| 0.5639580| -0.1586443|
 ## |rep 3     | 0.4848734| 0.7479590|  0.2988036| 0.4531232| 0.7054955|  0.1436093|
 ## |rep 4     | 0.4106084| 0.7283237| -0.0471308| 0.6007318| 0.8275819| -0.0016637|
-
+```
 ![](Readme_files/figure-gfm/rangebreak_blob-1.png)<!-- -->
 
 If you want to access the individual replicates (for instance to see how
@@ -1153,7 +1166,7 @@ your ranges are being split up), you can find them in the list named
 ``` r
 rbl.glm$replicate.models$monticola.rep.1
 ```
-
+```
 ## 
 ## 
 ## Formula:  presence ~ bio1 + bio12 + bio7
@@ -1240,6 +1253,7 @@ rbl.glm$replicate.models$monticola.rep.1
 ## 
 ## 
 ## 
+```
 ## Notes:
 
 ![](Readme_files/figure-gfm/rbl_reps-1.png)<!-- -->
@@ -1247,7 +1261,7 @@ rbl.glm$replicate.models$monticola.rep.1
 ``` r
 rbl.glm$replicate.models$cyreni.rep.1
 ```
-
+```
 ## 
 ## 
 ## Formula:  presence ~ bio1 + bio12 + bio7
@@ -1335,7 +1349,7 @@ rbl.glm$replicate.models$cyreni.rep.1
 ## 
 ## 
 ## Notes:
-
+```
 ![](Readme_files/figure-gfm/rbl_reps-2.png)<!-- -->
 
 For the ribbon rangebreak test, you will need one extra thing; a third
@@ -1363,7 +1377,7 @@ points(ribbon$presence.points, pch = 16)
 ribbon$range <- background.raster.buffer(ribbon$presence.points, 20000, mask = env)
 ribbon
 ```
-
+```
 ## 
 ## 
 ## Range raster: 
@@ -1397,7 +1411,7 @@ ribbon
 ## Background points not defined.
 ## 
 ## Species name:  ribbon
-
+```
 Now we’ll run a ribbon rangebreak test using GLM models with quadratic
 effects. We also need to tell it the width of the ribbons to generate
 for the replicates. The units for the width argument are the same units
@@ -1408,7 +1422,7 @@ degrees you should supply the width of the barrier in decimal degrees.
 rbr.glm <- rangebreak.ribbon(monticola, cyreni, ribbon, env, type = "glm", f = pres ~ poly(bio1, 2) + poly(bio12, 2) + poly(bio7, 2), width = 0.5, nreps = 4)
 rbr.glm
 ```
-
+```
 ## 
 ## 
 ##  
@@ -1467,7 +1481,7 @@ rbr.glm
 ## rep 2     0.7693195 0.9339830  0.80621933 0.8429629 0.9602767  0.69527996
 ## rep 3     0.5169369 0.7522324  0.18099865 0.3126748 0.5426152 -0.47148475
 ## rep 4     0.3736786 0.6503553  0.51616993 0.4268829 0.6883124  0.48972746
-
+```
 ![](Readme_files/figure-gfm/rangebreak_ribbon-1.png)<!-- -->![](Readme_files/figure-gfm/rangebreak_ribbon-2.png)<!-- -->![](Readme_files/figure-gfm/rangebreak_ribbon-3.png)<!-- -->![](Readme_files/figure-gfm/rangebreak_ribbon-4.png)<!-- -->
 
 Note that the output table here has slope, intercept, and intercept
@@ -1477,11 +1491,13 @@ offset.
 rbr.glm$lines.df
 ```
 
+```r
 ##        slope intercept    offset
 ## 1 -2.0354472  32.46446 0.5669571
 ## 2 -0.4279309  39.02535 0.2719289
 ## 3  0.1616337  41.49875 0.2532446
 ## 4 -0.0792137  42.74416 0.2507831
+```
 
 The intercept denotes the intercept corresponding to the CENTER of each
 ribbon. To get the lines denoting the edges of the ribbons (for example
@@ -1570,7 +1586,7 @@ distichus <- species.from.gbif(genus = "Anolis", species = "distichus", env = hi
 brev.clade <- enmtools.clade(species = list(brevirostris, marron, caudalis, websteri, distichus), tree = hisp.anoles)
 check.clade(brev.clade)
 ```
-
+```
 ## 
 ## 
 ## An enmtools.clade object with 5 species
@@ -1598,7 +1614,7 @@ check.clade(brev.clade)
 ## |distichus    |distichus     |TRUE    |905      |0          |present |
 ## |marron       |marron        |TRUE    |14       |0          |present |
 ## |websteri     |websteri      |TRUE    |21       |0          |present |
-
+```
 That’s one way to build a clade object by hand, but there’s already one
 built into ENMTools to experiment with so we’ll just use that.
 
@@ -1638,7 +1654,7 @@ of the function used above).
 range.aoc <- enmtools.aoc(clade = iberolacerta.clade,  nreps = 50, overlap.source = "range")
 summary(range.aoc)
 ```
-
+```
 ## 
 ## 
 ## Age-Overlap Correlation test
@@ -1648,10 +1664,10 @@ summary(range.aoc)
 ## p values:
 ##      (Intercept) empirical.df$age 
 ##       0.01960784       0.01960784
-
+```
 ![](Readme_files/figure-gfm/range_aoc-1.png)<!-- -->![](Readme_files/figure-gfm/range_aoc-2.png)<!-- -->
 
-## NULL
+
 
 Now we can do one using point overlaps just by changing the
 overlap.source argument:
@@ -1660,7 +1676,7 @@ overlap.source argument:
 point.aoc <- enmtools.aoc(clade = iberolacerta.clade,  nreps = 50, overlap.source = "points")
 summary(point.aoc)
 ```
-
+```
 ## 
 ## 
 ## Age-Overlap Correlation test
@@ -1670,10 +1686,10 @@ summary(point.aoc)
 ## p values:
 ##      (Intercept) empirical.df$age 
 ##       0.07843137       0.07843137
-
+```
 ![](Readme_files/figure-gfm/point_aoc-1.png)<!-- -->![](Readme_files/figure-gfm/point_aoc-2.png)<!-- -->
 
-## NULL
+
 
 Or we can use similarity between ENMs built for each species. Here we’ll
 use GLM models:
@@ -1682,7 +1698,7 @@ use GLM models:
 glm.aoc <- enmtools.aoc(clade = iberolacerta.clade,  env = env, nreps = 50, overlap.source = "glm", f = pres ~ poly(bio1, 2) + poly(bio12, 2))
 summary(glm.aoc)
 ```
-
+```
 ## 
 ## 
 ## Age-Overlap Correlation test
@@ -1692,10 +1708,10 @@ summary(glm.aoc)
 ## p values:
 ##      (Intercept) empirical.df$age 
 ##        0.1372549        0.1960784
-
+```
 ![](Readme_files/figure-gfm/enm_aoc-1.png)<!-- -->![](Readme_files/figure-gfm/enm_aoc-2.png)<!-- -->
 
-## NULL
+
 
 ### Literature cited
 

@@ -23,9 +23,12 @@ check.species <- function(this.species, env = NA, trim.dupes = FALSE){
     this.species[[i]] <- NA
   }
 
+  if(!is.logical(this.species$range) || !is.na(this.species$range)){
+    this.species$range <- check.raster(this.species$range, "range")
+  }
   if(!inherits(this.species$range, "SpatRaster")){
     if(!is.na(this.species$range)){
-      stop("Argument range requires an object of class SpatRaster")
+      stop("Argument range requires an object of or coercible to class SpatRaster")
     }
   }
 
@@ -36,15 +39,21 @@ check.species <- function(this.species, env = NA, trim.dupes = FALSE){
   }
 
 
+  if(!is.logical(this.species$presence.points) || !all(is.na(this.species$presence.points))){
+    this.species$presence.points <- check.points(this.species$presence.points, "presence.points")
+  }
   if(!inherits(this.species$presence.points, "SpatVector")){
-    if(!is.na(this.species$presence.points)){
-      "Species presence points require an object of class SpatVector"
+    if(!all(is.na(this.species$presence.points))){
+      "Species presence points require an object of or coercible to class SpatVector"
     }
   }
 
+  if(!is.logical(this.species$background.points) || !all(is.na(this.species$background.points))){
+    this.species$background.points <- check.points(this.species$background.points, "background.points")
+  }
   if(!inherits(this.species$background.points, "SpatVector")){
-    if(!is.na(this.species$background.points)){
-      "Species background points require an object of class SpatVector"
+    if(!all(is.na(this.species$background.points))){
+      "Species background points require an object of or coercible to class SpatVector"
     }
   }
 
@@ -57,6 +66,9 @@ check.species <- function(this.species, env = NA, trim.dupes = FALSE){
 
 
   # Extracts data from env at presence points, uses that to remove points that have NA in any layer
+  if(!is.logical(env) || !is.na(env)) {
+    env <- check.raster(env, "env")
+  }
   if(inherits(env, "SpatRaster")){
     temp.df <- terra::extract(env, this.species$presence.points, ID = FALSE)
     this.species$presence.points <- this.species$presence.points[complete.cases(temp.df),]
@@ -80,7 +92,7 @@ check.species <- function(this.species, env = NA, trim.dupes = FALSE){
 }
 
 
-format.latlon <- function(latlon){
+reformat.latlon <- function(latlon){
 
   # Basically this bit just tries to auto-identify the lat and lon columns, then returns a
   # reformatted data frame with col names "x" and "y"
