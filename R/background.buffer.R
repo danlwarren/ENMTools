@@ -53,7 +53,7 @@ background.buffer <- function(points, buffer.width, buffer.type = "circles", mas
 
   # sample points
   if(return.type == "points"){
-    xy <- terra::spatSample(buffer.raster, size=n, xy=TRUE, na.rm=TRUE)[,1:2]
+    xy <- terra::spatSample(buffer.raster, size=n, xy=TRUE, na.rm=TRUE, warn = FALSE)[,1:2]
 
     # If we didn't get as many points as we wanted
     if(nrow(xy) < 1){
