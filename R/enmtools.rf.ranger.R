@@ -27,7 +27,7 @@
 
 enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, bg.source = "default", verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, legacy = FALSE, ...){
 
-  check.packages("ranger")
+  check.extras("ranger")
 
   if(!legacy) {
     model_args <- list(...)
@@ -293,21 +293,6 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
         ggtitle(paste("Model performance in environment space on training data")) +
         theme(plot.title = element_text(hjust = 0.5))
 
-      # Make plots for test AUC distributions
-      if(test.prop > 0){
-        test.plot <- ggplot(rts.geog.test, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
-          geom_histogram(binwidth = 0.05) +
-          geom_vline(xintercept = test.evaluation@auc, linetype = "longdash") +
-          xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
-          ggtitle(paste("Model performance in geographic space on training data")) +
-          theme(plot.title = element_text(hjust = 0.5))
-
-        env.training.plot <- ggplot(rts.env.training, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
-          geom_histogram(binwidth = 0.05) +
-          geom_vline(xintercept = env.test.evaluation@auc, linetype = "longdash") +
-          xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
-          ggtitle(paste("Model performance in environment space on training data")) +
-          theme(plot.title = element_text(hjust = 0.5))
 
         # Make plots for test AUC distributions
         if(test.prop > 0){

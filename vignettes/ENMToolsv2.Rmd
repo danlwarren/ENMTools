@@ -48,7 +48,7 @@ monticola.glm
 
 ```
 
-This gives a very similar output to ENMTools version < 2. The only difference you may notice is the model slot in the `enmtools.model` object now has an onject of class `workflow`, which is from the `workflows` package. `workflows` is a package in the `tidymodels` suite of packages for conducting modelling analyses in R. This reflects the most major change in ENMTools version 2.0, that it now uses `tidymodels` infrastructure for fitting models. As far as the user is concerned this may make no difference to you. If you just want to use ENMTools how you did before, this change makes little difference. If you want to retrieve the original model object you can use `workflows::extract_fit_engine()`
+This gives a very similar output to ENMTools version < 2. The only difference you may notice is the model slot in the `enmtools.model` object now has an object of class `workflow`, which is from the `workflows` package. `workflows` is a package in the `tidymodels` suite of packages for conducting modelling analyses in R. This reflects the most major change in ENMTools version 2.0, that it now uses `tidymodels` infrastructure for fitting models. As far as the user is concerned this may make no difference to you. If you just want to use ENMTools how you did before, this change makes little difference. If you want to retrieve the original model object you can use `workflows::extract_fit_engine()`
 
 ```{r extract_model, eval = FALSE}
 workflows::extract_fit_engine(monticola.glm$model)
@@ -61,15 +61,13 @@ monticola.glm <- enmtools.glm(species = monticola, env = env, f = pres ~ bio1 + 
 monticola.glm
 ```
 
-However, this change opens up a lot of additional functionality because much of the infrastructure for model fitting provided by `tidymodels` is now accessible to the ENMTools user. Later on in this vignette we will provide some examples of how you can use `tidymodels` in conjunction with ENMTools. Beyond this better integration into the wider world of modelling in R, a major implication of the move to `tidymodels` is that now, in addition to all original modelling methods provided by ENMTools, any model type implemented in `tidymodels` for classification can now be used for species distribution modelling using the ENMTools framework, out of the box. We are very excited about this feature. Here are some examples, let's run our monticola example from above, but use a boosted regression tree approach, available through `tidymodels`. To do this, we can use the new `enmtools.tidy()` function, and pass it a model specification provided by the `tidymodels` package called `parsnip`. Note that `tidymodels` is itself a wrapper around modelling functions provided by many different R packages. If you do not have the necessary package installed then `tidymodels` will throw an error and tell you what package you need. In this case, it will be the `xgboost` package. The `enmtools.tidy()` function has similar arguments to all all ENMTools modelling functions, with the addition of a `model` argument. This can either be a character string giving the name of a 'classic' ENMTools model (such as 'glm' or 'maxent'), or it can be a `model_spec` object from the `parsnip` package (or other other `tidymodels` extension packages). This is how you can do a boosted regression tree:
+However, this change opens up a lot of additional functionality because much of the infrastructure for model fitting provided by `tidymodels` is now accessible to the ENMTools user. Later on in this vignette we will provide some examples of how you can use `tidymodels` in conjunction with ENMTools. Beyond this better integration into the wider world of modelling in R, a major implication of the move to `tidymodels` is that now, in addition to all original modelling methods provided by ENMTools, any model type implemented in `tidymodels` for classification can now be used for species distribution modelling using the ENMTools framework, out of the box. We are very excited about this feature. Here are some examples, let's run our monticola example from above, but use a boosted regression tree approach, available through `tidymodels`. To do this, we can use the new `enmtools.tidy()` function, and pass it a model specification provided by the `tidymodels` package called `parsnip`. Note that `tidymodels` is itself a wrapper around modelling functions provided by many different R packages. If you do not have the necessary package installed then `tidymodels` will throw an error and tell you what package you need. In this case, it will be the `xgboost` package. The `enmtools.tidy()` function has similar arguments to all ENMTools modelling functions, with the addition of a `model` argument. This can either be a character string giving the name of a 'classic' ENMTools model (such as 'glm' or 'maxent'), or it can be a `model_spec` object from the `parsnip` package (or other other `tidymodels` extension packages). This is how you can do a boosted regression tree:
 
 ```{r boost}
 library(xgboost)
 monticola.boost <- enmtools.tidy(monticola, euro.worldclim, model = parsnip::boost_tree("classification"), test.prop = 0.2)
 monticola.boost
 ```
-
-To our knowledge this is the first application of boosted regression trees to species distribution modelling, and you saw it here! It was as easy as that!
 
 If you want to pass arguments to the underlying functions you can use the `model_args` arguments of `enmtools.tidy()`. In `tidymodels` there are two types of arguments: main arguments, which are common to all 'engines' for a particular type of model, and engine arguments, which are specific to a particular engine. In `tidymodels` the 'engine' is the underlying R function used to fit the model (e.g. 'ranger' is an engine for random forest (`parsnip::rand_forest()`)). The main arguments can easily be found in the `parsnip` model specification (e.g. `parsnip::boost_tree()$args`). The engine arguments can be found in the documentation for individual engines (linked to from the eg. `?parsnip::boost_tree`, or directly with `?parsnip::details_boost_tree_xgboost`). You can pass either type of argument using `model_args`. As an example, we can increase the number of trees estimated by the boosted regression using the main argument `trees`, and change the metric used to evaluate trees using the engine arguments `eval_metric`. You can pass custom values for these like this:
 
@@ -124,8 +122,8 @@ monticola.glm.rec
 ```
 
 ```{r apply_it2}
-monticola.dm.rec <- enmtools.dm(monticola, env, f = rec, test.prop = 0.2)
-monticola.dm.rec
+monticola.dm <- enmtools.dm(monticola, env, f = rec, test.prop = 0.2)
+monticola.dm
 ```
 
 The suitability plots suggest the transformation have been applied correctly to the prediction data since they look very reasonable and as you would expect.
