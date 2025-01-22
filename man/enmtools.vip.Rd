@@ -6,7 +6,7 @@
 \usage{
 enmtools.vip(
   model,
-  metric = "auc",
+  metric = "roc_auc",
   nsim = 10,
   method = "permute",
   verbose = FALSE,
@@ -34,10 +34,12 @@ Takes an enmtools.model object, and performs variable importance analyses on it 
 }
 \examples{
 \donttest{
-install.extras(repos='http://cran.us.r-project.org')
+#install.extras(repos='http://cran.us.r-project.org')
 monticola.glm <- enmtools.glm(iberolacerta.clade$species$monticola,
                               env = euro.worldclim,
                               test.prop = 0.3)
-enmtools.vip(monticola.glm)
+if(check.extras("enmtools.vip")) {
+  enmtools.vip(monticola.glm)
+}
 }
 }

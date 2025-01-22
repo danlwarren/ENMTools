@@ -23,7 +23,9 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
     with.bias <- TRUE
   }
 
-
+  if(!is.logical(env) || !is.na(env)) {
+    env <- check.raster(env, "env")
+  }
 
   if(bg.source %in% c("points", "range", "env")){
 

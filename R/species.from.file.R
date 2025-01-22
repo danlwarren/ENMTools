@@ -30,6 +30,7 @@ species.from.file <- function(filename, species.col = "species"){
 
     # More than one species in the file, create and return a list of enmtools.species objects
     for(i in sp.names){
+      print(i)
       this.species <- enmtools.species(species.name = i,
                                        presence.points = input.df[input.df[,species.col] == i,])
       this.species <- check.species(this.species)

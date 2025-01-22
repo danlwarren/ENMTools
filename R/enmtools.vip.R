@@ -11,16 +11,18 @@
 #'
 #' @examples
 #' \donttest{
-#' install.extras(repos='http://cran.us.r-project.org')
+#' #install.extras(repos='http://cran.us.r-project.org')
 #' monticola.glm <- enmtools.glm(iberolacerta.clade$species$monticola,
 #'                               env = euro.worldclim,
 #'                               test.prop = 0.3)
-#' enmtools.vip(monticola.glm)
+#' if(check.extras("enmtools.vip")) {
+#'   enmtools.vip(monticola.glm)
+#' }
 #' }
 
-enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", verbose = FALSE, ...){
+enmtools.vip <- function(model, metric = "roc_auc", nsim = 10, method = "permute", verbose = FALSE, ...){
 
-  check.packages(c("vip", "pdp", "fastshap", "reshape2", "viridis"))
+  assert.extras.this.fun()
 
   output <- list()
 
@@ -36,7 +38,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
     train <- model$analysis.df[,-c(1,2)]
     target <- "presence"
     pred_wrapper <- predict
-    reference_class <- "1"
+    train$presence <- as.factor(train$presence)
   }
 
   if(inherits(model, "enmtools.gam")){
@@ -45,7 +47,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
     train <- model$analysis.df[,-c(1,2)]
     target <- "presence"
     pred_wrapper <- predict
-    reference_class <- "1"
+    train$presence <- as.factor(train$presence)
   }
 
   if(inherits(model, "enmtools.rf")){
@@ -54,7 +56,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
     train <- model$analysis.df[,-c(1,2)]
     target <- "presence"
     pred_wrapper <- predict
-    reference_class <- "1"
+    train$presence <- as.factor(train$presence)
   }
 
   if(inherits(model, "enmtools.rf.ranger")){
@@ -64,7 +66,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
     train <- model$analysis.df[,-c(1,2)]
     target <- "presence"
     pred_wrapper <- function(object, newdata) predict(object, data = newdata, type = "response")$predictions
-    reference_class <- "1"
+    train$presence <- as.factor(train$presence)
   }
 
   if(inherits(model, "enmtools.maxent")){
@@ -75,8 +77,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
                         rep(0, nrow(attr(thismodel, "absence"))))
     target <- "presence"
     pred_wrapper <- function(object, newdata) predict(object, newdata)
-
-    reference_class <- "1"
+    train$presence <- as.factor(train$presence)
   }
 
   if(inherits(model, "enmtools.ppmlasso")){
@@ -86,7 +87,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
     train <- model$analysis.df[,c(feature_names, "presence")]
     target <- "presence"
     pred_wrapper <- function(object, newdata) predict(object, newdata = newdata, type = "response")
-    reference_class <- "1"
+    train$presence <- as.factor(train$presence)
   }
 
   if("model" %in% method){
@@ -126,15 +127,15 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
   if("permute" %in% method){
 
     if(inherits(model, c("enmtools.maxent")) & verbose == FALSE){
-    invisible(capture.output(output[["permute"]] <- vip::vi_permute(thismodel,
-                                           feature_names = feature_names,
-                                           train = train,
-                                           target = target,
-                                           metric = metric,
-                                           pred_wrapper = pred_wrapper,
-                                           reference_class = "1",
-                                           nsim = nsim,
-                                           keep = TRUE)))
+      invisible(capture.output(output[["permute"]] <- vip::vi_permute(thismodel,
+                                                                      feature_names = feature_names,
+                                                                      train = train,
+                                                                      target = target,
+                                                                      metric = metric,
+                                                                      pred_wrapper = pred_wrapper,
+                                                                      event_level = "second",
+                                                                      nsim = nsim,
+                                                                      keep = TRUE)))
     } else {
       output[["permute"]] <- vip::vi_permute(thismodel,
                                              feature_names = feature_names,
@@ -142,7 +143,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
                                              target = target,
                                              metric = metric,
                                              pred_wrapper = pred_wrapper,
-                                             reference_class = "1",
+                                             event_level = "second",
                                              nsim = nsim,
                                              keep = TRUE)
     }
@@ -151,7 +152,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
 
     output[["permute.plot"]] <- ggplot(plotdf,
                                        aes_string(x = "Importance",
-                                                  fill = "..x..")) +
+                                                  fill = after_stat("..x.."))) +
       geom_histogram(bins = 20) +
       theme_bw() +
       geom_hline(yintercept = 0, color = "grey") +
@@ -238,7 +239,7 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", v
       geom_histogram(bins = 20) +
       theme_bw() +
       geom_hline(yintercept = 0, color = "grey") +
-      viridis::scale_fill_viridis(name = "Variable", option = "D", discrete = TRUE, direction = -1) +
+      viridis::scale_fill_viridis(name = "Variable", option = "D", discrete = TRUE) +
       facet_grid(rows = vars(fct_reorder(.data$Variable, .data$Importance, .desc = TRUE)), switch = "y") +
       ylab("Variable") +
       ggtitle("Variable importance, FIRM method") +

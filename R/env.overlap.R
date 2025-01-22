@@ -63,7 +63,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
     pred2.recal <- NA
 
     # Draw a starting latin hypercube scheme
-    this.lhs <- randomLHS(chunk.size, length(names(env)))
+    this.lhs <- lhs::randomLHS(chunk.size, length(names(env)))
 
     # Setting it up so we can handle either a set of rasters or a list of minima and maxima
     if(inherits(env, c("SpatRaster"))){
@@ -121,7 +121,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
     # First we'll do it if both are recalibrated
     if(!all(is.na(recal.model.1)) & !all(is.na(recal.model.2))){
 
-      check.packages("CalibratR")
+      assert.extras.this.fun()
 
       recal.names <- intersect(names(recal.model.1$recalibrated.model$predictions),
                                names(recal.model.2$recalibrated.model$predictions))
@@ -142,7 +142,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
     # Now if just model 1 is recalibrated
     if(!all(is.na(recal.model.1)) & all(is.na(recal.model.2))){
 
-      check.packages("CalibratR")
+      assert.extras.this.fun()
 
       recal.names <- names(recal.model.1$recalibrated.model$predictions)
 
@@ -162,7 +162,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
     # Now if just model 2 is recalibrated
     if(all(is.na(recal.model.1)) & !all(is.na(recal.model.2))){
 
-      check.packages("CalibratR")
+      assert.extras.this.fun()
 
       recal.names <- names(recal.model.2$recalibrated.model$predictions)
 
@@ -219,7 +219,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
       # print(max(gens))
 
       # Add chunk.size rows to the LHS and build a new predict table
-      this.lhs <- randomLHS(chunk.size, length(names(env)))
+      this.lhs <- lhs::randomLHS(chunk.size, length(names(env)))
       predict.table <- t(t(this.lhs) * (maxes  - mins) + mins)
       colnames(predict.table) <- names(env)
 
@@ -258,7 +258,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
       # First we'll do it if both are recalibrated
       if(!all(is.na(recal.model.1)) & !all(is.na(recal.model.2))){
 
-        check.packages("CalibratR")
+        assert.extras.this.fun()
 
         recal.names <- intersect(names(recal.model.1$recalibrated.model$predictions),
                                  names(recal.model.2$recalibrated.model$predictions))
@@ -279,7 +279,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
       # Now if just model 1 is recalibrated
       if(!all(is.na(recal.model.1)) & all(is.na(recal.model.2))){
 
-        check.packages("CalibratR")
+        assert.extras.this.fun()
 
         recal.names <- names(recal.model.1$recalibrated.model$predictions)
 
@@ -299,7 +299,7 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
       # Now if just model 2 is recalibrated
       if(all(is.na(recal.model.1)) & !all(is.na(recal.model.2))){
 
-        check.packages("CalibratR")
+        assert.extras.this.fun()
 
         recal.names <- names(recal.model.2$recalibrated.model$predictions)
 

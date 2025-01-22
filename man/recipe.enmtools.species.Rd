@@ -152,18 +152,26 @@ sp_signed <-
 sp_signed
 }\if{html}{\out{</div>}}
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{## Recipe
+\if{html}{\out{<div class="sourceCode">}}\preformatted{## 
+
+## -- Recipe ------------------------------------------------------------
+
 ## 
-## Inputs:
+
+## -- Inputs
+
+## Number of variables by role
+
+## outcome:   1
+## predictor: 5
+
 ## 
-##       role #variables
-##    outcome          1
-##  predictor          5
-## 
-## Operations:
-## 
-## Centering and scaling for all_numeric_predictors()
-## Spatial sign on  all_numeric_predictors()
+
+## -- Operations
+
+## * Centering and scaling for: all_numeric_predictors()
+
+## * Spatial sign on: all_numeric_predictors()
 }\if{html}{\out{</div>}}
 
 We can create a \code{parsnip} model, and then build a workflow with the
@@ -246,20 +254,32 @@ Now to estimate the normalization statistics and the PCA loadings:
 pca_rec
 }\if{html}{\out{</div>}}
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{## Recipe
+\if{html}{\out{<div class="sourceCode">}}\preformatted{## 
+
+## -- Recipe ------------------------------------------------------------
+
 ## 
-## Inputs:
+
+## -- Inputs
+
+## Number of variables by role
+
+## outcome:   1
+## predictor: 5
+
 ## 
-##       role #variables
-##    outcome          1
-##  predictor          5
+
+## -- Training information
+
+## Training data contained 456 data points and no incomplete rows.
+
 ## 
-## Training data contained 456 data points and no missing data.
-## 
-## Operations:
-## 
-## Centering and scaling for carbon, hydrogen, oxygen, nitrogen, s... [trained]
-## PCA extraction with carbon, hydrogen, oxygen, nitrogen, su... [trained]
+
+## -- Operations
+
+## * Centering and scaling for: carbon and hydrogen, ... | Trained
+
+## * PCA extraction with: carbon, hydrogen, oxygen, ... | Trained
 }\if{html}{\out{</div>}}
 
 Note that the estimated recipe shows the actual column names captured by
@@ -292,12 +312,12 @@ applies the estimated steps to any data set.
 \if{html}{\out{<div class="sourceCode">}}\preformatted{## # A tibble: 6 x 6
 ##     HHV    PC1    PC2     PC3     PC4     PC5
 ##   <dbl>  <dbl>  <dbl>   <dbl>   <dbl>   <dbl>
-## 1  18.3 0.730   0.412  0.495   0.333   0.253 
-## 2  17.6 0.617  -1.41  -0.118  -0.466   0.815 
-## 3  17.2 0.761  -1.10   0.0550 -0.397   0.747 
-## 4  18.9 0.0400 -0.950 -0.158   0.405  -0.143 
-## 5  20.5 0.792   0.732 -0.204   0.465  -0.148 
-## 6  18.5 0.433   0.127  0.354  -0.0168 -0.0888
+## 1  18.3 0.730  -0.412 -0.495   0.333   0.253 
+## 2  17.6 0.617   1.41   0.118  -0.466   0.815 
+## 3  17.2 0.761   1.10  -0.0550 -0.397   0.747 
+## 4  18.9 0.0400  0.950  0.158   0.405  -0.143 
+## 5  20.5 0.792  -0.732  0.204   0.465  -0.148 
+## 6  18.5 0.433  -0.127 -0.354  -0.0168 -0.0888
 }\if{html}{\out{</div>}}
 
 In general, the workflow interface to recipes is recommended for most

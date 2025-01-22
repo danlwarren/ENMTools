@@ -56,16 +56,21 @@ identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99,
 
   # For starters we need to combine species background points so that each model
   # is being built with the same background
-  species.1$background.points <- rbind(species.1$background.points, species.2$background.points)
-  species.2$background.points <- rbind(species.1$background.points, species.2$background.points)
+  combined.background.points <- rbind(species.1$background.points, species.2$background.points)
+  species.1.original.background <- species.1$background.points
+  species.2.original.background <- species.2$background.points
+  species.1$background.points <- combined.background.points
+  species.2$background.points <- combined.background.points
 
   combined.presence.points <- rbind(species.1$presence.points, species.2$presence.points)
 
   # Clamping layers here so it's not done separately for every replicate
   # and setting replicate clmaping to FALSE
   if(clamp == TRUE){
+    combined.all.points <- rbind(species.1$presence.points, species.2$presence.points, combined.background.points)
+
     # Adding env (skipped for BC otherwise)
-    this.df <- as.data.frame(terra::extract(env, combined.presence.points, ID = FALSE))
+    this.df <- as.data.frame(terra::extract(env, combined.all.points, ID = FALSE))
 
     env <- clamp.env(this.df, env)
   }
@@ -133,8 +138,8 @@ identity.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99,
 
     # Building models for reps
     if(type == "glm"){
-      rep.species.1.model <- enmtools.glm(rep.species.1, env, f, clamp = FALSE)
-      rep.species.2.model <- enmtools.glm(rep.species.2, env, f, clamp = FALSE)
+      rep.species.1.model <- enmtools.glm(rep.species.1, env, f, clamp = FALSE, ...)
+      rep.species.2.model <- enmtools.glm(rep.species.2, env, f, clamp = FALSE, ...)
     }
 
     if(type == "gam"){

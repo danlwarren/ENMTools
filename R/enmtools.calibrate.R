@@ -12,17 +12,19 @@
 #'
 #' @examples
 #' \donttest{
-#' install.extras(repos='http://cran.us.r-project.org')
+#' #install.extras(repos='http://cran.us.r-project.org')
 #' monticola.glm <- enmtools.glm(iberolacerta.clade$species$monticola,
 #'                               env = euro.worldclim,
 #'                               f = pres ~ bio1 + bio9,
 #'                               test.prop = 0.3)
-#' enmtools.calibrate(monticola.glm)
+#' if(check.extras("enmtools.calibrate")) {
+#'   enmtools.calibrate(monticola.glm)
+#' }
 #' }
 
 enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, n.background = 10000, recal.methods = c(1, 2, 3, 4), ...){
 
-  check.packages(c("ecospat", "CalibratR", "caret", "ResourceSelection"))
+  assert.extras.this.fun()
 
   if(suppressWarnings(is.na(model$test.evaluation))){
     stop("No test evaluation data available, cannot measure calibration.")

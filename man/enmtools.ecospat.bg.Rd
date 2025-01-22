@@ -10,7 +10,7 @@ enmtools.ecospat.bg(
   env,
   nreps = 99,
   layers = NULL,
-  test.type = "asymmetric",
+  test.type = "symmetric",
   th.sp = 0,
   th.env = 0,
   R = 100,
@@ -56,10 +56,12 @@ enmtools.ecospat.bg, Runs an ecospat background/similarity test using enmtool.sp
 }
 \examples{
 \donttest{
-install.extras(repos='http://cran.us.r-project.org')
+#install.extras(repos='http://cran.us.r-project.org')
 monticola <- iberolacerta.clade$species$monticola
 cyreni <- iberolacerta.clade$species$cyreni
-enmtools.ecospat.bg(monticola, cyreni, euro.worldclim[[1:2]], nback = 500)
+if(check.extras("enmtools.ecospat.bg")) {
+  enmtools.ecospat.bg(monticola, cyreni, euro.worldclim[[1:2]], nback = 500)
+}
 }
 }
 \keyword{enm}

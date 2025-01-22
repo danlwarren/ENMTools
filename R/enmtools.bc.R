@@ -34,6 +34,8 @@ enmtools.bc <- function(species, env = NA, f = NULL, test.prop = 0, report = NUL
 
     notes <- NULL
 
+    env <- check.raster(env, "env")
+
     species <- check.bg(species, env, nback, verbose = verbose, bias = bias)
 
     bc.precheck(species, env)
@@ -237,25 +239,27 @@ enmtools.bc <- function(species, env = NA, f = NULL, test.prop = 0, report = NUL
         rts.env.test.pvalue <- NA
       }
 
-      rts.geog.training <- data.frame(AUC = rts.geog.training)
-      rts.env.training <- data.frame(AUC = rts.env.training)
-      rts.geog.test <- data.frame(AUC = rts.geog.test)
-      rts.env.test <- data.frame(AUC = rts.env.test)
 
-      # Making plots
-      training.plot <- ggplot(rts.geog.training, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
-        geom_histogram(binwidth = 0.05) +
-        geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
-        xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
-        ggtitle(paste("Model performance in geographic space on training data")) +
-        theme(plot.title = element_text(hjust = 0.5))
+    rts.geog.training <- data.frame(AUC = rts.geog.training)
+    rts.env.training <- data.frame(AUC = rts.env.training)
+    rts.geog.test <- data.frame(AUC = rts.geog.test)
+    rts.env.test <- data.frame(AUC = rts.env.test)
 
-      env.training.plot <- ggplot(rts.env.training, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
-        geom_histogram(binwidth = 0.05) +
-        geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
-        xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
-        ggtitle(paste("Model performance in environment space on training data")) +
-        theme(plot.title = element_text(hjust = 0.5))
+    # Making plots
+    training.plot <- ggplot(rts.geog.training, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
+      geom_histogram(binwidth = 0.05) +
+      geom_vline(xintercept = model.evaluation@auc, linetype = "longdash") +
+      xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
+      ggtitle(paste("Model performance in geographic space on training data")) +
+      theme(plot.title = element_text(hjust = 0.5))
+
+    env.training.plot <- ggplot(rts.env.training, aes(x = .data$AUC, fill = "density", alpha = 0.5)) +
+      geom_histogram(binwidth = 0.05) +
+      geom_vline(xintercept = env.model.evaluation@auc, linetype = "longdash") +
+      xlim(-0.05,1.05) + guides(fill = "none", alpha = "none") + xlab("AUC") +
+      ggtitle(paste("Model performance in environment space on training data")) +
+      theme(plot.title = element_text(hjust = 0.5))
+
 
       # Make plots for test AUC distributions
       if(test.prop > 0){

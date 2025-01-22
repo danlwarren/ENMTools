@@ -8,7 +8,8 @@ globalVariables(c("f", "predict", "value"))
   #             envir = parent.env(environment()))
   # utils::data(iberolacerta.clade, package = pkgname,
   #             envir = parent.env(environment()))
-  euro.worldclim <<- terra::rast(euro.worldclim)
+  euro.worldclim.terra <- terra::rast(euro.worldclim)
+  assign("euro.worldclim", euro.worldclim.terra, pos = asNamespace("ENMTools"))
   y <- iberolacerta.clade
   y$species <- lapply(iberolacerta.clade$species,
                       function(x) {
@@ -19,7 +20,7 @@ globalVariables(c("f", "predict", "value"))
                         x$range <- range
                         x
                       })
-  iberolacerta.clade <<- y
+  assign("iberolacerta.clade", y, pos = asNamespace("ENMTools"))
 
   make_pres_only_sdm()
 

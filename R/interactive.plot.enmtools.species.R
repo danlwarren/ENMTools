@@ -19,7 +19,7 @@
 
 interactive.plot.enmtools.species <- function(x, map.provider = "Esri.WorldPhysical", cluster.points = FALSE, max.bytes = 4194304, ...) {
 
-  check.packages("leaflet")
+  assert.extras.this.fun()
 
   m <- leaflet::leaflet() %>%
     leaflet::addProviderTiles(map.provider, group = "Base map")
@@ -28,13 +28,15 @@ interactive.plot.enmtools.species <- function(x, map.provider = "Esri.WorldPhysi
   labels <- NULL
   colors <- NULL
 
-  if(inherits(raster::raster(x$range), "RasterLayer")){
-    m <- m %>%
-      leaflet::addRasterImage(raster::raster(x$range), function(y) ifelse(is.na(y), "#00000000", "#00000090"),
-                     group = "Range", maxBytes = max.bytes)
-    overlays <- c(overlays, "Range")
-    labels <- c(labels, "Range raster")
-    colors <- c(colors, "black")
+  if(!isTRUE(is.na(x$range))){
+    if(inherits(raster::raster(x$range), "RasterLayer")){
+      m <- m %>%
+        leaflet::addRasterImage(raster::raster(x$range), function(y) ifelse(is.na(y), "#00000000", "#00000090"),
+                                group = "Range", maxBytes = max.bytes)
+      overlays <- c(overlays, "Range")
+      labels <- c(labels, "Range raster")
+      colors <- c(colors, "black")
+    }
   }
 
 
@@ -42,8 +44,8 @@ interactive.plot.enmtools.species <- function(x, map.provider = "Esri.WorldPhysi
     background.points <- terra::as.data.frame(x$background.points, geom = "XY")
     m <- m %>%
       leaflet::addCircleMarkers(~x, ~y, color = "red",
-                       data = background.points, stroke = FALSE, fillOpacity = 0.5,
-                       radius = 8, group = "Background points")
+                                data = background.points, stroke = FALSE, fillOpacity = 0.5,
+                                radius = 8, group = "Background points")
     overlays <- c(overlays, "Background points")
     labels <- c(labels, "Background points")
     colors <- c(colors, "red")
@@ -54,14 +56,14 @@ interactive.plot.enmtools.species <- function(x, map.provider = "Esri.WorldPhysi
     if(cluster.points) {
       m <- m %>%
         leaflet::addCircleMarkers(~x, ~y, color = "green",
-                         stroke = FALSE, fillOpacity = 0.5, radius = 8,
-                         data = presence.points, clusterOptions = leaflet::markerClusterOptions(),
-                         group = "Occurrence points")
+                                  stroke = FALSE, fillOpacity = 0.5, radius = 8,
+                                  data = presence.points, clusterOptions = leaflet::markerClusterOptions(),
+                                  group = "Occurrence points")
     } else {
       m <- m %>%
         leaflet::addCircleMarkers(~x, ~y, color = "green",
-                         data = presence.points, stroke = FALSE, fillOpacity = 0.5,
-                         radius = 8, group = "Occurrence points")
+                                  data = presence.points, stroke = FALSE, fillOpacity = 0.5,
+                                  radius = 8, group = "Occurrence points")
     }
     overlays <- c(overlays, "Occurrence points")
     labels <- c(labels, "Occurrence points")
@@ -77,7 +79,7 @@ interactive.plot.enmtools.species <- function(x, map.provider = "Esri.WorldPhysi
 
   m <- m %>%
     leaflet::addLegend("bottomright", colors = colors,
-              labels = labels)
+                       labels = labels)
 
   m
 

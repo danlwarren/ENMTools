@@ -57,10 +57,8 @@ An enmtools model object containing species name, model formula (if any), model 
 Takes an emtools.species object with presence and background points, and builds a maxent model
 }
 \examples{
-\dontrun{
-install.extras(repos='http://cran.us.r-project.org')
-if(requireNamespace("rJava", quietly = TRUE)) {
-    enmtools.maxent(iberolacerta.clade$species$monticola, env = euro.worldclim)
-}
+if(check.extras("enmtools.maxent")) {
+    ## maxent is not working on some platforms so use try()
+    try(enmtools.maxent(iberolacerta.clade$species$monticola, env = euro.worldclim))
 }
 }
