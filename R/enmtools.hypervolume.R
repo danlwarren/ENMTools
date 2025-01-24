@@ -57,6 +57,7 @@ enmtools.hypervolume <- function(species, env, samples.per.point = 10, reduction
 
 
 # Summary for objects of class enmtools.hypervolume
+#' @exportS3Method
 summary.enmtools.hypervolume <- function(object, plot = TRUE, ...){
 
   print(object$hv)
@@ -68,6 +69,7 @@ summary.enmtools.hypervolume <- function(object, plot = TRUE, ...){
 }
 
 # Print method for objects of class enmtools.hypervolume
+#' @exportS3Method
 print.enmtools.hypervolume <- function(x, ...){
 
   print(summary(x, ...))
@@ -76,6 +78,7 @@ print.enmtools.hypervolume <- function(x, ...){
 
 
 # Plot method for objects of class enmtools.hypervolume
+#' @exportS3Method
 plot.enmtools.hypervolume <- function(x, ...){
 
   suit.points <- data.frame(rasterToPoints2(x$suitability))

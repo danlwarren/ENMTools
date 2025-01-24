@@ -43,6 +43,7 @@ enmtools.clade <- function(species = NA, tree = NA){
    return(output)
 }
 
+#' @exportS3Method
 summary.enmtools.clade <- function(object, ...){
 
   object <- check.clade(object)
@@ -61,6 +62,7 @@ summary.enmtools.clade <- function(object, ...){
   cat("\n")
 }
 
+#' @exportS3Method
 plot.enmtools.clade <- function(x, ...){
 
   # Figure out how many plots you need.  We'll do one for each species (up to 15)
@@ -89,6 +91,7 @@ plot.enmtools.clade <- function(x, ...){
 
 }
 
+#' @exportS3Method
 print.enmtools.clade <- function(x, ...){
   summary(x)
 }

@@ -370,6 +370,7 @@ enmtools.rf <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nbac
 }
 
 # Summary for objects of class enmtools.rf
+#' @exportS3Method
 summary.enmtools.rf <- function(object, plot = TRUE, ...){
 
   cat("\n\nFormula:  ")
@@ -409,6 +410,7 @@ summary.enmtools.rf <- function(object, plot = TRUE, ...){
 }
 
 # Print method for objects of class enmtools.rf
+#' @exportS3Method
 print.enmtools.rf <- function(x, ...){
 
   print(summary(x, ...))
@@ -417,6 +419,7 @@ print.enmtools.rf <- function(x, ...){
 
 
 # Plot method for objects of class enmtools.rf
+#' @exportS3Method
 plot.enmtools.rf <- function(x, ...){
 
 

@@ -322,6 +322,7 @@ get_MCE_equal_width <- function(actual, predicted, bins=10){ #equal width bins
 }
 
 # Summary for objects of class enmtools.calibrate
+#' @exportS3Method
 summary.enmtools.calibrate <- function(object, ...){
 
   print(plot(object))
@@ -351,6 +352,7 @@ summary.enmtools.calibrate <- function(object, ...){
 }
 
 # Print method for objects of class enmtools.calibrate
+#' @exportS3Method
 print.enmtools.calibrate <- function(x, ...){
 
   print(summary(x, ...))
@@ -359,6 +361,7 @@ print.enmtools.calibrate <- function(x, ...){
 
 
 # Plot method for objects of class enmtools.calibrate
+#' @exportS3Method
 plot.enmtools.calibrate <- function(x, ...){
 
   if(inherits(x, "enmtools.recalibrated.model")){

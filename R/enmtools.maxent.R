@@ -376,6 +376,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
 }
 
 # Summary for objects of class enmtools.maxent
+#' @exportS3Method
 summary.enmtools.maxent <- function(object, plot = TRUE, ...){
 
   cat("\n\nData table (top ten lines): ")
@@ -412,6 +413,7 @@ summary.enmtools.maxent <- function(object, plot = TRUE, ...){
 }
 
 # Print method for objects of class enmtools.maxent
+#' @exportS3Method
 print.enmtools.maxent <- function(x, ...){
 
   summary(x)
@@ -419,6 +421,7 @@ print.enmtools.maxent <- function(x, ...){
 }
 
 # Plot method for objects of class enmtools.maxent
+#' @exportS3Method
 plot.enmtools.maxent <- function(x, ...){
 
 

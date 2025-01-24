@@ -348,6 +348,7 @@ enmtools.bc <- function(species, env = NA, f = NULL, test.prop = 0, report = NUL
 
 
 # Summary for objects of class enmtools.bc
+#' @exportS3Method
 summary.enmtools.bc <- function(object, plot = TRUE, ...){
 
   cat("\n\nData table (top ten lines): ")
@@ -385,6 +386,7 @@ summary.enmtools.bc <- function(object, plot = TRUE, ...){
 }
 
 #Print method for objects of class enmtools.bc
+#' @exportS3Method
 print.enmtools.bc <- function(x, ...){
 
   print(summary(x, ...))
@@ -392,6 +394,7 @@ print.enmtools.bc <- function(x, ...){
 }
 
 # Plot method for objects of class enmtools.bc
+#' @exportS3Method
 plot.enmtools.bc <- function(x, ...){
 
 

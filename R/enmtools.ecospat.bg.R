@@ -260,7 +260,7 @@ ecospat.bg.precheck <- function(species.1, species.2, env, nreps, layers){
 
 }
 
-
+#' @exportS3Method
 summary.ecospat.bg.test <- function(object, ...){
   cat(paste("\n\n", object$description))
 
@@ -280,12 +280,14 @@ summary.ecospat.bg.test <- function(object, ...){
 
 }
 
+#' @exportS3Method
 print.ecospat.bg.test <- function(x, ...){
 
   print(summary(x, ...))
 
 }
 
+#' @exportS3Method
 plot.ecospat.bg.test <- function(x, ...){
   grid.arrange(x$d.plot, x$i.plot, nrow = 2)
   grid.arrange(x$sp1.bg.plot, x$sp2.bg.plot,

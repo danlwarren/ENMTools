@@ -390,6 +390,7 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
 }
 
 # Summary for objects of class enmtools.gam
+#' @exportS3Method
 summary.enmtools.gam <- function(object, plot = TRUE, ...){
 
   cat("\n\nFormula:  ")
@@ -428,6 +429,7 @@ summary.enmtools.gam <- function(object, plot = TRUE, ...){
 }
 
 # Print method for objects of class enmtools.gam
+#' @exportS3Method
 print.enmtools.gam <- function(x, ...){
 
   print(summary(x, ...))
@@ -436,6 +438,7 @@ print.enmtools.gam <- function(x, ...){
 
 
 # Plot method for objects of class enmtools.gam
+#' @exportS3Method
 plot.enmtools.gam <- function(x, ...){
 
   suit.points <- data.frame(rasterToPoints2(x$suitability))

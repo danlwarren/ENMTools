@@ -384,6 +384,7 @@ enmtools.rf.ranger <- function(species, env, f = NULL, test.prop = 0, eval = TRU
 }
 
 # Summary for objects of class enmtools.rf
+#' @exportS3Method
 summary.enmtools.rf.ranger <- function(object, plot = TRUE, ...){
 
   cat("\n\nFormula:  ")
@@ -423,6 +424,7 @@ summary.enmtools.rf.ranger <- function(object, plot = TRUE, ...){
 }
 
 # Print method for objects of class enmtools.rf
+#' @exportS3Method
 print.enmtools.rf.ranger <- function(x, ...){
 
   print(summary(x, ...))
@@ -431,6 +433,7 @@ print.enmtools.rf.ranger <- function(x, ...){
 
 
 # Plot method for objects of class enmtools.rf
+#' @exportS3Method
 plot.enmtools.rf.ranger <- function(x, ...){
 
 

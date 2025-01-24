@@ -338,7 +338,7 @@ background.precheck <- function(species.1, species.2, env, type, f, nreps, test.
 
 }
 
-
+#' @exportS3Method
 summary.enmtools.background.test <- function(object, ...){
 
   message(paste("\n\n", object$description))
@@ -353,12 +353,14 @@ summary.enmtools.background.test <- function(object, ...){
 
 }
 
+#' @exportS3Method
 print.enmtools.background.test <- function(x, ...){
 
   summary(x)
 
 }
 
+#' @exportS3Method
 plot.enmtools.background.test <- function(x, ...){
   grid.arrange(x$d.plot, x$env.d.plot,
                x$i.plot, x$env.i.plot,

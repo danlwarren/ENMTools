@@ -346,6 +346,7 @@ enmtools.dm <- function(species, env = NA, f = NULL, test.prop = 0, report = NUL
 
 
 # Summary for objects of class enmtools.dm
+#' @exportS3Method
 summary.enmtools.dm <- function(object, plot = TRUE, ...){
 
   cat("\n\nData table (top ten lines): ")
@@ -383,6 +384,7 @@ summary.enmtools.dm <- function(object, plot = TRUE, ...){
 
 
 #Print method for objects of class enmtools.dm
+#' @exportS3Method
 print.enmtools.dm <- function(x, ...){
 
   print(summary(x, ...))
@@ -390,6 +392,7 @@ print.enmtools.dm <- function(x, ...){
 }
 
 # Plot method for objects of class enmtools.dm
+#' @exportS3Method
 plot.enmtools.dm <- function(x, ...){
 
   suit.points <- data.frame(rasterToPoints2(x$suitability))

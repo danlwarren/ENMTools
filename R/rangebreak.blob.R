@@ -333,7 +333,7 @@ rangebreak.blob.precheck <- function(species.1, species.2, env, type, f, nreps){
 
 }
 
-
+#' @exportS3Method
 summary.enmtools.rangebreak.blob <- function(object, ...){
 
   cat(paste("\n\n", object$description))
@@ -348,12 +348,14 @@ summary.enmtools.rangebreak.blob <- function(object, ...){
 
 }
 
+#' @exportS3Method
 print.enmtools.rangebreak.blob <- function(x, ...){
 
   summary(x)
 
 }
 
+#' @exportS3Method
 plot.enmtools.rangebreak.blob <- function(x, ...){
 
   #   x.raster <- x$empirical.species.1.model$suitability

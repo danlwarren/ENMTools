@@ -321,7 +321,7 @@ identity.precheck <- function(species.1, species.2, env, type, f, nreps){
 
 }
 
-
+#' @exportS3Method
 summary.enmtools.identity.test <- function(object, ...){
 
   cat(paste("\n\n", object$description))
@@ -336,12 +336,14 @@ summary.enmtools.identity.test <- function(object, ...){
 
 }
 
+#' @exportS3Method
 print.enmtools.identity.test <- function(x, ...){
 
   summary(x)
 
 }
 
+#' @exportS3Method
 plot.enmtools.identity.test <- function(x, ...){
   grid.arrange(x$d.plot, x$env.d.plot,
                x$i.plot, x$env.i.plot,

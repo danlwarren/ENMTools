@@ -411,6 +411,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
 }
 
 # Summary for objects of class enmtools.glm
+#' @exportS3Method
 summary.enmtools.glm <- function(object, plot = TRUE, ...){
 
   cat("\n\nFormula:  ")
@@ -450,6 +451,7 @@ summary.enmtools.glm <- function(object, plot = TRUE, ...){
 }
 
 # Print method for objects of class enmtools.glm
+#' @exportS3Method
 print.enmtools.glm <- function(x, ...){
 
   print(summary(x, ...))
@@ -458,6 +460,7 @@ print.enmtools.glm <- function(x, ...){
 
 
 # Plot method for objects of class enmtools.glm
+#' @exportS3Method
 plot.enmtools.glm <- function(x, ...){
 
 

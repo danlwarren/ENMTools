@@ -163,6 +163,7 @@ enmtools.aoc <- function(clade, env = NULL,  overlap.source, nreps = 100, f = NU
   return(output)
 }
 
+#' @exportS3Method
 summary.enmtools.aoc <- function(object, ...){
 
   cat("\n\nAge-Overlap Correlation test\n\n")
@@ -175,10 +176,12 @@ summary.enmtools.aoc <- function(object, ...){
 
 }
 
+#' @exportS3Method
 print.enmtools.aoc <- function(x, ...){
   summary(x)
 }
 
+#' @exportS3Method
 plot.enmtools.aoc <- function(x, ...){
 
   assert.extras.this.fun()
