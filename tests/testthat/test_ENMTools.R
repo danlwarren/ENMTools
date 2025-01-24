@@ -247,11 +247,11 @@ test_that("backwards compatability works", {
   cyreni <- iberolacerta.clade$species$cyreni
   loaded <- load("sysdata.rda")
   on.exit(rm(list = loaded), add = TRUE, after = FALSE)
-  expect_warning(cyreni.glm.raster <- enmtools.glm(cyreni,
+  expect_error(cyreni.glm.raster <- enmtools.glm(cyreni,
                                                    euro.worldclim,
                                                    f = pres ~ bio1 + bio9,
                                                    test.prop = 0.2),
-                 "env is not the expected SpatRaster class",
+                 "Argument env must be a SpatRaster object!",
                  fixed = TRUE)
   expect_enmtools_model(cyreni.glm.raster)
   suppressWarnings(cyreni.glm.raster2 <- enmtools.glm(iberolacerta.clade$species$cyreni,

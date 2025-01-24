@@ -103,12 +103,12 @@ visualize.enm <- function(model, env, nbins = 100, layers = colnames(model$analy
   plot.df <- data.frame(plot.df)
 
   if(inherits(model$model, "DistModel")){
-    pred <- predict(model$model, x = plot.df, type = "response")
+    pred <- predict(model$model, x = plot.df, type = "prob")
   } else {
     if(inherits(model$model, "ranger")) {
-      pred <- predict(model$model, data = plot.df, type = "response")$predictions[ , 2, drop = TRUE]
+      pred <- predict(model$model, data = plot.df, type = "prob")$predictions[ , 2, drop = TRUE]
     } else {
-      pred <- predict(model$model, newdata = plot.df, type = "response")
+      pred <- predict(model$model, new_data = plot.df, type = "prob")
     }
   }
 

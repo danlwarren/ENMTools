@@ -80,22 +80,22 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
     # Use that sample space to get a starting overlap value
     colnames(predict.table) <- names(env)
     if(inherits(model.1, "DistModel")){
-      pred1 <- as.numeric(predict(model.1, x = data.frame(predict.table), type = "response"))
+      pred1 <- as.numeric(predict(model.1, x = data.frame(predict.table), type = "prob"))
     } else {
       if(inherits(model.1, "ranger")) {
-        pred1 <- as.numeric(predict(model.1, data = data.frame(predict.table), type = "response")$predictions[ , 2, drop = TRUE])
+        pred1 <- as.numeric(predict(model.1, data = data.frame(predict.table), type = "prob")$predictions[ , 2, drop = TRUE])
       } else {
-        pred1 <- as.numeric(predict(model.1, newdata = data.frame(predict.table), type = "response"))
+        pred1 <- as.numeric(predict(model.1, new_data = data.frame(predict.table), type = "prob"))
       }
     }
 
     if(inherits(model.2, "DistModel")){
-      pred2 <- as.numeric(predict(model.2, x = data.frame(predict.table), type = "response"))
+      pred2 <- as.numeric(predict(model.2, x = data.frame(predict.table), type = "prob"))
     } else {
       if(inherits(model.2, "ranger")) {
-        pred2 <- as.numeric(predict(model.2, data = data.frame(predict.table), type = "response")$predictions[ , 2, drop = TRUE])
+        pred2 <- as.numeric(predict(model.2, data = data.frame(predict.table), type = "prob")$predictions[ , 2, drop = TRUE])
       } else {
-        pred2 <- as.numeric(predict(model.2, newdata = data.frame(predict.table), type = "response"))
+        pred2 <- as.numeric(predict(model.2, new_data = data.frame(predict.table), type = "prob"))
       }
     }
 
@@ -224,22 +224,22 @@ env.overlap <- function(model.1, model.2, env, tolerance = .001, max.reps = 10, 
       colnames(predict.table) <- names(env)
 
       if(inherits(model.1, "DistModel")){
-        pred1 <- as.numeric(predict(model.1, x = data.frame(predict.table), type = "response"))
+        pred1 <- as.numeric(predict(model.1, x = data.frame(predict.table), type = "prob"))
       } else {
         if(inherits(model.1, "ranger")) {
-          pred1 <- as.numeric(predict(model.1, data = data.frame(predict.table), type = "response")$predictions[ , 2, drop = TRUE])
+          pred1 <- as.numeric(predict(model.1, data = data.frame(predict.table), type = "prob")$predictions[ , 2, drop = TRUE])
         } else {
-          pred1 <- as.numeric(predict(model.1, newdata = data.frame(predict.table), type = "response"))
+          pred1 <- as.numeric(predict(model.1, new_data = data.frame(predict.table), type = "prob"))
         }
       }
 
       if(inherits(model.2, "DistModel")){
-        pred2 <- as.numeric(predict(model.2, x = data.frame(predict.table), type = "response"))
+        pred2 <- as.numeric(predict(model.2, x = data.frame(predict.table), type = "prob"))
       } else {
         if(inherits(model.2, "ranger")) {
-          pred2 <- as.numeric(predict(model.2, data = data.frame(predict.table), type = "response")$predictions[ , 2, drop = TRUE])
+          pred2 <- as.numeric(predict(model.2, data = data.frame(predict.table), type = "prob")$predictions[ , 2, drop = TRUE])
         } else {
-          pred2 <- as.numeric(predict(model.2, newdata = data.frame(predict.table), type = "response"))
+          pred2 <- as.numeric(predict(model.2, new_data = data.frame(predict.table), type = "prob"))
         }
       }
 
