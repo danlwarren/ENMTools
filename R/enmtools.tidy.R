@@ -804,13 +804,13 @@ plot.enmtools.tidy <- function(x, ...){
 predict.enmtools.tidy <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
 
   # Make a plot of habitat suitability in the new region
-  suitability <- terra::predict(env, object$model, type = "response", na.rm = TRUE)
+  suitability <- terra::predict(env, object$model, type = "prob", na.rm = TRUE)
 
   # Clamping and getting a diff layer
   clamping.strength <- NA
   if(clamp == TRUE){
     env <- clamp.env(object$analysis.df, env)
-    clamped.suitability <- terra::predict(env, object$model, type = "response", na.rm = TRUE)
+    clamped.suitability <- terra::predict(env, object$model, type = "prob", na.rm = TRUE)
     clamping.strength <- clamped.suitability - suitability
     suitability <- clamped.suitability
   }
