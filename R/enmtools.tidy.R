@@ -722,7 +722,6 @@ pres_only_sdm <- function(mode = "classification", engine = "bioclim") {
 NULL
 
 
-#' Summary for objects of class enmtools.glm
 #' @exportS3Method
 summary.enmtools.tidy <- function(object, plot = TRUE, ...){
 
@@ -762,7 +761,7 @@ summary.enmtools.tidy <- function(object, plot = TRUE, ...){
 
 }
 
-#' Print method for objects of class enmtools.glm
+
 #' @exportS3Method
 print.enmtools.tidy <- function(x, ...){
 
@@ -772,7 +771,6 @@ print.enmtools.tidy <- function(x, ...){
 
 #' @exportS3Method
 plot.enmtools.tidy <- function(x, ...){
-
 
   suit.points <- data.frame(rasterToPoints2(x$suitability))
   colnames(suit.points) <- c("x", "y", "Suitability")
