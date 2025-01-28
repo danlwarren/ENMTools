@@ -800,7 +800,7 @@ plot.enmtools.tidy <- function(x, ...){
 }
 
 
-# Predict method for models of class enmtools.glm
+# Predict method for models of class enmtools.tidy
 predict.enmtools.tidy <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
 
   # Make a plot of habitat suitability in the new region
