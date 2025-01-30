@@ -22,7 +22,7 @@ library(GGally)
 library(DALEXtra)
 ```
 
-This vignette is about new feature in ENMTools in version 2.0. It can help for user's migrating from version 1.0, and is also a testing ground for the new feature.
+This vignette is about new feature in ENMTools in version 2.0. It can help for user's migrating from version 1.0, and is also a testing ground for the new features.
 
 ## Version 1.1 changes: Spatial packages 
 
