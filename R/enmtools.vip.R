@@ -32,7 +32,7 @@ enmtools.vip <- function(model, metric = "roc_auc", nsim = 10, method = "permute
 
   if(inherits(model, "enmtools.tidy")){
     thismodel <- model$model
-    feature_names <- labels(terms(thismodel))
+    feature_names <- labels(terms(thismodel$pre$actions$formula$formula))
     feature_names <- gsub("poly\\(", "", feature_names)
     feature_names <- gsub(",.*", "", feature_names)
     train <- model$analysis.df[,-c(1,2)]

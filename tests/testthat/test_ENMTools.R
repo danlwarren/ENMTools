@@ -247,11 +247,11 @@ test_that("backwards compatability works", {
   cyreni <- iberolacerta.clade$species$cyreni
   loaded <- load("sysdata.rda")
   on.exit(rm(list = loaded), add = TRUE, after = FALSE)
-  expect_error(cyreni.glm.raster <- enmtools.glm(cyreni,
+  expect_warning(cyreni.glm.raster <- enmtools.glm(cyreni,
                                                    euro.worldclim,
                                                    f = pres ~ bio1 + bio9,
                                                    test.prop = 0.2),
-                 "Argument env must be a SpatRaster object!",
+                 "env is not the expected SpatRaster class (instead, it is of class RasterBrick). ENMTools will attempt to coerce using terra::rast(...), but we cannot guaranteed the correctness of the result. Please consider using SpatRaster format directly in the future, to minimize unexpected results.",
                  fixed = TRUE)
   expect_enmtools_model(cyreni.glm.raster)
   suppressWarnings(cyreni.glm.raster2 <- enmtools.glm(iberolacerta.clade$species$cyreni,
