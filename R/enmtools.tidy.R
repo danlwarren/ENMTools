@@ -790,6 +790,8 @@ plot.enmtools.tidy <- function(x, ...){
   }
 
   if(!is.na(x$species.name)){
+
+    # Need to change this to reflect the actual model type
     title <- paste("GLM model for", x$species.name)
     suit.plot <- suit.plot + ggtitle(title) + theme(plot.title = element_text(hjust = 0.5))
   }
