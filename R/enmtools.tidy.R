@@ -255,16 +255,16 @@ enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, 
         rts.env.training[i] <- thisrep.env.model.evaluation@auc
 
         if(test.prop > 0 & test.prop < 1){
-          temp.sp <- rep.species
+          temp.sp <- species
           temp.sp$presence.points <- terra::vect(rep.test.data, geom=c("x", "y"), crs = terra::crs(species$presence.points))
           temp.sp.prep <- enmtools.prep(temp.sp, env, nback = 0, weights = weights)
           rep.test.data2 <- temp.sp.prep$data
-          temp.sp <- temp.sp.prep$species
+          #temp.sp <- temp.sp.prep$species
 
-          thisrep.test.evaluation <-dismo::evaluate(as.numeric(unlist(predict(thisrep.tidy, new_data = rep.test.data2, type = "prob")$.pred_1)),
-                                                    as.numeric(unlist(predict(thisrep.tidy, new_data = rts.df[rts.df$presence == 0, ], type = "prob")$.pred_1)))
+          thisrep.test.evaluation <- dismo::evaluate(as.numeric(unlist(predict(thisrep.tidy, new_data = rep.test.data2, type = "prob")$.pred_1)),
+                                                     as.numeric(unlist(predict(thisrep.tidy, new_data = rts.df[rts.df$presence == 0, ], type = "prob")$.pred_1)))
 
-          temp.sp <- rep.species
+          temp.sp <- species
           temp.sp$presence.points <- terra::vect(rep.test.data, geom = c("x", "y"), crs = terra::crs(species$presence.points))
           thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.tidy, env, n.background = env.nback)
 

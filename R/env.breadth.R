@@ -55,7 +55,7 @@ env.breadth <- function(model, env, tolerance = .0001, max.reps = 10, chunk.size
       if(inherits(model, "ranger")) {
         pred <- as.numeric(predict(model, data = data.frame(predict.table), type = "prob")$predictions[ , 2, drop = TRUE])
       } else {
-        pred <- as.numeric(predict(model, new_data = data.frame(predict.table), type = "prob"))
+        pred <- as.numeric(predict(model, new_data = data.frame(predict.table), type = "prob")$.pred_1)
       }
     }
 
@@ -104,7 +104,7 @@ env.breadth <- function(model, env, tolerance = .0001, max.reps = 10, chunk.size
         if(inherits(model, "ranger")) {
           pred <- as.numeric(predict(model, data = data.frame(predict.table), type = "prob")$predictions[ , 2, drop = TRUE])
         } else {
-          pred <- as.numeric(predict(model, new_data = data.frame(predict.table), type = "prob"))
+          pred <- as.numeric(predict(model, new_data = data.frame(predict.table), type = "prob")$.pred_1)
         }
       }
 

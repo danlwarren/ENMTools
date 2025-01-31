@@ -32,12 +32,11 @@ enmtools.vip <- function(model, metric = "roc_auc", nsim = 10, method = "permute
 
   if(inherits(model, "enmtools.tidy")){
     thismodel <- model$model
-    feature_names <- labels(terms(thismodel$pre$actions$formula$formula))
-    feature_names <- gsub("poly\\(", "", feature_names)
-    feature_names <- gsub(",.*", "", feature_names)
+    pars <- summary(workflows::extract_recipe(thismodel, estimated = TRUE))
+    feature_names <- pars$variable[pars$role == "predictor"]
     train <- model$analysis.df[,-c(1,2)]
     target <- "presence"
-    pred_wrapper <- predict
+    pred_wrapper <- function(object, newdata) predict(object, new_data = newdata, type = "prob")$.pred_1
     train$presence <- as.factor(train$presence)
   }
 
@@ -240,6 +239,7 @@ enmtools.vip <- function(model, metric = "roc_auc", nsim = 10, method = "permute
                                        train = train,
                                        target = target,
                                        metric = metric,
+                                       pred.fun = pred_wrapper,
                                        reference_class = "1",
                                        nsim = nsim)
     }

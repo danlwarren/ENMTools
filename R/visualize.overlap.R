@@ -85,7 +85,7 @@ visualize.overlap <- function(model.1, model.2, env, nbins = 100, layers, plot.p
     if(inherits(model.1$model, "ranger")) {
       pred1 <- as.numeric(predict(model.1$model, data = data.frame(plot.df), type = "prob")$predictions[ , 2, drop = TRUE])
     } else {
-      pred1 <- as.numeric(predict(model.1$model, new_data = data.frame(plot.df), type = "prob"))
+      pred1 <- as.numeric(predict(model.1$model, new_data = data.frame(plot.df), type = "prob")$.pred_1)
     }
   }
 
@@ -95,7 +95,7 @@ visualize.overlap <- function(model.1, model.2, env, nbins = 100, layers, plot.p
     if(inherits(model.2$model, "ranger")) {
       pred2 <- as.numeric(predict(model.2$model, data = data.frame(plot.df), type = "prob")$predictions[ , 2, drop = TRUE])
     } else {
-      pred2 <- as.numeric(predict(model.2$model, new_data = data.frame(plot.df), type = "prob"))
+      pred2 <- as.numeric(predict(model.2$model, new_data = data.frame(plot.df), type = "prob")$.pred_1)
     }
   }
 
