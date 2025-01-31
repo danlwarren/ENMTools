@@ -217,17 +217,18 @@ enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, 
 
         # Mix the points all together
         if(test.prop > 0) {
-          test <- as.data.frame(test.data, geom = "XY")[ , c("x", "y")]
+          test <- cbind(test.data, test.data.check)
+          allpoints <- rbind(test,
+                             species$background.points,
+                             species$presence.points)
         } else {
-          test <- NULL
+          allpoints <- rbind(species$background.points,
+                             species$presence.points)
         }
-        allpoints <- rbind(test,
-                           as.data.frame(species$background.points, geom = "XY")[ , c("x", "y")],
-                           as.data.frame(species$presence.points, geom = "XY")[ , c("x", "y")])
 
         # Sample presence points from pool and remove from pool
         rep.rows <- sample(nrow(allpoints), nrow(species$presence.points))
-        rep.species$presence.points <- terra::vect(allpoints[rep.rows,], geom=c("x", "y"), crs = terra::crs(species$presence.points))
+        rep.species$presence.points <- allpoints[rep.rows,]
         allpoints <- allpoints[-rep.rows,]
 
         # Do the same for test points
@@ -238,9 +239,9 @@ enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, 
         }
 
         # Everything else goes back to the background
-        rep.species$background.points <- terra::vect(allpoints, geom=c("x", "y"), crs = terra::crs(species$presence.points))
+        rep.species$background.points <- allpoints
 
-        rts.prep <- enmtools.prep(rep.species, env, nback = 0, weights = weights)
+        rts.prep <- enmtools.prep(rep.species, nback = 0, weights = weights)
         rts.df <- rts.prep$data
         rep.species <- rts.prep$species
 
@@ -255,17 +256,15 @@ enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, 
         rts.env.training[i] <- thisrep.env.model.evaluation@auc
 
         if(test.prop > 0 & test.prop < 1){
-          temp.sp <- species
-          temp.sp$presence.points <- terra::vect(rep.test.data, geom=c("x", "y"), crs = terra::crs(species$presence.points))
-          temp.sp.prep <- enmtools.prep(temp.sp, env, nback = 0, weights = weights)
+          temp.sp <- rep.species
+          temp.sp$presence.points <- rep.test.data
+          temp.sp.prep <- enmtools.prep(temp.sp, nback = 0, weights = weights)
           rep.test.data2 <- temp.sp.prep$data
           #temp.sp <- temp.sp.prep$species
 
-          thisrep.test.evaluation <- dismo::evaluate(as.numeric(unlist(predict(thisrep.tidy, new_data = rep.test.data2, type = "prob")$.pred_1)),
-                                                     as.numeric(unlist(predict(thisrep.tidy, new_data = rts.df[rts.df$presence == 0, ], type = "prob")$.pred_1)))
+          thisrep.test.evaluation <- dismo::evaluate(as.numeric(unlist(predict(thisrep.tidy, new_data = rep.test.data2[rep.test.data2$presence == 1, ], type = "prob")$.pred_1)),
+                                                     as.numeric(unlist(predict(thisrep.tidy, new_data = rep.test.data2[rep.test.data2$presence == 0, ], type = "prob")$.pred_1)))
 
-          temp.sp <- species
-          temp.sp$presence.points <- terra::vect(rep.test.data, geom = c("x", "y"), crs = terra::crs(species$presence.points))
           thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.tidy, env, n.background = env.nback)
 
           rts.geog.test[i] <- thisrep.test.evaluation@auc
@@ -466,13 +465,15 @@ recipe.enmtools.species <- function (x, formula = NULL, env, nback = 1000, bg.so
 #'
 #' @examples
 #' enmtools.prep(iberolacerta.clade$species$monticola, euro.worldclim)
-enmtools.prep <- function(x, env = NA, nback = 1000, bg.source = "default", verbose = FALSE, bias = NA, weights = "none") {
+enmtools.prep <- function(x, env = NULL, nback = 1000, bg.source = "default", verbose = FALSE, bias = NA, weights = "none") {
   if(nback > 0) {
     species <- check.bg(x, env, nback = nback, bg.source = bg.source, verbose = verbose, bias = bias)
   } else {
     species <- x
   }
-  species <- add.env(species, env = env, verbose = verbose)
+  if(!is.null(env)) {
+    species <- add.env(species, env = env, verbose = verbose)
+  }
   x <- make_analysis.df(species)
   if(weights == "equal"){
     weights <- c(rep(1, nrow(species$presence.points)),
