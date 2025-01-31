@@ -6,7 +6,7 @@
 \usage{
 enmtools.prep(
   x,
-  env = NA,
+  env = NULL,
   nback = 1000,
   bg.source = "default",
   verbose = FALSE,
