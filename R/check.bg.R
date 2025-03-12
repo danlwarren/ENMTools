@@ -92,7 +92,7 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
     } else {
       # There is a bias layer
       if(!inherits(bias, c("SpatVector"))){
-        stop("Bias layer was provided, but it is not a raster, ext = FALSE, rowcol = FALSE!")
+        stop("Bias layer was provided, but it is not a SpatRaster, ext = FALSE, rowcol = FALSE!")
       }
 
       if(!terra::compareGeom(bias, species$range, ext = FALSE, rowcol = FALSE)){
@@ -104,15 +104,13 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
       sample.raster = terra::mask(bias, bias + species$range)
 
       # Drawing background points from sample raster
-      species$background.points <- terra::spatSample(sample.raster,
-                                                     size = min(length(terra::cells(sample.raster)), nback), replace = TRUE,
-                                                     method = "weights", as.points = TRUE,
-                                                     na.rm = TRUE,
-                                                     values = FALSE)
-      # Becase terra doesn't actually sample with replacement
-      if(nrow(species$background.points) < nback){
-        species$background.points <- sample(species$background.points, nback, replace = TRUE)
-      }
+      # We're hand-rolling this because terra doesn't do weighted sampling with replacement
+      sample.raster <- raster.standardize(sample.raster)
+      sample.points <- as.data.frame(sample.raster, xy = TRUE)
+      sample.inds <- sample(1:nrow(sample.points), nback, replace = TRUE, prob = sample.points[,3])
+      sample.points <- sample.points[sample.inds,]
+      species$background.points <- vect(sample.points, geom = c("x", "y"))
+
     }
 
     colnames(species$background.points) <- colnames(species$presence.points)
