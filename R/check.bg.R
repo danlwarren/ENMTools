@@ -109,7 +109,7 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
       sample.points <- as.data.frame(sample.raster, xy = TRUE)
       sample.inds <- sample(1:nrow(sample.points), nback, replace = TRUE, prob = sample.points[,3])
       sample.points <- sample.points[sample.inds,]
-      species$background.points <- vect(sample.points, geom = c("x", "y"))
+      species$background.points <- terra::vect(sample.points, geom = c("x", "y"))
 
     }
 
