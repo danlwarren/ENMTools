@@ -27,6 +27,8 @@
 #'
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
 #'
+#' @export enmtools.tidy
+#'
 #' @examples
 #' data(euro.worldclim)
 #' data(iberolacerta.clade)
