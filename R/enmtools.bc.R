@@ -437,7 +437,7 @@ predict.enmtools.bc <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
   clamping.strength <- NA
   if(clamp == TRUE){
     # Adding env (skipped for BC otherwise)
-    this.df <- as.data.frame(terra::extract(env, object$analysis.df, ID = FALSE))
+    this.df <- as.data.frame(terra::extract(env, object$analysis.df[,1:2], ID = FALSE))
 
     env <- clamp.env(this.df, env)
     clamped.suitability <- terra::predict(env, object$model, na.rm = TRUE)

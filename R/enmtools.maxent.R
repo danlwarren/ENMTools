@@ -460,7 +460,8 @@ plot.enmtools.maxent <- function(x, ...){
 predict.enmtools.maxent <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
 
   # Make a plot of habitat suitability in the new region
-  suitability <- invisible(capture.output(terra::predict(env, object$model, na.rm = TRUE, ...)))
+
+  suitability <- try(terra::predict(env, object$model, na.rm = TRUE, ...), silent = TRUE)
 
   # I'm actually not sure this is doing anything - I think maxent models are clamped by default
   if(clamp == TRUE){
@@ -468,7 +469,7 @@ predict.enmtools.maxent <- function(object, env, maxpts = 1000, clamp = TRUE, ..
     this.df <- as.data.frame(rbind(object$model@presence, object$model@absence))
 
     env <- clamp.env(this.df, env)
-    clamped.suitability <- invisible(capture.output(terra::predict(env, object$model, na.rm = TRUE, ...)))
+    clamped.suitability <- try(terra::predict(env, object$model, na.rm = TRUE, ...), silent = TRUE)
     clamping.strength <- clamped.suitability - suitability
     suitability <- clamped.suitability
   }

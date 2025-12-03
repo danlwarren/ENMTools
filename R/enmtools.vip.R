@@ -195,12 +195,11 @@ enmtools.vip <- function(model, metric = "roc_auc", nsim = 10, method = "permute
                                      nsim = nsim)
 
     output[["shap.plot"]] <- ggplot(output[["shap"]],
-                                    aes_string(x = "Importance",
-                                               fill = fct_reorder("Variable", "Importance", .desc = TRUE))) +
+                                    aes_string(x = "Importance", fill = after_stat("..x.."))) +
       geom_histogram(bins = 20) +
       theme_bw() +
       geom_hline(yintercept = 0, color = "grey") +
-      viridis::scale_fill_viridis(name = "Variable", option = "D", discrete = TRUE, direction = -1) +
+      viridis::scale_fill_viridis(name = "Variable", option = "D") +
       facet_grid(rows = vars(fct_reorder(.data$Variable, .data$Importance, .desc = TRUE)), switch = "y") +
       ylab("Variable") +
       ggtitle("Variable importance, SHAP method") +
