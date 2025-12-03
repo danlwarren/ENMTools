@@ -74,6 +74,7 @@ find.extras <- function(funs = NULL) {
                   `enmtools.gam` = "mgcv",
                   `enmtools.hypervolume` = "hypervolume",
                   `enmtools.maxent` = "rJava",
+                  `enmtools.maxnet` = "maxnet",
                   `enmtools.rf` = "randomForest",
                   `enmtools.rf.ranger` = "ranger",
                   `enmtools.tidy` = "tidymodels",

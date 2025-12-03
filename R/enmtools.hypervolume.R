@@ -1,58 +1,82 @@
-#' THIS FUNCTION IS CURRENTLY DISABLED.  Takes an emtools.species object and environmental layers, and constructs a hypervolume using the R package hypervolume
+#' Takes an enmtools.species object and builds a hypervolume model
 #'
 #' @param species An enmtools.species object
-#' @param env A stack of environmental rasters
-#' @param samples.per.point To be passed to hypervolume_gaussian
-#' @param reduction.factor To be passed to hypervolume_project
-#' @param method Method for constructing hypervolumes, defaults to "gaussian"
-#' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
-#' @param clamp When set to TRUE, clamps the environmental layers so that predictions made outside the min/max of the training data for each predictor are set to the value for the min/max for that predictor. Prevents the model from extrapolating beyond the min/max bounds of the predictor space the model was trained in, although there could still be projections outside the multivariate training space if predictors are strongly correlated.
-#' @param ... Extra parameters to be passed to hypervolume_gaussian
+#' @param env A SpatRaster of environmental data. Note: hypervolume works best with a small number of
+#'   uncorrelated environmental variables (typically 2-6 dimensions).
+#' @param f Standard R formula or tidymodels recipe (optional). If NULL, all environmental variables will be used.
+#' @param test.prop Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.
+#' @param eval Determines whether model evaluation should be done. Turned on by default.
+#' @param nback Number of background points to draw from range or env, if background points aren't provided
+#' @param env.nback Number of points to draw from environment space for environment space discrimination metrics.
+#' @param report Optional name of an html file for generating reports
+#' @param overwrite TRUE/FALSE whether to overwrite a report file if it already exists
+#' @param rts.reps The number of replicates to do for a Raes and ter Steege-style test of significance
+#' @param bg.source Source for drawing background points. If "points", it just uses the background points that are already in the species object. If "range", it uses the range raster. If "env", it draws points at random from the entire study area outlined by the first environmental layer.
+#' @param verbose Controls printing of various messages progress reports. Defaults to FALSE.
+#' @param clamp When set to TRUE, clamps the environmental layers so that predictions made outside the min/max of the training data for each predictor are set to the value for the min/max for that predictor.
+#' @param corner An integer from 1 to 4. Selects which corner to use for "block" test data. By default the corner is selected randomly.
+#' @param bias An optional raster estimating relative sampling effort per grid cell. Will be used for drawing background data.
+#' @param method Method for constructing hypervolumes: "gaussian" (default) or "svm".
+#' @param samples.per.point Number of random samples per point for hypervolume estimation. Default 1000.
+#' @param reduction.factor Value between 0 and 1 for prediction speed. Lower values are faster but less accurate. Default 0.5.
+#' @param ... Additional arguments to be passed to hypervolume construction functions
 #'
-#' @return An enmtools hypvervolume object containing a hypervolume object, a raster of suitability scores, the species name, and the occurrence data frame.
+#' @return An enmtools model object containing species name, model object, suitability raster, and any evaluation objects that were created.
+#'
+#' @details Hypervolume models estimate the environmental niche as an n-dimensional hypervolume
+#' using kernel density estimation. This is a presence-only method that does not use background points
+#' for model fitting (though background points are still used for model evaluation).
+#'
+#' Note that hypervolume models work best with a small number of uncorrelated environmental
+#' variables (typically 2-6). Using too many variables can lead to poor performance due to the
+#' curse of dimensionality.
+#'
+#' The function internally standardizes environmental data before fitting the hypervolume,
+#' and stores the scaling parameters for use in prediction.
+#'
+#' @seealso \code{\link[hypervolume]{hypervolume_gaussian}} for the underlying modeling function.
 #'
 #' @examples
-#' \donttest{
-#' #install.extras(repos='http://cran.us.r-project.org')
-#' env <- euro.worldclim[[c(1,8,12,17)]]
-#' if(requireNamespace("hypervolume", quietly = TRUE)) {
-#'     monticola.hv <- enmtools.hypervolume(iberolacerta.clade$species$monticola, env = env)
+#' \dontrun{
+#' # Use a small number of environmental variables
+#' env_subset <- euro.worldclim[[c("bio1", "bio12")]]
+#' monticola.hv <- enmtools.hypervolume(iberolacerta.clade$species$monticola, env = env_subset)
 #' }
-#' }
-
-enmtools.hypervolume <- function(species, env, samples.per.point = 10, reduction.factor = 0.1, method = "gaussian",  verbose = FALSE, clamp = TRUE, ...){
-
-  return("This function is currently disabled, will be re-enabled once hypervolume on CRAN is working with the terra package.")
+#'
+#' @export
+enmtools.hypervolume <- function(species, env, f = NULL, test.prop = 0, eval = TRUE,
+                                  nback = 1000, env.nback = 10000, report = NULL,
+                                  overwrite = FALSE, rts.reps = 0,
+                                  bg.source = "default", verbose = FALSE, clamp = TRUE,
+                                  corner = NA, bias = NA,
+                                  method = "gaussian", samples.per.point = 1000,
+                                  reduction.factor = 0.5, ...) {
 
   assert.extras.this.fun()
 
-  hypervolume.precheck(species, env)
+  model_args <- list(method = method, samples.per.point = samples.per.point,
+                     reduction.factor = reduction.factor, ...)
 
-  for(i in 1:length(names(env))){
-    env[[i]] <- (env[[i]] - as.numeric(terra::global(env[[i]], "mean", na.rm = TRUE)))/as.numeric(terra::global(env[[i]], "sd", na.rm = TRUE))
-  }
-
-  climate <- terra::extract(env, species$presence.points, ID = FALSE)
-
-  this.hv = NA
-
-  if(method == "gaussian"){
-    this.hv <- hypervolume::hypervolume_gaussian(climate, name = species$species.name, samples.per.point = samples.per.point, ...)
-  } else if(method == "svm"){
-    this.hv <- hypervolume::hypervolume_svm(climate, name = species$species.name, samples.per.point = samples.per.point, ...)
-  }
-
-
-  this.map <- hypervolume::hypervolume_project(this.hv, env, reduction.factor = reduction.factor)
-
-  output <- list(hv = this.hv,
-                 suitability = this.map,
-                 species.name = species$species.name,
-                 analysis.df = species$presence.points)
-
-  class(output) <- "enmtools.hypervolume"
-
-  return(output)
+  enmtools.tidy(
+    species = species,
+    env = env,
+    f = f,
+    model = "hypervolume",
+    test.prop = test.prop,
+    eval = eval,
+    nback = nback,
+    env.nback = env.nback,
+    report = report,
+    overwrite = overwrite,
+    rts.reps = rts.reps,
+    weights = "none",  # hypervolume is presence-only, no weights needed
+    bg.source = bg.source,
+    verbose = verbose,
+    clamp = clamp,
+    corner = corner,
+    bias = bias,
+    model_args = model_args
+  )
 }
 
 

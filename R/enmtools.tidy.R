@@ -378,7 +378,27 @@ enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, 
                  call = sys.call(),
                  notes = notes)
 
-  class(output) <- c("enmtools.tidy", "enmtools.model")
+  # Determine model-specific class based on model parameter
+  model_class <- if (is.character(model)) {
+    switch(model,
+           maxnet = "enmtools.maxnet",
+           hypervolume = "enmtools.hypervolume",
+           hv = "enmtools.hypervolume",
+           NULL)
+  } else {
+    NULL
+  }
+
+  # For hypervolume models, extract the hypervolume object for special methods
+  if (!is.null(model_class) && model_class == "enmtools.hypervolume") {
+    output$hv <- workflows::extract_fit_parsnip(this.fit)$fit
+  }
+
+  if (!is.null(model_class)) {
+    class(output) <- c(model_class, "enmtools.tidy", "enmtools.model")
+  } else {
+    class(output) <- c("enmtools.tidy", "enmtools.model")
+  }
 
   # Doing response plots for each variable.  Doing this bit after creating
   # the output object because marginal.plots expects an enmtools.model object
@@ -502,7 +522,10 @@ choose_model <- function(model, args = list(), ...) {
          rf = parsnip::rand_forest(mode = "classification", engine = "randomForest"),
          `rf.ranger` = parsnip::rand_forest(mode = "classification"),
          bc = pres_only_sdm(),
-         dm = pres_only_sdm(engine = "domain"))
+         dm = pres_only_sdm(engine = "domain"),
+         hv = pres_only_sdm(engine = "hypervolume"),
+         hypervolume = pres_only_sdm(engine = "hypervolume"),
+         maxnet = maxnet_sdm())
   if(length(args) > 0) {
     m <- parsnip::set_args(m, !!!args)
   }
@@ -558,6 +581,129 @@ domain_bridge <- function(x, y) {
   dismo::domain(dat)
 }
 
+#' Wrapper function for `maxnet::maxnet()`
+#'
+#' Wraps [`maxnet::maxnet()`] for use in a `parsnip` model specification.
+#' Mostly for internal use. Exported so it works properly with parallel computation in `tidymodels`
+#'
+#' @param x Matrix or data.frame of environmental variables at points
+#' @param y Single column matrix or data.frame containing a two-level factor
+#' @param regmult Regularization multiplier passed to maxnet. Default 1.
+#' @param classes Feature classes for maxnet formula. Default "default".
+#' @param ... Additional arguments passed to maxnet::maxnet()
+#'
+#' @return The result of calling [`maxnet::maxnet()`]
+#' @export
+maxnet_bridge <- function(x, y, regmult = 1, classes = "default", ...) {
+  # Convert factor to 0/1 vector
+  # Level 2 is presence (coded as "1"), level 1 is background (coded as "0")
+  # Handle both vector and single-column data.frame/matrix cases
+  if (is.data.frame(y) || is.matrix(y)) {
+    p <- as.integer(y[[1]]) - 1L
+  } else {
+    p <- as.integer(y) - 1L
+  }
+
+  # Ensure x is a data.frame
+  data <- as.data.frame(x)
+
+  # Build the maxnet formula
+  f <- maxnet::maxnet.formula(p, data, classes = classes)
+
+  # Fit the model
+  maxnet::maxnet(p = p, data = data, f = f, regmult = regmult, ...)
+}
+
+#' Wrapper function for `hypervolume::hypervolume_gaussian()`
+#'
+#' Wraps [`hypervolume::hypervolume_gaussian()`] for use in a `parsnip` model specification.
+#' Mostly for internal use. Exported so it works properly with parallel computation in `tidymodels`
+#'
+#' @param x Matrix or data.frame of environmental variables at points
+#' @param y Single column matrix or data.frame containing a two-level factor
+#' @param method Method for constructing hypervolumes: "gaussian" (default) or "svm".
+#' @param samples.per.point Number of random samples per point for hypervolume estimation.
+#' @param reduction.factor Value between 0 and 1 for prediction speed. Default 0.5.
+#' @param ... Additional arguments passed to hypervolume construction function.
+#'
+#' @return A Hypervolume object with scaling attributes attached
+#' @export
+hypervolume_bridge <- function(x, y, method = "gaussian", samples.per.point = 1000,
+                               reduction.factor = 0.5, ...) {
+  # Extract presence-only data (same as bioclim/domain)
+  dat <- check_pres_only(x, y)
+
+  # Standardize the data (hypervolume works better with standardized data)
+  dat_scaled <- scale(dat)
+
+  # Store scaling parameters as attributes for prediction
+  center <- attr(dat_scaled, "scaled:center")
+  scale_sd <- attr(dat_scaled, "scaled:scale")
+
+  # Build the hypervolume
+  if (method == "gaussian") {
+    hv <- hypervolume::hypervolume_gaussian(
+      dat_scaled,
+      samples.per.point = samples.per.point,
+      verbose = FALSE,
+      ...
+    )
+  } else if (method == "svm") {
+    hv <- hypervolume::hypervolume_svm(
+      dat_scaled,
+      samples.per.point = samples.per.point,
+      verbose = FALSE,
+      ...
+    )
+  } else {
+    stop("method must be 'gaussian' or 'svm'")
+  }
+
+  # Attach scaling info and prediction settings for later use
+  attr(hv, "scale_center") <- center
+  attr(hv, "scale_scale") <- scale_sd
+  attr(hv, "reduction_factor") <- reduction.factor
+
+  hv
+}
+
+#' Prediction helper for hypervolume objects
+#'
+#' Helper function for predicting from hypervolume objects in the tidymodels framework.
+#' Uses hypervolume_estimate_probability for continuous suitability values.
+#'
+#' @param object A Hypervolume object from hypervolume package
+#' @param newdata Data frame or matrix of new points to predict
+#'
+#' @return Numeric vector of probability density estimates (normalized to max = 1)
+#' @export
+hypervolume_predict <- function(object, newdata) {
+  # Get scaling parameters
+  center <- attr(object, "scale_center")
+  scale_sd <- attr(object, "scale_scale")
+  reduction_factor <- attr(object, "reduction_factor")
+  if (is.null(reduction_factor)) reduction_factor <- 0.5  # Default
+
+  # Scale the new data using stored parameters
+  newdata_scaled <- scale(as.matrix(newdata), center = center, scale = scale_sd)
+
+  # Use probability estimation for continuous values
+  result <- hypervolume::hypervolume_estimate_probability(
+    hv = object,
+    points = newdata_scaled,
+    reduction.factor = reduction_factor,
+    verbose = FALSE
+  )
+
+  # Normalize to [0, 1] range by dividing by max (if any non-zero values)
+  max_val <- max(result, na.rm = TRUE)
+  if (max_val > 0) {
+    result <- result / max_val
+  }
+
+  result
+}
+
 check_pres_only <- function(x, y) {
   # if(ncol(y) > 1) {
   #   stop("pres_only_sdm can only accept an outcome with a single variable")
@@ -589,7 +735,7 @@ make_pres_only_sdm <- function() {
   )
   parsnip::set_dependency("pres_only_sdm", eng = "bioclim", pkg = "dismo")
   parsnip::set_dependency("pres_only_sdm", eng = "domain", pkg = "dismo")
-  parsnip::set_dependency("pres_only_sdm", eng = "hypervolume", pkg = "dismo")
+  parsnip::set_dependency("pres_only_sdm", eng = "hypervolume", pkg = "hypervolume")
   parsnip::set_dependency("pres_only_sdm", eng = "bioclim", pkg = "ENMTools")
   parsnip::set_dependency("pres_only_sdm", eng = "domain", pkg = "ENMTools")
   parsnip::set_dependency("pres_only_sdm", eng = "hypervolume", pkg = "ENMTools")
@@ -620,6 +766,19 @@ make_pres_only_sdm <- function() {
     )
   )
 
+  parsnip::set_fit(
+    model = "pres_only_sdm",
+    eng = "hypervolume",
+    mode = "classification",
+    value = list(
+      interface = "matrix",
+      data = c(x = "x", y = "y"),
+      protect = c("x", "y"),
+      func = c(pkg = "ENMTools", fun = "hypervolume_bridge"),
+      defaults = list(method = "gaussian", samples.per.point = 1000, reduction.factor = 0.5)
+    )
+  )
+
   parsnip::set_encoding(
     model = "pres_only_sdm",
     eng = "bioclim",
@@ -635,6 +794,18 @@ make_pres_only_sdm <- function() {
   parsnip::set_encoding(
     model = "pres_only_sdm",
     eng = "domain",
+    mode = "classification",
+    options = list(
+      predictor_indicators = "none",
+      compute_intercept = FALSE,
+      remove_intercept = FALSE,
+      allow_sparse_x = FALSE
+    )
+  )
+
+  parsnip::set_encoding(
+    model = "pres_only_sdm",
+    eng = "hypervolume",
     mode = "classification",
     options = list(
       predictor_indicators = "none",
@@ -682,6 +853,32 @@ make_pres_only_sdm <- function() {
     value = prob_info
   )
 
+  # Hypervolume uses a custom predict function
+  hypervolume_prob_info <-
+    list(
+      pre = NULL,
+      post = function(x, object) {
+        cnames <- paste0(".pred_", object$lvl)
+        probs <- as.numeric(x)
+        res <- data.frame(pred_0 = 1 - probs, pred_1 = probs)
+        colnames(res) <- cnames
+        res
+      },
+      func = c(pkg = "ENMTools", fun = "hypervolume_predict"),
+      args = list(
+        object = quote(object$fit),
+        newdata = quote(new_data)
+      )
+    )
+
+  parsnip::set_pred(
+    model = "pres_only_sdm",
+    eng = "hypervolume",
+    mode = "classification",
+    type = "prob",
+    value = hypervolume_prob_info
+  )
+
 }
 
 #' `parsnip` Model specification for presence-only species distribution models
@@ -714,6 +911,102 @@ pres_only_sdm <- function(mode = "classification", engine = "bioclim") {
       method = NULL,
       engine = engine
     )
+}
+
+#' `parsnip` Model specification for maxnet species distribution models
+#'
+#' @details maxnet fits Maxent models using the glmnet package, providing a
+#'   modern implementation of the Maxent algorithm without requiring Java.
+#'
+#' @param mode A single character string for the type of model.
+#'   The only possible value for this model is "classification".
+#' @param engine A single character string specifying what computational engine
+#'   to use for fitting. The only engine available is "maxnet".
+#'
+#' @inherit parsnip::logistic_reg return
+#' @export
+#'
+#' @examples
+#' maxnet_sdm()
+maxnet_sdm <- function(mode = "classification", engine = "maxnet") {
+  if (mode != "classification") {
+    stop("`mode` should be 'classification'")
+  }
+
+  parsnip::new_model_spec(
+    "maxnet_sdm",
+    args = NULL,
+    eng_args = NULL,
+    mode = mode,
+    method = NULL,
+    engine = engine
+  )
+}
+
+make_maxnet_sdm <- function() {
+  parsnip::set_new_model("maxnet_sdm")
+  parsnip::set_model_mode(model = "maxnet_sdm", mode = "classification")
+  parsnip::set_model_engine(
+    "maxnet_sdm",
+    mode = "classification",
+    eng = "maxnet"
+  )
+
+  parsnip::set_dependency("maxnet_sdm", eng = "maxnet", pkg = "maxnet")
+  parsnip::set_dependency("maxnet_sdm", eng = "maxnet", pkg = "ENMTools")
+
+  parsnip::set_fit(
+    model = "maxnet_sdm",
+    eng = "maxnet",
+    mode = "classification",
+    value = list(
+      interface = "matrix",
+      data = c(x = "x", y = "y"),
+      protect = c("x", "y"),
+      func = c(pkg = "ENMTools", fun = "maxnet_bridge"),
+      defaults = list(regmult = 1, classes = "default")
+    )
+  )
+
+  parsnip::set_encoding(
+    model = "maxnet_sdm",
+    eng = "maxnet",
+    mode = "classification",
+    options = list(
+      predictor_indicators = "none",
+      compute_intercept = FALSE,
+      remove_intercept = FALSE,
+      allow_sparse_x = FALSE
+    )
+  )
+
+  # Prediction - returns probability from cloglog transformation
+  # Note: maxnet has a predict.maxnet S3 method, so we use stats::predict
+  maxnet_prob_info <-
+    list(
+      pre = NULL,
+      post = function(x, object) {
+        cnames <- paste0(".pred_", object$lvl)
+        res <- data.frame(pred_0 = 1 - x, pred_1 = x)
+        colnames(res) <- cnames
+        res
+      },
+      func = c(pkg = "stats", fun = "predict"),
+      args = list(
+        object = quote(object$fit),
+        newdata = quote(as.data.frame(new_data)),
+        type = "cloglog",
+        clamp = TRUE
+      )
+    )
+
+  parsnip::set_pred(
+    model = "maxnet_sdm",
+    eng = "maxnet",
+    mode = "classification",
+    type = "prob",
+    value = maxnet_prob_info
+  )
 }
 
 #' Reexported functions from other packages

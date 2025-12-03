@@ -40,24 +40,23 @@
 \item{vars}{A character string of column names corresponding to variables
 that will be used in any context (see below)}
 
-\item{roles}{A character string (the same length of \code{vars}) that
-describes a single role that the variable will take. This value could be
-anything but common roles are \code{"outcome"}, \code{"predictor"},
-\code{"case_weight"}, or \code{"ID"}}
+\item{roles}{A character string (the same length of \code{vars}) that describes a
+single role that the variable will take. This value could be anything but
+common roles are \code{"outcome"}, \code{"predictor"}, \code{"case_weight"}, or \code{"ID"}.}
 }
 \value{
 An object of class \code{recipe} with sub-objects:
-\item{var_info}{A tibble containing information about the original data
-set columns}
+\item{var_info}{A tibble containing information about the original data set
+columns.}
 \item{term_info}{A tibble that contains the current set of terms in the
 data set. This initially defaults to the same data contained in
 \code{var_info}.}
-\item{steps}{A list of \code{step}  or \code{check} objects that define the sequence of
-preprocessing operations that will be applied to data. The default value is
-\code{NULL}}
-\item{template}{A tibble of the data. This is initialized to be the same
-as the data given in the \code{data} argument but can be different after
-the recipe is trained.}
+\item{steps}{A list of \code{step} or \code{check} objects that define the sequence
+of preprocessing operations that will be applied to data. The default value
+is \code{NULL}.}
+\item{template}{A tibble of the data. This is initialized to be the same as
+the data given in the \code{data} argument but can be different after the recipe
+is trained.}
 }
 \description{
 A \link[recipes:recipe]{recipe} is a description of the steps to be applied to a data set in order to prepare it for data analysis.
@@ -73,19 +72,43 @@ but are currently not useable by recipe steps (these are the spatial coordinates
 \details{
 \subsection{Defining recipes}{
 
+Creating a recipe comes in two parts:
+\enumerate{
+\item Specifying which variables are used and what roles they should have.
+\item Specifying what transformations should be applied to which
+variables.
+}
+
+The first part is done with \code{recipe()} and optionally \code{update_role()},
+\code{add_role()}, and \code{remove_role()}. A \code{recipe} object can be created in
+several ways. If an analysis only contains outcomes and predictors, the
+simplest way to create one is to use a formula (e.g. \code{y ~ x1 + x2}) that
+does not contain inline functions such as \code{log(x3)}.
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{recipe(data, formula)
+recipe(formula, data)
+}\if{html}{\out{</div>}}
+
 Variables in recipes can have any type of \emph{role}, including outcome,
 predictor, observation ID, case weights, stratification variables, etc.
+You can instead use the \code{vars} and \code{roles} argument to specify the
+variables and roles. \code{vars} must be a character vector of names and
+\code{roles} must the the corresponding roles.
 
-\code{recipe} objects can be created in several ways. If an analysis only
-contains outcomes and predictors, the simplest way to create one is to
-use a formula (e.g. \code{y ~ x1 + x2}) that does not contain inline
-functions such as \code{log(x3)} (see the first example below).
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{recipe(data, vars = vars, roles = roles)
+}\if{html}{\out{</div>}}
 
-Alternatively, a \code{recipe} object can be created by first specifying
-which variables in a data set should be used and then sequentially
-defining their roles (see the last example). This alternative is an
-excellent choice when the number of variables is very high, as the
-formula method is memory-inefficient with many variables.
+Lastly you can use \code{update_role()}, \code{add_role()}, and \code{remove_role()}.
+These functions will alter, add, or eliminate roles from the selections.
+These can be used in combination with the above ways, or by themselves
+since \code{recipe(data)} will consume all the data as undeclared roles. Note
+that \code{update_role()}, \code{add_role()}, and \code{remove_role()} are applied
+before steps and checks, regardless of where they are in the pipeline.
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{recipe(data) |>
+  update_role(class, new_role = "outcome") |>
+  update_role(starts_with("x"), new_role = "predictor")
+}\if{html}{\out{</div>}}
 
 There are two different types of operations that can be sequentially
 added to a recipe.
@@ -137,8 +160,8 @@ library(parsnip)
 data(biomass, package = "modeldata")
 
 # split data
-biomass_tr <- biomass \%>\% filter(dataset == "Training")
-biomass_te <- biomass \%>\% filter(dataset == "Testing")
+biomass_tr <- biomass |> filter(dataset == "Training")
+biomass_te <- biomass |> filter(dataset == "Testing")
 
 # With only predictors and outcomes, use a formula:
 rec <- recipe(HHV ~ carbon + hydrogen + oxygen + nitrogen + sulfur,
@@ -146,8 +169,8 @@ rec <- recipe(HHV ~ carbon + hydrogen + oxygen + nitrogen + sulfur,
 
 # Now add preprocessing steps to the recipe:
 sp_signed <- 
-  rec \%>\%
-  step_normalize(all_numeric_predictors()) \%>\%
+  rec |>
+  step_normalize(all_numeric_predictors()) |>
   step_spatialsign(all_numeric_predictors())
 sp_signed
 }\if{html}{\out{</div>}}
@@ -180,8 +203,8 @@ model and recipe:
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{linear_mod <- linear_reg()
 
 linear_sp_sign_wflow <- 
-  workflow() \%>\% 
-  add_model(linear_mod) \%>\% 
+  workflow() |> 
+  add_model(linear_mod) |> 
   add_recipe(sp_signed)
 
 linear_sp_sign_wflow
@@ -243,8 +266,8 @@ As an example of using PCA (perhaps to produce a plot):
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{# Define the recipe
 pca_rec <- 
-  rec \%>\%
-  step_normalize(all_numeric_predictors()) \%>\%
+  rec |>
+  step_normalize(all_numeric_predictors()) |>
   step_pca(all_numeric_predictors())
 }\if{html}{\out{</div>}}
 
@@ -277,7 +300,7 @@ pca_rec
 
 ## -- Operations
 
-## * Centering and scaling for: carbon and hydrogen, ... | Trained
+## * Centering and scaling for: carbon hydrogen, ... | Trained
 
 ## * PCA extraction with: carbon, hydrogen, oxygen, ... | Trained
 }\if{html}{\out{</div>}}
@@ -324,6 +347,32 @@ In general, the workflow interface to recipes is recommended for most
 applications.
 }
 
+}
+
+\subsection{Strings and Factors}{
+
+The primary purpose of a recipe is to facilitate visualization,
+modeling, and analysis. Because of this, most qualitative data should be
+encoded as factors instead of character strings (with exceptions for
+text analysis and related tasks). It is preferred that quantitative data
+be converted to factors prior to passing the data to the recipe since
+the number of levels is usually required for steps (e.g., for making
+dummy indicator columns).
+
+Although it is advisable to create factors before calling
+\code{\link[recipes:recipe]{recipe()}}, that function has a \code{strings_as_factors}
+argument that can do the conversion. This affects the preprocessed
+training set (when \code{retain = TRUE}) as well as the results of both
+\code{\link[recipes:prep.recipe]{prep.recipe()}} and \code{\link[recipes:bake.recipe]{bake.recipe()}}.
+This will only affect variables with roles \code{"outcome"} and \code{"predictor"}
+
+In 1.2.1 and prior versions of the recipes package, this argument was
+provided via \code{\link[recipes:prep]{prep()}}. Code that only provides it via
+\code{\link[recipes:prep]{prep()}} will continue to work with a once-per-session
+warning, and in a future version, it will become an error. If provided
+in both \code{\link[recipes:prep]{prep()}} and \code{\link[recipes:recipe]{recipe()}}, the value in
+\code{\link[recipes:recipe]{recipe()}} will take precedence. Default to \verb{NULL,} which
+will be taken as \code{TRUE}.
 }
 }
 \examples{

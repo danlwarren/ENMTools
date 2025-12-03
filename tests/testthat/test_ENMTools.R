@@ -36,7 +36,8 @@ expect_enmtools_model <- function(model){
 
   expect_true(all(class(model$model) %in% c("MaxEnt", "Domain", "Bioclim",
                                             "randomForest.formula", "randomForest",
-                                            "list", "glm", "lm", "gam", "ranger", "workflow")),
+                                            "list", "glm", "lm", "gam", "ranger", "workflow",
+                                            "maxnet", "Hypervolume")),
               info = "Class of model is not recognized")
 
   # Evaluation on training data happens unless it's bypassed (GLM only I think)
@@ -288,7 +289,42 @@ test_that("backwards compatability works", {
 #'
 
 
+test_that("maxnet model objects work", {
+  skip_if_not_installed("maxnet")
+  cyreni.maxnet <- enmtools.maxnet(cyreni, euro.worldclim, test.prop = 0.2)
+  expect_enmtools_model(cyreni.maxnet)
+  expect_true(inherits(cyreni.maxnet, "enmtools.maxnet"))
+  p <- plot(cyreni.maxnet)
+  expect_s3_class(p, "ggplot")
+  expect_output(print(cyreni.maxnet, plot = FALSE))
 
+  ## slow
+  skip_on_cran()
+  cyreni.maxnet.rts1 <- enmtools.maxnet(cyreni, euro.worldclim, test.prop = 0.2, rts.reps = 2)
+  cyreni.maxnet.rts2 <- enmtools.maxnet(cyreni, euro.worldclim, test.prop = 0, rts.reps = 2)
+  expect_enmtools_model(cyreni.maxnet.rts1)
+  expect_enmtools_model(cyreni.maxnet.rts2)
+})
+
+
+test_that("hypervolume model objects work", {
+  skip_if_not_installed("hypervolume")
+  # Hypervolume fitting is computationally intensive (kernel density estimation)
+  # Skip full model fitting on CRAN
+  skip_on_cran()
+  # Use only a few environmental variables (hypervolume works best with 2-6 dimensions)
+  env_subset <- euro.worldclim[[c("bio1", "bio12")]]
+  # Use small samples.per.point and large reduction.factor for faster testing
+  cyreni.hv <- enmtools.hypervolume(cyreni, env_subset, test.prop = 0.2,
+                                     samples.per.point = 100, reduction.factor = 0.5)
+  expect_enmtools_model(cyreni.hv)
+  expect_true(inherits(cyreni.hv, "enmtools.hypervolume"))
+  # Check that hypervolume object is stored
+  expect_true(!is.null(cyreni.hv$hv))
+  p <- plot(cyreni.hv)
+  expect_s3_class(p, "ggplot")
+  expect_output(print(cyreni.hv, plot = FALSE))
+})
 
 
 
