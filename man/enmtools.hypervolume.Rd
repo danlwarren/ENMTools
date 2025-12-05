@@ -22,6 +22,7 @@ enmtools.hypervolume(
   bias = NA,
   method = "gaussian",
   samples.per.point = 1000,
+  reduction.factor = 0.5,
   ...
 )
 }
@@ -60,6 +61,8 @@ uncorrelated environmental variables (typically 2-6 dimensions).}
 \item{method}{Method for constructing hypervolumes: "gaussian" (default) or "svm".}
 
 \item{samples.per.point}{Number of random samples per point for hypervolume estimation. Default 1000.}
+
+\item{reduction.factor}{Value between 0 and 1 for prediction speed. Lower values are faster but less accurate. Default 0.5.}
 
 \item{...}{Additional arguments to be passed to hypervolume construction functions}
 }

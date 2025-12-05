@@ -4,7 +4,14 @@
 \alias{hypervolume_bridge}
 \title{Wrapper function for \code{hypervolume::hypervolume_gaussian()}}
 \usage{
-hypervolume_bridge(x, y, method = "gaussian", samples.per.point = 1000, ...)
+hypervolume_bridge(
+  x,
+  y,
+  method = "gaussian",
+  samples.per.point = 1000,
+  reduction.factor = 0.5,
+  ...
+)
 }
 \arguments{
 \item{x}{Matrix or data.frame of environmental variables at points}
@@ -14,6 +21,8 @@ hypervolume_bridge(x, y, method = "gaussian", samples.per.point = 1000, ...)
 \item{method}{Method for constructing hypervolumes: "gaussian" (default) or "svm".}
 
 \item{samples.per.point}{Number of random samples per point for hypervolume estimation.}
+
+\item{reduction.factor}{Value between 0 and 1 for prediction speed. Default 0.5.}
 
 \item{...}{Additional arguments passed to hypervolume construction function.}
 }

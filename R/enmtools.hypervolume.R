@@ -133,7 +133,7 @@ plot.enmtools.hypervolume <- function(x, ...){
 
 
 # Predict method for models of class enmtools.hypervolume
-predict.enmtools.hypervolume <- function(object, env, reduction.factor = 0.1){
+predict.enmtools.hypervolume <- function(object, env, reduction.factor = 0.1, ...){
 
   # Make a plot of habitat suitability in the new region
   suitability <- hypervolume::hypervolume_project(object$hv, env, reduction.factor = reduction.factor)

@@ -12,9 +12,9 @@ hypervolume_predict(object, newdata)
 \item{newdata}{Data frame or matrix of new points to predict}
 }
 \value{
-Numeric vector of inclusion probabilities (0 or 1)
+Numeric vector of probability density estimates (normalized to max = 1)
 }
 \description{
 Helper function for predicting from hypervolume objects in the tidymodels framework.
-Uses hypervolume_inclusion_test with the fast method.
+Uses hypervolume_estimate_probability for continuous suitability values.
 }
