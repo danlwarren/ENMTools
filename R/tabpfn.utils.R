@@ -5,15 +5,15 @@
 # Internal registry of available finetuned models
 .tabpfn_models <- list(
   "sdm-finetuned-nonspatial" = list(
-    url = "https://placeholder.zenodo.org/step2_nonspatial.pt",
+    url = "https://placeholder.zenodo.org/sdm_finetuned_nonspatial.ckpt",
     sha256 = "placeholder",
-    filename = "step2_nonspatial.pt",
+    filename = "sdm_finetuned_nonspatial.ckpt",
     size_mb = 41
   ),
   "sdm-finetuned-spatial" = list(
-    url = "https://placeholder.zenodo.org/step2_spatial.pt",
+    url = "https://placeholder.zenodo.org/sdm_finetuned_spatial.ckpt",
     sha256 = "placeholder",
-    filename = "step2_spatial.pt",
+    filename = "sdm_finetuned_spatial.ckpt",
     size_mb = 41
   )
 )
@@ -156,7 +156,7 @@ tabpfn_list_models <- function() {
 #' @export
 tabpfn_clear_cache <- function() {
   cache <- tabpfn_cache_dir()
-  files <- list.files(cache, pattern = "\\.pt$", full.names = TRUE)
+  files <- list.files(cache, pattern = "\\.(pt|ckpt)$", full.names = TRUE)
 
   if (length(files) == 0) {
     message("No cached TabPFN models found.")

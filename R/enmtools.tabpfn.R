@@ -18,15 +18,16 @@
 #' @param bias An optional raster estimating relative sampling effort per grid cell. Will be used for drawing background data.
 #' @param backend Character. Either "local" (default) for local Python TabPFN, or "api" for cloud API backend.
 #' @param model_path Character. Controls which model to use:
-#'   - "auto" (default): standard pretrained TabPFN
+#'   - "tabpfn-v2-classifier-v2_default.ckpt" (default): TabPFN v2 pretrained model (ungated)
+#'   - "auto": latest TabPFN model (may require HuggingFace authentication)
 #'   - "real": pretrained model trained on real data
 #'   - A finetuned model name (e.g. "sdm-finetuned-nonspatial"): downloads and uses a finetuned checkpoint
 #'   - A file path ending in .pt: uses a local finetuned checkpoint
 #' @param device Character. Device for computation: "auto" (default), "cuda", or "cpu".
-#' @param n_estimators Integer. Number of ensemble estimators (default 8).
+#' @param n_estimators Integer. Number of ensemble estimators (default 16).
 #' @param softmax_temperature Numeric. Softmax temperature for predictions (default 0.9).
-#' @param balance_probabilities Logical. Whether to balance class probabilities (default FALSE).
-#' @param average_before_softmax Logical. Whether to average logits before softmax (default FALSE).
+#' @param balance_probabilities Logical. Whether to balance class probabilities (default TRUE).
+#' @param average_before_softmax Logical. Whether to average logits before softmax (default TRUE).
 #' @param ensemble_subsamples Integer or NULL. For API backend, number of subsamples for manual ensembling.
 #'   If NULL (default), no ensembling is done.
 #' @param ... Additional arguments passed to the model.
@@ -38,13 +39,17 @@
 #' It works by performing in-context learning at inference time, using the training
 #' data as context for predictions.
 #'
-#' Three backends are available:
+#' For SDM, a subsampling ensemble approach is used: each of the \code{n_estimators}
+#' ensemble members sees all presence points plus a balanced random sample of
+#' background points (equal to the number of presences). This handles the class
+#' imbalance inherent in SDM data and is passed to TabPFN via its native
+#' \code{SUBSAMPLE_SAMPLES} inference config parameter.
+#'
+#' Two backends are available:
 #' \itemize{
-#'   \item \strong{Local pretrained} (\code{backend = "local", model_path = "auto"}): Uses the
-#'     standard pretrained TabPFN model. Requires the Python \code{tabpfn} package.
-#'   \item \strong{Local finetuned} (\code{backend = "local", model_path = "sdm-finetuned-nonspatial"}):
-#'     Uses a model finetuned on SDM datasets. Checkpoint files (~41MB) are downloaded
-#'     automatically on first use.
+#'   \item \strong{Local} (\code{backend = "local"}): Uses the TabPFN Python package
+#'     locally. Supports both pretrained models (default) and finetuned SDM models.
+#'     Requires the Python \code{tabpfn} package (see \code{\link{install.tabpfn}}).
 #'   \item \strong{Cloud API} (\code{backend = "api"}): Uses the TabPFN cloud service.
 #'     Requires a \code{TABPFN_ACCESS_TOKEN} environment variable.
 #' }
@@ -65,12 +70,12 @@ enmtools.tabpfn <- function(species, env, f = NULL, test.prop = 0, eval = TRUE,
                              bg.source = "default", verbose = FALSE, clamp = TRUE,
                              corner = NA, bias = NA,
                              backend = "local",
-                             model_path = "auto",
+                             model_path = "tabpfn-v2-classifier-v2_default.ckpt",
                              device = "auto",
-                             n_estimators = 8L,
+                             n_estimators = 16L,
                              softmax_temperature = 0.9,
-                             balance_probabilities = FALSE,
-                             average_before_softmax = FALSE,
+                             balance_probabilities = TRUE,
+                             average_before_softmax = TRUE,
                              ensemble_subsamples = NULL,
                              ...) {
 

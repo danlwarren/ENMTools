@@ -333,8 +333,12 @@ test_that("tabpfn model objects work", {
           "TabPFN Python not available")
   skip_on_cran()
 
-  cyreni.tabpfn <- enmtools.tabpfn(cyreni, euro.worldclim,
-                                    test.prop = 0.2)
+  # Use minimal settings for CPU speed: cropped + aggregated raster, 2 estimators
+  env.small <- terra::crop(euro.worldclim[[1:2]], terra::ext(-5, 5, 40, 45))
+  env.small <- terra::aggregate(env.small, fact = 4, fun = "mean")
+  cyreni.tabpfn <- enmtools.tabpfn(cyreni, env.small,
+                                    test.prop = 0.2, nback = 50,
+                                    n_estimators = 2L, bg.source = "env")
   expect_enmtools_model(cyreni.tabpfn)
   expect_true(inherits(cyreni.tabpfn, "enmtools.tabpfn"))
   p <- plot(cyreni.tabpfn)
