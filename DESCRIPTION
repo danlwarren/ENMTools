@@ -33,6 +33,7 @@ Depends:
     parsnip,
     R (>= 2.10)
 Suggests:
+    reticulate,
     testthat,
     hypervolume,
     leaflet,

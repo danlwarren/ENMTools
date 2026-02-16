@@ -7,7 +7,7 @@
 #' @param model A character string specifying the desired model, or a `parsnip`
 #' model definition for any model with `mode = "classification"`. Default is
 #' "glm". If a character string, choices are the standard ENMTools models:
-#' `c("glm", "bc", "dm", "gam", "rf", "rf.ranger", "maxent")`
+#' `c("glm", "bc", "dm", "gam", "rf", "rf.ranger", "maxent", "tabpfn")`
 #' @param test.prop Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.
 #' @param eval Determines whether model evaluation should be done.  Turned on by default, but moses turns it off to speed things up.
 #' @param nback Number of background points to draw from range or env, if background points aren't provided
@@ -384,6 +384,7 @@ enmtools.tidy <- function(species, env, f = NULL, model = "glm", test.prop = 0, 
            maxnet = "enmtools.maxnet",
            hypervolume = "enmtools.hypervolume",
            hv = "enmtools.hypervolume",
+           tabpfn = "enmtools.tabpfn",
            NULL)
   } else {
     NULL
@@ -525,7 +526,8 @@ choose_model <- function(model, args = list(), ...) {
          dm = pres_only_sdm(engine = "domain"),
          hv = pres_only_sdm(engine = "hypervolume"),
          hypervolume = pres_only_sdm(engine = "hypervolume"),
-         maxnet = maxnet_sdm())
+         maxnet = maxnet_sdm(),
+         tabpfn = tabpfn_sdm())
   if(length(args) > 0) {
     m <- parsnip::set_args(m, !!!args)
   }
@@ -1006,6 +1008,322 @@ make_maxnet_sdm <- function() {
     mode = "classification",
     type = "prob",
     value = maxnet_prob_info
+  )
+}
+
+#' Wrapper function for TabPFN classifier
+#'
+#' Wraps the TabPFN Python package for use in a `parsnip` model specification.
+#' Supports three backends: local pretrained, local finetuned, and cloud API.
+#' Mostly for internal use. Exported so it works properly with parallel computation in `tidymodels`.
+#'
+#' @param x Matrix or data.frame of environmental variables at points
+#' @param y Single column matrix or data.frame containing a two-level factor
+#' @param backend Character. Either "local" or "api".
+#' @param model_path Character. Model path: "auto" (default pretrained), "real" (real-data pretrained),
+#'   a finetuned model name (e.g. "sdm-finetuned-nonspatial"), or a file path to a .pt checkpoint.
+#' @param device Character. Device for computation: "auto", "cuda", or "cpu".
+#' @param n_estimators Integer. Number of ensemble estimators.
+#' @param softmax_temperature Numeric. Softmax temperature for predictions.
+#' @param balance_probabilities Logical. Whether to balance class probabilities.
+#' @param average_before_softmax Logical. Whether to average before softmax.
+#' @param ensemble_subsamples Integer or NULL. Number of subsamples for API manual ensembling.
+#' @param ... Additional arguments (ignored).
+#'
+#' @return A list with class "tabpfn_fit" containing the fitted model and metadata.
+#' @export
+tabpfn_bridge <- function(x, y, backend = "local", model_path = "auto",
+                           device = "auto", n_estimators = 8L,
+                           softmax_temperature = 0.9,
+                           balance_probabilities = FALSE,
+                           average_before_softmax = FALSE,
+                           ensemble_subsamples = NULL, ...) {
+
+  # Convert factor to 0/1 integer
+  if (is.data.frame(y) || is.matrix(y)) {
+    y_vec <- y[[1]]
+  } else {
+    y_vec <- y
+  }
+  y_int <- as.integer(y_vec) - 1L
+  X <- as.matrix(x)
+
+  # Determine if this is a finetuned model
+  is_finetuned <- (!is.null(model_path) &&
+                     (grepl("\\.pt$", model_path) ||
+                        model_path %in% names(.tabpfn_models)))
+
+  if (backend == "local") {
+    reticulate::py_require("tabpfn")
+    np <- reticulate::import("numpy")
+
+    if (is_finetuned) {
+      # Finetuned model path: use Python helper
+      if (model_path %in% names(.tabpfn_models)) {
+        model_path <- tabpfn_model_path(model_path)
+      }
+
+      py_helper <- reticulate::import_from_path(
+        "tabpfn_sdm_predict",
+        system.file("python", package = "ENMTools")
+      )
+      clf <- py_helper$load_finetuned_model(
+        model_path,
+        device = device,
+        n_estimators = as.integer(n_estimators)
+      )
+
+      result <- list(
+        clf = clf,
+        py_helper = py_helper,
+        X_train = X,
+        y_train = y_int,
+        backend = "finetuned"
+      )
+
+    } else {
+      # Standard pretrained model
+      tabpfn <- reticulate::import("tabpfn")
+
+      clf_args <- list(
+        device = device,
+        n_estimators = as.integer(n_estimators),
+        softmax_temperature = softmax_temperature,
+        balance_probabilities = balance_probabilities,
+        average_before_softmax = average_before_softmax,
+        ignore_pretraining_limits = TRUE,
+        random_state = 42L
+      )
+
+      if (model_path != "auto") {
+        clf_args$model_path <- model_path
+      }
+
+      clf <- do.call(tabpfn$TabPFNClassifier, clf_args)
+      clf$fit(reticulate::r_to_py(X), np$array(y_int))
+
+      result <- list(
+        clf = clf,
+        backend = "local"
+      )
+    }
+
+  } else if (backend == "api") {
+    reticulate::py_require("tabpfn_client")
+    tabpfn_client <- reticulate::import("tabpfn_client")
+    np <- reticulate::import("numpy")
+
+    token <- Sys.getenv("TABPFN_ACCESS_TOKEN")
+    if (token == "") {
+      stop("TabPFN API token not found. Set your token by adding to your .Renviron file:\n",
+           "  TABPFN_ACCESS_TOKEN=your_token_here\n\n",
+           "Get a token at: https://tabpfn.com",
+           call. = FALSE)
+    }
+    tabpfn_client$config$set_access_token(token)
+
+    clf <- tabpfn_client$TabPFNClassifier(
+      model_path = "v2.5_large-samples",
+      ignore_pretraining_limits = TRUE,
+      random_state = 42L
+    )
+
+    if (!is.null(ensemble_subsamples)) {
+      # Store training data for ensemble prediction
+      result <- list(
+        clf = clf,
+        tabpfn_client = tabpfn_client,
+        X_train = X,
+        y_train = y_int,
+        ensemble_subsamples = as.integer(ensemble_subsamples),
+        backend = "api_ensemble"
+      )
+    } else {
+      clf$fit(reticulate::r_to_py(X), np$array(y_int))
+      result <- list(
+        clf = clf,
+        backend = "api"
+      )
+    }
+
+  } else {
+    stop("Unknown TabPFN backend: '", backend, "'. Use 'local' or 'api'.",
+         call. = FALSE)
+  }
+
+  class(result) <- "tabpfn_fit"
+  result
+}
+
+#' Prediction helper for TabPFN objects
+#'
+#' Helper function for predicting from TabPFN fit objects in the tidymodels framework.
+#'
+#' @param object A tabpfn_fit object
+#' @param newdata Data frame or matrix of new points to predict
+#'
+#' @return Numeric vector of predicted presence probabilities.
+#' @export
+tabpfn_predict <- function(object, newdata) {
+  np <- reticulate::import("numpy")
+  newdata_mat <- as.matrix(newdata)
+
+  if (object$backend == "local") {
+    # Standard pretrained: direct predict_proba
+    proba <- object$clf$predict_proba(reticulate::r_to_py(newdata_mat))
+    proba <- as.matrix(proba)
+    return(proba[, 2])
+
+  } else if (object$backend == "finetuned") {
+    # Finetuned: use Python helper with training data
+    preds <- object$py_helper$predict_with_finetuned(
+      object$clf,
+      object$X_train,
+      object$y_train,
+      newdata_mat
+    )
+    return(as.numeric(preds))
+
+  } else if (object$backend == "api") {
+    # API without ensemble: direct predict_proba
+    proba <- object$clf$predict_proba(reticulate::r_to_py(newdata_mat))
+    proba <- as.matrix(proba)
+    return(proba[, 2])
+
+  } else if (object$backend == "api_ensemble") {
+    # API with manual ensembling
+    n_subs <- object$ensemble_subsamples
+    X_train <- object$X_train
+    y_train <- object$y_train
+
+    pres_idx <- which(y_train == 1L)
+    abs_idx <- which(y_train == 0L)
+
+    all_preds <- matrix(0, nrow = nrow(newdata_mat), ncol = n_subs)
+
+    for (i in seq_len(n_subs)) {
+      # Subsample: all presences + random subset of absences
+      sub_abs <- sample(abs_idx, min(length(abs_idx), length(pres_idx)), replace = FALSE)
+      sub_idx <- c(pres_idx, sub_abs)
+
+      sub_clf <- object$tabpfn_client$TabPFNClassifier(
+        model_path = "v2.5_large-samples",
+        ignore_pretraining_limits = TRUE,
+        random_state = as.integer(42L + i)
+      )
+      sub_clf$fit(
+        reticulate::r_to_py(X_train[sub_idx, , drop = FALSE]),
+        np$array(y_train[sub_idx])
+      )
+      proba <- as.matrix(sub_clf$predict_proba(reticulate::r_to_py(newdata_mat)))
+      all_preds[, i] <- proba[, 2]
+    }
+
+    return(rowMeans(all_preds))
+
+  } else {
+    stop("Unknown TabPFN backend in predict: '", object$backend, "'",
+         call. = FALSE)
+  }
+}
+
+#' `parsnip` Model specification for TabPFN species distribution models
+#'
+#' @details TabPFN is a pre-trained tabular foundation model that can be used
+#'   for species distribution modeling. Supports local pretrained, local
+#'   finetuned, and cloud API backends.
+#'
+#' @param mode A single character string for the type of model.
+#'   The only possible value for this model is "classification".
+#' @param engine A single character string specifying what computational engine
+#'   to use for fitting. The only engine available is "tabpfn".
+#'
+#' @inherit parsnip::logistic_reg return
+#' @export
+tabpfn_sdm <- function(mode = "classification", engine = "tabpfn") {
+  if (mode != "classification") {
+    stop("`mode` should be 'classification'")
+  }
+
+  parsnip::new_model_spec(
+    "tabpfn_sdm",
+    args = NULL,
+    eng_args = NULL,
+    mode = mode,
+    method = NULL,
+    engine = engine
+  )
+}
+
+make_tabpfn_sdm <- function() {
+  parsnip::set_new_model("tabpfn_sdm")
+  parsnip::set_model_mode(model = "tabpfn_sdm", mode = "classification")
+  parsnip::set_model_engine(
+    "tabpfn_sdm",
+    mode = "classification",
+    eng = "tabpfn"
+  )
+
+  parsnip::set_dependency("tabpfn_sdm", eng = "tabpfn", pkg = "reticulate")
+  parsnip::set_dependency("tabpfn_sdm", eng = "tabpfn", pkg = "ENMTools")
+
+  parsnip::set_fit(
+    model = "tabpfn_sdm",
+    eng = "tabpfn",
+    mode = "classification",
+    value = list(
+      interface = "matrix",
+      data = c(x = "x", y = "y"),
+      protect = c("x", "y"),
+      func = c(pkg = "ENMTools", fun = "tabpfn_bridge"),
+      defaults = list(
+        backend = "local",
+        model_path = "auto",
+        device = "auto",
+        n_estimators = 8L,
+        softmax_temperature = 0.9,
+        balance_probabilities = FALSE,
+        average_before_softmax = FALSE,
+        ensemble_subsamples = NULL
+      )
+    )
+  )
+
+  parsnip::set_encoding(
+    model = "tabpfn_sdm",
+    eng = "tabpfn",
+    mode = "classification",
+    options = list(
+      predictor_indicators = "none",
+      compute_intercept = FALSE,
+      remove_intercept = FALSE,
+      allow_sparse_x = FALSE
+    )
+  )
+
+  tabpfn_prob_info <-
+    list(
+      pre = NULL,
+      post = function(x, object) {
+        cnames <- paste0(".pred_", object$lvl)
+        probs <- as.numeric(x)
+        res <- data.frame(pred_0 = 1 - probs, pred_1 = probs)
+        colnames(res) <- cnames
+        res
+      },
+      func = c(pkg = "ENMTools", fun = "tabpfn_predict"),
+      args = list(
+        object = quote(object$fit),
+        newdata = quote(new_data)
+      )
+    )
+
+  parsnip::set_pred(
+    model = "tabpfn_sdm",
+    eng = "tabpfn",
+    mode = "classification",
+    type = "prob",
+    value = tabpfn_prob_info
   )
 }
 

@@ -77,6 +77,7 @@ find.extras <- function(funs = NULL) {
                   `enmtools.maxnet` = "maxnet",
                   `enmtools.rf` = "randomForest",
                   `enmtools.rf.ranger` = "ranger",
+                  `enmtools.tabpfn` = "reticulate",
                   `enmtools.tidy` = "tidymodels",
                   `enmtools.vip` = c("vip", "pdp", "fastshap", "reshape2", "viridis"),
                   `env.overlap` = "CalibratR",

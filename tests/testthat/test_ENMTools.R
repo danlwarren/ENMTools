@@ -327,4 +327,19 @@ test_that("hypervolume model objects work", {
 })
 
 
+test_that("tabpfn model objects work", {
+  skip_if_not_installed("reticulate")
+  skip_if(!reticulate::py_module_available("tabpfn"),
+          "TabPFN Python not available")
+  skip_on_cran()
+
+  cyreni.tabpfn <- enmtools.tabpfn(cyreni, euro.worldclim,
+                                    test.prop = 0.2)
+  expect_enmtools_model(cyreni.tabpfn)
+  expect_true(inherits(cyreni.tabpfn, "enmtools.tabpfn"))
+  p <- plot(cyreni.tabpfn)
+  expect_s3_class(p, "ggplot")
+  expect_output(print(cyreni.tabpfn, plot = FALSE))
+})
+
 

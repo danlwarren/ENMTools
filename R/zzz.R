@@ -24,6 +24,7 @@ globalVariables(c("f", "predict", "value"))
 
   make_pres_only_sdm()
   make_maxnet_sdm()
+  make_tabpfn_sdm()
 
 }
 
