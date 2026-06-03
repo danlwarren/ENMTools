@@ -1,6 +1,12 @@
 ENMTools 1.x
 ============
 
+ENMTools 1.1.6
+--------------
+
+### Bug Fixes
+- Fixing problem with supplyiing bias SpatRasters inline with modeling functions
+
 ENMTools 1.1.5
 --------------
 

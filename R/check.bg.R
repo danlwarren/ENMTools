@@ -91,8 +91,8 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
 
     } else {
       # There is a bias layer
-      if(!inherits(bias, c("SpatVector"))){
-        stop("Bias layer was provided, but it is not a raster, ext = FALSE, rowcol = FALSE!")
+      if(!inherits(bias, c("SpatRaster"))){
+        stop("Bias layer was provided, but it is not a SpatRaster")
       }
 
       if(!terra::compareGeom(bias, species$range, ext = FALSE, rowcol = FALSE)){
