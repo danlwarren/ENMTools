@@ -4,8 +4,9 @@
 #' @param metric The metric to use for measuring how variables affect model predictions
 #' @param nsim The number of simulations to be run for method "permute"
 #' @param method A character string or vector containing any combination of "model", "permute", "shap", or "firm".  "model", "permute", and "firm" use functions from the vip package; "shap" computes SHAP values via kernelshap and returns a shapviz object.
+#' @param shap_method Either "permshap" (default, faster) or "kernelshap" (slower but more accurate for correlated features).  Ignored for enmtools.glm and enmtools.gam models, which always use additive_shap.
 #' @param verbose Controls printing of messages
-#' @param ... Further arguments to be passed to vip's "vi" functions or kernelshap, depending on which method is chosen.
+#' @param ... Further arguments to be passed to vip's "vi" functions or kernelshap/permshap, depending on which method is chosen.
 #'
 #' @return An enmtools.vip object
 #'
@@ -20,7 +21,7 @@
 #' }
 #' }
 
-enmtools.vip <- function(model, metric = "roc_auc", nsim = 10, method = "permute", verbose = TRUE, ...){
+enmtools.vip <- function(model, metric = "roc_auc", nsim = 10, method = "permute", shap_method = "permshap", verbose = TRUE, ...){
 
   assert.extras.this.fun()
 
@@ -98,8 +99,8 @@ enmtools.vip <- function(model, metric = "roc_auc", nsim = 10, method = "permute
       output[["model"]] <- vip::vi_model(thismodel)
 
       output[["model.plot"]] <- ggplot(output[["model"]],
-                                       aes_string(x = "Importance",
-                                                  fill = fct_reorder("Variable", "Importance", .desc = TRUE))) +
+                                       aes(x = Importance,
+                                           fill = fct_reorder(Variable, Importance, .desc = TRUE))) +
         geom_histogram(bins = 20) +
         theme_bw() +
         geom_hline(yintercept = 0, color = "grey") +
@@ -151,8 +152,8 @@ enmtools.vip <- function(model, metric = "roc_auc", nsim = 10, method = "permute
     colnames(plotdf) <- c("Variable", "Permutation", "Importance")
 
     output[["permute.plot"]] <- ggplot(plotdf,
-                                       aes_string(x = "Importance",
-                                                  fill = after_stat(x))) +
+                                       aes(x = Importance,
+                                           fill = after_stat(x))) +
       geom_histogram(bins = 20) +
       theme_bw() +
       geom_hline(yintercept = 0, color = "grey") +
@@ -192,12 +193,14 @@ enmtools.vip <- function(model, metric = "roc_auc", nsim = 10, method = "permute
       bg_idx   <- c(pres_idx, sample(abs_idx, min(length(pres_idx), length(abs_idx))))
       bg_X     <- X_shap[bg_idx, , drop = FALSE]
 
-      sv <- shapviz::shapviz(kernelshap::kernelshap(thismodel,
-                                                    X = X_shap,
-                                                    bg_X = bg_X,
-                                                    pred_fun = shap_pred,
-                                                    verbose = verbose,
-                                                    ...))
+      shap_fun <- if(shap_method == "kernelshap") kernelshap::kernelshap else kernelshap::permshap
+
+      sv <- shapviz::shapviz(shap_fun(thismodel,
+                                      X = X_shap,
+                                      bg_X = bg_X,
+                                      pred_fun = shap_pred,
+                                      verbose = verbose,
+                                      ...))
     }
 
     output[["shap"]] <- sv
@@ -267,12 +270,12 @@ enmtools.vip <- function(model, metric = "roc_auc", nsim = 10, method = "permute
     }
 
     output[["firm.plot"]] <- ggplot(output[["firm"]],
-                                    aes_string(x = "Importance",
-                                               fill = fct_reorder("Variable", "Importance", .desc = TRUE))) +
+                                    aes(x = Importance,
+                                        fill = fct_reorder(Variable, Importance, .desc = TRUE))) +
       geom_histogram(bins = 20) +
       theme_bw() +
       geom_hline(yintercept = 0, color = "grey") +
-      viridis::scale_fill_viridis(name = "Variable", option = "D", discrete = TRUE) +
+      viridis::scale_fill_viridis(name = "Variable", option = "D", discrete = TRUE, direction = -1) +
       facet_grid(rows = vars(fct_reorder(.data$Variable, .data$Importance, .desc = TRUE)), switch = "y") +
       ylab("Variable") +
       ggtitle("Variable importance, FIRM method") +
