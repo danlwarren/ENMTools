@@ -105,14 +105,10 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
 
       # Drawing background points from sample raster
       species$background.points <- terra::spatSample(sample.raster,
-                                                     size = min(length(terra::cells(sample.raster)), nback), replace = TRUE,
+                                                     size = nback, replace = TRUE,
                                                      method = "weights", as.points = TRUE,
                                                      na.rm = TRUE,
                                                      values = FALSE)
-      # Becase terra doesn't actually sample with replacement
-      if(nrow(species$background.points) < nback){
-        species$background.points <- sample(species$background.points, nback, replace = TRUE)
-      }
     }
 
     colnames(species$background.points) <- colnames(species$presence.points)
@@ -146,17 +142,13 @@ check.bg <- function(species, env = NA, nback = 1000, bg.source = "default", ver
 
       # Creating a raster that intersects the species range and the bias layer
       # using the fact that sum will return NA if either layer is NA
-      sample.raster = terra::mask(bias, bias + env)
+      sample.raster = terra::mask(bias, bias + sum(env))
 
       # Drawing background points from sample raster
       species$background.points <- terra::spatSample(sample.raster,
-                                                     size = min(length(terra::cells(sample.raster)), nback), replace = TRUE,
+                                                     size = nback, replace = TRUE,
                                                      method = "weights", as.points = TRUE,
                                                      na.rm = TRUE, values = FALSE)
-      # Becase terra doesn't actually sample with replacement
-      if(nrow(species$background.points) < nback){
-        species$background.points <- sample(species$background.points, nback, replace = TRUE)
-      }
     }
 
     colnames(species$background.points) <- colnames(species$presence.points)
