@@ -9,7 +9,8 @@ enmtools.vip(
   metric = "roc_auc",
   nsim = 10,
   method = "permute",
-  verbose = FALSE,
+  shap_method = "permshap",
+  verbose = TRUE,
   ...
 )
 }
@@ -20,11 +21,13 @@ enmtools.vip(
 
 \item{nsim}{The number of simulations to be run for method "permute"}
 
-\item{method}{A character string or vector containing any combination of "model", "permute", "shap", or "firm".  For details on what these mean, see the vip package help.}
+\item{method}{A character string or vector containing any combination of "model", "permute", "shap", or "firm".  "model", "permute", and "firm" use functions from the vip package; "shap" computes SHAP values via kernelshap and returns a shapviz object.}
+
+\item{shap_method}{Either "permshap" (default, faster) or "kernelshap" (slower but more accurate for correlated features).  Ignored for enmtools.glm and enmtools.gam models, which always use additive_shap.}
 
 \item{verbose}{Controls printing of messages}
 
-\item{...}{Further arguments to be passed to vip's "vi" functions.}
+\item{...}{Further arguments to be passed to vip's "vi" functions or kernelshap/permshap, depending on which method is chosen.}
 }
 \value{
 An enmtools.vip object
