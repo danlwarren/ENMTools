@@ -33,6 +33,7 @@
 
 enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", gam.method = "REML", gam.select = TRUE, bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, ...){
 
+
   assert.extras.this.fun()
 
   notes <- NULL
@@ -340,7 +341,7 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
                  rts.test = rts.test,
                  suitability = suitability,
                  clamping.strength = clamping.strength,
-                 call = sys.call(),
+                 call = match.call(),
                  notes = notes)
 
   class(output) <- c("enmtools.gam", "enmtools.model")

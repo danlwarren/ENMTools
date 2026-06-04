@@ -28,6 +28,7 @@
 
 enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, step = FALSE, ...){
 
+
   notes <- NULL
 
   env <- check.raster(env, "env")
@@ -365,7 +366,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
                  rts.test = rts.test,
                  suitability = suitability,
                  clamping.strength = clamping.strength,
-                 call = sys.call(),
+                 call = match.call(),
                  notes = notes)
 
   class(output) <- c("enmtools.glm", "enmtools.model")
