@@ -18,7 +18,7 @@ Imports: knitr, ggplot2, gridExtra, lhs, magrittr, ENMeval,
 Depends: dismo, R (>= 2.10)
 Suggests: testthat, hypervolume, leaflet, mgcv, ecospat (>= 3.2.1),
         randomForest, ranger, caret, CalibratR, ape, ResourceSelection,
-        reshape2, vip, pdp, fastshap, viridis, progress, rmarkdown, sf
+        reshape2, vip, pdp, shapviz, kernelshap, viridis, progress, rmarkdown, sf
 Config/testthat/edition: 3
 NeedsCompilation: no
 Packaged: 2025-07-13 23:47:35 UTC; dwarre12
