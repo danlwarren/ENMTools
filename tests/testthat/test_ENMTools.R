@@ -63,7 +63,7 @@ expect_enmtools_model <- function(model){
 
   expect_true(inherits(model$response.plots, "list"))
 
-  expect_true(all(sapply(model$response.plots, class) %in% c("gg", "ggplot")))
+  expect_true(all(sapply(model$response.plots, is.ggplot)))
 }
 
 

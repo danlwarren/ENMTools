@@ -222,12 +222,12 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
 
       # We have to do this to capture the "this is maxent version XXX message".
       if(verbose){
-        thisrep.mx <- dismo::maxent(raster::stack(env), p = rts.df[rts.df$presence == 1,1:2], a = rts.df[rts.df$presence == 0,1:2], ...)
+        thisrep.mx <- dismo::maxent(raster::stack(env), p = crds(rts.df[rts.df$presence == 1,1:2]), a = crds(rts.df[rts.df$presence == 0,1:2]), ...)
         thisrep.model.evaluation <- dismo::evaluate(rep.species$presence.points, species$background.points,
                                                    thisrep.mx, env, na.rm = TRUE)
         thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.mx, env, n.background = env.nback)
       } else {
-        invisible(capture.output(thisrep.mx <- dismo::maxent(raster::stack(env), p = rts.df[rts.df$presence == 1,1:2], a = rts.df[rts.df$presence == 0,1:2], ...)))
+        invisible(capture.output(thisrep.mx <- dismo::maxent(raster::stack(env), p = crds(rts.df[rts.df$presence == 1,1:2]), a = crds(rts.df[rts.df$presence == 0,1:2]), ...)))
         invisible(capture.output(thisrep.model.evaluation <- dismo::evaluate(rep.species$presence.points, species$background.points,
                                                    thisrep.mx, env, na.rm = TRUE)))
         invisible(capture.output(thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.mx, env, n.background = env.nback)))
@@ -457,7 +457,8 @@ plot.enmtools.maxent <- function(x, ...){
 predict.enmtools.maxent <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
 
   # Make a plot of habitat suitability in the new region
-  suitability <- invisible(capture.output(terra::predict(env, object$model, na.rm = TRUE, ...)))
+
+  suitability <- try(terra::predict(env, object$model, na.rm = TRUE, ...), silent = TRUE)
 
   # I'm actually not sure this is doing anything - I think maxent models are clamped by default
   if(clamp == TRUE){
@@ -465,7 +466,7 @@ predict.enmtools.maxent <- function(object, env, maxpts = 1000, clamp = TRUE, ..
     this.df <- as.data.frame(rbind(object$model@presence, object$model@absence))
 
     env <- clamp.env(this.df, env)
-    clamped.suitability <- invisible(capture.output(terra::predict(env, object$model, na.rm = TRUE, ...)))
+    clamped.suitability <- try(terra::predict(env, object$model, na.rm = TRUE, ...), silent = TRUE)
     clamping.strength <- clamped.suitability - suitability
     suitability <- clamped.suitability
   }

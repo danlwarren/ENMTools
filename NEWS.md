@@ -1,6 +1,24 @@
 ENMTools 1.x
 ============
 
+ENMTools 1.1.6
+--------------
+
+### Bug Fixes
+- Fixing problem with supplyiing bias SpatRasters inline with modeling functions
+
+ENMTools 1.1.5
+--------------
+
+### Bug Fixes
+- Fixing error with previous upload
+
+ENMTools 1.1.4
+--------------
+
+### Bug Fixes
+- Minor adjustments to deal with new version of ggplot2
+
 ENMTools 1.1.3
 --------------
 

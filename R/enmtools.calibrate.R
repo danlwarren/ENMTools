@@ -106,7 +106,7 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
   if(recalibrate == TRUE){
     recalibrated.model <- CalibratR::calibrate(this.pa, pred.df$prob, evaluate_no_CV_error = FALSE, model_idx = recal.methods, ...)
     preds <- as.matrix(terra::as.data.frame(model$suitability, xy = TRUE))
-    cal.preds <- CalibratR::predict_calibratR(recalibrated.model$calibration_models, new = preds[,"lyr1"])
+    cal.preds <- CalibratR::predict_calibratR(recalibrated.model$calibration_models, new = preds[, names(model$suitability)])
 
     # The Phillips and Elith recalibration should be done here for presence only models
     # Should make it optional with a flag that defaults to TRUE
@@ -128,7 +128,7 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
     # Do env space discrim metrics
     if(inherits(env, c("SpatRaster"))){
 
-      allpoints <- rbind(model$analysis.df[,1:2], model$test.data)
+      allpoints <- rbind(model$analysis.df[,1:2], geom(model$test.data)[,c("x", "y")])
       values <- terra::extract(env, allpoints, ID = FALSE)
       maxes <- apply(values, 2, function(x) max(x, na.rm = TRUE))
       mins <- apply(values, 2, function(x) min(x, na.rm = TRUE))

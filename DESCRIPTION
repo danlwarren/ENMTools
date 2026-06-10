@@ -1,51 +1,28 @@
 Package: ENMTools
 Type: Package
 Title: Analysis of Niche Evolution using Niche and Distribution Models
-Version: 1.1.3
-Date: 2024-04-22
+Version: 1.1.6
+Date: 2026-06-02
 Encoding: UTF-8
 Authors@R: c(person(given = "Dan", family = "Warren", role = c("aut", "cre"), email = "dan.l.warren@gmail.com", comment = c(ORCID = "0000-0002-8747-2451")),
 	      	person(given = "Russell", family = "Dinnage", role = "aut", email = "r.dinnage@gmail.com", comment = c(ORCID = "0000-0003-0846-2819")))
 Maintainer: Dan Warren <dan.l.warren@gmail.com>
 Description: Constructing niche models and analyzing patterns of niche evolution.  Acts as an interface for many popular modeling algorithms, and allows users to conduct Monte Carlo tests to address basic questions in evolutionary ecology and biogeography.  Warren, D.L., R.E. Glor, and M. Turelli (2008) <doi:10.1111/j.1558-5646.2008.00482.x> Glor, R.E., and D.L. Warren (2011) <doi:10.1111/j.1558-5646.2010.01177.x>  Warren, D.L., R.E. Glor, and M. Turelli (2010) <doi:10.1111/j.1600-0587.2009.06142.x> Cardillo, M., and D.L. Warren (2016) <doi:10.1111/geb.12455> D.L. Warren, L.J. Beaumont, R. Dinnage, and J.B. Baumgartner (2019) <doi:10.1111/ecog.03900>.  
 License: GPL-2
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.3
 URL: https://github.com/danlwarren/ENMTools
 BugReports: https://github.com/danlwarren/ENMTools/issues
-Imports: 
-    knitr,
-    ggplot2,
-    gridExtra,
-    lhs,
-    magrittr,
-    ENMeval,
-    spatstat.geom,
-    spatstat.random,
-    ggpubr,
-    forcats,
-    terra,
-    raster (>= 3.6.3)
-Depends: 
-    dismo,
-    R (>= 2.10)
-Suggests: 
-    testthat,
-    hypervolume,
-    leaflet,
-    mgcv,
-    ecospat (>= 3.2.1),
-    randomForest,
-    ranger,
-    caret,
-    CalibratR,
-    ape,
-    ResourceSelection,
-    reshape2,
-    vip,
-    pdp,
-    fastshap,
-    viridis,
-    progress,
-    rmarkdown,
-    sf
+Imports: knitr, ggplot2, gridExtra, lhs, magrittr, ENMeval,
+        spatstat.geom, spatstat.random, ggpubr, forcats, terra, raster
+        (>= 3.6.3)
+Depends: dismo, R (>= 2.10)
+Suggests: testthat, hypervolume, leaflet, mgcv, ecospat (>= 3.2.1),
+        randomForest, ranger, caret, CalibratR, ape, ResourceSelection,
+        reshape2, vip, pdp, shapviz, kernelshap, viridis, progress, rmarkdown, sf
 Config/testthat/edition: 3
+NeedsCompilation: no
+Packaged: 2025-07-13 23:47:35 UTC; dwarre12
+Author: Dan Warren [aut, cre] (ORCID: <https://orcid.org/0000-0002-8747-2451>),
+  Russell Dinnage [aut] (ORCID: <https://orcid.org/0000-0003-0846-2819>)
+Repository: CRAN
+Date/Publication: 2025-07-14 00:10:05 UTC
