@@ -21,8 +21,5 @@ Suggests: testthat, hypervolume, leaflet, mgcv, ecospat (>= 3.2.1),
         reshape2, vip, pdp, shapviz, kernelshap, viridis, progress, rmarkdown, sf
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2025-07-13 23:47:35 UTC; dwarre12
-Author: Dan Warren [aut, cre] (ORCID: <https://orcid.org/0000-0002-8747-2451>),
-  Russell Dinnage [aut] (ORCID: <https://orcid.org/0000-0003-0846-2819>)
 Repository: CRAN
-Date/Publication: 2025-07-14 00:10:05 UTC
+Additional_repositories: https://bgreenwell.r-universe.dev
