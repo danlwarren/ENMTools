@@ -100,7 +100,7 @@ permutation.bias <- function(species, model, training.env, transfer.env, nreps =
 
   # --- Empirical projection ---
   empirical.transfer <- pb.transfer.predict(model, transfer.env, type)
-  mss.threshold      <- dismo::threshold(model$training.evaluation, "spec_sens")
+  mss.threshold      <- pb.threshold(model, type)
 
   
   empirical.mean.suitability <- terra::global(empirical.transfer, mean, na.rm = TRUE)[[1]]
@@ -211,7 +211,7 @@ permutation.bias <- function(species, model, training.env, transfer.env, nreps =
 
     # Collect statistics
     if(pa.threshold == "replicate"){
-      rep.mss <- dismo::threshold(rep.model$training.evaluation, "spec_sens")
+      rep.mss <- pb.threshold(rep.model, type)
     } else {
       rep.mss <- mss.threshold
     }
@@ -336,6 +336,17 @@ permutation.bias <- function(species, model, training.env, transfer.env, nreps =
 
 
 # --- Internal helpers ---
+
+# MSS threshold on the same scale as pb.transfer.predict(). GLM and GAM
+# evaluations are on the link scale, so their thresholds are back-transformed
+# to the response scale; otherwise every cell is counted as suitable.
+pb.threshold <- function(model, type) {
+  threshold <- dismo::threshold(model$training.evaluation, "spec_sens")
+  if(type %in% c("glm", "gam")){
+    threshold <- model$model$family$linkinv(threshold)
+  }
+  threshold
+}
 
 pb.transfer.predict <- function(model, transfer.env, type) {
 
