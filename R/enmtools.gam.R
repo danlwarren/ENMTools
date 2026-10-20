@@ -126,7 +126,7 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
   }
 
   model.evaluation <- dismo::evaluate(species$presence.points, species$background.points,
-                               this.gam, env, na.rm = TRUE)
+                               this.gam, env, na.rm = TRUE, type = "response")
   env.model.evaluation <- env.evaluate(species, this.gam, env, n.background = env.nback)
 
 
@@ -136,7 +136,7 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
       test.check <- terra::extract(env, test.data, ID = FALSE)
       test.data <- test.data[complete.cases(test.check),]
       test.evaluation <-dismo::evaluate(test.data, species$background.points,
-                                        this.gam, env, na.rm = TRUE)
+                                        this.gam, env, na.rm = TRUE, type = "response")
       temp.sp <- species
       temp.sp$presence.points <- test.data
       env.test.evaluation <- env.evaluate(temp.sp, this.gam, env, n.background = env.nback)
@@ -149,7 +149,7 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
       test.check <- terra::extract(env, test.data, ID = FALSE)
       test.data <- test.data[complete.cases(test.check),]
       test.evaluation <-dismo::evaluate(test.data, test.bg,
-                                        this.gam, env, na.rm = TRUE)
+                                        this.gam, env, na.rm = TRUE, type = "response")
       temp.sp <- species
       temp.sp$presence.points <- test.data
       temp.sp$background.points <- test.bg
@@ -223,7 +223,7 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
       thisrep.gam <- mgcv::gam(f, rts.df[,-c(1,2)], family="binomial", ...)
 
       thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points, species$background.points,
-                                                 thisrep.gam, env, na.rm = TRUE)
+                                                 thisrep.gam, env, na.rm = TRUE, type = "response")
       thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.gam, env, n.background = env.nback)
 
       rts.geog.training[i] <- thisrep.model.evaluation@auc
@@ -231,7 +231,7 @@ enmtools.gam <- function(species, env, f = NULL, test.prop = 0, k = 4, nback = 1
 
       if(test.prop > 0 & test.prop < 1){
         thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points,
-                                                  thisrep.gam, env, na.rm = TRUE)
+                                                  thisrep.gam, env, na.rm = TRUE, type = "response")
         temp.sp <- rep.species
         temp.sp$presence.points <- terra::vect(rep.test.data, geom=c("x", "y"), crs = terra::crs(species$presence.points))
         thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.gam, env, n.background = env.nback)
