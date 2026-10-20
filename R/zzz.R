@@ -1,4 +1,4 @@
-globalVariables(c("f", "predict", "value", "x"))
+globalVariables(c("f", "predict", "value", "x", "Importance", "Variable", "crds", "geom"))
 
 # Package setup options
 

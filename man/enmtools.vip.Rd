@@ -38,6 +38,7 @@ Takes an enmtools.model object, and performs variable importance analyses on it 
 \examples{
 \donttest{
 #install.extras(repos='http://cran.us.r-project.org')
+requireNamespace("vip", quietly = TRUE)
 monticola.glm <- enmtools.glm(iberolacerta.clade$species$monticola,
                               env = euro.worldclim,
                               test.prop = 0.3)
