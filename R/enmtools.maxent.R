@@ -461,6 +461,7 @@ predict.enmtools.maxent <- function(object, env, maxpts = 1000, clamp = TRUE, ..
   suitability <- try(terra::predict(env, object$model, na.rm = TRUE, ...), silent = TRUE)
 
   # I'm actually not sure this is doing anything - I think maxent models are clamped by default
+  clamping.strength <- NA
   if(clamp == TRUE){
     # Adding env (skipped for MX otherwise)
     this.df <- as.data.frame(rbind(object$model@presence, object$model@absence))

@@ -458,13 +458,16 @@ predict.enmtools.rf <- function(object, env, maxpts = 1000, clamp = TRUE, ...){
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     coord_fixed() + theme_classic()
 
-  clamp.points <- data.frame(rasterToPoints2(clamping.strength))
-  colnames(clamp.points) <- c("x", "y", "Clamping")
+  clamp.plot <- NA
+  if(clamp == TRUE){
+    clamp.points <- data.frame(rasterToPoints2(clamping.strength))
+    colnames(clamp.points) <- c("x", "y", "Clamping")
 
-  clamp.plot <- ggplot(data = clamp.points,  aes(y = .data$y, x = .data$x)) +
-    geom_raster(aes_string(fill = "Clamping")) +
-    scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
-    coord_fixed() + theme_classic()
+    clamp.plot <- ggplot(data = clamp.points,  aes(y = .data$y, x = .data$x)) +
+      geom_raster(aes_string(fill = "Clamping")) +
+      scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
+      coord_fixed() + theme_classic()
+  }
 
   if(!is.na(object$species.name)){
     title <- paste("Random forests model projection for", object$species.name)
