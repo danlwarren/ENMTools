@@ -26,6 +26,7 @@
 
 enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0,  bg.source = "default", verbose = FALSE, clamp = TRUE,  corner = NA, bias = NA, ...){
 
+
   assert.extras.this.fun()
 
   notes <- NULL
@@ -346,7 +347,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
                  rts.test = rts.test,
                  suitability = suitability,
                  clamping.strength = clamping.strength,
-                 call = sys.call(),
+                 call = match.call(),
                  notes = notes)
 
   class(output) <- c("enmtools.maxent", "enmtools.model")

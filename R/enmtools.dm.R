@@ -25,6 +25,7 @@
 
 enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback = 1000, env.nback = 10000, overwrite = FALSE, rts.reps = 0, bg.source = "default", verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, ...){
 
+
   notes <- NULL
 
   env <- check.raster(env, "env")
@@ -305,7 +306,7 @@ enmtools.dm <- function(species, env = NA, test.prop = 0, report = NULL, nback =
                  rts.test = rts.test,
                  suitability = suitability,
                  clamping.strength = clamping.strength,
-                 call = sys.call(),
+                 call = match.call(),
                  notes = notes)
 
   class(output) <- c("enmtools.dm", "enmtools.model")

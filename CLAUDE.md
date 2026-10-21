@@ -28,6 +28,23 @@ R CMD check ENMTools_*.tar.gz
 
 Do not enforce line length limits or snake_case naming — existing code uses longer lines and mixed naming conventions, and consistency with the existing style takes precedence.
 
+## Code style
+
+All `if`, `else`, and `for` blocks must use braces and be written in multi-line form, even when the body is a single statement:
+
+```r
+# correct
+if(condition){
+  do.something()
+}
+
+# wrong
+if(condition) do.something()
+if(condition){ do.something() }
+```
+
+Inline `if/else` expressions (e.g. `x <- if(a) b else c`) should be avoided in favour of explicit multi-line blocks.
+
 ## Architecture
 
 ENMTools is an R package for ecological niche modeling (ENM) and comparative niche analysis. It wraps multiple modeling backends behind a unified S3 interface, adds hypothesis-testing infrastructure, and provides visualization utilities.

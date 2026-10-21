@@ -28,6 +28,7 @@
 
 enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nback = 1000, env.nback = 10000, report = NULL, overwrite = FALSE, rts.reps = 0, weights = "equal", bg.source = "default",  verbose = FALSE, clamp = TRUE, corner = NA, bias = NA, step = FALSE, ...){
 
+
   notes <- NULL
 
   env <- check.raster(env, "env")
@@ -143,7 +144,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
     }
 
     model.evaluation <-dismo::evaluate(species$presence.points, species$background.points,
-                                       this.glm, env, na.rm = TRUE)
+                                       this.glm, env, na.rm = TRUE, type = "response")
     env.model.evaluation <- env.evaluate(species, this.glm, env, n.background = env.nback)
 
     # Test eval for randomly withheld data
@@ -152,7 +153,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
         test.check <- terra::extract(env, test.data, ID = FALSE)
         test.data <- test.data[complete.cases(test.check),]
         test.evaluation <-dismo::evaluate(test.data, species$background.points,
-                                          this.glm, env, na.rm = TRUE)
+                                          this.glm, env, na.rm = TRUE, type = "response")
         temp.sp <- species
         temp.sp$presence.points <- test.data
         env.test.evaluation <- env.evaluate(temp.sp, this.glm, env, n.background = env.nback)
@@ -165,7 +166,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
         test.check <- terra::extract(env, test.data, ID = FALSE)
         test.data <- test.data[complete.cases(test.check),]
         test.evaluation <-dismo::evaluate(test.data, test.bg,
-                                          this.glm, env, na.rm = TRUE)
+                                          this.glm, env, na.rm = TRUE, type = "response")
         temp.sp <- species
         temp.sp$presence.points <- test.data
         temp.sp$background.points <- test.bg
@@ -246,7 +247,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
         }
 
         thisrep.model.evaluation <-dismo::evaluate(rep.species$presence.points, species$background.points,
-                                                   thisrep.glm, env, na.rm = TRUE)
+                                                   thisrep.glm, env, na.rm = TRUE, type = "response")
         thisrep.env.model.evaluation <- env.evaluate(rep.species, thisrep.glm, env, n.background = env.nback)
 
         rts.geog.training[i] <- thisrep.model.evaluation@auc
@@ -254,7 +255,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
 
         if(test.prop > 0 & test.prop < 1){
           thisrep.test.evaluation <-dismo::evaluate(rep.test.data, rep.species$background.points,
-                                                    thisrep.glm, env, na.rm = TRUE)
+                                                    thisrep.glm, env, na.rm = TRUE, type = "response")
           temp.sp <- rep.species
           temp.sp$presence.points <- terra::vect(rep.test.data, geom = c("x", "y"), crs = terra::crs(species$presence.points))
           thisrep.env.test.evaluation <- env.evaluate(temp.sp, thisrep.glm, env, n.background = env.nback)
@@ -365,7 +366,7 @@ enmtools.glm <- function(species, env, f = NULL, test.prop = 0, eval = TRUE, nba
                  rts.test = rts.test,
                  suitability = suitability,
                  clamping.strength = clamping.strength,
-                 call = sys.call(),
+                 call = match.call(),
                  notes = notes)
 
   class(output) <- c("enmtools.glm", "enmtools.model")
