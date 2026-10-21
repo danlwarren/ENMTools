@@ -810,7 +810,7 @@ precise estimates of overlap, but can take much longer to calculate.
 
 ``` r
 monticola.glm <- enmtools.glm(species = monticola, env = env, f = pres ~ poly(bio1, 2) + poly(bio7, 2) + poly(bio12, 2), test.prop = 0.2)
-cyreni.glm <- enmtools.glm(species = monticola, env = env, f = pres ~ poly(bio1, 2) + poly(bio7, 2) + poly(bio12, 2), test.prop = 0.2)
+cyreni.glm <- enmtools.glm(species = cyreni, env = env, f = pres ~ poly(bio1, 2) + poly(bio7, 2) + poly(bio12, 2), test.prop = 0.2)
 env.overlap(monticola.glm, cyreni.glm, env, tolerance = .001)
 ```
 ```
@@ -1367,7 +1367,7 @@ ribbon <- enmtools.species(species.name = "ribbon")
 temp.ribbon.points <- data.frame(x = runif(n = 10, min = -9, max = 0),
 y = runif(n = 10, min = 40.5, max = 42))
 ribbon$presence.points <- vect(temp.ribbon.points, geom = c("x", "y"))
-crs(ribbon($presence.points)) <- crs(env)
+crs(ribbon$presence.points) <- crs(env)
 points(ribbon$presence.points, pch = 16)
 ```
 
