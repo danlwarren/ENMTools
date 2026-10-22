@@ -17,8 +17,8 @@
 #' @param corner An integer from 1 to 4. Selects which corner to use for "block" test data. By default the corner is selected randomly.
 #' @param bias An optional raster estimating relative sampling effort per grid cell. Will be used for drawing background data.
 #' @param method Method for constructing hypervolumes: "gaussian" (default) or "svm".
-#' @param samples.per.point Number of random samples per point for hypervolume estimation. Default 1000.
-#' @param reduction.factor Value between 0 and 1 for prediction speed. Lower values are faster but less accurate. Default 0.5.
+#' @param samples.per.point Number of random points generated around each presence point when building the hypervolume.  More points describe the hypervolume more precisely but make predictions slower.  If NULL (the default), the hypervolume package's default is used, which scales with the number of variables and presence points so that the total number of random points stays similar across sample sizes.
+#' @param reduction.factor Proportion of the hypervolume's random points used when predicting suitability, between 0 and 1.  Defaults to 1, which uses all of them.  Lower values make predictions faster, but a different random subset is used each time, so suitability near the edge of the hypervolume changes from one prediction to the next.
 #' @param ... Additional arguments to be passed to hypervolume construction functions
 #'
 #' @return An enmtools model object containing species name, model object, suitability raster, and any evaluation objects that were created.
@@ -49,8 +49,8 @@ enmtools.hypervolume <- function(species, env, f = NULL, test.prop = 0, eval = T
                                   overwrite = FALSE, rts.reps = 0,
                                   bg.source = "default", verbose = FALSE, clamp = FALSE,
                                   corner = NA, bias = NA,
-                                  method = "gaussian", samples.per.point = 1000,
-                                  reduction.factor = 0.5, ...) {
+                                  method = "gaussian", samples.per.point = NULL,
+                                  reduction.factor = 1, ...) {
 
   assert.extras.this.fun()
 

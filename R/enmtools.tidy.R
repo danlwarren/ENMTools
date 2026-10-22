@@ -705,14 +705,14 @@ maxnet.bridge <- function(x, y, regmult = 1, classes = "default", ...) {
 #' @param x Matrix or data.frame of environmental variables at points
 #' @param y Single column matrix or data.frame containing a two-level factor
 #' @param method Method for constructing hypervolumes: "gaussian" (default) or "svm".
-#' @param samples.per.point Number of random samples per point for hypervolume estimation.
-#' @param reduction.factor Value between 0 and 1 for prediction speed. Default 0.5.
+#' @param samples.per.point Number of random points generated around each presence point when building the hypervolume.  More points describe the hypervolume more precisely but make predictions slower.  If NULL (the default), the hypervolume package's default is used, which scales with the number of variables and presence points so that the total number of random points stays similar across sample sizes.
+#' @param reduction.factor Proportion of the hypervolume's random points used when predicting suitability, between 0 and 1.  Defaults to 1, which uses all of them.  Lower values make predictions faster, but a different random subset is used each time, so suitability near the edge of the hypervolume changes from one prediction to the next.
 #' @param ... Additional arguments passed to hypervolume construction function.
 #'
 #' @return A Hypervolume object with scaling attributes attached
 #' @export
-hypervolume.bridge <- function(x, y, method = "gaussian", samples.per.point = 1000,
-                               reduction.factor = 0.5, ...) {
+hypervolume.bridge <- function(x, y, method = "gaussian", samples.per.point = NULL,
+                               reduction.factor = 1, ...) {
   # Extract presence-only data (same as bioclim/domain)
   dat <- check.pres.only(x, y)
 
@@ -723,24 +723,17 @@ hypervolume.bridge <- function(x, y, method = "gaussian", samples.per.point = 10
   center <- attr(dat.scaled, "scaled:center")
   scale.sd <- attr(dat.scaled, "scaled:scale")
 
-  # Build the hypervolume
-  if (method == "gaussian") {
-    hv <- hypervolume::hypervolume_gaussian(
-      dat.scaled,
-      samples.per.point = samples.per.point,
-      verbose = FALSE,
-      ...
-    )
-  } else if (method == "svm") {
-    hv <- hypervolume::hypervolume_svm(
-      dat.scaled,
-      samples.per.point = samples.per.point,
-      verbose = FALSE,
-      ...
-    )
-  } else {
-    stop("method must be 'gaussian' or 'svm'")
+  # Build the hypervolume, leaving samples.per.point to the hypervolume
+  # package's default unless it was given
+  hv.fun <- switch(method,
+                   gaussian = hypervolume::hypervolume_gaussian,
+                   svm = hypervolume::hypervolume_svm,
+                   stop("method must be 'gaussian' or 'svm'"))
+  hv.args <- list(dat.scaled, verbose = FALSE, ...)
+  if (!is.null(samples.per.point)) {
+    hv.args$samples.per.point <- samples.per.point
   }
+  hv <- do.call(hv.fun, hv.args)
 
   # Attach scaling info and prediction settings for later use
   attr(hv, "scale.center") <- center
@@ -765,7 +758,7 @@ hypervolume.predict <- function(object, newdata) {
   center <- attr(object, "scale.center")
   scale.sd <- attr(object, "scale.scale")
   reduction.factor <- attr(object, "reduction.factor")
-  if (is.null(reduction.factor)) reduction.factor <- 0.5  # Default
+  if (is.null(reduction.factor)) reduction.factor <- 1
 
   # Scale the new data using stored parameters
   newdata.scaled <- scale(as.matrix(newdata), center = center, scale = scale.sd)
@@ -881,7 +874,7 @@ make.pres.only.sdm <- function() {
       data = c(x = "x", y = "y"),
       protect = c("x", "y"),
       func = c(pkg = "ENMTools", fun = "hypervolume.bridge"),
-      defaults = list(method = "gaussian", samples.per.point = 1000, reduction.factor = 0.5)
+      defaults = list(method = "gaussian", samples.per.point = NULL, reduction.factor = 1)
     )
   )
 
