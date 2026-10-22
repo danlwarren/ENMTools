@@ -34,14 +34,14 @@ raster.cor.plot <- function(env, method = "pearson"){
   mds.cor <- as.data.frame(cmdscale(d))
   colnames(mds.cor) <- c("X", "Y")
 
-  cor.mds.plot <- ggplot(mds.cor, aes_string(x = "X", y = "Y"))  +
+  cor.mds.plot <- ggplot(mds.cor, aes(x = .data$X, y = .data$Y))  +
     geom_text(aes(label = rownames(mds.cor))) + theme_bw()
 
   # Make heatmap
   melted.cor.mat <- reshape2::melt(as.matrix(cor.mat))
   colnames(melted.cor.mat) <- c("Var1", "Var2", "value")
 
-  cor.heatmap <- ggplot(data = melted.cor.mat, aes_string(x="Var1", y="Var2", fill="value")) +
+  cor.heatmap <- ggplot(data = melted.cor.mat, aes(x = .data$Var1, y = .data$Var2, fill = .data$value)) +
     geom_tile() + scale_fill_viridis_c() +
     theme(axis.text.x = element_text(angle = 90, hjust = 1))
 

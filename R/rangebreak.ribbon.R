@@ -5,8 +5,10 @@
 #' @param species.2 An enmtools.species object
 #' @param ribbon An enmtools.species object representing the region of marginal habtiat in the overlap between the species' ranges
 #' @param env A SpatRaster object containing environmental data
-#' @param type The type of model to construct, currently accepts "glm", "mx", "bc", or "dm"
-#' @param f A function to use for model fitting.  Only required for GLM models at the moment.
+#' @param type The type of model to construct: "glm", "gam", "bc", "dm", "rf", "rf.ranger", "maxnet", "mx" (Maxent using the Java implementation), or "tidy" for any classification model specified with parsnip (see `model`).
+#' @param f Optional.  A formula or [recipes::recipe()] specifying the predictors to use.  If NULL (the default), each model uses the default for its type: every layer in `env` is used as a predictor, as linear terms for GLMs and smooth terms for GAMs.  See the documentation for each modeling function (e.g. [enmtools.glm()]) for details.  Not used when type = "mx".
+#' @param model When type = "tidy", a parsnip model specification with mode "classification", e.g. `parsnip::boost_tree("classification")`, passed to [enmtools.tidy()].
+#' @param model.args When type = "tidy", a list of arguments for the model specification or its engine, passed to [enmtools.tidy()].
 #' @param width Width of the ribbon, in the same units as the occurrence points (e.g, decimal degrees)
 #' @param nreps Number of replicates to perform
 #' @param nback Number of background points for models
@@ -14,7 +16,7 @@
 #' @param low.memory When set to TRUE, replicate models are written to disc instead of being stored in the output object.  Replicate models stored in the output object contain paths to the replicate models on disk instead of the rasters themselves.
 #' @param rep.dir Directory for storing replicate models when low.memory is set to TRUE.  If not specified, the working directory will be used.
 #' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
-#' @param clamp Controls whether empirical and replicate models should be clamped to the environment space used for training.
+#' @param clamp Controls whether empirical and replicate models should be clamped to the environment space used for training.  Defaults to TRUE, except for presence-only envelope models; these are not clamped unless clamp = TRUE.
 #' @param ... Additional arguments to be passed to model fitting functions.
 #'
 #' @return results A list containing models for the replicates, models for the empirical data, and summary statistics and plots.
@@ -37,7 +39,7 @@
 #' type = "glm", f= pres ~ bio1 + bio12, nreps = 10)
 #' }
 
-rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL, width = 1, nreps = 99,  nback = 1000, bg.source = "default", low.memory = FALSE, rep.dir = NA, verbose = FALSE, clamp = TRUE, ...){
+rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL, model = NULL, model.args = list(), width = 1, nreps = 99,  nback = 1000, bg.source = "default", low.memory = FALSE, rep.dir = NA, verbose = FALSE, clamp = NULL, ...){
 
   species.1 <- check.bg(species.1, env, nback = nback, bg.source = bg.source, verbose = verbose)
   species.2 <- check.bg(species.2, env, nback = nback, bg.source = bg.source, verbose = verbose)
@@ -50,7 +52,7 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
     species.2 <- temp.species
   }
 
-  rangebreak.ribbon.precheck(species.1, species.2, ribbon, env, type, f, width, nreps)
+  rangebreak.ribbon.precheck(species.1, species.2, ribbon, env, type, f, model, width, nreps)
 
   outside <- species.1
   outside$species.name <- "outside"
@@ -85,9 +87,14 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
   combined.presence.points <- rbind(species.1$presence.points, species.2$presence.points, ribbon$presence.points)
 
   # Clamping layers here so it's not done separately for every replicate
-  # and setting replicate clmaping to FALSE
+  # and setting replicate clamping to FALSE.  Envelope models are not clamped
+  # unless clamp = TRUE.
+  if(is.null(clamp)){
+    clamp <- !is.envelope.type(type, model)
+  }
+
   if(clamp == TRUE){
-    # Adding env (skipped for BC otherwise)
+    # Environmental values at all points, used to set the clamping limits
     this.df <- as.data.frame(terra::extract(env, combined.presence.points, ID = FALSE))
 
     env <- clamp.env(this.df, env)
@@ -95,47 +102,10 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
 
   # Build models for empirical data
   message("\nBuilding empirical models...\n")
-  if(type == "glm"){
-    empirical.species.1.model <- enmtools.glm(species.1, env, f, clamp = FALSE, ...)
-    empirical.species.2.model <- enmtools.glm(species.2, env, f, clamp = FALSE, ...)
-    empirical.ribbon.model <- enmtools.glm(ribbon, env, f, clamp = FALSE, ...)
-    empirical.outside.model <- enmtools.glm(outside, env, f, clamp = FALSE, ...)
-  }
-
-  if(type == "gam"){
-    empirical.species.1.model <- enmtools.gam(species.1, env, f, clamp = FALSE, ...)
-    empirical.species.2.model <- enmtools.gam(species.2, env, f, clamp = FALSE, ...)
-    empirical.ribbon.model <- enmtools.gam(ribbon, env, f, clamp = FALSE, ...)
-    empirical.outside.model <- enmtools.gam(outside, env, f, clamp = FALSE, ...)
-  }
-
-  if(type == "mx"){
-    empirical.species.1.model <- enmtools.maxent(species.1, env, clamp = FALSE, ...)
-    empirical.species.2.model <- enmtools.maxent(species.2, env, clamp = FALSE, ...)
-    empirical.ribbon.model <- enmtools.maxent(ribbon, env, clamp = FALSE, ...)
-    empirical.outside.model <- enmtools.maxent(outside, env, clamp = FALSE, ...)
-  }
-
-  if(type == "bc"){
-    empirical.species.1.model <- enmtools.bc(species.1, env, clamp = FALSE, ...)
-    empirical.species.2.model <- enmtools.bc(species.2, env, clamp = FALSE, ...)
-    empirical.ribbon.model <- enmtools.bc(ribbon, env, clamp = FALSE, ...)
-    empirical.outside.model <- enmtools.bc(outside, env, clamp = FALSE, ...)
-  }
-
-  if(type == "dm"){
-    empirical.species.1.model <- enmtools.dm(species.1, env, clamp = FALSE, ...)
-    empirical.species.2.model <- enmtools.dm(species.2, env, clamp = FALSE, ...)
-    empirical.ribbon.model <- enmtools.dm(ribbon, env, clamp = FALSE, ...)
-    empirical.outside.model <- enmtools.dm(outside, env, clamp = FALSE, ...)
-  }
-
-  if(type == "rf"){
-    empirical.species.1.model <- enmtools.rf(species.1, env, clamp = FALSE, ...)
-    empirical.species.2.model <- enmtools.rf(species.2, env, clamp = FALSE, ...)
-    empirical.ribbon.model <- enmtools.rf(ribbon, env, clamp = FALSE, ...)
-    empirical.outside.model <- enmtools.rf(outside, env, clamp = FALSE, ...)
-  }
+  empirical.species.1.model <- enmtools.model.by.type(type, species.1, env, f = f, model = model, model.args = model.args, clamp = FALSE, ...)
+  empirical.species.2.model <- enmtools.model.by.type(type, species.2, env, f = f, model = model, model.args = model.args, clamp = FALSE, ...)
+  empirical.ribbon.model <- enmtools.model.by.type(type, ribbon, env, f = f, model = model, model.args = model.args, clamp = FALSE, ...)
+  empirical.outside.model <- enmtools.model.by.type(type, outside, env, f = f, model = model, model.args = model.args, clamp = FALSE, ...)
 
   empirical.overlap.sp1.vs.sp2 <- c(unlist(raster.overlap(empirical.species.1.model, empirical.species.2.model)),
                                     unlist(env.overlap(empirical.species.1.model, empirical.species.2.model, env = env)[1:3]))
@@ -231,47 +201,10 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
     # temp.list <- list(rep.species.1, rep.species.2, rep.ribbon, rep.outside)
     # return(temp.list)
 
-    if(type == "glm"){
-      rep.species.1.model <- enmtools.glm(rep.species.1, env, f, clamp = FALSE, ...)
-      rep.species.2.model <- enmtools.glm(rep.species.2, env, f, clamp = FALSE, ...)
-      rep.ribbon.model <- enmtools.glm(rep.ribbon, env, f, clamp = FALSE, ...)
-      rep.outside.model <- enmtools.glm(rep.outside, env, f, clamp = FALSE, ...)
-    }
-
-    if(type == "gam"){
-      rep.species.1.model <- enmtools.gam(rep.species.1, env, f, clamp = FALSE, ...)
-      rep.species.2.model <- enmtools.gam(rep.species.2, env, f, clamp = FALSE, ...)
-      rep.ribbon.model <- enmtools.gam(rep.ribbon, env, f, clamp = FALSE, ...)
-      rep.outside.model <- enmtools.gam(rep.outside, env, f, clamp = FALSE, ...)
-    }
-
-    if(type == "mx"){
-      rep.species.1.model <- enmtools.maxent(rep.species.1, env, clamp = FALSE, ...)
-      rep.species.2.model <- enmtools.maxent(rep.species.2, env, clamp = FALSE, ...)
-      rep.ribbon.model <- enmtools.maxent(rep.ribbon, env, clamp = FALSE, ...)
-      rep.outside.model <- enmtools.maxent(rep.outside, env, clamp = FALSE, ...)
-    }
-
-    if(type == "bc"){
-      rep.species.1.model <- enmtools.bc(rep.species.1, env, clamp = FALSE, ...)
-      rep.species.2.model <- enmtools.bc(rep.species.2, env, clamp = FALSE, ...)
-      rep.ribbon.model <- enmtools.bc(rep.ribbon, env, clamp = FALSE, ...)
-      rep.outside.model <- enmtools.bc(rep.outside, env, clamp = FALSE, ...)
-    }
-
-    if(type == "dm"){
-      rep.species.1.model <- enmtools.dm(rep.species.1, env, clamp = FALSE, ...)
-      rep.species.2.model <- enmtools.dm(rep.species.2, env, clamp = FALSE, ...)
-      rep.ribbon.model <- enmtools.dm(rep.ribbon, env, clamp = FALSE, ...)
-      rep.outside.model <- enmtools.dm(rep.outside, env, clamp = FALSE, ...)
-    }
-
-    if(type == "rf"){
-      rep.species.1.model <- enmtools.rf(rep.species.1, env, clamp = FALSE, ...)
-      rep.species.2.model <- enmtools.rf(rep.species.2, env, clamp = FALSE, ...)
-      rep.ribbon.model <- enmtools.rf(rep.ribbon, env, clamp = FALSE, ...)
-      rep.outside.model <- enmtools.rf(rep.outside, env, clamp = FALSE, ...)
-    }
+    rep.species.1.model <- enmtools.model.by.type(type, rep.species.1, env, f = f, model = model, model.args = model.args, clamp = FALSE, ...)
+    rep.species.2.model <- enmtools.model.by.type(type, rep.species.2, env, f = f, model = model, model.args = model.args, clamp = FALSE, ...)
+    rep.ribbon.model <- enmtools.model.by.type(type, rep.ribbon, env, f = f, model = model, model.args = model.args, clamp = FALSE, ...)
+    rep.outside.model <- enmtools.model.by.type(type, rep.outside, env, f = f, model = model, model.args = model.args, clamp = FALSE, ...)
 
 
 
@@ -546,7 +479,7 @@ rangebreak.ribbon <- function(species.1, species.2, ribbon, env, type, f = NULL,
 
 }
 
-rangebreak.ribbon.precheck <- function(species.1, species.2, ribbon, env, type, f, width, nreps){
+rangebreak.ribbon.precheck <- function(species.1, species.2, ribbon, env, type, f, model, width, nreps){
 
   if(!inherits(species.1, "enmtools.species")){
     stop("Species.1 is not an enmtools.species object!")
@@ -564,25 +497,9 @@ rangebreak.ribbon.precheck <- function(species.1, species.2, ribbon, env, type, 
     stop("Environmental layers are not a SpatRaster object!")
   }
 
-  if(type == "glm"){
-    if(!is.null(f)){
-      if(!inherits(f, "formula")){
-        stop("Type is set to GLM and f is not a formula object!")
-      }
-    }
-  }
 
-  if(type == "gam"){
-    if(!is.null(f)){
-      if(!inherits(f, "formula")){
-        stop("Type is set to GAM and f is not a formula object!")
-      }
-    }
-  }
 
-  if(!type %in% c("glm", "mx", "bc", "dm", "gam", "rf")){
-    stop(paste("Model type", type, "not understood! Select either bc, dm, mx, gam, rf, or glm."))
-  }
+  check.model.type(type, f, model)
 
   check.species(species.1)
 
@@ -652,7 +569,7 @@ rangebreak.ribbon.precheck <- function(species.1, species.2, ribbon, env, type, 
   }
 }
 
-
+#' @exportS3Method
 summary.enmtools.rangebreak.ribbon <- function(object, ...){
 
   cat(paste("\n\n", object$description))
@@ -681,12 +598,14 @@ summary.enmtools.rangebreak.ribbon <- function(object, ...){
 
 }
 
+#' @exportS3Method
 print.enmtools.rangebreak.ribbon <- function(x, ...){
 
   summary(x)
 
 }
 
+#' @exportS3Method
 plot.enmtools.rangebreak.ribbon <- function(x, ...){
 
   #   x.raster <- x$empirical.species.1.model$suitability

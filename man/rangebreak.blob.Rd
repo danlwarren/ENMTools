@@ -10,13 +10,15 @@ rangebreak.blob(
   env,
   type,
   f = NULL,
+  model = NULL,
+  model.args = list(),
   nreps = 99,
   nback = 1000,
   bg.source = "default",
   low.memory = FALSE,
   rep.dir = NA,
   verbose = FALSE,
-  clamp = TRUE,
+  clamp = NULL,
   ...
 )
 }
@@ -27,9 +29,13 @@ rangebreak.blob(
 
 \item{env}{A SpatRaster object containing environmental data}
 
-\item{type}{The type of model to construct, currently accepts "glm", "mx", "bc", "gam", or "dm"}
+\item{type}{The type of model to construct: "glm", "gam", "bc", "dm", "rf", "rf.ranger", "maxnet", "mx" (Maxent using the Java implementation), or "tidy" for any classification model specified with parsnip (see \code{model}).}
 
-\item{f}{A function to use for model fitting.  Only required for GLM models at the moment.}
+\item{f}{Optional.  A formula or \code{\link[recipes:recipe]{recipes::recipe()}} specifying the predictors to use.  If NULL (the default), each model uses the default for its type: every layer in \code{env} is used as a predictor, as linear terms for GLMs and smooth terms for GAMs.  See the documentation for each modeling function (e.g. \code{\link[=enmtools.glm]{enmtools.glm()}}) for details.  Not used when type = "mx".}
+
+\item{model}{When type = "tidy", a parsnip model specification with mode "classification", e.g. \code{parsnip::boost_tree("classification")}, passed to \code{\link[=enmtools.tidy]{enmtools.tidy()}}.}
+
+\item{model.args}{When type = "tidy", a list of arguments for the model specification or its engine, passed to \code{\link[=enmtools.tidy]{enmtools.tidy()}}.}
 
 \item{nreps}{Number of replicates to perform}
 
@@ -43,7 +49,7 @@ rangebreak.blob(
 
 \item{verbose}{Controls printing of various messages progress reports.  Defaults to FALSE.}
 
-\item{clamp}{Controls whether empirical and replicate models should be clamped to the environment space used for training.}
+\item{clamp}{Controls whether empirical and replicate models should be clamped to the environment space used for training.  Defaults to TRUE, except for presence-only envelope models; these are not clamped unless clamp = TRUE.}
 
 \item{...}{Additional arguments to be passed to model fitting functions.}
 }

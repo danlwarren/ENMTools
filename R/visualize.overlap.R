@@ -39,16 +39,10 @@ visualize.overlap <- function(model.1, model.2, env, nbins = 100, layers, plot.p
   }
 
   # Grab points
-  if(inherits(model.1, c("enmtools.bc", "enmtools.dm"))){
-    points.1 <- model.1$analysis.df
-  } else {
-    points.1 <- model.1$analysis.df[model.1$analysis.df$presence == 1,1:2]
-  }
-  if(inherits(model.2, c("enmtools.bc", "enmtools.dm"))){
-    points.2 <- model.2$analysis.df
-  } else {
-    points.2 <- model.2$analysis.df[model.2$analysis.df$presence == 1,1:2]
-  }
+  points.1 <- model.1$analysis.df[model.1$analysis.df$presence == 1,1:2]
+
+  points.2 <- model.2$analysis.df[model.2$analysis.df$presence == 1,1:2]
+
 
 
   layer1.min <- min(terra::values(env[[layers[1]]]), na.rm=TRUE)
@@ -80,23 +74,17 @@ visualize.overlap <- function(model.1, model.2, env, nbins = 100, layers, plot.p
   plot.df <- data.frame(plot.df)
 
   if(inherits(model.1$model, "DistModel")){
-    pred1 <- as.numeric(predict(model.1$model, x = data.frame(plot.df), type = "response"))
+    pred1 <- as.numeric(predict(model.1$model, x = data.frame(plot.df), type = "prob"))
   } else {
-    if(inherits(model.1$model, "ranger")) {
-      pred1 <- as.numeric(predict(model.1$model, data = data.frame(plot.df), type = "response")$predictions[ , 2, drop = TRUE])
-    } else {
-      pred1 <- as.numeric(predict(model.1$model, newdata = data.frame(plot.df), type = "response"))
-    }
+    pred1 <- as.numeric(predict(model.1$model, new_data = data.frame(plot.df), type = "prob")$.pred_1)
+
   }
 
   if(inherits(model.2$model, "DistModel")){
-    pred2 <- as.numeric(predict(model.2$model, x = data.frame(plot.df), type = "response"))
+    pred2 <- as.numeric(predict(model.2$model, x = data.frame(plot.df), type = "prob"))
   } else {
-    if(inherits(model.2$model, "ranger")) {
-      pred2 <- as.numeric(predict(model.2$model, data = data.frame(plot.df), type = "response")$predictions[ , 2, drop = TRUE])
-    } else {
-      pred2 <- as.numeric(predict(model.2$model, newdata = data.frame(plot.df), type = "response"))
-    }
+    pred2 <- as.numeric(predict(model.2$model, new_data = data.frame(plot.df), type = "prob")$.pred_1)
+
   }
 
   plot.df <- cbind(plot.df[,1:2], pred1, pred2)

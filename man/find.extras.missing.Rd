@@ -7,10 +7,10 @@
 find.extras.missing(funs = NULL)
 }
 \arguments{
-\item{funs}{character vector of ENMTools function names to install extra dependencies for. If `NULL`, extras for all ENMTools functions will be installed.}
+\item{funs}{character vector of ENMTools function names to install extra dependencies for. If \code{NULL}, extras for all ENMTools functions will be installed.}
 }
 \value{
-A character vector with the names of extra packages required by `funs` that are currently not available
+A character vector with the names of extra packages required by \code{funs} that are currently not available
 }
 \description{
 Find the extra packages needed for an ENMTools function that are currently missing (not available)

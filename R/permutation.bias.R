@@ -1,8 +1,8 @@
 #' permutation.bias
 #'
 #' Implements a permutation test for the effects of sampling bias on ENM
-#' projections, as described in Warren et al. (2021).  The empirical model is
-#' projected to a transfer environment and a suite of summary statistics are
+#' projections, as described in Warren et al. (2021).  A model of the chosen
+#' type is fitted to the empirical data and projected to a transfer environment and a suite of summary statistics are
 #' calculated for that projection.  A null distribution for each statistic is
 #' then built by repeatedly resampling occurrence records at random from the
 #' training region, refitting the model with identical settings, projecting to
@@ -15,9 +15,12 @@
 #' and how sensitive those predictions are to the input occurrence data.
 #'
 #' @param species An enmtools.species object
-#' @param model A fitted enmtools.model object
 #' @param training.env A SpatRaster of the training environment
 #' @param transfer.env A SpatRaster of the transfer environment
+#' @param type The type of model to construct: "glm", "gam", "bc", "dm", "rf", "rf.ranger", "maxnet", "mx" (Maxent using the Java implementation), or "tidy" for any classification model specified with parsnip (see `model`).
+#' @param f Optional.  A formula or [recipes::recipe()] specifying the predictors to use.  If NULL (the default), each model uses the default for its type: every layer in `env` is used as a predictor, as linear terms for GLMs and smooth terms for GAMs.  See the documentation for each modeling function (e.g. [enmtools.glm()]) for details.  Not used when type = "mx".
+#' @param model When type = "tidy", a parsnip model specification with mode "classification", e.g. `parsnip::boost_tree("classification")`, passed to [enmtools.tidy()].
+#' @param model.args When type = "tidy", a list of arguments for the model specification or its engine, passed to [enmtools.tidy()].
 #' @param nreps Number of replicate models to build. Defaults to 100.
 #' @param bias Optional SpatRaster. If provided, random occurrence and
 #'   background points are drawn with probability proportional to the
@@ -27,9 +30,10 @@
 #'   resampled presence points, intersected with the bias layer (if provided).
 #'   Units match the CRS of training.env.
 #' @param pa.threshold Controls which MSS threshold is used to binarize replicate projections. "empirical" (default) applies the threshold from the fitted empirical model to all replicates, matching the approach in Warren et al. (2021). "replicate" calculates a separate threshold for each replicate from its own training evaluation.
+#' @param clamp Whether to clamp the empirical and replicate models.  If NULL (the default), the default for the model type is used; see the modeling functions.  Projections to the transfer environment use the same setting.
 #' @param verbose Controls printing of progress messages. Defaults to FALSE.
-#' @param ... Additional arguments passed to the model fitting function when
-#'   building replicate models (e.g., f, test.prop, clamp).
+#' @param ... Additional arguments passed to the modeling function for the
+#'   empirical and replicate models (e.g., test.prop).
 #'
 #' @return An enmtools.permutation.bias object containing empirical and
 #'   replicate statistics, mean and variance change rasters, and summary plots.
@@ -38,20 +42,17 @@
 #'
 #' @examples
 #' \donttest{
-#' monticola.glm <- enmtools.glm(iberolacerta.clade$species$monticola,
-#'                               training.env = euro.worldclim,
-#'                               f = pres ~ bio1 + bio12,
-#'                               test.prop = 0.2)
 #' pb <- permutation.bias(iberolacerta.clade$species$monticola,
-#'                        monticola.glm,
 #'                        training.env = euro.worldclim,
-#'                        transfer.training.env = euro.worldclim,
+#'                        transfer.env = euro.worldclim,
+#'                        type = "glm",
+#'                        f = pres ~ bio1 + bio12,
 #'                        nreps = 10)
 #' }
 
-permutation.bias <- function(species, model, training.env, transfer.env, nreps = 100,
-                              bias = NULL, buffer.width = NULL,
-                              pa.threshold = "empirical", verbose = FALSE, ...) {
+permutation.bias <- function(species, training.env, transfer.env, type, f = NULL, model = NULL,
+                              model.args = list(), nreps = 100, bias = NULL, buffer.width = NULL,
+                              pa.threshold = "empirical", clamp = NULL, verbose = FALSE, ...) {
 
   # --- Input validation and coercion ---
   species <- check.species(species)
@@ -68,24 +69,12 @@ permutation.bias <- function(species, model, training.env, transfer.env, nreps =
     bias <- terra::rast(bias)
   }
 
-  # Determine model type
-  if(inherits(model, "enmtools.glm")){
-    type <- "glm"
-  } else if(inherits(model, "enmtools.gam")){
-    type <- "gam"
-  } else if(inherits(model, "enmtools.rf")){
-    type <- "rf"
-  } else if(inherits(model, "enmtools.rf.ranger")){
-    type <- "rf.ranger"
-  } else if(inherits(model, "enmtools.maxent")){
-    type <- "mx"
-  } else if(inherits(model, "enmtools.bc")){
-    type <- "bc"
-  } else if(inherits(model, "enmtools.dm")){
-    type <- "dm"
-  } else {
-    stop("Unrecognized model type.")
-  }
+  check.model.type(type, f, model)
+
+  # --- Empirical model ---
+  model.spec <- model
+  model <- enmtools.model.by.type(type, species, training.env, f = f, model = model.spec,
+                                  model.args = model.args, clamp = clamp, ...)
 
   n.pres <- length(model$training.evaluation@presence)
   n.bg   <- length(model$training.evaluation@absence)
@@ -99,7 +88,7 @@ permutation.bias <- function(species, model, training.env, transfer.env, nreps =
   }
 
   # --- Empirical projection ---
-  empirical.transfer <- pb.transfer.predict(model, transfer.env, type)
+  empirical.transfer <- suitability.from.env(model, transfer.env)
   mss.threshold      <- dismo::threshold(model$training.evaluation, "spec_sens")
 
   
@@ -127,18 +116,6 @@ permutation.bias <- function(species, model, training.env, transfer.env, nreps =
     empirical.n.gained <- terra::global((transfer.bin - train.bin) > 0,  sum, na.rm = TRUE)[[1]]
     empirical.n.lost   <- terra::global((train.bin - transfer.bin) > 0,  sum, na.rm = TRUE)[[1]]
   }
-
-  # --- Build reusable argument list from the empirical model's stored call ---
-  # Evaluate each argument in the caller's environment so that variable
-  # references (e.g. f = my.formula) are resolved correctly.  species and env
-  # are excluded here and injected fresh each iteration.
-  calling.env <- parent.frame()
-  mc <- model$call
-  fn.name <- as.character(mc[[1]])
-  base.args <- lapply(
-    as.list(mc)[setdiff(names(mc), c("", "species", "env"))],
-    eval, envir = calling.env
-  )
 
   # --- Replicate loop ---
   reps.mean.suitability <- numeric(nreps)
@@ -200,12 +177,12 @@ permutation.bias <- function(species, model, training.env, transfer.env, nreps =
     rep.species$background.points <- rep.bg
     rep.species$species.name <- paste0("rep", i)
 
-    # Fit replicate model using the same arguments as the empirical model
-    rep.model <- do.call(fn.name,
-                         c(list(species = rep.species, env = training.env), base.args))
+    # Fit replicate model with the same settings as the empirical model
+    rep.model <- enmtools.model.by.type(type, rep.species, training.env, f = f, model = model.spec,
+                                        model.args = model.args, clamp = clamp, ...)
 
     # Project to transfer environment
-    rep.transfer <- pb.transfer.predict(rep.model, transfer.env, type)
+    rep.transfer <- suitability.from.env(rep.model, transfer.env)
     rep.training.rasters[[i]] <- rep.model$suitability
     rep.transfer.rasters[[i]] <- rep.transfer
 
@@ -336,29 +313,6 @@ permutation.bias <- function(species, model, training.env, transfer.env, nreps =
 
 
 # --- Internal helpers ---
-
-pb.transfer.predict <- function(model, transfer.env, type) {
-
-  if(type %in% c("glm", "gam")){
-    return(terra::predict(transfer.env, model$model, type = "response", na.rm = TRUE))
-  }
-
-  if(type == "rf"){
-    return(terra::predict(transfer.env, model$model, type = "response", na.rm = TRUE))
-  }
-
-  if(type == "rf.ranger"){
-    pred.fun <- function(model, data, ...) {
-      predict(model, data = data, type = "response")$predictions[, 2]
-    }
-    return(terra::predict(transfer.env, model$model, fun = pred.fun, na.rm = TRUE))
-  }
-
-  if(type %in% c("mx", "bc", "dm")){
-    return(terra::predict(transfer.env, model$model, na.rm = TRUE))
-  }
-
-}
 
 pb.histogram <- function(combined.stats, col, xlab, title) {
   ggplot(combined.stats[2:nrow(combined.stats), , drop = FALSE],

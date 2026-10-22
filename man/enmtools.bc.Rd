@@ -7,6 +7,7 @@
 enmtools.bc(
   species,
   env = NA,
+  f = NULL,
   test.prop = 0,
   report = NULL,
   overwrite = FALSE,
@@ -15,7 +16,7 @@ enmtools.bc(
   rts.reps = 0,
   bg.source = "default",
   verbose = FALSE,
-  clamp = TRUE,
+  clamp = FALSE,
   corner = NA,
   bias = NA,
   ...
@@ -25,6 +26,8 @@ enmtools.bc(
 \item{species}{An enmtools.species object}
 
 \item{env}{A SpatRaster of environmental data.}
+
+\item{f}{Optional.  A formula or \code{\link[recipes:recipe]{recipes::recipe()}} object, used only to select which environmental variables are used (those on the right hand side of a formula, or with the predictor role in a recipe).  If NULL (the default), every layer in \code{env} is used.  Transformations, interactions, and recipe steps are ignored, with a warning; to fit the model to transformed variables such as principal components, transform the environmental layers first.  This argument is new as of version 2.0}
 
 \item{test.prop}{Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.}
 
@@ -42,13 +45,13 @@ enmtools.bc(
 
 \item{verbose}{Controls printing of various messages progress reports.  Defaults to FALSE.}
 
-\item{clamp}{When set to TRUE, clamps the environmental layers so that predictions made outside the min/max of the training data for each predictor are set to the value for the min/max for that predictor. Prevents the model from extrapolating beyond the min/max bounds of the predictor space the model was trained in, although there could still be projections outside the multivariate training space if predictors are strongly correlated.}
+\item{clamp}{Defaults to FALSE.  Suitability from this model already declines for conditions outside the range of the presence points, and clamping the environmental layers would raise suitability for those conditions.  If TRUE, the environmental layers are clamped to the minimum and maximum of each predictor at the presence points.}
 
 \item{corner}{An integer from 1 to 4.  Selects which corner to use for "block" test data.  By default the corner is selected randomly.}
 
 \item{bias}{An optional raster estimating relative sampling effort per grid cell.  Will be used for drawing background data.}
 
-\item{...}{Arguments to be passed to bioclim()}
+\item{...}{Arguments to be passed to dismo::bioclim()}
 }
 \value{
 An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.

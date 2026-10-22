@@ -22,5 +22,8 @@ globalVariables(c("f", "predict", "value", "x", "Importance", "Variable", "crds"
                       })
   assign("iberolacerta.clade", y, pos = asNamespace("ENMTools"))
 
+  make.pres.only.sdm()
+  make.maxnet.sdm()
+
 }
 

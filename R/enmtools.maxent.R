@@ -13,7 +13,7 @@
 #' @param clamp When set to TRUE, clamps the environmental layers so that predictions made outside the min/max of the training data for each predictor are set to the value for the min/max for that predictor. Prevents the model from extrapolating beyond the min/max bounds of the predictor space the model was trained in, although there could still be projections outside the multivariate training space if predictors are strongly correlated.
 #' @param corner An integer from 1 to 4.  Selects which corner to use for "block" test data.  By default the corner is selected randomly.
 #' @param bias An optional raster estimating relative sampling effort per grid cell.  Will be used for drawing background data.
-#' @param ... Arguments to be passed to maxent()
+#' @param ... Arguments to be passed to dismo::maxent()
 #'
 #' @return An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
 #'
@@ -69,7 +69,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
     }
   }
 
-  analysis.df <- make_analysis.df(species)
+  analysis.df <- make.analysis.df(species)
 
   # This is a very weird hack that has to be done because dismo's evaluate and maxent function
   # fail if the stack only has one layer.
@@ -377,6 +377,7 @@ enmtools.maxent <- function(species, env, test.prop = 0, nback = 1000, env.nback
 }
 
 # Summary for objects of class enmtools.maxent
+#' @exportS3Method
 summary.enmtools.maxent <- function(object, plot = TRUE, ...){
 
   cat("\n\nData table (top ten lines): ")
@@ -413,6 +414,7 @@ summary.enmtools.maxent <- function(object, plot = TRUE, ...){
 }
 
 # Print method for objects of class enmtools.maxent
+#' @exportS3Method
 print.enmtools.maxent <- function(x, ...){
 
   summary(x)
@@ -420,6 +422,7 @@ print.enmtools.maxent <- function(x, ...){
 }
 
 # Plot method for objects of class enmtools.maxent
+#' @exportS3Method
 plot.enmtools.maxent <- function(x, ...){
 
 
@@ -462,6 +465,7 @@ predict.enmtools.maxent <- function(object, env, maxpts = 1000, clamp = TRUE, ..
   suitability <- try(terra::predict(env, object$model, na.rm = TRUE, ...), silent = TRUE)
 
   # I'm actually not sure this is doing anything - I think maxent models are clamped by default
+  clamping.strength <- NA
   if(clamp == TRUE){
     # Adding env (skipped for MX otherwise)
     this.df <- as.data.frame(rbind(object$model@presence, object$model@absence))

@@ -11,3 +11,6 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^\.claude$
+^\.claude_notes_and_utils$
+^CLAUDE\.md$

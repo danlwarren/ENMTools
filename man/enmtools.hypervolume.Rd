@@ -2,48 +2,96 @@
 % Please edit documentation in R/enmtools.hypervolume.R
 \name{enmtools.hypervolume}
 \alias{enmtools.hypervolume}
-\title{THIS FUNCTION IS CURRENTLY DISABLED.  Takes an emtools.species object and environmental layers, and constructs a hypervolume using the R package hypervolume}
+\title{Takes an enmtools.species object and builds a hypervolume model}
 \usage{
 enmtools.hypervolume(
   species,
   env,
-  samples.per.point = 10,
-  reduction.factor = 0.1,
-  method = "gaussian",
+  f = NULL,
+  test.prop = 0,
+  eval = TRUE,
+  nback = 1000,
+  env.nback = 10000,
+  report = NULL,
+  overwrite = FALSE,
+  rts.reps = 0,
+  bg.source = "default",
   verbose = FALSE,
-  clamp = TRUE,
+  clamp = FALSE,
+  corner = NA,
+  bias = NA,
+  method = "gaussian",
+  samples.per.point = 1000,
+  reduction.factor = 0.5,
   ...
 )
 }
 \arguments{
 \item{species}{An enmtools.species object}
 
-\item{env}{A stack of environmental rasters}
+\item{env}{A SpatRaster of environmental data. Note: hypervolume works best with a small number of
+uncorrelated environmental variables (typically 2-6 dimensions).}
 
-\item{samples.per.point}{To be passed to hypervolume_gaussian}
+\item{f}{Optional.  A formula or \code{\link[recipes:recipe]{recipes::recipe()}} object, used only to select which environmental variables are used (those on the right hand side of a formula, or with the predictor role in a recipe).  If NULL (the default), every layer in \code{env} is used.  Transformations, interactions, and recipe steps are ignored, with a warning; to fit the model to transformed variables such as principal components, transform the environmental layers first.  This argument is new as of version 2.0}
 
-\item{reduction.factor}{To be passed to hypervolume_project}
+\item{test.prop}{Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.}
 
-\item{method}{Method for constructing hypervolumes, defaults to "gaussian"}
+\item{eval}{Determines whether model evaluation should be done. Turned on by default.}
 
-\item{verbose}{Controls printing of various messages progress reports.  Defaults to FALSE.}
+\item{nback}{Number of background points to draw from range or env, if background points aren't provided}
 
-\item{clamp}{When set to TRUE, clamps the environmental layers so that predictions made outside the min/max of the training data for each predictor are set to the value for the min/max for that predictor. Prevents the model from extrapolating beyond the min/max bounds of the predictor space the model was trained in, although there could still be projections outside the multivariate training space if predictors are strongly correlated.}
+\item{env.nback}{Number of points to draw from environment space for environment space discrimination metrics.}
 
-\item{...}{Extra parameters to be passed to hypervolume_gaussian}
+\item{report}{Optional name of an html file for generating reports}
+
+\item{overwrite}{TRUE/FALSE whether to overwrite a report file if it already exists}
+
+\item{rts.reps}{The number of replicates to do for a Raes and ter Steege-style test of significance}
+
+\item{bg.source}{Source for drawing background points. If "points", it just uses the background points that are already in the species object. If "range", it uses the range raster. If "env", it draws points at random from the entire study area outlined by the first environmental layer.}
+
+\item{verbose}{Controls printing of various messages progress reports. Defaults to FALSE.}
+
+\item{clamp}{Defaults to FALSE.  Suitability from this model already declines for conditions outside the range of the presence points, and clamping the environmental layers would raise suitability for those conditions.  If TRUE, the environmental layers are clamped to the minimum and maximum of each predictor at the presence points.}
+
+\item{corner}{An integer from 1 to 4. Selects which corner to use for "block" test data. By default the corner is selected randomly.}
+
+\item{bias}{An optional raster estimating relative sampling effort per grid cell. Will be used for drawing background data.}
+
+\item{method}{Method for constructing hypervolumes: "gaussian" (default) or "svm".}
+
+\item{samples.per.point}{Number of random samples per point for hypervolume estimation. Default 1000.}
+
+\item{reduction.factor}{Value between 0 and 1 for prediction speed. Lower values are faster but less accurate. Default 0.5.}
+
+\item{...}{Additional arguments to be passed to hypervolume construction functions}
 }
 \value{
-An enmtools hypvervolume object containing a hypervolume object, a raster of suitability scores, the species name, and the occurrence data frame.
+An enmtools model object containing species name, model object, suitability raster, and any evaluation objects that were created.
 }
 \description{
-THIS FUNCTION IS CURRENTLY DISABLED.  Takes an emtools.species object and environmental layers, and constructs a hypervolume using the R package hypervolume
+Takes an enmtools.species object and builds a hypervolume model
+}
+\details{
+Hypervolume models estimate the environmental niche as an n-dimensional hypervolume
+using kernel density estimation. This is a presence-only method that does not use background points
+for model fitting (though background points are still used for model evaluation).
+
+Note that hypervolume models work best with a small number of uncorrelated environmental
+variables (typically 2-6). Using too many variables can lead to poor performance due to the
+curse of dimensionality.
+
+The function internally standardizes environmental data before fitting the hypervolume,
+and stores the scaling parameters for use in prediction.
 }
 \examples{
-\donttest{
-#install.extras(repos='http://cran.us.r-project.org')
-env <- euro.worldclim[[c(1,8,12,17)]]
-if(requireNamespace("hypervolume", quietly = TRUE)) {
-    monticola.hv <- enmtools.hypervolume(iberolacerta.clade$species$monticola, env = env)
+\dontrun{
+# Use a small number of environmental variables
+env_subset <- euro.worldclim[[c("bio1", "bio12")]]
+monticola.hv <- enmtools.hypervolume(iberolacerta.clade$species$monticola, env = env_subset)
 }
+
 }
+\seealso{
+\code{\link[hypervolume]{hypervolume_gaussian}} for the underlying modeling function.
 }

@@ -12,6 +12,9 @@ enmtools.aoc(
   overlap.source,
   nreps = 100,
   f = NULL,
+  model = NULL,
+  model.args = list(),
+  clamp = NULL,
   overlap.matrix = NULL,
   metric = "D",
   ...
@@ -22,11 +25,17 @@ enmtools.aoc(
 
 \item{env}{Environmental layers for use when overlap is calculated using niche models.}
 
-\item{overlap.source}{The source of the overlaps to calculate.  Choices are "bc", "dm", "gam", "glm", "mx", "range", and "point"}
+\item{overlap.source}{The source of the overlaps to calculate.  Choices are "range", "point", "matrix", or a model type: "glm", "gam", "bc", "dm", "rf", "rf.ranger", "maxnet", "mx", or "tidy" (see \code{model}).}
 
 \item{nreps}{A number of reps to do}
 
-\item{f}{The model to be used for GLM and GAM comparisons}
+\item{f}{Optional.  A formula or \code{\link[recipes:recipe]{recipes::recipe()}} specifying the predictors to use for ENM-based overlaps.  If NULL (the default), each model uses the default for its type: every layer in \code{env} is used as a predictor, as linear terms for GLMs and smooth terms for GAMs.  See the documentation for each modeling function (e.g. \code{\link[=enmtools.glm]{enmtools.glm()}}) for details.  Not used for Maxent models (overlap.source = "mx").}
+
+\item{model}{When overlap.source = "tidy", a parsnip model specification with mode "classification", passed to \code{\link[=enmtools.tidy]{enmtools.tidy()}}.}
+
+\item{model.args}{When overlap.source = "tidy", a list of arguments for the model specification or its engine, passed to \code{\link[=enmtools.tidy]{enmtools.tidy()}}.}
+
+\item{clamp}{Passed to the modeling functions for ENM-based overlaps.  If NULL (the default), each model type's own default is used: presence-only envelope models (Bioclim, DOMAIN, and hypervolumes) are not clamped, and other models are.}
 
 \item{overlap.matrix}{A matrix of overlaps to use, for option overlap.source = "matrix"}
 

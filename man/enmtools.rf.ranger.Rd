@@ -2,7 +2,7 @@
 % Please edit documentation in R/enmtools.rf.ranger.R
 \name{enmtools.rf.ranger}
 \alias{enmtools.rf.ranger}
-\title{Takes an emtools.species object with presence and background points, and builds a random forest model using the 'probability mode' in package `ranger`}
+\title{Takes an emtools.species object with presence and background points, and builds a random forest model using the 'probability mode' in package \code{ranger}}
 \usage{
 enmtools.rf.ranger(
   species,
@@ -15,6 +15,7 @@ enmtools.rf.ranger(
   report = NULL,
   overwrite = FALSE,
   rts.reps = 0,
+  weights = "equal",
   bg.source = "default",
   verbose = FALSE,
   clamp = TRUE,
@@ -28,7 +29,7 @@ enmtools.rf.ranger(
 
 \item{env}{A SpatRaster of environmental data.}
 
-\item{f}{A formula for fitting the model}
+\item{f}{Optional.  A formula or \code{\link[recipes:recipe]{recipes::recipe()}} object specifying the predictors.  If NULL (the default), every layer in \code{env} is used as a predictor.}
 
 \item{test.prop}{Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.}
 
@@ -43,6 +44,8 @@ enmtools.rf.ranger(
 \item{overwrite}{TRUE/FALSE whether to overwrite a report file if it already exists}
 
 \item{rts.reps}{The number of replicates to do for a Raes and ter Steege-style test of significance}
+
+\item{weights}{If this is set to "equal" (the default), presences and background data will be assigned weights so that the sum of all presence points weights equals the sum of all background point weights.  Otherwise, weights are not provided to the model. ENMTools versions < 2.0 did not weight ranger models, so use weights = "none" to reproduce them.}
 
 \item{bg.source}{Source for drawing background points.  If "points", it just uses the background points that are already in the species object.  If "range", it uses the range raster.  If "env", it draws points at randome from the entire study area outlined by the first environmental layer.}
 
@@ -60,7 +63,7 @@ enmtools.rf.ranger(
 An enmtools model object containing species name, model formula (if any), model object, suitability raster, marginal response plots, and any evaluation objects that were created.
 }
 \description{
-Takes an emtools.species object with presence and background points, and builds a random forest model using the 'probability mode' in package `ranger`
+Takes an emtools.species object with presence and background points, and builds a random forest model using the 'probability mode' in package \code{ranger}
 }
 \examples{
 \donttest{

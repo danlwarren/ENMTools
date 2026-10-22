@@ -7,7 +7,7 @@
 assert.extras(funs = NULL)
 }
 \arguments{
-\item{funs}{character vector of ENMTools function names to install extra dependencies for. If `NULL`, extras for all ENMTools functions will be installed.}
+\item{funs}{character vector of ENMTools function names to install extra dependencies for. If \code{NULL}, extras for all ENMTools functions will be installed.}
 }
 \value{
 None, this function is used for its side-effects

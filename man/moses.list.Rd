@@ -12,7 +12,6 @@ moses.list(
   nback = 1000,
   bg.source = "default",
   verbose = FALSE,
-  step = FALSE,
   ...
 )
 }
@@ -21,7 +20,7 @@ moses.list(
 
 \item{env}{A SpatRaster of environmental data.}
 
-\item{f}{A GLM-style function for model fitting}
+\item{f}{Optional.  A GLM formula, used for every model.  If NULL (the default), every layer in \code{env} is used as a linear term.}
 
 \item{eval}{Boolean indicating whether or not GLMs should be evaluated using AUC/TSS/etc.}
 
@@ -31,8 +30,6 @@ moses.list(
 
 \item{verbose}{Controls printing of various messages progress reports.  Defaults to FALSE.}
 
-\item{step}{Logical determining whether to do stepwise model selection or not}
-
 \item{...}{further arguments to be passed to enmtools.glm}
 }
 \value{
@@ -40,4 +37,7 @@ A list containing GLMs for the groups separately and together, as well as AIC va
 }
 \description{
 Takes a list of enmtools.species objects and uses model selection to ask whether they're better treated jointly or separately
+}
+\details{
+The comparison is only valid if the separate and combined models are fitted to exactly the same points with the same weights, so all models are fitted to all presence and background points without weighting.  The weights and test.prop arguments of enmtools.glm() therefore cannot be used.
 }

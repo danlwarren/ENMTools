@@ -50,13 +50,9 @@ env.breadth <- function(model, env, tolerance = .0001, max.reps = 10, chunk.size
     # Use that sample space to get a starting overlap value
     colnames(predict.table) <- names(env)
     if(inherits(model, "DistModel")){
-      pred <- as.numeric(predict(model, x = data.frame(predict.table), type = "response"))
+      pred <- as.numeric(predict(model, x = data.frame(predict.table), type = "prob"))
     } else {
-      if(inherits(model, "ranger")) {
-        pred <- as.numeric(predict(model, data = data.frame(predict.table), type = "response")$predictions[ , 2, drop = TRUE])
-      } else {
-        pred <- as.numeric(predict(model, newdata = data.frame(predict.table), type = "response"))
-      }
+      pred <- as.numeric(predict(model, new_data = data.frame(predict.table), type = "prob")$.pred_1)
     }
 
     if(max(pred) == 0){
@@ -99,13 +95,9 @@ env.breadth <- function(model, env, tolerance = .0001, max.reps = 10, chunk.size
 
       # Make new predictions and recalculate metrics
       if(inherits(model, "DistModel")){
-        pred <- c(pred, as.numeric(predict(model, x = data.frame(predict.table), type = "response")))
+        pred <- c(pred, as.numeric(predict(model, x = data.frame(predict.table), type = "prob")))
       } else {
-        if(inherits(model, "ranger")) {
-          pred <- as.numeric(predict(model, data = data.frame(predict.table), type = "response")$predictions[ , 2, drop = TRUE])
-        } else {
-          pred <- as.numeric(predict(model, newdata = data.frame(predict.table), type = "response"))
-        }
+        pred <- as.numeric(predict(model, new_data = data.frame(predict.table), type = "prob")$.pred_1)
       }
 
       if(max(pred) == 0){

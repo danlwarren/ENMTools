@@ -35,30 +35,17 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
   # The following bits of code basically just turn each model type's
   # output into probabilities.
 
-  if(inherits(model, "enmtools.glm") | inherits(model, "enmtools.gam")){
+  if(inherits(model, c("enmtools.tidy", "enmtools.maxent"))){
 
-    # For models that need to be transformed from logit to probabilities
-    p <- exp(model$test.evaluation@presence)/(1 + exp(model$test.evaluation@presence))
-    a <- exp(model$test.evaluation@absence)/(1 + exp(model$test.evaluation@absence))
-    train.p <- exp(model$training.evaluation@presence)/(1 + exp(model$training.evaluation@presence))
+    # Predictions stored in the evaluation objects are already probabilities
+    p <- model$test.evaluation@presence
+    a <- model$test.evaluation@absence
+    train.p <- model$training.evaluation@presence
 
     # Subsampling background test data to get same prevalence as we had with training data
     a <- sample(a, size = model$test.prop * length(a), replace = FALSE)
 
     # Pack it all up
-    pred.df <- data.frame(prob = c(p, a),
-                          obs = c(rep("presence", length(p)), rep("absence", length(a))))
-  } else if(inherits(model, "enmtools.bc") | inherits(model, "enmtools.dm") | inherits(model, "enmtools.maxent") | inherits(model, "enmtools.rf")){
-
-    # For models that already have probabilities
-    p <- model$test.evaluation@presence
-    a <- model$test.evaluation@absence
-
-    # Subsampling background test data to get same prevalence as we had with training data
-    a <- sample(a, size = model$test.prop * length(a), replace = FALSE)
-
-    train.p <- model$training.evaluation@presence
-
     pred.df <- data.frame(prob = c(p, a),
                           obs = c(rep("presence", length(p)), rep("absence", length(a))))
   } else {
@@ -104,7 +91,17 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
   env.test.evaluation <- list()
 
   if(recalibrate == TRUE){
-    recalibrated.model <- CalibratR::calibrate(this.pa, pred.df$prob, evaluate_no_CV_error = FALSE, model_idx = recal.methods, ...)
+    # CalibratR bins on quantiles and fails when tied predictions produce
+    # duplicate breaks, so tied values get a tiny jitter (kept inside [0, 1])
+    recal.prob <- pred.df$prob
+    if(any(duplicated(recal.prob))){
+      message("Predictions contain ties; adding a small jitter (< 1e-6) before recalibration.")
+      eps <- 1e-6
+      recal.prob <- ifelse(recal.prob < eps, recal.prob + stats::runif(length(recal.prob), 0, eps),
+                           ifelse(recal.prob > 1 - eps, recal.prob - stats::runif(length(recal.prob), 0, eps),
+                                  recal.prob + stats::runif(length(recal.prob), -eps, eps)))
+    }
+    recalibrated.model <- CalibratR::calibrate(this.pa, recal.prob, evaluate_no_CV_error = FALSE, model_idx = recal.methods, ...)
     preds <- as.matrix(terra::as.data.frame(model$suitability, xy = TRUE))
     cal.preds <- CalibratR::predict_calibratR(recalibrated.model$calibration_models, new = preds[, names(model$suitability)])
 
@@ -140,17 +137,9 @@ enmtools.calibrate <- function(model, recalibrate = FALSE, cuts = 11, env = NA, 
       p.table <- terra::extract(env, model$analysis.df[model$analysis.df$presence == 1,1:2], ID = FALSE)
       test.table <- terra::extract(env, model$test.data, ID = FALSE)
 
-      # Having to do this for now because the dismo models don't like "newdata"
-      # Unfortunately I think we finally have to use an if statement because ranger predict is really different
-      if(inherits(model, "ranger")) {
-        pred.p <- as.numeric(predict(model$model, data = data.frame(p.table), type = "response")$predictions[ , 2, drop = TRUE])
-        pred.bg <- as.numeric(predict(model$model, data = data.frame(bg.table), type = "response")$predictions[ , 2, drop = TRUE])
-        pred.test <- as.numeric(predict(model$model, data = data.frame(test.table), type = "response")$predictions[ , 2, drop = TRUE])
-      } else {
-        pred.p <- as.numeric(predict(model$model, newdata = data.frame(p.table), x = data.frame(p.table), type = "response"))
-        pred.bg <- as.numeric(predict(model$model, newdata = data.frame(bg.table), x = data.frame(bg.table), type = "response"))
-        pred.test <- as.numeric(predict(model$model, newdata = data.frame(test.table), x = data.frame(test.table), type = "response"))
-      }
+      pred.p <- suitability.from.data(model, p.table)
+      pred.bg <- suitability.from.data(model, bg.table)
+      pred.test <- suitability.from.data(model, test.table)
 
       pred.p <- CalibratR::predict_calibratR(recalibrated.model$calibration_models, pred.p)
       pred.bg <- CalibratR::predict_calibratR(recalibrated.model$calibration_models, pred.bg)
@@ -322,6 +311,7 @@ get_MCE_equal_width <- function(actual, predicted, bins=10){ #equal width bins
 }
 
 # Summary for objects of class enmtools.calibrate
+#' @exportS3Method
 summary.enmtools.calibrate <- function(object, ...){
 
   print(plot(object))
@@ -351,6 +341,7 @@ summary.enmtools.calibrate <- function(object, ...){
 }
 
 # Print method for objects of class enmtools.calibrate
+#' @exportS3Method
 print.enmtools.calibrate <- function(x, ...){
 
   print(summary(x, ...))
@@ -359,6 +350,7 @@ print.enmtools.calibrate <- function(x, ...){
 
 
 # Plot method for objects of class enmtools.calibrate
+#' @exportS3Method
 plot.enmtools.calibrate <- function(x, ...){
 
   if(inherits(x, "enmtools.recalibrated.model")){

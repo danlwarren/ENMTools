@@ -7,10 +7,10 @@
 check.extras(funs = NULL)
 }
 \arguments{
-\item{funs}{character vector of ENMTools function names to install extra dependencies for. If `NULL`, extras for all ENMTools functions will be installed.}
+\item{funs}{character vector of ENMTools function names to install extra dependencies for. If \code{NULL}, extras for all ENMTools functions will be installed.}
 }
 \value{
-Logical, `TRUE` if all required extra packages are available, `FALSE` otherwise
+Logical, \code{TRUE} if all required extra packages are available, \code{FALSE} otherwise
 }
 \description{
 Check that the extra packages needed for an ENMTools function are installed and available

@@ -6,12 +6,17 @@
 \usage{
 permutation.bias(
   species,
-  model,
-  env,
+  training.env,
   transfer.env,
+  type,
+  f = NULL,
+  model = NULL,
+  model.args = list(),
   nreps = 100,
   bias = NULL,
   buffer.width = NULL,
+  pa.threshold = "empirical",
+  clamp = NULL,
   verbose = FALSE,
   ...
 )
@@ -19,11 +24,17 @@ permutation.bias(
 \arguments{
 \item{species}{An enmtools.species object}
 
-\item{model}{A fitted enmtools.model object}
-
-\item{env}{A SpatRaster of the training environment}
+\item{training.env}{A SpatRaster of the training environment}
 
 \item{transfer.env}{A SpatRaster of the transfer environment}
+
+\item{type}{The type of model to construct: "glm", "gam", "bc", "dm", "rf", "rf.ranger", "maxnet", "mx" (Maxent using the Java implementation), or "tidy" for any classification model specified with parsnip (see \code{model}).}
+
+\item{f}{Optional.  A formula or \code{\link[recipes:recipe]{recipes::recipe()}} specifying the predictors to use.  If NULL (the default), each model uses the default for its type: every layer in \code{env} is used as a predictor, as linear terms for GLMs and smooth terms for GAMs.  See the documentation for each modeling function (e.g. \code{\link[=enmtools.glm]{enmtools.glm()}}) for details.  Not used when type = "mx".}
+
+\item{model}{When type = "tidy", a parsnip model specification with mode "classification", e.g. \code{parsnip::boost_tree("classification")}, passed to \code{\link[=enmtools.tidy]{enmtools.tidy()}}.}
+
+\item{model.args}{When type = "tidy", a list of arguments for the model specification or its engine, passed to \code{\link[=enmtools.tidy]{enmtools.tidy()}}.}
 
 \item{nreps}{Number of replicate models to build. Defaults to 100.}
 
@@ -34,22 +45,25 @@ estimated sampling intensity in each grid cell.}
 \item{buffer.width}{Optional numeric. If provided, background points for
 each replicate are drawn from circular buffers of this radius around the
 resampled presence points, intersected with the bias layer (if provided).
-Units match the CRS of env.}
+Units match the CRS of training.env.}
+
+\item{pa.threshold}{Controls which MSS threshold is used to binarize replicate projections. "empirical" (default) applies the threshold from the fitted empirical model to all replicates, matching the approach in Warren et al. (2021). "replicate" calculates a separate threshold for each replicate from its own training evaluation.}
+
+\item{clamp}{Whether to clamp the empirical and replicate models.  If NULL (the default), the default for the model type is used; see the modeling functions.  Projections to the transfer environment use the same setting.}
 
 \item{verbose}{Controls printing of progress messages. Defaults to FALSE.}
 
-\item{...}{Additional arguments passed to the model fitting function when
-building replicate models (e.g., f, test.prop, clamp).}
+\item{...}{Additional arguments passed to the modeling function for the
+empirical and replicate models (e.g., test.prop).}
 }
 \value{
 An enmtools.permutation.bias object containing empirical and
-  replicate statistics, p-values, mean and variance change rasters, and
-  summary plots.
+replicate statistics, mean and variance change rasters, and summary plots.
 }
 \description{
 Implements a permutation test for the effects of sampling bias on ENM
-projections, as described in Warren et al. (2021).  The empirical model is
-projected to a transfer environment and a suite of summary statistics are
+projections, as described in Warren et al. (2021).  A model of the chosen
+type is fitted to the empirical data and projected to a transfer environment and a suite of summary statistics are
 calculated for that projection.  A null distribution for each statistic is
 then built by repeatedly resampling occurrence records at random from the
 training region, refitting the model with identical settings, projecting to
@@ -63,15 +77,11 @@ and how sensitive those predictions are to the input occurrence data.
 }
 \examples{
 \donttest{
-monticola.glm <- enmtools.glm(iberolacerta.clade$species$monticola,
-                              env = euro.worldclim,
-                              f = pres ~ bio1 + bio12,
-                              test.prop = 0.2)
 pb <- permutation.bias(iberolacerta.clade$species$monticola,
-                       monticola.glm,
-                       env = euro.worldclim,
+                       training.env = euro.worldclim,
                        transfer.env = euro.worldclim,
-                       nreps = 10,
-                       f = pres ~ bio1 + bio12)
+                       type = "glm",
+                       f = pres ~ bio1 + bio12,
+                       nreps = 10)
 }
 }

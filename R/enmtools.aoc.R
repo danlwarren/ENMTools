@@ -4,9 +4,12 @@
 #'
 #' @param clade An enmtools.clade object containing species data and a phylogeny
 #' @param env Environmental layers for use when overlap is calculated using niche models.
-#' @param overlap.source The source of the overlaps to calculate.  Choices are "bc", "dm", "gam", "glm", "mx", "range", and "point"
+#' @param overlap.source The source of the overlaps to calculate.  Choices are "range", "point", "matrix", or a model type: "glm", "gam", "bc", "dm", "rf", "rf.ranger", "maxnet", "mx", or "tidy" (see `model`).
 #' @param nreps A number of reps to do
-#' @param f The model to be used for GLM and GAM comparisons
+#' @param f Optional.  A formula or [recipes::recipe()] specifying the predictors to use for ENM-based overlaps.  If NULL (the default), each model uses the default for its type: every layer in `env` is used as a predictor, as linear terms for GLMs and smooth terms for GAMs.  See the documentation for each modeling function (e.g. [enmtools.glm()]) for details.  Not used for Maxent models (overlap.source = "mx").
+#' @param model When overlap.source = "tidy", a parsnip model specification with mode "classification", passed to [enmtools.tidy()].
+#' @param model.args When overlap.source = "tidy", a list of arguments for the model specification or its engine, passed to [enmtools.tidy()].
+#' @param clamp Passed to the modeling functions for ENM-based overlaps.  If NULL (the default), each model type's own default is used: presence-only envelope models (Bioclim, DOMAIN, and hypervolumes) are not clamped, and other models are.
 #' @param overlap.matrix A matrix of overlaps to use, for option overlap.source = "matrix"
 #' @param metric The overlap metric to use. For ENM sources, this can be any combination of "D", "I", "cor", "env.D", "env.I", and "env.cor".
 #' for range and point overlap this argument is ignored.
@@ -14,40 +17,20 @@
 #'
 #' @return A list containing a data frame of coefficients from the empirical regression of overlap on time along with the coefficients from all Monte Carlo replicates, along with plots and p values for the accompanying statistical tests.
 
-enmtools.aoc <- function(clade, env = NULL,  overlap.source, nreps = 100, f = NULL, overlap.matrix = NULL, metric = "D", ...){
+enmtools.aoc <- function(clade, env = NULL,  overlap.source, nreps = 100, f = NULL, model = NULL, model.args = list(), clamp = NULL, overlap.matrix = NULL, metric = "D", ...){
 
   description <- "Age-Overlap Correlation from Monte Carlo Test"
 
   clade <- check.clade(clade)
 
   # Make sure the data's okay
-  enmtools.aoc.precheck(clade, nreps, overlap.source, env,  f, overlap.matrix, metric)
+  enmtools.aoc.precheck(clade, nreps, overlap.source, env, f, model, overlap.matrix, metric)
 
   # Generate empirical overlaps
 
-  # Bioclim models
-  if(overlap.source == "bc"){
-    empirical.models <- lapply(clade$species, function(x) enmtools.bc(x, env = env, ...))
-  }
-
-  # Domain models
-  if(overlap.source == "dm"){
-    empirical.models <- lapply(clade$species, function(x) enmtools.dm(x, env = env, ...))
-  }
-
-  # GAM models
-  if(overlap.source == "gam"){
-    empirical.models <- lapply(clade$species, function(x) enmtools.gam(x, env = env, f = f, ...))
-  }
-
-  # GLM models
-  if(overlap.source == "glm"){
-    empirical.models <- lapply(clade$species, function(x) enmtools.glm(x, env = env, f = f, ...))
-  }
-
-  # Maxent models
-  if(overlap.source == "mx"){
-    empirical.models <- lapply(clade$species, function(x) enmtools.maxent(x, env = env), ...)
+  # ENM-based overlaps
+  if(overlap.source %in% model.types){
+    empirical.models <- lapply(clade$species, function(x) enmtools.model.by.type(overlap.source, x, env, f = f, model = model, model.args = model.args, clamp = clamp, ...))
   }
 
   if(is.na(match(overlap.source, c("range", "points", "matrix")))){
@@ -163,6 +146,7 @@ enmtools.aoc <- function(clade, env = NULL,  overlap.source, nreps = 100, f = NU
   return(output)
 }
 
+#' @exportS3Method
 summary.enmtools.aoc <- function(object, ...){
 
   cat("\n\nAge-Overlap Correlation test\n\n")
@@ -175,10 +159,12 @@ summary.enmtools.aoc <- function(object, ...){
 
 }
 
+#' @exportS3Method
 print.enmtools.aoc <- function(x, ...){
   summary(x)
 }
 
+#' @exportS3Method
 plot.enmtools.aoc <- function(x, ...){
 
   assert.extras.this.fun()
@@ -192,7 +178,7 @@ plot.enmtools.aoc <- function(x, ...){
 
 }
 
-enmtools.aoc.precheck <- function(clade, nreps, overlap.source, env,  model, overlap.matrix, metric){
+enmtools.aoc.precheck <- function(clade, nreps, overlap.source, env, f, model, overlap.matrix, metric){
 
   if(!inherits(clade$tree, "phylo")){
     stop("Tree is not a phylo object!")
@@ -203,7 +189,15 @@ enmtools.aoc.precheck <- function(clade, nreps, overlap.source, env,  model, ove
   }
 
   # Check to make sure env data is good
-  if(!is.na(match(overlap.source, c("bc", "dm", "mx", "glm", "gam")))){
+  if(!overlap.source %in% c(model.types, "range", "point", "points", "matrix")){
+    stop(paste0("overlap.source ", overlap.source, " not understood! Select one of: ", paste(c(model.types, "range", "point", "matrix"), collapse = ", "), "."))
+  }
+
+  if(overlap.source %in% model.types){
+    check.model.type(overlap.source, f, model)
+  }
+
+  if(overlap.source %in% model.types){
     if(!inherits(env, c("SpatRaster"))){
       stop("No environmental rasters were supplied!")
     }

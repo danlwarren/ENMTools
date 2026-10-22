@@ -3,12 +3,12 @@
 #' @param model An enmtools.model object
 #' @param metric The model fit metric used to measure the effect of permuting each variable.  Any single-value metric stored in a dismo ModelEvaluation object can be used, default is "auc".
 #' @param nsim The number of permutations to be run for each variable for method "permute"
-#' @param method A character string or vector containing "permute", "shap", or both.  "permute" measures the decline in model fit when each variable is permuted; "shap" calculates SHAP values for presence points.  SHAP values for enmtools.glm and enmtools.gam models are calculated exactly from the model terms, on the scale of the linear predictor.  Those for enmtools.rf and enmtools.rf.ranger models use TreeSHAP and require the treeshap package, and those for enmtools.maxent models require the kernelshap package.
-#' @param shap.method For enmtools.maxent models, either "permshap" (default, faster) or "kernelshap" (slower but more accurate for correlated features).  Ignored for other models.
+#' @param method A character string or vector containing "permute", "shap", or both.  "permute" measures the decline in model fit when each variable is permuted; "shap" calculates SHAP values for presence points.  For GLMs and GAMs, SHAP values are calculated exactly from the model terms, on the scale of the linear predictor.  For random forests (randomForest or ranger), they are calculated with TreeSHAP, which requires the treeshap package.  These exact methods are only used when the formula or recipe passes the predictors to the model unchanged; for other models, including those fitted with a recipe that transforms the predictors, SHAP values are estimated with the kernelshap package.
+#' @param shap.method For models whose SHAP values are estimated with kernelshap (see `method`), either "permshap" (default, faster) or "kernelshap" (slower but more accurate for correlated features).
 #' @param shap.npres The maximum number of presence points for which SHAP values are calculated.  Presence points are subsampled at random if there are more than this.
 #' @param shap.nback The maximum number of background points used as the reference sample for SHAP values, so that each value describes how a variable makes a presence more or less suitable than the study area as a whole.  Argument not used for enmtools.glm, enmtools.gam, enmtools.rf, and enmtools.rf.ranger models.
 #' @param verbose Controls printing of messages
-#' @param ... Further arguments to be passed to kernelshap/permshap for enmtools.maxent models.
+#' @param ... Further arguments to be passed to kernelshap/permshap.
 #'
 #' @return An enmtools.vip object.  If method includes "shap", its "shap" element is a list containing the SHAP values (S), the predictor values for the presence points they were calculated for (X), and the baseline prediction (baseline).  These can be passed to the shapviz package for further plots, e.g. shapviz::shapviz(result$shap$S, X = result$shap$X, baseline = result$shap$baseline).
 #'
@@ -28,43 +28,20 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", s
 
   output <- list()
 
-  if(inherits(model, "enmtools.bc") | inherits(model, "enmtools.dm")){
-    stop("Variable importance tests not available for models of this type.")
-  }
-
   if(any(!method %in% c("permute", "shap"))){
     stop("method must be \"permute\", \"shap\", or both.")
   }
 
-  if(inherits(model, "enmtools.glm")){
-    thismodel <- model$model
-    feature.names <- labels(terms(thismodel))
-    feature.names <- gsub("poly\\(", "", feature.names)
-    feature.names <- gsub(",.*", "", feature.names)
-    train <- model$analysis.df[,-c(1,2)]
-    pred.wrapper <- function(object, newdata) predict(object, newdata, type = "response")
+  if(!inherits(model, c("enmtools.tidy", "enmtools.maxent"))){
+    stop("Variable importance tests not available for models of this type.")
   }
 
-  if(inherits(model, "enmtools.gam")){
+  if(inherits(model, "enmtools.tidy")){
     thismodel <- model$model
-    feature.names <- labels(terms(thismodel))
+    # Original predictor columns, before any formula or recipe processing
+    feature.names <- colnames(workflows::extract_mold(thismodel)$blueprint$ptypes$predictors)
     train <- model$analysis.df[,-c(1,2)]
-    pred.wrapper <- function(object, newdata) as.numeric(predict(object, newdata, type = "response"))
-  }
-
-  if(inherits(model, "enmtools.rf")){
-    thismodel <- model$model
-    feature.names <- labels(terms(thismodel))
-    train <- model$analysis.df[,-c(1,2)]
-    pred.wrapper <- function(object, newdata) predict(object, newdata)
-  }
-
-  if(inherits(model, "enmtools.rf.ranger")){
-    thismodel <- model$model
-    feature.names <- colnames(model$analysis.df)
-    feature.names <- feature.names[!feature.names %in% c("x", "y", "presence")]
-    train <- model$analysis.df[,-c(1,2)]
-    pred.wrapper <- function(object, newdata) predict(object, data = newdata, type = "response")$predictions[ , 2]
+    pred.wrapper <- function(object, newdata) predict(object, new_data = newdata, type = "prob")$.pred_1
   }
 
   if(inherits(model, "enmtools.maxent")){
@@ -74,14 +51,6 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", s
     train$presence <- c(rep(1, nrow(attr(thismodel, "presence"))),
                         rep(0, nrow(attr(thismodel, "absence"))))
     pred.wrapper <- function(object, newdata) predict(object, newdata)
-  }
-
-  if(inherits(model, "enmtools.ppmlasso")){
-    thismodel <- model$model
-    feature.names <- colnames(model$analysis.df)
-    feature.names <- feature.names[!feature.names %in% c("x", "y", "presence", "wt")]
-    train <- model$analysis.df[,c(feature.names, "presence")]
-    pred.wrapper <- function(object, newdata) predict(object, newdata = newdata, type = "response")
   }
 
   if("permute" %in% method){
@@ -142,19 +111,31 @@ enmtools.vip <- function(model, metric = "auc", nsim = 10, method = "permute", s
     X.shap <- train[pres.idx, feature.names, drop = FALSE]
     bg.X   <- train[abs.idx, feature.names, drop = FALSE]
 
-    if(inherits(model, c("enmtools.glm", "enmtools.gam"))){
-      shap <- additive.shap(thismodel, X.shap, feature.names)
-    } else if(inherits(model, c("enmtools.rf", "enmtools.rf.ranger"))){
+    # Exact methods (additive SHAP for GLMs and GAMs, TreeSHAP for random
+    # forests) work on the fitted model itself, so they can only be used when
+    # the formula or recipe passes the predictors to it unchanged
+    if(inherits(model, "enmtools.tidy")){
+      engine.fit <- workflows::extract_fit_engine(thismodel)
+      mold <- workflows::extract_mold(thismodel)
+      passthrough <- identical(colnames(mold$predictors), colnames(mold$blueprint$ptypes$predictors))
+    } else {
+      engine.fit <- thismodel
+      passthrough <- FALSE
+    }
+
+    if(passthrough && inherits(engine.fit, c("glm", "gam"))){
+      shap <- additive.shap(engine.fit, X.shap, feature.names)
+    } else if(passthrough && inherits(engine.fit, c("randomForest", "ranger"))){
       if(!requireNamespace("treeshap", quietly = TRUE)){
         stop("SHAP values for random forest models require the treeshap package.  Install it with install.extras(\"enmtools.vip.treeshap\") or install.packages(\"treeshap\").  If no binary is available for your system, use install.packages(\"treeshap\", type = \"source\").", call. = FALSE)
       }
 
       # TreeSHAP needs a reference sample that reaches every node the explained
       # points do, so it uses all of the training data
-      if(inherits(model, "enmtools.rf")){
-        unified <- treeshap::randomForest.unify(thismodel, train[, feature.names, drop = FALSE])
+      if(inherits(engine.fit, "randomForest")){
+        unified <- treeshap::randomForest.unify(engine.fit, train[, feature.names, drop = FALSE])
       } else {
-        unified <- treeshap::ranger.unify(thismodel, train[, feature.names, drop = FALSE])
+        unified <- treeshap::ranger.unify(engine.fit, train[, feature.names, drop = FALSE])
       }
       shap <- list(S = as.matrix(treeshap::treeshap(unified, X.shap, verbose = FALSE)$shaps),
                    X = X.shap,

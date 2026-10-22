@@ -23,17 +23,17 @@ enmtools.vip(
 
 \item{nsim}{The number of permutations to be run for each variable for method "permute"}
 
-\item{method}{A character string or vector containing "permute", "shap", or both.  "permute" measures the decline in model fit when each variable is permuted; "shap" calculates SHAP values for presence points.  SHAP values for enmtools.glm and enmtools.gam models are calculated exactly from the model terms, on the scale of the linear predictor.  Those for enmtools.rf and enmtools.rf.ranger models use TreeSHAP and require the treeshap package, and those for enmtools.maxent models require the kernelshap package.}
+\item{method}{A character string or vector containing "permute", "shap", or both.  "permute" measures the decline in model fit when each variable is permuted; "shap" calculates SHAP values for presence points.  For GLMs and GAMs, SHAP values are calculated exactly from the model terms, on the scale of the linear predictor.  For random forests (randomForest or ranger), they are calculated with TreeSHAP, which requires the treeshap package.  These exact methods are only used when the formula or recipe passes the predictors to the model unchanged; for other models, including those fitted with a recipe that transforms the predictors, SHAP values are estimated with the kernelshap package.}
 
-\item{shap.method}{For enmtools.maxent models, either "permshap" (default, faster) or "kernelshap" (slower but more accurate for correlated features).  Ignored for other models.}
+\item{shap.method}{For models whose SHAP values are estimated with kernelshap (see \code{method}), either "permshap" (default, faster) or "kernelshap" (slower but more accurate for correlated features).}
 
 \item{shap.npres}{The maximum number of presence points for which SHAP values are calculated.  Presence points are subsampled at random if there are more than this.}
 
-\item{shap.nback}{The maximum number of background points used as the reference sample for SHAP values, so that each value describes how a variable makes a presence more or less suitable than the study area as a whole.  Background points are subsampled at random if there are more than this.  Not used for enmtools.glm and enmtools.gam models, or for enmtools.rf and enmtools.rf.ranger models, for which TreeSHAP uses all of the training data as the reference.}
+\item{shap.nback}{The maximum number of background points used as the reference sample for SHAP values, so that each value describes how a variable makes a presence more or less suitable than the study area as a whole.  Argument not used for enmtools.glm, enmtools.gam, enmtools.rf, and enmtools.rf.ranger models.}
 
 \item{verbose}{Controls printing of messages}
 
-\item{...}{Further arguments to be passed to kernelshap/permshap for enmtools.maxent models.}
+\item{...}{Further arguments to be passed to kernelshap/permshap.}
 }
 \value{
 An enmtools.vip object.  If method includes "shap", its "shap" element is a list containing the SHAP values (S), the predictor values for the presence points they were calculated for (X), and the baseline prediction (baseline).  These can be passed to the shapviz package for further plots, e.g. shapviz::shapviz(result$shap$S, X = result$shap$X, baseline = result$shap$baseline).

@@ -28,15 +28,6 @@ threespace.plot <- function(model, env, maxpts = NA){
     model$analysis.df <- cbind(model$analysis.df, terra::extract(env, model$analysis.df[,1:2], ID = FALSE))
   }
 
-  if(inherits(model, c("enmtools.bc", "enmtools.dm"))){
-    model$analysis.df <- cbind(model$analysis.df, terra::extract(env, model$analysis.df[,1:2], ID = FALSE))
-    model$analysis.df$presence <- rep(1, nrow(model$analysis.df))
-  }
-
-  if(inherits(model, "enmtools.ppmlasso")){
-    model$analysis.df <- model$analysis.df[,c(names(env), "presence")]
-  }
-
   # Chuck out X and Y and stop on any unmatched env variables
   model.df <- model$analysis.df[,c(names(env), "presence")]
   model.df <- model.df[complete.cases(model.df),]
@@ -70,23 +61,14 @@ threespace.plot <- function(model, env, maxpts = NA){
                               PC2 = allpoints.pca$scores[,2],
                               source = allpoints$presence)
 
-  if(inherits(model, c("enmtools.bc", "enmtools.dm"))){
-    # Plot layers in order
-    output <- ggplot(allpoints.pca, aes_string("PC1", "PC2")) +
-      layer(geom = "point", stat = "identity", position = "identity",
-            data = allpoints.pca[allpoints.pca$source == 2,], aes(color = "Env Layers")) +
-      layer(geom = "point", stat = "identity", position = "identity",
-            data = allpoints.pca[allpoints.pca$source == 1,], aes(color = "Presence"))
-  } else {
-    # Plot layers in order
-    output <- ggplot(allpoints.pca, aes_string("PC1", "PC2")) +
-      layer(geom = "point", stat = "identity", position = "identity",
-            data = allpoints.pca[allpoints.pca$source == 2,], aes(color = "Env Layers")) +
-      layer(geom = "point", stat = "identity", position = "identity",
-            data = allpoints.pca[allpoints.pca$source == 0,], aes(color = "Background")) +
-      layer(geom = "point", stat = "identity", position = "identity",
-            data = allpoints.pca[allpoints.pca$source == 1,], aes(color = "Presence"))
-  }
+  # Plot layers in order
+  output <- ggplot(allpoints.pca, aes(x = .data$PC1, y = .data$PC2)) +
+    layer(geom = "point", stat = "identity", position = "identity",
+          data = allpoints.pca[allpoints.pca$source == 2,], aes(color = "Env Layers")) +
+    layer(geom = "point", stat = "identity", position = "identity",
+          data = allpoints.pca[allpoints.pca$source == 0,], aes(color = "Background")) +
+    layer(geom = "point", stat = "identity", position = "identity",
+          data = allpoints.pca[allpoints.pca$source == 1,], aes(color = "Presence"))
 
 
 

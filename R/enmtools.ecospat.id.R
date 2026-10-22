@@ -115,7 +115,7 @@ enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = 
   sp1.bg.points <- as.data.frame(sp1.niche$Z, xy = TRUE)
   colnames(sp1.bg.points) <- c("X", "Y", "Density")
   sp1.bg.plot <-  ggplot(data = sp1.bg.points, aes(y = .data$Y, x = .data$X)) +
-    geom_raster(aes_string(fill = "Density")) +
+    geom_raster(aes(fill = .data$Density)) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Density")) +
     theme_classic() +
     ggtitle(paste(species.1$species.name, "available environment")) +
@@ -124,7 +124,7 @@ enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = 
   sp1.env.points <- as.data.frame(sp1.niche$z.uncor, xy = TRUE)
   colnames(sp1.env.points) <- c("X", "Y", "Density")
   sp1.env.plot <-  ggplot(data = sp1.env.points, aes(y = .data$Y, x = .data$X)) +
-    geom_raster(aes_string(fill = "Density")) +
+    geom_raster(aes(fill = .data$Density)) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Density")) +
     theme_classic() +
     ggtitle(paste(species.1$species.name, "occurrence in environment space")) +
@@ -133,7 +133,7 @@ enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = 
   sp1.env.corr.points <- as.data.frame(sp1.niche$z.cor, xy = TRUE)
   colnames(sp1.env.corr.points) <- c("X", "Y", "Density")
   sp1.env.plot.corr <-  ggplot(data = sp1.env.corr.points, aes(y = .data$Y, x = .data$X)) +
-    geom_raster(aes_string(fill = "Density")) +
+    geom_raster(aes(fill = .data$Density)) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Density")) +
     theme_classic() +
     ggtitle(paste(species.1$species.name, "occurrence scaled by availability")) +
@@ -142,7 +142,7 @@ enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = 
   sp2.bg.points <- as.data.frame(sp2.niche$Z, xy = TRUE)
   colnames(sp2.bg.points) <- c("X", "Y", "Density")
   sp2.bg.plot <-  ggplot(data = sp2.bg.points, aes(y = .data$Y, x = .data$X)) +
-    geom_raster(aes_string(fill = "Density")) +
+    geom_raster(aes(fill = .data$Density)) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Density")) +
     theme_classic() +
     ggtitle(paste(species.2$species.name, "available environment")) +
@@ -151,7 +151,7 @@ enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = 
   sp2.env.points <- as.data.frame(sp2.niche$z.uncor, xy = TRUE)
   colnames(sp2.env.points) <- c("X", "Y", "Density")
   sp2.env.plot <-  ggplot(data = sp2.env.points, aes(y = .data$Y, x = .data$X)) +
-    geom_raster(aes_string(fill = "Density")) +
+    geom_raster(aes(fill = .data$Density)) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Density")) +
     theme_classic() +
     ggtitle(paste(species.2$species.name, "occurrence in environment space")) +
@@ -160,7 +160,7 @@ enmtools.ecospat.id <- function(species.1, species.2, env, nreps = 99, layers = 
   sp2.env.corr.points <- as.data.frame(sp2.niche$z.cor, xy = TRUE)
   colnames(sp2.env.corr.points) <- c("X", "Y", "Density")
   sp2.env.plot.corr <-  ggplot(data = sp2.env.corr.points, aes(y = .data$Y, x = .data$X)) +
-    geom_raster(aes_string(fill = "Density")) +
+    geom_raster(aes(fill = .data$Density)) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Density")) +
     theme_classic() +
     ggtitle(paste(species.2$species.name, "occurrence scaled by availability")) +
@@ -252,7 +252,7 @@ ecospat.id.precheck <- function(species.1, species.2, env, nreps, layers){
 
 }
 
-
+#' @exportS3Method
 summary.ecospat.id.test <- function(object, ...){
   cat(paste("\n\n", object$description))
 
@@ -272,12 +272,14 @@ summary.ecospat.id.test <- function(object, ...){
 
 }
 
+#' @exportS3Method
 print.ecospat.id.test <- function(x, ...){
 
   print(summary(x, ...))
 
 }
 
+#' @exportS3Method
 plot.ecospat.id.test <- function(x, ...){
   grid.arrange(x$d.plot, x$i.plot, nrow = 2)
   grid.arrange(x$sp1.bg.plot, x$sp2.bg.plot,

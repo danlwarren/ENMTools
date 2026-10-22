@@ -32,11 +32,8 @@ visualize.enm <- function(model, env, nbins = 100, layers = colnames(model$analy
   }
 
   # Grab points
-  if(inherits(model, c("enmtools.bc", "enmtools.dm"))){
-    points <- model$analysis.df
-  } else {
-    points <- model$analysis.df[model$analysis.df$presence == 1,1:2]
-  }
+  points <- model$analysis.df[model$analysis.df$presence == 1,1:2]
+
 
   # Getting min and max for each env layer
   if(minmax == "env"){
@@ -47,7 +44,7 @@ visualize.enm <- function(model, env, nbins = 100, layers = colnames(model$analy
     layer1.max <- max(terra::values(env[[layers[1]]]), na.rm=TRUE)
     layer2.max <- max(terra::values(env[[layers[2]]]), na.rm=TRUE)
 
-    } else if(minmax == "points"){
+  } else if(minmax == "points"){
 
     # Getting values from presence and background
     layer1.min <- min(model$analysis.df[,layers[1]], na.rm = TRUE)
@@ -103,19 +100,15 @@ visualize.enm <- function(model, env, nbins = 100, layers = colnames(model$analy
   plot.df <- data.frame(plot.df)
 
   if(inherits(model$model, "DistModel")){
-    pred <- predict(model$model, x = plot.df, type = "response")
+    pred <- as.numeric(predict(model$model, x = plot.df, type = "prob"))
   } else {
-    if(inherits(model$model, "ranger")) {
-      pred <- predict(model$model, data = plot.df, type = "response")$predictions[ , 2, drop = TRUE]
-    } else {
-      pred <- predict(model$model, newdata = plot.df, type = "response")
-    }
+    pred <- as.numeric(predict(model$model, new_data = plot.df, type = "prob")$.pred_1)
   }
 
-  plot.df <- cbind(plot.df[,1:2], pred)
+  plot.df <- cbind(plot.df[,1:2], Suitability = pred)
 
   suit.plot <- ggplot(data = plot.df, aes(y = .data[[names[2]]], x = .data[[names[1]]])) +
-    geom_raster(aes(fill = pred)) +
+    geom_raster(aes(fill = .data$Suitability)) +
     scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Suitability")) +
     theme_classic() +
     ggtitle(label = "Predicted suitability in environment space") +
@@ -132,23 +125,23 @@ visualize.enm <- function(model, env, nbins = 100, layers = colnames(model$analy
   }
 
   # Do density plot of presence vs. background data
-  if(inherits(model, c("enmtools.bc", "enmtools.dm"))){
-    background.plot <- NA
-  } else {
-    bgpoints <- model$analysis.df[model$analysis.df$presence == 0,1:2]
-    bgdata <- as.data.frame(terra::extract(env[[layers]], bgpoints, ID = FALSE, na.rm = TRUE))
-    background.plot <- ggplot(bgdata, aes(y = .data[[names[2]]], x = .data[[names[1]]])) +
-      stat_density_2d(aes_string(fill = "..density.."), geom = "raster", contour = FALSE) +
-      xlim(layer1.min, layer1.max) + ylim(layer2.min, layer2.max) +
-      scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Density")) + theme_classic() +
-      ggtitle(label = "Presence points and background density in environment space") +
-      theme(plot.title = element_text(hjust = 0.5))
+  bgpoints <- model$analysis.df[model$analysis.df$presence == 0,1:2]
+  bgdata <- as.data.frame(terra::extract(env[[layers]], bgpoints, ID = FALSE, na.rm = TRUE))
+  background.plot <- ggplot(bgdata, aes(y = .data[[names[2]]], x = .data[[names[1]]])) +
+    stat_density_2d(aes(fill = after_stat(density)),
+                    geom = "raster",
+                    contour = FALSE,
+                    na.rm = TRUE) +
+    xlim(layer1.min, layer1.max) + ylim(layer2.min, layer2.max) +
+    scale_fill_viridis_c(option = "B", guide = guide_colourbar(title = "Density")) + theme_classic() +
+    ggtitle(label = "Presence points and background density in environment space") +
+    theme(plot.title = element_text(hjust = 0.5))
 
-    if(plot.points == TRUE){
-      background.plot <- background.plot + geom_point(data = pointdata, aes(y = .data[[names[2]]], x = .data[[names[1]]]),
-                                                      pch = 21, fill = "white", color = "black", size = 3)
-    }
+  if(plot.points == TRUE){
+    background.plot <- background.plot + geom_point(data = pointdata, aes(y = .data[[names[2]]], x = .data[[names[1]]]),
+                                                    pch = 21, fill = "white", color = "black", size = 3)
   }
+
 
   output <- list(background.plot = background.plot,
                  suit.plot = suit.plot)

@@ -28,7 +28,7 @@ enmtools.rf(
 
 \item{env}{A SpatRaster of environmental data.}
 
-\item{f}{A formula for fitting the model}
+\item{f}{Optional.  A formula or \code{\link[recipes:recipe]{recipes::recipe()}} object specifying the predictors.  If NULL (the default), every layer in \code{env} is used as a predictor.}
 
 \item{test.prop}{Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.}
 

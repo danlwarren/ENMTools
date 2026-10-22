@@ -21,7 +21,6 @@ enmtools.glm(
   clamp = TRUE,
   corner = NA,
   bias = NA,
-  step = FALSE,
   ...
 )
 }
@@ -30,7 +29,7 @@ enmtools.glm(
 
 \item{env}{A SpatRaster of environmental data.}
 
-\item{f}{Standard GLM formula}
+\item{f}{Optional.  A formula or \code{\link[recipes:recipe]{recipes::recipe()}} object specifying the model, e.g. \code{presence ~ bio1 + I(bio1^2) + bio12}.  If NULL (the default), every layer in \code{env} is used as a linear term.}
 
 \item{test.prop}{Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.}
 
@@ -57,8 +56,6 @@ enmtools.glm(
 \item{corner}{An integer from 1 to 4.  Selects which corner to use for "block" test data.  By default the corner is selected randomly.}
 
 \item{bias}{An optional raster estimating relative sampling effort per grid cell.  Will be used for drawing background data.}
-
-\item{step}{Logical determining whether to do stepwise model selection or not}
 
 \item{...}{Arguments to be passed to glm()}
 }

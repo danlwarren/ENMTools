@@ -7,8 +7,10 @@
 #' @param species.1 An emtools.species object from which presence points (asymmetric) or background (symmetric) will be sampled.
 #' @param species.2 An enmtools.species object from which background will be sampled.
 #' @param env A SpatRaster object containing environmental data
-#' @param type The type of model to construct, currently accepts "glm", "mx", "bc", "gam", or "dm"
-#' @param f A function to use for model fitting.  Only required for GLM models at the moment.
+#' @param type The type of model to construct: "glm", "gam", "bc", "dm", "rf", "rf.ranger", "maxnet", "mx" (Maxent using the Java implementation), or "tidy" for any classification model specified with parsnip (see `model`).
+#' @param f Optional.  A formula or [recipes::recipe()] specifying the predictors to use.  If NULL (the default), each model uses the default for its type: every layer in `env` is used as a predictor, as linear terms for GLMs and smooth terms for GAMs.  See the documentation for each modeling function (e.g. [enmtools.glm()]) for details.  Not used when type = "mx".
+#' @param model When type = "tidy", a parsnip model specification with mode "classification", e.g. `parsnip::boost_tree("classification")`, passed to [enmtools.tidy()].
+#' @param model.args When type = "tidy", a list of arguments for the model specification or its engine, passed to [enmtools.tidy()].
 #' @param nreps Number of replicates to perform
 #' @param nback Number of background points for models
 #' @param test.type Controls whether the background test will be "symmetric" or "asymmetric"
@@ -16,7 +18,7 @@
 #' @param low.memory When set to TRUE, replicate models are written to disc instead of being stored in the output object.  Replicate models stored in the output object contain paths to the replicate models on disk instead of the rasters themselves.
 #' @param rep.dir Directory for storing replicate models when low.memory is set to TRUE.  If not specified, the working directory will be used.
 #' @param verbose Controls printing of various messages progress reports.  Defaults to FALSE.
-#' @param clamp Controls whether empirical and replicate models should be clamped to the environment space used for training.
+#' @param clamp Controls whether empirical and replicate models should be clamped to the environment space used for training.  Defaults to TRUE, except for presence-only envelope models; these are not clamped unless clamp = TRUE.
 #' @param ... Additional arguments to be passed to model fitting functions.
 #'
 #'
@@ -34,7 +36,7 @@
 #' f = pres ~ bio1 + bio12, nreps = 10)
 #' }
 
-background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 99, test.type = "asymmetric", nback = 1000, bg.source = "default", low.memory = FALSE, rep.dir = NA, verbose = FALSE, clamp = TRUE, ...){
+background.test <- function(species.1, species.2, env, type, f = NULL, model = NULL, model.args = list(), nreps = 99, test.type = "asymmetric", nback = 1000, bg.source = "default", low.memory = FALSE, rep.dir = NA, verbose = FALSE, clamp = NULL, ...){
 
   # Build a description of the analysis to use for summaries and plot titles
   if(test.type == "symmetric"){
@@ -48,7 +50,7 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
   species.2 <- check.bg(species.2, env, nback = nback, bg.source = bg.source, verbose = verbose)
 
   # Check to make sure everything's okay
-  background.precheck(species.1, species.2, env, type, f, nreps, test.type)
+  background.precheck(species.1, species.2, env, type, f, model, nreps, test.type)
 
   # Initialize a list to store reps in
   replicate.models <- list()
@@ -78,11 +80,16 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
   species.2$background.points <- combined.background.points
 
   # Clamping layers here so it's not done separately for every replicate
-  # and setting replicate clmaping to FALSE
+  # and setting replicate clamping to FALSE.  Envelope models are not clamped
+  # unless clamp = TRUE.
+  if(is.null(clamp)){
+    clamp <- !is.envelope.type(type, model)
+  }
+
   if(clamp == TRUE){
     combined.all.points <- rbind(species.1$presence.points, species.2$presence.points, combined.background.points)
 
-    # Adding env (skipped for BC otherwise)
+    # Environmental values at all points, used to set the clamping limits
     this.df <- as.data.frame(terra::extract(env, combined.all.points, ID = FALSE))
 
     env <- clamp.env(this.df, env)
@@ -90,35 +97,8 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
   # Building models for empirical data
   message("\nBuilding empirical models...\n")
-  if(type == "glm"){
-    empirical.species.1.model <- enmtools.glm(species.1, env, f, clamp = FALSE, ...)
-    empirical.species.2.model <- enmtools.glm(species.2, env, f, clamp = FALSE, ...)
-  }
-
-  if(type == "gam"){
-    empirical.species.1.model <- enmtools.gam(species.1, env, f, clamp = FALSE, ...)
-    empirical.species.2.model <- enmtools.gam(species.2, env, f, clamp = FALSE, ...)
-  }
-
-  if(type == "mx"){
-    empirical.species.1.model <- enmtools.maxent(species.1, env, clamp = FALSE, verbose = verbose, ...)
-    empirical.species.2.model <- enmtools.maxent(species.2, env, clamp = FALSE, verbose = verbose, ...)
-  }
-
-  if(type == "bc"){
-    empirical.species.1.model <- enmtools.bc(species.1, env, clamp = FALSE, ...)
-    empirical.species.2.model <- enmtools.bc(species.2, env, clamp = FALSE, ...)
-  }
-
-  if(type == "dm"){
-    empirical.species.1.model <- enmtools.dm(species.1, env, clamp = FALSE, ...)
-    empirical.species.2.model <- enmtools.dm(species.2, env, clamp = FALSE, ...)
-  }
-
-  if(type == "rf"){
-    empirical.species.1.model <- enmtools.rf(species.1, env, clamp = FALSE, ...)
-    empirical.species.2.model <- enmtools.rf(species.2, env, clamp = FALSE, ...)
-  }
+  empirical.species.1.model <- enmtools.model.by.type(type, species.1, env, f = f, model = model, model.args = model.args, clamp = FALSE, ...)
+  empirical.species.2.model <- enmtools.model.by.type(type, species.2, env, f = f, model = model, model.args = model.args, clamp = FALSE, ...)
 
   empirical.overlap <- c(unlist(raster.overlap(empirical.species.1.model, empirical.species.2.model)),
                          unlist(env.overlap(empirical.species.1.model, empirical.species.2.model, env = env)[1:3]))
@@ -163,35 +143,8 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
     rep.species.2$background.points <- background.points <- combined.background.points[(nrow(species.2$presence.points) + 1):nrow(combined.background.points),]
 
     # Building the models for reps
-    if(type == "glm"){
-      rep.species.1.model <- enmtools.glm(rep.species.1, env, f, clamp = FALSE, ...)
-      rep.species.2.model <- enmtools.glm(rep.species.2, env, f, clamp = FALSE, ...)
-    }
-
-    if(type == "gam"){
-      rep.species.1.model <- enmtools.gam(rep.species.1, env, f, clamp = FALSE, ...)
-      rep.species.2.model <- enmtools.gam(rep.species.2, env, f, clamp = FALSE, ...)
-    }
-
-    if(type == "mx"){
-      rep.species.1.model <- enmtools.maxent(rep.species.1, env, clamp = FALSE, verbose = verbose, ...)
-      rep.species.2.model <- enmtools.maxent(rep.species.2, env, clamp = FALSE, verbose = verbose, ...)
-    }
-
-    if(type == "bc"){
-      rep.species.1.model <- enmtools.bc(rep.species.1, env, clamp = FALSE, ...)
-      rep.species.2.model <- enmtools.bc(rep.species.2, env, clamp = FALSE, ...)
-    }
-
-    if(type == "dm"){
-      rep.species.1.model <- enmtools.dm(rep.species.1, env, clamp = FALSE, ...)
-      rep.species.2.model <- enmtools.dm(rep.species.2, env, clamp = FALSE, ...)
-    }
-
-    if(type == "rf"){
-      rep.species.1.model <- enmtools.rf(rep.species.1, env, clamp = FALSE, ...)
-      rep.species.2.model <- enmtools.rf(rep.species.2, env, clamp = FALSE, ...)
-    }
+    rep.species.1.model <- enmtools.model.by.type(type, rep.species.1, env, f = f, model = model, model.args = model.args, clamp = FALSE, ...)
+    rep.species.2.model <- enmtools.model.by.type(type, rep.species.2, env, f = f, model = model, model.args = model.args, clamp = FALSE, ...)
 
     # Appending overlap to results
     reps.overlap <- rbind(reps.overlap, c(unlist(raster.overlap(rep.species.1.model, rep.species.2.model)),
@@ -274,7 +227,7 @@ background.test <- function(species.1, species.2, env, type, f = NULL, nreps = 9
 
 }
 
-background.precheck <- function(species.1, species.2, env, type, f, nreps, test.type){
+background.precheck <- function(species.1, species.2, env, type, f, model, nreps, test.type){
 
   if(!inherits(species.1, "enmtools.species")){
     stop("Species.1 is not an enmtools.species object!")
@@ -288,25 +241,9 @@ background.precheck <- function(species.1, species.2, env, type, f, nreps, test.
     stop("Environmental layers are not a SpatRaster object!")
   }
 
-  if(type == "glm"){
-    if(!is.null(f)){
-      if(!inherits(f, "formula")){
-        stop("Type is set to GLM and f is not a formula object!")
-      }
-    }
-  }
 
-  if(type == "gam"){
-    if(!is.null(f)){
-      if(!inherits(f, "formula")){
-        stop("Type is set to GAM and f is not a formula object!")
-      }
-    }
-  }
 
-  if(!type %in% c("glm", "mx", "bc", "dm", "gam", "rf")){
-    stop(paste("Model type", type, "not understood! Select either bc, dm, mx, gam, rf, or glm."))
-  }
+  check.model.type(type, f, model)
 
   check.species(species.1)
 
@@ -338,7 +275,7 @@ background.precheck <- function(species.1, species.2, env, type, f, nreps, test.
 
 }
 
-
+#' @exportS3Method
 summary.enmtools.background.test <- function(object, ...){
 
   message(paste("\n\n", object$description))
@@ -353,12 +290,14 @@ summary.enmtools.background.test <- function(object, ...){
 
 }
 
+#' @exportS3Method
 print.enmtools.background.test <- function(x, ...){
 
   summary(x)
 
 }
 
+#' @exportS3Method
 plot.enmtools.background.test <- function(x, ...){
   grid.arrange(x$d.plot, x$env.d.plot,
                x$i.plot, x$env.i.plot,

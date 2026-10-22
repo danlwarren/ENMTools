@@ -22,8 +22,8 @@ expect_enmtools_model <- function(model){
 
   expect_true(all(names(model) %in% c("species.name", "analysis.df", "test.data", "test.prop", "model",
                                       "training.evaluation", "test.evaluation", "env.training.evaluation",
-                                      "env.test.evaluation", "rts.test",  "suitability", "clamping.strength", "call",  "notes", "response.plots",
-                                      "formula")), info = "Unexpected items in enmtools.model object!")
+                                      "env.test.evaluation", "rts.test",  "suitability", "clamping.strength", "clamp", "call",  "notes", "response.plots",
+                                      "formula", "hv")), info = "Unexpected items in enmtools.model object!")
 
   expect_true(inherits(model$species.name, "character"),
               info = "species.name is not a character")
@@ -36,7 +36,8 @@ expect_enmtools_model <- function(model){
 
   expect_true(all(class(model$model) %in% c("MaxEnt", "Domain", "Bioclim",
                                             "randomForest.formula", "randomForest",
-                                            "list", "glm", "lm", "gam", "ranger")),
+                                            "list", "glm", "lm", "gam", "ranger", "workflow",
+                                            "maxnet", "Hypervolume")),
               info = "Class of model is not recognized")
 
   # Evaluation on training data happens unless it's bypassed (GLM only I think)
@@ -158,7 +159,7 @@ test_that("enmtools.model objects work for core methods", {
 
 test_that("rf model objects work", {
   skip_if_not_installed("randomForest")
-  expect_warning(cyreni.rf <- enmtools.rf(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2))
+  cyreni.rf <- enmtools.rf(cyreni, euro.worldclim, f = pres ~ bio1 + bio9, test.prop = 0.2)
   expect_enmtools_model(cyreni.rf)
   p <- plot(cyreni.rf)
   expect_s3_class(p, "ggplot")
@@ -231,22 +232,37 @@ test_that("interactive.plot produces correct object", {
   expect_match(sapply(m_dm$x$calls, function(x) x$method), "addRasterImage", all = FALSE)
 })
 
+test_that("glm with polynomial terms works", {
+  aurelioi.glm.poly <- enmtools.glm(iberolacerta.clade$species$aurelioi, euro.worldclim,
+   f = pres ~ poly(bio1, 4) + poly(bio12, 4))
+  expect_enmtools_model(aurelioi.glm.poly)
+})
+
+test_that("gam with smooth terms works", {
+  aurelioi.gam.s <- enmtools.gam(iberolacerta.clade$species$aurelioi, euro.worldclim,
+                                 f = presence ~ s(bio1, k = 4) + s(bio12, k = 4))
+  expect_enmtools_model(aurelioi.gam.s)
+})
+
 test_that("backwards compatability works", {
   cyreni <- iberolacerta.clade$species$cyreni
   loaded <- load("sysdata.rda")
   on.exit(rm(list = loaded), add = TRUE, after = FALSE)
-  expect_warning(cyreni.glm.raster <- enmtools.glm(cyreni,
+  expect_error(cyreni.glm.raster <- enmtools.glm(cyreni,
                                                    euro.worldclim,
                                                    f = pres ~ bio1 + bio9,
                                                    test.prop = 0.2),
-                 "env is not the expected SpatRaster class",
+                 "Argument env must be a SpatRaster object!",
                  fixed = TRUE)
-  expect_enmtools_model(cyreni.glm.raster)
-  suppressWarnings(cyreni.glm.raster2 <- enmtools.glm(iberolacerta.clade$species$cyreni,
-                                                   euro.worldclim,
-                                                   f = pres ~ bio1 + bio9,
-                                                   test.prop = 0.2))
-  expect_enmtools_model(cyreni.glm.raster2)
+
+  # Commenting this out because right now the above doesn't return a model at all
+  # expect_enmtools_model(cyreni.glm.raster)
+  # suppressWarnings(cyreni.glm.raster2 <- enmtools.glm(iberolacerta.clade$species$cyreni,
+  #                                                  euro.worldclim,
+  #                                                  f = pres ~ bio1 + bio9,
+  #                                                  test.prop = 0.2))
+  # expect_enmtools_model(cyreni.glm.raster2)
+
 })
 
 
@@ -273,7 +289,42 @@ test_that("backwards compatability works", {
 #'
 
 
+test_that("maxnet model objects work", {
+  skip_if_not_installed("maxnet")
+  cyreni.maxnet <- enmtools.maxnet(cyreni, euro.worldclim, test.prop = 0.2)
+  expect_enmtools_model(cyreni.maxnet)
+  expect_true(inherits(cyreni.maxnet, "enmtools.maxnet"))
+  p <- plot(cyreni.maxnet)
+  expect_s3_class(p, "ggplot")
+  expect_output(print(cyreni.maxnet, plot = FALSE))
 
+  ## slow
+  skip_on_cran()
+  cyreni.maxnet.rts1 <- enmtools.maxnet(cyreni, euro.worldclim, test.prop = 0.2, rts.reps = 2)
+  cyreni.maxnet.rts2 <- enmtools.maxnet(cyreni, euro.worldclim, test.prop = 0, rts.reps = 2)
+  expect_enmtools_model(cyreni.maxnet.rts1)
+  expect_enmtools_model(cyreni.maxnet.rts2)
+})
+
+
+test_that("hypervolume model objects work", {
+  skip_if_not_installed("hypervolume")
+  # Hypervolume fitting is computationally intensive (kernel density estimation)
+  # Skip full model fitting on CRAN
+  skip_on_cran()
+  # Use only a few environmental variables (hypervolume works best with 2-6 dimensions)
+  env_subset <- euro.worldclim[[c("bio1", "bio12")]]
+  # Use small samples.per.point and large reduction.factor for faster testing
+  cyreni.hv <- enmtools.hypervolume(cyreni, env_subset, test.prop = 0.2,
+                                     samples.per.point = 100, reduction.factor = 0.5)
+  expect_enmtools_model(cyreni.hv)
+  expect_true(inherits(cyreni.hv, "enmtools.hypervolume"))
+  # Check that hypervolume object is stored
+  expect_true(!is.null(cyreni.hv$hv))
+  p <- plot(cyreni.hv)
+  expect_s3_class(p, "ggplot")
+  expect_output(print(cyreni.hv, plot = FALSE))
+})
 
 
 

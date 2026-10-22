@@ -31,7 +31,7 @@ enmtools.gam(
 
 \item{env}{A SpatRaster of environmental data.}
 
-\item{f}{Standard gam formula}
+\item{f}{Optional.  A formula or \code{\link[recipes:recipe]{recipes::recipe()}} object specifying the model, e.g. \code{presence ~ s(bio1) + s(bio12)}.  If NULL (the default), every layer in \code{env} is included as a smooth term, s(variable, k = k).}
 
 \item{test.prop}{Proportion of data to withhold randomly for model evaluation, or "block" for spatially structured evaluation.}
 

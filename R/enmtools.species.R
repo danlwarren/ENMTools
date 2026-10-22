@@ -61,7 +61,7 @@ enmtools.species <- function(range = NA, presence.points = NA, background.points
   return(output)
 }
 
-
+#' @exportS3Method
 summary.enmtools.species <- function(object, ...){
   stopifnot(inherits(object, "enmtools.species"))
 
@@ -102,7 +102,7 @@ summary.enmtools.species <- function(object, ...){
 
 }
 
-
+#' @exportS3Method
 plot.enmtools.species <- function(x, ...){
   stopifnot(inherits(x, "enmtools.species"))
 
@@ -124,6 +124,7 @@ plot.enmtools.species <- function(x, ...){
 
 }
 
+#' @exportS3Method
 print.enmtools.species <- function(x, ...){
 
   summary(x)
